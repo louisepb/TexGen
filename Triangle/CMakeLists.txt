@@ -1,0 +1,1 @@
+ADD_LIBRARY(Triangle STATIC triangle.c triangle.h)
