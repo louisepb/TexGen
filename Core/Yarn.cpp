@@ -168,7 +168,7 @@ void CYarn::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType)
 			SectionLength.SetAttribute("value", stringify(m_SectionLengths[i]));
 			Element.InsertEndChild(SectionLength);
 		}
-		Element.SetAttribute("NeedsBuilding", m_iNeedsBuilding);
+		Element.SetAttribute("NeedsBuilding", m_iNeedsBuilding | VOLUME);
 	}
 	else
 	{

@@ -73,8 +73,8 @@ namespace TexGen
 		void SetIndex(int iIndex) { m_iIndex = iIndex; }
 		const vector<XYZ> &GetSectionPoints() const { return m_SectionPoints; }
 		const vector<XY> &Get2DSectionPoints() const { return m_2DSectionPoints; }
-		const CMesh &Get2DSectionMesh() const { return m_2DSectionMesh; }
-		const CMesh &GetSectionMesh() const { return m_SectionMesh; }
+		const CMesh &Get2DSectionMesh() const { return *m_2DSectionMesh; }
+		const CMesh &GetSectionMesh() const { return *m_SectionMesh; }
 
 		inline bool operator < ( const CSlaveNode &right)
 		{
@@ -87,9 +87,9 @@ namespace TexGen
 		/// Coordinates of the cross-section edge points in 3D
 		vector<XYZ> m_SectionPoints;
 		/// Section mesh in 2D
-		CMesh m_2DSectionMesh;
+		CMesh* m_2DSectionMesh;
 		/// Section mesh in 3D
-		CMesh m_SectionMesh;
+		CMesh* m_SectionMesh;
 		/// T is the parameter which varies from 0 to 1 which tells us how far along the link the node is.
 		double m_T;
 		/// Index which determines between which master nodes this slave node lies, varies from 0 to number of nodes - 1
