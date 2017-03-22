@@ -62,7 +62,6 @@ namespace TexGen
 		void Refine() const;
 		bool AdjustSectionsForRotation() const;
 		double CalcSinAngle( double R, double Width, double Height ) const;
-		bool ConvertToInterpNodes() const;
 
 		/// Adjust cross section shapes to correct interference
 		/**

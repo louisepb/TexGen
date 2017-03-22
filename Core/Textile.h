@@ -241,6 +241,8 @@ namespace TexGen
 		void SetAllYarnsPoissonsRatioY(double dValue);
 		void SetAllYarnsPoissonsRatioZ(double dValue);
 
+		bool ConvertToInterpNodes() const;
+
 
 		/// If this textile is a woven textile get a pointer of that type else return NULL
 		/**
