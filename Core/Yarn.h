@@ -438,6 +438,8 @@ namespace TexGen
 		/// Get number of slave nodes
 		int GetNumSlaveNodes() const { return m_iNumSlaveNodes; }
 
+		bool ConvertToInterpNodes();
+
 		// Accessor methods
 		const vector<CNode> &GetMasterNodes() const { return m_MasterNodes; }
 		const vector<XYZ> &GetRepeats() const { return m_Repeats; }

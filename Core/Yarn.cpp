@@ -2022,8 +2022,28 @@ double CYarn::FindClosestEdgeDistance( XY &Loc, const vector<XY> &SectionPoints,
 	return dClosestEdgeDistance;
 }
 
+bool CYarn::ConvertToInterpNodes()
+{
+	// Get a copy of the yarn sections that are applied to the nodes
+	string str = GetYarnSection()->GetType();
+	if ( str == "CYarnSectionInterpNode" )
+		return true;
+	if (str != "CYarnSectionConstant")
+		return false;
 
-
+	CYarnSectionConstant* pYarnSection = (CYarnSectionConstant*)GetYarnSection()->Copy();
+		
+	CYarnSectionInterpNode NewYarnSection(false, true);
+	// Add section at each node
+	for ( int i = 0; i < GetNumNodes(); ++i )
+	{
+		NewYarnSection.AddSection( pYarnSection->GetSection() );
+	}
+		
+	delete pYarnSection;
+	AssignSection( NewYarnSection );
+	return true;
+}
 
 
 

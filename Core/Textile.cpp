@@ -1135,29 +1135,8 @@ bool CTextile::ConvertToInterpNodes() const
 
 	for (itYarn = m_Yarns.begin(); itYarn != m_Yarns.end(); ++itYarn)
 	{
-		// Get a copy of the yarn sections that are applied to the nodes
-		string str = itYarn->GetYarnSection()->GetType();
-		if ( str == "CYarnSectionInterpNode" )
-			return true;
-		if (str != "CYarnSectionConstant")
+		if ( !itYarn->ConvertToInterpNodes() )
 			return false;
-
-		CYarnSectionConstant* pYarnSection = (CYarnSectionConstant*)itYarn->GetYarnSection()->Copy();
-		if ( pYarnSection->GetSection().GetType() != "CSectionEllipse" )
-		{
-			delete pYarnSection;
-			return false;
-		}
-		
-		CYarnSectionInterpNode NewYarnSection(false, true);
-		// Add section at each node
-		for ( int i = 0; i < itYarn->GetNumNodes(); ++i )
-		{
-			NewYarnSection.AddSection( pYarnSection->GetSection() );
-		}
-		
-		delete pYarnSection;
-		itYarn->AssignSection( NewYarnSection );
 	}
 	return true;
 }
