@@ -438,6 +438,8 @@ namespace TexGen
 		/// Get number of slave nodes
 		int GetNumSlaveNodes() const { return m_iNumSlaveNodes; }
 
+		/// Converts a yarn with constant cross-section to interpolate sections between nodes
+		/// Sets the section at each node to the original section
 		bool ConvertToInterpNodes();
 
 		// Accessor methods

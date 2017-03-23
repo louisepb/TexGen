@@ -241,6 +241,8 @@ namespace TexGen
 		void SetAllYarnsPoissonsRatioY(double dValue);
 		void SetAllYarnsPoissonsRatioZ(double dValue);
 
+		/// Converts each yarn with constant cross-section to interpolate sections between nodes
+		/// Sets the section at each node to the original section
 		bool ConvertToInterpNodes() const;
 
 
