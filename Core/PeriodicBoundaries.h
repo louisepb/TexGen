@@ -19,8 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma once
 
+#include "Materials.h"
+
 namespace TexGen
 {
+	class CMaterial;
+
 	using namespace std;
 
 	/// Class used to generate Abaqus output for periodic boundary conditions
@@ -56,8 +60,9 @@ namespace TexGen
 		vector<int> m_Vertices;
 		int m_NumVertices;
 
-		map<string, pair< CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > > m_Materials;
-		map<int, string> m_MaterialAssignements;
+		//map<string, pair< CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > > m_Materials;
+		CTextileMaterials m_Materials;
+		//map<int, string> m_MaterialAssignements;
 		//ostream m_Output;
 
 		XYZ m_DomSize;
@@ -77,26 +82,11 @@ namespace TexGen
 		void OutputStep( ostream& Output, int iBoundaryConditions );
 		/// Output 6 load cases
 		void OutputLoadCase( ostream& Output, int iCase );
-		/// Set up a material for each unique set of material constants
-		void SetupMaterials( CTextile& Textile );
-		/// Add a material with associated name, this should then be assigned to yarns individually
-		void AddMaterial(string Name, const pair<vector<double>, vector<double> > &Constants);
-		/// Assign the material to a given yarn
-		void AssignMaterial(string Material, int iYarn);
-		/// Assign the material to a number of yarns
-		void AssignMaterial(string Material, const vector<int> &Yarns);
+		
 		/// Assign a material to be used by all yarns
 		void SetMaterial(string Name, const vector<double> &Constants);
 		void CreateMaterials(ostream &Output, int iNumYarns, bool bMatrixOnly );
 		template <typename T>
 		static void WriteValues( ostream& Output, T &Values, int iMaxPerLine);
-		/// Gets a default linear elastic isotropic material with young's modulus of 1
-		//CMaterial &GetDefaultMaterial();
-		void GetDefaultMaterial(pair< CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > &DefaultMat);
-
-		/// Check if material constants have been assigned (ie != 0). Return false if all 0.0
-		bool CheckYarnConstants( pair< vector<double>, vector<double> > &Constants );
-		/// Compare two sets of material constants. Return true if identical
-		bool CompareMaterialConstants( const vector<double> &MatConstants, const vector<double> &ThermConstants, const pair< vector<double>, vector<double> > &Constants );
 	};
 }; // namespace TexGen

@@ -10,3 +10,5 @@ Installer/*.pyd
 Installer/*.manifest
 Docs/TexGen.chm
 Docs/html/
+Python/*.py
+Python/*.zip

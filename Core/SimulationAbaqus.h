@@ -28,52 +28,13 @@ namespace TexGen
 	class CTextileWeave;
 	class CTextile3DWeave;
 	class CDomain;
+	class CMaterial;
 
 	struct ELEMENT_INDICES
 	{
 		CMesh::ELEMENT_TYPE ElementType;
 		vector<int>			Index;
 	};
-
-	/// Abstract base class to represent a material definition
-		class CLASS_DECLSPEC CMaterial
-		{
-		public:
-			virtual CMaterial* Copy() const = 0;
-			virtual string GetAbaqusCommands(string Type = "" ) = 0;
-			virtual vector<double>& GetConstants() = 0;
-			virtual string GetThermAbaqusCommands(string Type = "") { return ""; }
-		};
-
-		/// Represents a UMAT material definition
-		class CLASS_DECLSPEC CUMAT : public CMaterial
-		{
-		public:
-			CUMAT() {}
-			CUMAT(const vector<double> &Constants){ m_Constants = Constants; }
-			CMaterial* Copy() const { return new CUMAT(*this); }
-			string GetAbaqusCommands(string Type = "");
-			string GetThermAbaqusCommands(string Type = "");
-			void SetConstants(vector<double> Constants) { m_Constants = Constants; }
-			vector<double>& GetConstants() { return m_Constants; }
-
-		protected:
-			vector<double> m_Constants;
-		};
-
-		/// Represents a material definition as a string of ABAQUS keywords
-		class CLASS_DECLSPEC CKeywordMaterial : public CMaterial
-		{
-		public:
-			CKeywordMaterial() {}
-			CKeywordMaterial(string AbaqusCommands):m_AbaqusCommands(AbaqusCommands){}
-			CMaterial* Copy() const { return new CKeywordMaterial(*this); }
-			string GetAbaqusCommands(string Type = "") { return m_AbaqusCommands; }
-			void SetAbaqusCommands(string AbaqusCommands) { m_AbaqusCommands = AbaqusCommands; }
-			vector<double>& GetConstants();
-		protected:
-			string m_AbaqusCommands;
-		};
 
 	/// Class used to generate an abaqus input deck for textile mechanics simulations
 	class CLASS_DECLSPEC CSimulationAbaqus : public CSimulation

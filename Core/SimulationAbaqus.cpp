@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //#include "Textile.h"
 //#include "Misc.h"
 #include "TexGen.h"
+#include "Materials.h"
 
 #define	FIRST_HALF	0
 #define SECOND_HALF	1
