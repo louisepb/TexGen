@@ -668,7 +668,7 @@ void CVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Textile, in
 }
 
 /// Output data with iMaxPerLine elements per line
-template <typename T>
+/*template <typename T>
 void CVoxelMesh::WriteValues( ostream &Output, T &Values, int iMaxPerLine)
 {
 	int iLinePos = 0;
@@ -692,7 +692,7 @@ void CVoxelMesh::WriteValues( ostream &Output, T &Values, int iMaxPerLine)
 		++iLinePos;
 	}
 	Output << endl;
-}
+}*/
 
 /*void CVoxelMesh::GetYarnGridIntersections( CTextile &Textile )
 {

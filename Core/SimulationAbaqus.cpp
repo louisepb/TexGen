@@ -20,8 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PrecompiledHeaders.h"
 #include "SimulationAbaqus.h"
 #include "AdjustMeshInterference.h"
-//#include "Textile.h"
-//#include "Misc.h"
 #include "TexGen.h"
 #include "Materials.h"
 
@@ -200,7 +198,8 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 	ofstream Output(Filename.c_str(), ios::app);
 
 	
-	SetupMaterials( Textile );
+	//SetupMaterials( Textile );
+	m_Materials.SetupMaterials( Textile );
 	TGLOG("Creating materials");
 	CreateMaterials(Output, Filename);
 	TGLOG("Creating surfaces");
@@ -456,85 +455,6 @@ CMaterial &CSimulationAbaqus::GetDefaultMaterial()
 	DefaultMat = CKeywordMaterial(Output.str());
 	return DefaultMat;
 }
-/*
-CSimulationAbaqus::CMaterial &CSimulationAbaqus::GetMaterialDefinition(int iYarn)
-{
-	string MaterialName;
-	if (m_MaterialAssignements.empty() && m_Materials.size() == 1)
-		return *m_Materials.begin()->second;
-	else if (m_MaterialAssignements.count(iYarn))
-	{
-		MaterialName = m_MaterialAssignements[iYarn];
-		if (m_Materials.count(MaterialName))
-		{
-			return *m_Materials[MaterialName];
-		}
-		else
-		{
-			TGLOG("Could not find material named \"" << MaterialName << "\", reverting to default");
-			return GetDefaultMaterial();
-		}
-	}
-	else
-	{
-		TGLOG("Could not find material assignement for yarn " << iYarn << ", reverting to default");
-		return GetDefaultMaterial();
-	}
-}
-*/
-
-void CSimulationAbaqus::SetupMaterials( CTextile &Textile )
-{
-	int iNumYarns = Textile.GetNumYarns();
-	int i;
-	int j = 0;
-
-	map<string, CObjectContainer<CMaterial> >::iterator itMaterial;
-
-	m_Materials.clear();
-	m_Materials["Default"] = GetDefaultMaterial();
-
-	for( i = 0; i < iNumYarns; ++i )
-	{
-		CYarn* Yarn = Textile.GetYarn(i);
-		vector<double> YarnConstants;
-		
-		YarnConstants.push_back( Yarn->GetYoungsModulusX() );
-		YarnConstants.push_back( Yarn->GetPoissonsRatioX() );
-
-		if ( YarnConstants[0] == 0.0 && YarnConstants[1] == 0.0 )
-		{
-			TGERROR("No material constants set for yarn " << i << ", assigning defaults" );
-			AssignMaterial( "Default", i );
-		}
-		else
-		{
-			for (itMaterial = m_Materials.begin(); itMaterial != m_Materials.end(); ++itMaterial)
-			{
-				// Find corresponding material if already created and assign to yarn
-				CObjectContainer<CMaterial> Material = (CObjectContainer<CMaterial>)(itMaterial->second);
-				vector<double> &MatConstants = Material->GetConstants();
-				if ( MatConstants.size() == 2 )
-				{
-					if ( MatConstants[0] == YarnConstants[0] && MatConstants[1] == YarnConstants[1] )
-					{
-						AssignMaterial( itMaterial->first, i );
-						break;
-					}
-				}
-			}
-			if ( itMaterial == m_Materials.end() )  // Yarn properties not from existing material so create new one & assign to yarn
-			{
-				string Name = "Mat" + stringify(j);
-				AddMaterial( Name, YarnConstants );
-				AssignMaterial( Name, i );
-				++j;
-			}	
-		}
-	}
-	
-	
-}
 
 void CSimulationAbaqus::CreateMaterials(ostream &Output, string Filename)
 {
@@ -543,14 +463,18 @@ void CSimulationAbaqus::CreateMaterials(ostream &Output, string Filename)
 	Output << "*****************" << endl;
 	Output << "*** MATERIALS ***" << endl;
 	Output << "*****************" << endl;
-	map<string, CObjectContainer<CMaterial> > Materials = m_Materials;
-	if (Materials.empty())
-		Materials["Default"] = GetDefaultMaterial();
-	map<string, CObjectContainer<CMaterial> >::iterator itMaterial;
+	
+	map<string, pair<CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > > Materials = m_Materials.GetMaterials();
+	map<int, string> MaterialAssignements = m_Materials.GetMaterialAssignements();
+	
+	map<string, pair<CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > >::iterator itMaterial;
 	for (itMaterial = Materials.begin(); itMaterial != Materials.end(); ++itMaterial)
 	{
 		Output << "*Material, Name=" << itMaterial->first << endl;
-		Output << itMaterial->second->GetAbaqusCommands();
+		if ( itMaterial->second.first->GetConstants().size() == 2 )
+			Output << itMaterial->second.first->GetAbaqusCommands();	
+		else
+			Output << itMaterial->second.first->GetAbaqusCommands( "ENGINEERING CONSTANTS" );
 		Output << "*Damping, alpha= 3.75e+6" << endl;
 		Output << "*Density" << endl;
 		Output << "1.37e-09," << endl;
@@ -561,24 +485,14 @@ void CSimulationAbaqus::CreateMaterials(ostream &Output, string Filename)
 	string MatName;
 	for (i = 0; i < iNumYarns; ++i)
 	{
-		if (m_MaterialAssignements.count(i))
-			MatName = m_MaterialAssignements[i];
+		if (MaterialAssignements.count(i))
+			MatName = MaterialAssignements[i];
 		else
 			MatName = Materials.begin()->first;
 		Output << "*Solid Section, ElSet=Yarn" << i << ", Material=" << MatName << ", Orientation=TexGenOrientations, controls=HourglassEnhanced" << endl;
 		Output << "1.0," << endl;
 	}
-/*	int i, iNumYarns = (int)m_YarnMeshes.size();
-	for (i = 0; i < iNumYarns; ++i)
-	{
-		CMaterial &Mat = GetMaterialDefinition(i);
-		Output << "*Material, Name=Yarn" << i << endl;
-		Output << Mat.GetAbaqusCommands();
-		Output << "*DepVar" << endl;
-		Output << "5" << endl;
-		Output << "*Solid Section, ElSet=Yarn" << i << ", Material=Yarn" << i << ", Orientation=TexGenOrientations" << endl;
-		Output << "1.0," << endl;
-	}*/
+
 	Output << "*Section Controls, Name=HourglassEnhanced, Hourglass=Enhanced, SECOND ORDER ACCURACY=YES" << endl;
 	Output << "** Note: Additional element data are stored as a depvars:" << endl;
 	Output << "** 1 - Yarn Index (-1 for matrix, first yarn starting at 0)" << endl;
@@ -930,76 +844,6 @@ void CSimulationAbaqus::CreateSet(ostream &Output, SET_TYPE Type, string Name, v
 		*itIndex += 1;
 	}
 	WriteValues(Output, Indices, 16);
-/*	int iLinePos = 0;
-	vector<int>::const_iterator itIndex;
-	for (itIndex = Indices.begin(); itIndex != Indices.end(); ++itIndex)
-	{
-		if (iLinePos == 0)
-		{
-			// Do nothing...
-		}
-		else if (iLinePos < 16)
-		{
-			Output << ", ";
-		}
-		else
-		{
-			Output << endl;
-			iLinePos = 0;
-		}
-		Output << *itIndex+1;
-		++iLinePos;
-	}
-	Output << endl;*/
-}
-
-template <typename T>
-void CSimulationAbaqus::WriteValues(ostream &Output, T &Values, int iMaxPerLine)
-{
-	int iLinePos = 0;
-	typename T::const_iterator itValue;
-	for (itValue = Values.begin(); itValue != Values.end(); ++itValue)
-	{
-		if (iLinePos == 0)
-		{
-			// Do nothing...
-		}
-		else if (iLinePos < iMaxPerLine)
-		{
-			Output << ", ";
-		}
-		else
-		{
-			Output << endl;
-			iLinePos = 0;
-		}
-		Output << *itValue;
-		++iLinePos;
-	}
-	Output << endl;
-}
-
-string CUMAT::GetAbaqusCommands( string Type )
-{
-	ostringstream Output;
-	if ( Type == "" )
-		Output << "*Elastic" << endl;
-	else
-		Output << "*Elastic, type=" << Type << endl;
-	
-	CSimulationAbaqus::WriteValues(Output, m_Constants, 8);
-	return Output.str();
-}
-
-string CUMAT::GetThermAbaqusCommands( string Type )
-{
-	ostringstream Output;
-	if ( Type == "" )
-		Output << "*Expansion" << endl;
-	else
-		Output << "*Expansion, type=" << Type << endl;
-	CSimulationAbaqus::WriteValues(Output, m_Constants, 8);
-	return Output.str();
 }
 
 void CSimulationAbaqus::SetYarnSurfaceInteraction(string AbaqusCommands)
@@ -1010,42 +854,6 @@ void CSimulationAbaqus::SetYarnSurfaceInteraction(string AbaqusCommands)
 void CSimulationAbaqus::SetPlateSurfaceInteraction(string AbaqusCommands)
 {
 	m_PlateInteraction = CKeywordInteraction(AbaqusCommands);
-}
-
-void CSimulationAbaqus::SetMaterial(string Name, string AbaqusCommands)
-{
-	m_Materials.clear();
-	m_Materials[Name] = CKeywordMaterial(AbaqusCommands);
-}
-
-void CSimulationAbaqus::SetMaterial(string Name, const vector<double> &Constants)
-{
-	m_Materials.clear();
-	m_Materials[Name] = CUMAT(Constants);
-}
-
-void CSimulationAbaqus::AddMaterial(string Name, string AbaqusCommands)
-{
-	m_Materials[Name] = CKeywordMaterial(AbaqusCommands);
-}
-
-void CSimulationAbaqus::AddMaterial(string Name, const vector<double> &Constants)
-{
-	m_Materials[Name] = CUMAT(Constants);
-}
-
-void CSimulationAbaqus::AssignMaterial(string Material, int iYarn)
-{
-	m_MaterialAssignements[iYarn] = Material;
-}
-
-void CSimulationAbaqus::AssignMaterial(string Material, const vector<int> &Yarns)
-{
-	vector<int>::const_iterator itYarn;
-	for (itYarn = Yarns.begin(); itYarn != Yarns.end(); ++itYarn)
-	{
-		m_MaterialAssignements[*itYarn] = Material;
-	}
 }
 
 void CSimulationAbaqus::SetStaticStepParameters(double dInitTimeInc, double dTimePeriod, double dMinTimeInc, double dMaxTimeInc)

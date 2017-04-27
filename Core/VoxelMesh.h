@@ -84,9 +84,9 @@ namespace TexGen
 		/// Calculate intersections for one orientation of grid lines
 		//void CalculateIntersections( CMesh &Mesh, vector<pair<XYZ,XYZ> > &Lines, int YarnIndex, vector<vector<pair<int, double> > > &Intersections);
 
-		template <typename T>
+		//template <typename T>
 		/// Output data with iMaxPerLine elements per line
-		static void WriteValues(ostream &Output, T &Values, int iMaxPerLine);
+		//static void WriteValues(ostream &Output, T &Values, int iMaxPerLine);
 
 		/// Mesh stored when saving to VTK
 		CMesh			m_Mesh;

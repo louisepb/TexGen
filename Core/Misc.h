@@ -249,11 +249,31 @@ namespace TexGen
 		NO_BOUNDARY_CONDITIONS
 	};
 
+	template <typename T>
+	void WriteValues(std::ostream &Output, T &Values, int iMaxPerLine)
+	{
+		int iLinePos = 0;
+		typename T::const_iterator itValue;
+		for (itValue = Values.begin(); itValue != Values.end(); ++itValue)
+		{
+			if (iLinePos == 0)
+			{
+				// Do nothing...
+			}
+			else if (iLinePos < iMaxPerLine)
+			{
+				Output << ", ";
+			}
+			else
+			{
+				Output << endl;
+				iLinePos = 0;
+			}
+			Output << *itValue;
+			++iLinePos;
+		}
+		Output << endl;
+	}
+
 };	// namespace TexGen
-
-
-
-
-
-
 

@@ -86,7 +86,7 @@ namespace TexGen
 		/// Assign a material to be used by all yarns
 		void SetMaterial(string Name, const vector<double> &Constants);
 		void CreateMaterials(ostream &Output, int iNumYarns, bool bMatrixOnly );
-		template <typename T>
-		static void WriteValues( ostream& Output, T &Values, int iMaxPerLine);
+		//template <typename T>
+		//static void WriteValues( ostream& Output, T &Values, int iMaxPerLine);
 	};
 }; // namespace TexGen

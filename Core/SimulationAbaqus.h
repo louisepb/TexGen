@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Simulation.h"
+#include "Materials.h"
 
 namespace TexGen
 { 
@@ -65,24 +66,9 @@ namespace TexGen
 		contain a newline character at the end.
 		*/
 		void SetPlateSurfaceInteraction(string AbaqusCommands);
-		/// Assign a material to be used by all yarns
-		void SetMaterial(string Name, string AbaqusCommands);
-		/// Assign a material to be used by all yarns
-		void SetMaterial(string Name, const vector<double> &Constants);
-		/// Add a material with associated name, this should then be assigned to yarns individually
-		void AddMaterial(string Name, string AbaqusCommands);
-		/// Add a material with associated name, this should then be assigned to yarns individually
-		void AddMaterial(string Name, const vector<double> &Constants);
-		/// Assign the material to a given yarn
-		void AssignMaterial(string Material, int iYarn);
-		/// Assign the material to a number of yarns
-		void AssignMaterial(string Material, const vector<int> &Yarns);
-		void ClearMaterials() { m_Materials.clear(); }
-		void ClearMaterialAssignements() { m_MaterialAssignements.clear(); }
+		
 		void SetStaticStepParameters(double dInitTimeInc = 0, double dTimePeriod = 0, double dMinTimeInc = 0, double dMaxTimeInc = 0);
 
-		template <typename T>
-		static void WriteValues(ostream &Output, T &Values, int iMaxPerLine);
 	protected:
 		enum SET_TYPE
 		{
@@ -154,8 +140,6 @@ namespace TexGen
 		/// Create the materials for the yarns
 		void CreateMaterials(ostream &Output, string Filename);
 
-		/// Setup materials from yarn properties for Young's modulus/ Poisson's ratio pairs & assign to yarns
-		void SetupMaterials( CTextile &Textile );
 		
 		/// Create a contact pair from two surface definitions
 		void CreateContact(ostream &Output, string Name1, string Name2, string InteractionName);
@@ -295,8 +279,9 @@ namespace TexGen
 		XYZ m_TopPlatePos;
 		XYZ m_BottomPlatePos;
 		double m_dInitialPlateGap;
-		map<string, CObjectContainer<CMaterial> > m_Materials;
-		map<int, string> m_MaterialAssignements;
+		//map<string, CObjectContainer<CMaterial> > m_Materials;
+		CTextileMaterials m_Materials;
+		//map<int, string> m_MaterialAssignements;
 		string m_StaticStepParameters;
 		CObjectContainer<CSurfaceInteraction> m_YarnInteraction;
 		CObjectContainer<CSurfaceInteraction> m_PlateInteraction;

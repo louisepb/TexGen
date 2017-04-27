@@ -153,7 +153,7 @@ void CPeriodicBoundaries::OutputVertexSets( ostream& Output )
 	}
 }
 
-template <typename T>
+/*template <typename T>
 void CPeriodicBoundaries::WriteValues(ostream &Output, T &Values, int iMaxPerLine)
 {
 	int iLinePos = 0;
@@ -177,7 +177,7 @@ void CPeriodicBoundaries::WriteValues(ostream &Output, T &Values, int iMaxPerLin
 		++iLinePos;
 	}
 	Output << endl;
-}
+}*/
 
 void CPeriodicBoundaries::OutputEquations( ostream& Output, int iBoundaryConditions )
 {

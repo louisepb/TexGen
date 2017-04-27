@@ -183,3 +183,26 @@ bool CTextileMaterials::CheckYarnConstants( pair< vector<double>, vector<double>
 	}
 	return bSetDefault;
 }
+
+string CUMAT::GetAbaqusCommands( string Type )
+{
+	ostringstream Output;
+	if ( Type == "" )
+		Output << "*Elastic" << endl;
+	else
+		Output << "*Elastic, type=" << Type << endl;
+	
+	WriteValues(Output, m_Constants, 8);
+	return Output.str();
+}
+
+string CUMAT::GetThermAbaqusCommands( string Type )
+{
+	ostringstream Output;
+	if ( Type == "" )
+		Output << "*Expansion" << endl;
+	else
+		Output << "*Expansion, type=" << Type << endl;
+	WriteValues(Output, m_Constants, 8);
+	return Output.str();
+}
