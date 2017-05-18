@@ -430,6 +430,14 @@ int CVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOut
 	return ( iElementNumber-1 );
 }
 
+void CVoxelMesh::OutputOrientationsAndElementSets( string Filename )
+{
+	AddExtensionIfMissing(Filename, ".inp");
+
+	ofstream Output(Filename.c_str(), ofstream::app);
+	OutputOrientationsAndElementSets( Filename, Output );
+}
+
 void CVoxelMesh::OutputOrientationsAndElementSets( string Filename, ostream &Output )
 {
 	string OrientationsFilename = Filename;
@@ -665,6 +673,11 @@ void CVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Textile, in
 	m_PeriodicBoundaries->SetVertex( numx*(numy-1) + (numz-1)*numx*numy + 1 );//2
 	
 	m_PeriodicBoundaries->CreatePeriodicBoundaries( Output, numx*numy*numz + 1, Textile, iBoundaryConditions, bMatrixOnly );
+}
+
+void CVoxelMesh::AddElementInfo(vector<POINT_INFO> &RowInfo)
+{
+	m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end() );
 }
 
 /// Output data with iMaxPerLine elements per line

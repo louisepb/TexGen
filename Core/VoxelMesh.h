@@ -41,6 +41,11 @@ namespace TexGen
 		\param iElementType 0 for C3D8R, 1 for C3D8
 		*/
 		virtual void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType = 0);
+		/// Add a row of element information
+		void AddElementInfo(vector<POINT_INFO> &RowInfo);
+		/// Outputs yarn orientations and element sets to .ori and .eld files
+		void OutputOrientationsAndElementSets( string Filename );
+
 	private:
 		CVoxelMesh( const CVoxelMesh& CopyMe );  // Shouldn't need to copy - implement if need arises
 		CVoxelMesh& operator=( const CVoxelMesh& CopyMe );
