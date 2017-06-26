@@ -3,6 +3,7 @@ digraph G
 	size = "7.5, 10"
 	ratio = "compress"
 	ranksep = "0.4";
+	graph [ dpi = 300 ];
 	
 	// Inherited
 	edge [arrowtail=empty, arrowhead=none, fontsize="16"];
