@@ -2,12 +2,22 @@ Version History
 ---------------
 v3.9.1
 ======
+General
+=======
+** Increased resolution in Core module structure graph for documentation
+
 Core
 ====
+** Added OutputOrientationsAndElementSets an AddElementInfo functions to CVoxelMesh so that can call from Python script
+** Moved WriteValues function to Misc.h
+** Created CMaterial and CTextile Material classes in Materials files to remove duplication in CSimulationAbaqus and CPeriodicBoundaries
+
+
 GUI
 ===
 ** Changed SaveToAbaqus to use CSimulationAbaqus so don't need to load Abaqus.py
 ** Bugfix in WeaveWizard3D to update number of binder layers in pattern dialog correctly
+
 
 v3.9.0
 ======
