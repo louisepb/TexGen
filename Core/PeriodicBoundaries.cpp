@@ -26,11 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define NUM_EDGES		12
 #define NUM_VERTICES	8
 
-/*#define DEFAULT_E		1e+9
-#define DEFAULT_v		0.1
-#define DEFAULT_G		1e+9
-#define DEFAULT_A		3e-6*/
-
 using namespace TexGen;
 using namespace std;
 
@@ -91,11 +86,10 @@ void CPeriodicBoundaries::CreatePeriodicBoundaries( ostream& Output, int iDummyN
 
 	OutputEquations( Output, iBoundaryConditions );
 	m_Materials.SetupMaterials( Textile );
-	//SetupMaterials( Textile );
+	
 	CreateMaterials( Output, Textile.GetNumYarns(), bMatrixOnly );
 
 	OutputStep( Output, iBoundaryConditions );
-	
 }
 
 void CPeriodicBoundaries::OutputSets( ostream& Output, vector<int>& Set, string SetName)
@@ -122,6 +116,14 @@ void CPeriodicBoundaries::OutputDummyNodeSets( ostream& Output, int iDummyNodeNu
 		Output << "*NSet, NSet=ConstraintsDriver" << i << endl;
 		Output << iDummyNodeNum + i << endl;
 	}
+}
+
+void CPeriodicBoundaries::OutputDummyNodeSets( string Filename, int iDummyNodeNum )
+{
+	AddExtensionIfMissing(Filename, ".inp");
+
+	ofstream Output(Filename.c_str(), ofstream::app);
+	OutputDummyNodeSets( Output, iDummyNodeNum );
 }
 
 void CPeriodicBoundaries::OutputFaceSets( ostream& Output )
@@ -152,32 +154,6 @@ void CPeriodicBoundaries::OutputVertexSets( ostream& Output )
 		OutputSets( Output, Vertex, "MasterNode" + stringify(i+1) );
 	}
 }
-
-/*template <typename T>
-void CPeriodicBoundaries::WriteValues(ostream &Output, T &Values, int iMaxPerLine)
-{
-	int iLinePos = 0;
-	typename T::const_iterator itValue;
-	for (itValue = Values.begin(); itValue != Values.end(); ++itValue)
-	{
-		if (iLinePos == 0)
-		{
-			// Do nothing...
-		}
-		else if (iLinePos < iMaxPerLine)
-		{
-			Output << ", ";
-		}
-		else
-		{
-			Output << endl;
-			iLinePos = 0;
-		}
-		Output << *itValue;
-		++iLinePos;
-	}
-	Output << endl;
-}*/
 
 void CPeriodicBoundaries::OutputEquations( ostream& Output, int iBoundaryConditions )
 {
@@ -484,7 +460,7 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 		Output << "*** FIELD OUTPUT: Output Request Shear_zx ***" << endl;
 		Output << "*Node Output, nset=ConstraintsDriver4" << endl << "U," << endl;
 	}
-	//Output << "*Output, history, frequency=0" << endl;
+	
 	Output << endl;
 
 	Output << "******************" << endl;
@@ -495,19 +471,9 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 		if ( bOutputTransverse || !i || i == 1 || i==3 )
 			OutputLoadCase( Output, i );
 	}
-	//Output << "*End Load Case" << endl;
+	
 	Output << endl;
 
-	/*Output << "*** CREATE AMPLITUDE PARAMETER ***" << endl;
-	Output << "*AMPLITUDE,Name=Amp-1,DEFINITION=TABULAR" << endl;
-	Output << "0,0" << endl;
-	Output << "1,1" << endl;
-
-	Output << "****************************************************" << endl;
-	Output << "*** APPLY DISPLACEMENT TO ONE OF THE DUMMY NODES ***" << endl;
-	Output << "****************************************************" << endl;
-	Output << "*Boundary, Amplitude=Amp-1" << endl;
-	Output << "ConstraintsDriver0,1,1,0.03" << endl;*/
 	Output << "*End Step" << endl;
 	Output << endl;
  
@@ -535,6 +501,14 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 		Output << "*Node Output, nset=ConstraintsDriver2" << endl << "U," << endl; 
 	}
 	Output << "*End Step" << endl;
+}
+
+void CPeriodicBoundaries::OutputStep( string Filename, int iBoundaryConditions )
+{
+	AddExtensionIfMissing(Filename, ".inp");
+
+	ofstream Output(Filename.c_str(), ofstream::app);
+	OutputStep( Output, iBoundaryConditions );
 }
 
 void CPeriodicBoundaries::OutputLoadCase(std::ostream &Output, int iCase )
@@ -592,4 +566,12 @@ void CPeriodicBoundaries::CreateMaterials(ostream &Output, int iNumYarns, bool b
 			Output << "1.0," << endl;
 		}
 	}	
+}
+
+void CPeriodicBoundaries::CreateMaterials( string Filename, int iNumYarns, bool bMatrixOnly )
+{
+	AddExtensionIfMissing(Filename, ".inp");
+
+	ofstream Output(Filename.c_str(), ofstream::app);
+	CreateMaterials( Output, iNumYarns, bMatrixOnly );
 }

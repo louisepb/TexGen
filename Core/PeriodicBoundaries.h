@@ -46,6 +46,16 @@ namespace TexGen
 
 		virtual void SetOffset( double Offset ){};
 
+		// Functions which create stream and then call protected functions (for use when called from Python)
+		/// Output 6 dummy nodes: x = 0, y = 1, z = 2, xy = 3, xz = 4, yz = 5
+		void OutputDummyNodeSets( string Filename, int iDummyNodeNum );
+		/// Output materials and assign to yarn element sets
+		void CreateMaterials( string Filename, int iNumYarns, bool bMatrixOnly );
+		/// Output a step including field outputs
+		void OutputStep( string Filename, int iBoundaryConditions );
+
+		CTextileMaterials& GetMaterials() { return m_Materials; }
+
 	protected:
 		/// Pairs of node sets for opposite faces
 		pair< vector<int>, vector<int> > m_FaceA;
@@ -60,10 +70,7 @@ namespace TexGen
 		vector<int> m_Vertices;
 		int m_NumVertices;
 
-		//map<string, pair< CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > > m_Materials;
 		CTextileMaterials m_Materials;
-		//map<int, string> m_MaterialAssignements;
-		//ostream m_Output;
 
 		XYZ m_DomSize;
 		/// Output equations for boundary conditions
@@ -85,8 +92,7 @@ namespace TexGen
 		
 		/// Assign a material to be used by all yarns
 		void SetMaterial(string Name, const vector<double> &Constants);
+		/// Output materials and assign to yarn element sets
 		void CreateMaterials(ostream &Output, int iNumYarns, bool bMatrixOnly );
-		//template <typename T>
-		//static void WriteValues( ostream& Output, T &Values, int iMaxPerLine);
 	};
 }; // namespace TexGen
