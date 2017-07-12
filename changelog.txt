@@ -11,7 +11,7 @@ Core
 ** Added OutputOrientationsAndElementSets an AddElementInfo functions to CVoxelMesh so that can call from Python script
 ** Moved WriteValues function to Misc.h
 ** Created CMaterial and CTextile Material classes in Materials files to remove duplication in CSimulationAbaqus and CPeriodicBoundaries
-
+** Added OutputDummyNodeSets, CreateMaterials and OutputStep functions to CPeriodicBoundaries so that can call from Python script
 
 GUI
 ===
