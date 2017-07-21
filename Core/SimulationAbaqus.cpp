@@ -80,10 +80,13 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 		for (i=0; i<iNumYarns; ++i)
 		{
 			TGLOG("Creating yarn " << i << " surface definitions");
-			vector<ELEMENT_FACE> UpperFaces, LowerFaces;
-			GetYarnSurfaces( i, Repeats, UpperFaces, LowerFaces );
-			SurfaceDefinitions["Yarn" + stringify(i) + "Lower"] = LowerFaces;
-			SurfaceDefinitions["Yarn" + stringify(i) + "Upper"] = UpperFaces;
+			vector<ELEMENT_FACE> Faces;
+			GetYarnSurface( i, Repeats, Faces );
+			SurfaceDefinitions["Yarn" + stringify(i)] = Faces;
+			//vector<ELEMENT_FACE> UpperFaces, LowerFaces;
+			//GetYarnSurfaces( i, Repeats, UpperFaces, LowerFaces );
+			//SurfaceDefinitions["Yarn" + stringify(i) + "Lower"] = LowerFaces;
+			//SurfaceDefinitions["Yarn" + stringify(i) + "Upper"] = UpperFaces;
 		}
 	}
 
@@ -303,6 +306,63 @@ void CSimulationAbaqus::GetYarnSurfaces(int iYarn, const vector<XYZ> &Repeats, v
 					{
 						LowerFaces.push_back(Face);
 					}
+				}
+			}
+		}
+	}
+}
+
+void CSimulationAbaqus::GetYarnSurface(int iYarn, const vector<XYZ> &Repeats, vector<ELEMENT_FACE> &Faces )
+{
+	// This function assumes that the yarn is repeating. If no repeats are specified, or the domain does not
+	// match a whole number of repeats then no surface will be saved
+	CMesh &VolumeMesh = m_YarnMeshes[iYarn];
+
+	CMesh SurfaceMesh = VolumeMesh;
+	
+	SurfaceMesh.ConvertToSurfaceMesh();
+
+	// Make a list of nodes which lie on the yarn's end
+	set<int> BoundaryNodes;
+	vector<XYZ>::const_iterator itRepeat;
+	for (itRepeat=Repeats.begin(); itRepeat!=Repeats.end(); ++itRepeat)
+	{
+		vector<pair<int, int> > NodePairs;
+		SurfaceMesh.GetNodePairs(*itRepeat, NodePairs);
+		vector<pair<int, int> >::iterator itNodePair;
+		for (itNodePair = NodePairs.begin(); itNodePair != NodePairs.end(); ++itNodePair)
+		{
+			BoundaryNodes.insert(itNodePair->first);
+			BoundaryNodes.insert(itNodePair->second);
+		}
+	}
+
+	// Get the yarn surface
+	int i, iType, iBoundaryNodes;
+	list<int>::iterator itIndex;
+	//vector<ELEMENT_FACE> UpperFaces, LowerFaces;
+	ELEMENT_FACE Face;
+	for (iType = 0; iType < CMesh::NUM_ELEMENT_TYPES; ++iType)
+	{
+		CMesh::ELEMENT_TYPE Type = (CMesh::ELEMENT_TYPE)iType;
+		if ( Type != CMesh::POLYGON )
+		{
+			list<int> &Indices = SurfaceMesh.GetIndices(Type);
+			for (itIndex = Indices.begin(); itIndex != Indices.end(); )
+			{
+				vector<int> ElemIndices;
+				iBoundaryNodes = 0;
+				for (i=0; i<CMesh::GetNumNodes(Type); ++i)
+				{
+					iBoundaryNodes += BoundaryNodes.count(*itIndex);
+					ElemIndices.push_back(*itIndex);
+					++itIndex;
+				}
+				// Filter out any faces which lie on the yarn boundary
+				if (iBoundaryNodes != (int)ElemIndices.size())
+				{
+					Face = FindFaceIndex(iYarn, ElemIndices);
+					Faces.push_back(Face);
 				}
 			}
 		}

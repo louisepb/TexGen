@@ -214,6 +214,14 @@ namespace TexGen
 		*/
 		void GetYarnSurfaces(int iYarn, const vector<XYZ> &Repeats, vector<ELEMENT_FACE> &UpperFaces, vector<ELEMENT_FACE> &LowerFaces );
 
+		/// Get a list of faces which make up the surface of a yarn
+		/**
+		\param iYarn The yarn index
+		\param Repeats The yarn repeat vectors
+		\param Faces, LowerFaces Vectors for lists of surface faces
+		*/
+		void GetYarnSurface(int iYarn, const vector<XYZ> &Repeats, vector<ELEMENT_FACE> &Faces );
+
 		/// Given a surface element, find the volume element it belongs to along with its face index
 		/**
 		\param iYarn The yarn index
