@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PrecompiledHeaders.h"
 #include "SectionHybrid.h"
 #include "SectionEllipse.h"
+#include "SectionRotated.h"
 
 using namespace TexGen;
 CSectionHybrid::CSectionHybrid(void)
@@ -126,6 +127,18 @@ XY CSectionHybrid::GetPoint(double t) const
 		i = max((int)m_Divisions.size()-1, 0);
 
 	assert(i >= 0 && i < (int)m_Sections.size());
+
+	if ( m_Sections[i]->GetType() == "CSectionRotated" )
+	{
+		CSectionRotated* rotSection = (CSectionRotated*)m_Sections[i]->Copy();
+		double angle = rotSection->GetAngle();
+		double t_angle = t*2*PI;
+		double new_angle = t_angle - angle;
+		if ( new_angle < 0.0 )
+			new_angle += (2*PI);
+		t = new_angle / (2*PI);
+		delete rotSection;
+	}
 
 	return m_Sections[i]->GetPoint(t);
 }
