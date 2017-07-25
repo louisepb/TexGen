@@ -112,6 +112,11 @@ string ConvertSectionForHybrid(const CSection &Section)
 		const CSectionRectangle &Rectangle = (const CSectionRectangle&)Section;
 		StringStream << "CSectionRectangle(" << Rectangle.GetWidth() << ", " << Rectangle.GetHeight() << ")" << endl;
 	}
+	else if ( Type == "CSectionRotated")
+	{
+		const CSectionRotated &Rotated = (const CSectionRotated&)Section;
+		StringStream << "CSectionRotated(" << ConvertSectionForHybrid(Rotated.GetSection()) << ", " << Rotated.GetAngle() << ")" << endl;
+	}
 	
 	return StringStream.str();
 }
