@@ -319,7 +319,6 @@ void CSimulationAbaqus::GetYarnSurface(int iYarn, const vector<XYZ> &Repeats, ve
 	CMesh &VolumeMesh = m_YarnMeshes[iYarn];
 
 	CMesh SurfaceMesh = VolumeMesh;
-	
 	SurfaceMesh.ConvertToSurfaceMesh();
 
 	// Make a list of nodes which lie on the yarn's end
