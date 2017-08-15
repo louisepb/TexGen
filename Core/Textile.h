@@ -28,6 +28,8 @@ namespace TexGen
 	class CTextileLayered;
 	class CTextileOrthogonal;
 	class CTextileLayerToLayer;
+	class CTextileAngleInterlock;
+	class CTextileWeave2D;
 
 	using namespace std;
 
@@ -249,10 +251,12 @@ namespace TexGen
 		in this language.
 		*/
 		CTextileWeave* GetWeave();
+		CTextileWeave2D* GetWeave2D();
 		CTextile3DWeave* Get3DWeave();
 		CTextileOrthogonal* GetOrthogonalWeave();
 		CTextileLayered* GetLayeredTextile();
 		CTextileLayerToLayer* GetLayerToLayerWeave();
+		CTextileAngleInterlock* GetAngleInterlockWeave();
 
 		// Accessor methods
 		int GetNumYarns() const;

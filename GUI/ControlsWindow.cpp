@@ -102,6 +102,7 @@ void CControlsWindow::BuildTextilesPage()
 	pSubSizer = new wxStaticBoxSizer(wxVERTICAL, pControls, wxT("")/*"Existing:"*/);
 	pSubSizer->Add(new wxButton(pControls, ID_EditTextile, wxT("Edit"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT), SizerFlags);
 	pSubSizer->Add(new wxButton(pControls, ID_DeleteTextile, wxT("Delete"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT), SizerFlags);
+	pSubSizer->Add(new wxButton(pControls, ID_RotateTextile, wxT("Rotate"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT), SizerFlags);
 	pMainSizer->Add(pSubSizer, SizerFlags);
 	SubSizers.push_back(pSubSizer);
 
@@ -137,6 +138,7 @@ void CControlsWindow::BuildTextilesPage()
 
 	pMenu->Append(ID_EditTextile, wxT("Edit Textile..."));
 	pMenu->Append(ID_DeleteTextile, wxT("Delete Textile"));
+	pMenu->Append(ID_RotateTextile, wxT("Rotate Textile"));
 	m_pMenuBar->Append(pMenu, wxT("&Textiles"));
 }
 

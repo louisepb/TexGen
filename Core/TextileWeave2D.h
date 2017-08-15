@@ -63,13 +63,15 @@ namespace TexGen
 
 		void ConvertToPatternDraft( /*CPatternDraft& PatternDraft*/ );
 
+		void SetInPlaneTangents( bool bInPlaneTangents = true ) const;
+
 	protected:
 		bool BuildTextile() const;
 		virtual void Refine( bool bCorrectWidths = true, bool bCorrectInterference = true, bool bPeriodic = true ) const;
 		void AdjustTangents() const;
 		virtual bool AdjustSectionsForRotation( bool bPeriodic = true ) const;
-		void SetInPlaneTangents() const;
-		void SetInPlaneTangents( int Yarn ) const;
+		
+		void SetInPlaneTangents( int Yarn, bool bInPlaneTangents = true ) const;
 
 		bool m_bRefine;
 		bool m_bInPlaneTangents;

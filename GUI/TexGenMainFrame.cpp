@@ -70,7 +70,7 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 
 	EVT_CHECKBOX_MENU_RANGE(ID_RenderNodes, ID_TrimtoDomain, CTexGenMainFrame::OnRendering)
 	EVT_BUTTON_MENU_RANGE(ID_ChangeBackgroundColor, ID_ChangeSurfaceColor, CTexGenMainFrame::OnRendering)
-	EVT_BUTTON_MENU_RANGE(ID_CreateEmptyTextile, ID_MaxNestLayers, CTexGenMainFrame::OnTextiles)
+	EVT_BUTTON_MENU_RANGE(ID_CreateEmptyTextile, ID_RotateTextile, CTexGenMainFrame::OnTextiles)
 	EVT_BUTTON_MENU_RANGE(ID_CreateYarn, ID_YarnFibreVolumeFraction, CTexGenMainFrame::OnModeller)
 	EVT_RADIOBUTTON_MENU_RANGE(ID_SelectTool, ID_ScaleTool, CTexGenMainFrame::OnModeller)
 	EVT_CHECKBOX_MENU_RANGE(ID_FilterNodes, ID_Relative, CTexGenMainFrame::OnModeller)
@@ -1290,6 +1290,68 @@ void CTexGenMainFrame::OnTextiles(wxCommandEvent& event)
 					{
 						SendPythonCode(Command);
 						RefreshTextile(TextileName);
+					}
+				}
+			}
+		}
+		break;
+	case ID_RotateTextile:
+		{
+			string TextileName = GetTextileSelection();
+			if (!TextileName.empty())
+			{
+				wxDialog RotateInput;
+				if (wxXmlResource::Get()->LoadDialog(&RotateInput, this, wxT("RotateTextile")))
+				{
+					int iAxisChoice;
+					bool bRotateDomain;
+					wxString Angle;
+
+					XRCCTRL(RotateInput, "AxisChoice", wxChoice)->SetValidator(wxGenericValidator(&iAxisChoice));
+					XRCCTRL(RotateInput, "Angle", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &Angle));
+					XRCCTRL(RotateInput, "RotateDomain", wxCheckBox)->SetValidator(wxGenericValidator(&bRotateDomain));
+
+					if (RotateInput.ShowModal() == wxID_OK)
+					{
+						CTextile* pTextile = CTexGen::GetInstance().GetTextile(TextileName);
+						if ( !pTextile )
+						{
+							TGERROR("Cannot rotate textile - no textile loaded");
+							break;
+						}
+						
+						stringstream Command;
+			
+						Command << "Weave= GetTextile('" << TextileName << "' )" << endl;
+
+						string Axis;
+						switch (iAxisChoice)
+						{
+						case 0:
+							Axis = "1,0,0";
+							break;
+						case 1:
+							Axis = "0,1,0";
+							break;
+						case 2:
+							Axis = "0,0,1";
+							break;
+						}
+
+						Command << "Weave.Rotate(WXYZ(XYZ(" << Axis << "),math.radians(" << ConvertString(Angle) << ")),XYZ(0,0,0))" << endl;
+						if ( bRotateDomain && pTextile->GetDomain() )
+						{
+							Command << "Domain = Weave.GetDomain()" << endl;
+							Command << "Domain.Rotate(WXYZ(XYZ(" << Axis << "),math.radians(" << ConvertString(Angle) << ")))" << endl;
+						}
+						if ( pTextile->GetType() == "CTextileWeave2D" && iAxisChoice < 2 )
+						{
+							Command << "weave2D = Weave.GetWeave2D()" << endl;
+							Command << "weave2D.SetInPlaneTangents( False )" << endl;
+						}
+							
+						SendPythonCode(Command.str());
+						RefreshTextile( TextileName );
 					}
 				}
 			}

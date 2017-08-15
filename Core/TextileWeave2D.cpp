@@ -593,7 +593,7 @@ string CTextileWeave2D::GetDefaultName() const
 
 
 /// Function to set interpolation so that in-plane tangents are forced at master nodes
-void CTextileWeave2D::SetInPlaneTangents() const
+void CTextileWeave2D::SetInPlaneTangents( bool bInPlaneTangents ) const
 {
 	vector<int>::iterator itpYarn;
 	
@@ -602,28 +602,28 @@ void CTextileWeave2D::SetInPlaneTangents() const
 	{
 		for (itpYarn = m_XYarns[i].begin(); itpYarn != m_XYarns[i].end(); ++itpYarn)
 		{
-			SetInPlaneTangents(*itpYarn);
+			SetInPlaneTangents(*itpYarn, bInPlaneTangents );
 		}
 	}
 	for (i=0; i<m_iNumYYarns; ++i)
 	{
 		for (itpYarn = m_YYarns[i].begin(); itpYarn != m_YYarns[i].end(); ++itpYarn)
 		{
-			SetInPlaneTangents(*itpYarn);
+			SetInPlaneTangents(*itpYarn, bInPlaneTangents );
 		}
 	}
 }
 
-void CTextileWeave2D::SetInPlaneTangents( int Yarn ) const
+void CTextileWeave2D::SetInPlaneTangents( int Yarn, bool bInPlaneTangents ) const
 {
 	const CInterpolation* Interpolation = m_Yarns[Yarn].GetInterpolation();
 	if ( Interpolation->GetType() == "CInterpolationCubic" )
 	{
-		m_Yarns[Yarn].AssignInterpolation(CInterpolationCubic( true, false, true ));
+		m_Yarns[Yarn].AssignInterpolation(CInterpolationCubic( true, false, bInPlaneTangents ));
 	}
 	else
 	{
-		m_Yarns[Yarn].AssignInterpolation(CInterpolationBezier( true, false, true ));
+		m_Yarns[Yarn].AssignInterpolation(CInterpolationBezier( true, false, bInPlaneTangents ));
 	}
 }
 
