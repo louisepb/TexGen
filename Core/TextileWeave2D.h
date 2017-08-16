@@ -63,6 +63,10 @@ namespace TexGen
 
 		void ConvertToPatternDraft( /*CPatternDraft& PatternDraft*/ );
 
+		/// Function to set interpolation so that in-plane tangents are forced at master nodes
+		/**
+		\param bInPlaneTangents Set to true to force master node tangents to be in x-y plane
+		*/
 		void SetInPlaneTangents( bool bInPlaneTangents = true ) const;
 
 	protected:
