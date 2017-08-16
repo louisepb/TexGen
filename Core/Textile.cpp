@@ -800,6 +800,11 @@ CTextileWeave* CTextile::GetWeave()
 	return dynamic_cast<CTextileWeave*>(this);
 }
 
+CTextileWeave2D* CTextile::GetWeave2D()
+{
+	return dynamic_cast<CTextileWeave2D*>(this);
+}
+
 CTextileLayered* CTextile::GetLayeredTextile()
 {
 	return dynamic_cast<CTextileLayered*>(this);
@@ -818,6 +823,11 @@ CTextileOrthogonal* CTextile::GetOrthogonalWeave()
 CTextileLayerToLayer* CTextile::GetLayerToLayerWeave()
 {
 	return dynamic_cast<CTextileLayerToLayer*>(this);
+}
+
+CTextileAngleInterlock* CTextile::GetAngleInterlockWeave()
+{
+	return dynamic_cast<CTextileAngleInterlock*>(this);
 }
 
 /*int CTextile::AdjustInterference(vector<float> &DistanceToSurface, CMesh *pInterferingPoints)

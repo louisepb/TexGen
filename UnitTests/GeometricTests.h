@@ -34,6 +34,7 @@ class CGeometricTests : public CppUnit::TestFixture
 	CPPUNIT_TEST(TestGetClosestPointFunctions);
 	CPPUNIT_TEST(Test3DGetClosestPointFunctions);
 	CPPUNIT_TEST(TestFindClosestSurfacePoint);
+	CPPUNIT_TEST(TestRotateYarn);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -51,6 +52,8 @@ protected:
 	void TestGetClosestPointFunctions();
 	void Test3DGetClosestPointFunctions();
 	void TestFindClosestSurfacePoint();
+
+	void TestRotateYarn();
 
 	CTextileFactory m_TextileFactory;
 };
