@@ -4,10 +4,21 @@ v3.9.1
 ======
 Core
 ====
+** Bugfix to enable rotated sections with hybrid sections
+** Added functions to CPeriodicBoundaries to allow access to overloaded functions from Python
+** Changed TextileWeave2D.SetInPlaneTangents to set to true or false
+
+
 GUI
 ===
 ** Changed SaveToAbaqus to use CSimulationAbaqus so don't need to load Abaqus.py
 ** Bugfix in WeaveWizard3D to update number of binder layers in pattern dialog correctly
+** Added Rotate Textile function
+
+UnitTests
+=========
+** Added TestRotateYarns in GeometricTests
+
 
 v3.9.0
 ======
