@@ -12,11 +12,19 @@ Core
 ** Moved WriteValues function to Misc.h
 ** Created CMaterial and CTextile Material classes in Materials files to remove duplication in CSimulationAbaqus and CPeriodicBoundaries
 ** Added OutputDummyNodeSets, CreateMaterials and OutputStep functions to CPeriodicBoundaries so that can call from Python script
+** Bugfix to enable rotated sections with hybrid sections
+** Changed TextileWeave2D.SetInPlaneTangents to set to true or false
 
 GUI
 ===
 ** Changed SaveToAbaqus to use CSimulationAbaqus so don't need to load Abaqus.py
 ** Bugfix in WeaveWizard3D to update number of binder layers in pattern dialog correctly
+** Added Rotate Textile function
+
+UnitTests
+=========
+** Added TestRotateYarns in GeometricTests
+
 
 
 v3.9.0

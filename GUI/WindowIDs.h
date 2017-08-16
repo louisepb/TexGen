@@ -75,6 +75,7 @@ enum
 	ID_SetLayerOffsets,
 	ID_NestLayers,
 	ID_MaxNestLayers,
+	ID_RotateTextile,
 
 	ID_CreateYarn,
 	ID_AssignSection,

@@ -244,6 +244,24 @@ void CGeometricTests::TestFindClosestSurfacePoint()
 	}
 }
 
+void CGeometricTests::TestRotateYarn()
+{
+	CTextile Textile = m_TextileFactory.GetSingleYarn(3, 20);
+	CYarn* Yarn = Textile.GetYarn(0);
+	vector<XYZ> Expected;
+	Expected.push_back( XYZ(0,0,0) );
+	Expected.push_back( XYZ(0,0.5,0) );
+	Expected.push_back( XYZ(0,1,0) );
+
+	Yarn->Rotate(WXYZ(XYZ(0,0,1), PI/2) );
+	for ( int i=0; i < 3; ++i )
+	{
+		XYZ Point = Yarn->GetNode(i)->GetPosition();
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(Expected[i].x, Point.x, 1e-5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(Expected[i].y, Point.y, 1e-5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(Expected[i].z, Point.z, 1e-5);
+	}
+}
 
 
 
