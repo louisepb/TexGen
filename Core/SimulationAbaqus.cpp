@@ -82,7 +82,7 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 			TGLOG("Creating yarn " << i << " surface definitions");
 			vector<ELEMENT_FACE> Faces;
 			GetYarnSurface( i, Repeats, Faces );
-			SurfaceDefinitions["Yarn" + stringify(i)] = Faces;
+			SurfaceDefinitions["YarnSurf" + stringify(i)] = Faces;
 			//vector<ELEMENT_FACE> UpperFaces, LowerFaces;
 			//GetYarnSurfaces( i, Repeats, UpperFaces, LowerFaces );
 			//SurfaceDefinitions["Yarn" + stringify(i) + "Lower"] = LowerFaces;
@@ -319,7 +319,11 @@ void CSimulationAbaqus::GetYarnSurface(int iYarn, const vector<XYZ> &Repeats, ve
 	CMesh &VolumeMesh = m_YarnMeshes[iYarn];
 
 	CMesh SurfaceMesh = VolumeMesh;
+	SurfaceMesh.RemoveElementType(CMesh::POLYGON);
+	SurfaceMesh.RemoveUnreferencedNodes();
+	SurfaceMesh.SaveToVTK("C://Users//epzlpb//TexGen//Knit//VolumeMesh");
 	SurfaceMesh.ConvertToSurfaceMesh();
+	SurfaceMesh.SaveToVTK("C://Users//epzlpb//TexGen//Knit//SurfaceMesh");
 
 	// Make a list of nodes which lie on the yarn's end
 	set<int> BoundaryNodes;
@@ -370,7 +374,13 @@ void CSimulationAbaqus::GetYarnSurface(int iYarn, const vector<XYZ> &Repeats, ve
 
 CSimulationAbaqus::ELEMENT_FACE CSimulationAbaqus::FindFaceIndex(int iYarn, const vector<int> &SurfIndices)
 {
-	CMesh &VolumeMesh = m_YarnMeshes[iYarn];
+	//CMesh &VolumeMesh = m_YarnMeshes[iYarn];
+
+	CMesh VolumeMesh = m_YarnMeshes[iYarn];
+
+	VolumeMesh.RemoveElementType(CMesh::POLYGON);
+	VolumeMesh.RemoveUnreferencedNodes();
+
 	list<int>::iterator itIndex;
 	int i, iElementIndex, iType;
 	for (iType = 0; iType < CMesh::NUM_ELEMENT_TYPES; ++iType)
@@ -757,21 +767,25 @@ void CSimulationAbaqus::CreatePeriodicBoundaries(ostream &Output, const CDomain 
 	vector<XYZ> DomainSize;
 	DomainSize.push_back(XYZ(DomainAABB.second.x - DomainAABB.first.x, 0,0));
 	DomainSize.push_back(XYZ(0, DomainAABB.second.y - DomainAABB.first.y, 0));
+	DomainSize.push_back(XYZ(0, 0, DomainAABB.second.z - DomainAABB.first.z));
 	
 	for ( i = 0; i < (int)DomainSize.size(); ++i )
 	{
 		NodePairs.clear();
 		m_TextileMesh.GetNodePairs(DomainSize[i], NodePairs);
-		CreateSet(Output, "Bound" + stringify(i), NodePairs);
-		int iDummyNodeNum = ++m_iTotalNumNodes;	// Note this is now a 1-based node index
-		Output << "*Node" << endl;
-		Output << iDummyNodeNum << ", 0, 0, 0" << endl;
-		Output << "*NSet, NSet=Dummy" << i << endl;
-		Output << iDummyNodeNum << endl;
-		for (j=0; j<3; ++j)
+		if ( NodePairs.size() > 0 )
 		{
-			Output << "*Equation\n3\n";
-			Output << "Bound" << i << "A, " << j+1 << ", 1.0, Bound" << i << "B, " << j+1 << ", -1.0, Dummy" << i << ", " << j+1 << ", 1.0" << endl;
+			CreateSet(Output, "Bound" + stringify(i), NodePairs);
+			int iDummyNodeNum = ++m_iTotalNumNodes;	// Note this is now a 1-based node index
+			Output << "*Node" << endl;
+			Output << iDummyNodeNum << ", 0, 0, 0" << endl;
+			Output << "*NSet, NSet=Dummy" << i << endl;
+			Output << iDummyNodeNum << endl;
+			for (j=0; j<3; ++j)
+			{
+				Output << "*Equation\n3\n";
+				Output << "Bound" << i << "A, " << j+1 << ", 1.0, Bound" << i << "B, " << j+1 << ", -1.0, Dummy" << i << ", " << j+1 << ", 1.0" << endl;
+			}
 		}
 	}
 	
