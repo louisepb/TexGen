@@ -1189,7 +1189,7 @@ bool CDomainPlanes::FillGaps(CMesh &Mesh, const PLANE &Plane, vector<int> &Polyg
 	vector<pair<int, int> >::iterator itSegment;
 
 	// Find closed loops
-	int iIndex, iFirstIndex;
+	int iIndex, iFirstIndex, iPrevIndex;
 	bool bFound;
 
 #ifdef _DEBUG
@@ -1279,6 +1279,36 @@ bool CDomainPlanes::FillGaps(CMesh &Mesh, const PLANE &Plane, vector<int> &Polyg
 			//assert(false);
 #endif
 			return false;
+		}
+
+		// Check for spike in loop where points two apart are the same
+		// Would be better to find the root cause of this happening
+		
+		vector<int>::iterator itPrev = ClosedLoop.begin(); 
+		vector<int>::iterator itCurrent = itPrev+1; 
+		vector<int>::iterator itNext = itCurrent+1;
+
+		while( itNext != ClosedLoop.end() )
+		{
+			if ( *itPrev == *itNext )
+			{
+				ClosedLoop.erase(itCurrent, itNext+1);
+				if ( itPrev != ClosedLoop.begin() )
+				{
+					itCurrent = itPrev;
+					--itPrev;
+					itNext = itCurrent+1;
+				}
+			}
+			else
+			{
+				// Go to the next set of 3 points
+				++itPrev;
+				++itCurrent;
+				++itNext;
+				if (itPrev == ClosedLoop.end())
+					itPrev = ClosedLoop.begin();	
+			}
 		}
 
 		Polygon.insert( Polygon.begin(), ClosedLoop.begin(), ClosedLoop.end() );
