@@ -173,15 +173,19 @@ void CMesher::SaveVolumeMeshToABAQUS(string Filename, string TextileName )
 	if ( m_iBoundaryConditions != NO_BOUNDARY_CONDITIONS )
 	{
 		m_PeriodicBoundaries->SetDomainSize( pTextile->GetDomain()->GetMesh() );
-		SaveNodeSets();
-		ofstream Output(Filename.c_str(), ofstream::app );
-		Output << "*****************" << endl;
-		Output << "*** NODE SETS ***" << endl;
-		Output << "*****************" << endl;
-		Output << "** AllNodes - Node set containing all elements" << endl;
-		Output << "*NSet, NSet=AllNodes, Generate" << endl;
-		Output << "1, " << m_VolumeMesh.GetNumNodes() << ", 1" << endl;
-		m_PeriodicBoundaries->CreatePeriodicBoundaries( Output, m_VolumeMesh.GetNumNodes() + 1, *pTextile, m_iBoundaryConditions, false );
+		if (SaveNodeSets() )
+		{
+			ofstream Output(Filename.c_str(), ofstream::app );
+			Output << "*****************" << endl;
+			Output << "*** NODE SETS ***" << endl;
+			Output << "*****************" << endl;
+			Output << "** AllNodes - Node set containing all elements" << endl;
+			Output << "*NSet, NSet=AllNodes, Generate" << endl;
+			Output << "1, " << m_VolumeMesh.GetNumNodes() << ", 1" << endl;
+			m_PeriodicBoundaries->CreatePeriodicBoundaries( Output, m_VolumeMesh.GetNumNodes() + 1, *pTextile, m_iBoundaryConditions, false );
+		}
+		else
+			TGERROR("Unable to generate node sets");
 	}
 }
 
@@ -1547,21 +1551,30 @@ void CMesher::CreateNodeSets( NODE_PAIR_SETS &EdgeNodePairSets, set<int> &Corner
 	}
 }
 
-void CMesher::SaveNodeSets()
+bool CMesher::SaveNodeSets()
 {
+	if (m_Vertices.size() != 8 )
+		return false;
 	for ( int i = 0; i < 8; ++i )
 	{
 		m_PeriodicBoundaries->SetVertex(m_Vertices[i]);
 	}
 
+	if ( m_Edges.size() != 12 )
+		return false;
 	for ( int i = 0; i < 12; ++i )
 	{
 		m_PeriodicBoundaries->SetEdges( m_Edges[i] );
 	}
 
+	if ( m_FaceA.size() == 0 || m_FaceB.size() == 0 || m_FaceC.size() == 0 || m_FaceD.size() == 0
+		|| m_FaceE.size() == 0 || m_FaceF.size() == 0 )
+		return false;
 	m_PeriodicBoundaries->SetFaceA(m_FaceA, m_FaceB);
 	m_PeriodicBoundaries->SetFaceB(m_FaceC, m_FaceD);
 	m_PeriodicBoundaries->SetFaceC(m_FaceE, m_FaceF);
+
+	return true;
 }
 
 void CMesher::AddQuadraticNodesToSets()

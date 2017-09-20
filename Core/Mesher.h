@@ -140,7 +140,7 @@ namespace TexGen
 		// Create Face, Edge and Corner node sets for periodic boundary conditions
 		void CreateNodeSets( NODE_PAIR_SETS &EdgeNodePairSets, set<int> &CornerIndex, const vector<XYZ> &Repeats );
 		// Save node sets to CPeriodicBoundaries class
-		void SaveNodeSets();
+		bool SaveNodeSets();
 		// Add extra edge nodes for quadratic elements to node sets
 		void AddQuadraticNodesToSets();
 		// Create node sets for each face containing all nodes on face, including edges and corners
