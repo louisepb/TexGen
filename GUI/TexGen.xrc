@@ -953,6 +953,22 @@
 							<dimension>1</dimension>
 						</object>
 					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxRadioBox" name="ContactSurfaces">
+							<style>wxRA_SPECIFY_COLS</style>
+							<tooltip>For woven textiles use Upper and Lower surfaces. Choose Whole Yarn where contacts surfaces are not clearly defined eg knit</tooltip>
+							<label>Contact Surfaces</label>
+							<selection>0</selection>
+							<content>
+								<item>Upper and Lower</item>
+								<item>Whole Yarn</item>
+							</content>
+							<dimension>1</dimension>
+						</object>
+					</object>
 				</object>
 			</object>
 			<object class="sizeritem">
