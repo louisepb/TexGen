@@ -44,13 +44,16 @@ namespace TexGen
 		CSimulationAbaqus(void);
 		virtual ~CSimulationAbaqus(void);
 
-		bool CreateAbaqusInputFile(CTextile &Textile, string Filename, bool bRegenerateMesh, int iElementType = 0, bool bAdjustMesh = false, double Tolerance = 0.0000001);
+		bool CreateAbaqusInputFile(CTextile &Textile, string Filename, bool bRegenerateMesh, int iElementType = 0, bool bAdjustMesh = false, double Tolerance = 0.0000001 );
 
 		void SetIncludePlates(bool bInclude) { m_bIncludePlates = bInclude; }
 		bool GetIncludePlates() { return m_bIncludePlates; }
 
 		void SetInitialPlateGap(double dPlateGap) { m_dInitialPlateGap = dPlateGap; }
 		double GetInitialPlateGap() { return m_dInitialPlateGap; }
+
+		void SetWholeSurfaces(bool bWholeSurface ) { m_bWholeSurfaces = bWholeSurface; }
+		bool GetWholeSurfaces() { return m_bWholeSurfaces; }
 
 		/// Assign a surface interaction to be used at contacts between yarns
 		/**
@@ -184,6 +187,9 @@ namespace TexGen
 		/// Create the contact definitions for a woven fabric
 		void CreateContacts(ostream &Output, const CTextileWeave &Weave);
 
+		/// Output the contact definitions
+		void OutputContacts( ostream &Output, set<pair<int, int> > &Contacts );
+
 		/// Create the contact definitions for a 3D woven fabric
 		void CreateContacts(ostream &Output, const CTextile3DWeave &Weave);
 
@@ -287,6 +293,7 @@ namespace TexGen
 		XYZ m_TopPlatePos;
 		XYZ m_BottomPlatePos;
 		double m_dInitialPlateGap;
+		bool m_bWholeSurfaces;
 		//map<string, CObjectContainer<CMaterial> > m_Materials;
 		CTextileMaterials m_Materials;
 		//map<int, string> m_MaterialAssignements;

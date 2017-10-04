@@ -902,6 +902,7 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 	bool bIncludePlates = false;
 	bool bRegenerateMesh = false;
 	int iElementType = 0;
+	int iContactSurfaces = 0;
 	
 	wxFileDialog dialog
 	(
@@ -927,6 +928,7 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 		XRCCTRL(AbaqusInput, "IncludePlates", wxCheckBox)->SetValidator(wxGenericValidator(&bIncludePlates));
 		XRCCTRL(AbaqusInput, "RegenerateMesh", wxCheckBox)->SetValidator(wxGenericValidator(&bRegenerateMesh));
 		XRCCTRL(AbaqusInput, "ElementType", wxRadioBox)->SetValidator(wxGenericValidator(&iElementType));
+		XRCCTRL(AbaqusInput, "ContactSurfaces", wxRadioBox)->SetValidator(wxGenericValidator(&iContactSurfaces));
 
 		if (AbaqusInput.ShowModal() == wxID_OK)
 		{
@@ -938,6 +940,9 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 				Command << "deformer = CSimulationAbaqus()" << endl;
 				Command << "deformer.SetIncludePlates(" << bIncludePlates << ")" << endl;
 				Command << "deformer.AddDeformationStep(tension)" << endl;
+
+				string strContact = iContactSurfaces ? "True" : "False";
+				Command << "deformer.SetWholeSurfaces(" << strContact << ")" << endl;
 
 				//#deformer.SetFortranProgram('LinearElasticUMAT.for')
 				//Command << "deformer.SetMaterial('ISO', [" << ConvertString(YoungsModulus) << "," << ConvertString(PoissonsRatio) << "])" << endl;
@@ -952,7 +957,7 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 				double Tolerance;
 				IntersectionTolerance.ToDouble( &Tolerance );
 				Command << "deformer.CreateAbaqusInputFile(textile, r\'" << ConvertString(dialog.GetPath()) << "'," << bRegenerateMesh << "," << iElementType << "," 
-															<< bAdjustIntersections << "," << Tolerance <<  ")" << endl;
+															<< bAdjustIntersections << "," << Tolerance << ")" << endl;
 
 				SendPythonCode(Command.str());
 			}

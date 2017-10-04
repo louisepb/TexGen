@@ -32,6 +32,7 @@ CSimulationAbaqus::CSimulationAbaqus(void)
 : m_iTotalNumNodes(0)
 , m_bIncludePlates(false)
 , m_dInitialPlateGap(0)
+, m_bWholeSurfaces(false)
 {
 }
 
@@ -80,13 +81,19 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 		for (i=0; i<iNumYarns; ++i)
 		{
 			TGLOG("Creating yarn " << i << " surface definitions");
-			vector<ELEMENT_FACE> Faces;
-			GetYarnSurface( i, Repeats, Faces );
-			SurfaceDefinitions["YarnSurf" + stringify(i)] = Faces;
-			//vector<ELEMENT_FACE> UpperFaces, LowerFaces;
-			//GetYarnSurfaces( i, Repeats, UpperFaces, LowerFaces );
-			//SurfaceDefinitions["Yarn" + stringify(i) + "Lower"] = LowerFaces;
-			//SurfaceDefinitions["Yarn" + stringify(i) + "Upper"] = UpperFaces;
+			if ( m_bWholeSurfaces )
+			{
+				vector<ELEMENT_FACE> Faces;
+				GetYarnSurface( i, Repeats, Faces );
+				SurfaceDefinitions["YarnSurf" + stringify(i)] = Faces;
+			}
+			else
+			{
+				vector<ELEMENT_FACE> UpperFaces, LowerFaces;
+				GetYarnSurfaces( i, Repeats, UpperFaces, LowerFaces );
+				SurfaceDefinitions["Yarn" + stringify(i) + "Lower"] = LowerFaces;
+				SurfaceDefinitions["Yarn" + stringify(i) + "Upper"] = UpperFaces;
+			}
 		}
 	}
 
@@ -125,10 +132,19 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 			for (i=0; i<iNumYarns; ++i)
 			{
 				TGLOG("Creating yarn " << i << " surface definitions");
-				vector<ELEMENT_FACE> UpperFaces, LowerFaces;
-				GetYarnSurfaces( i, Repeats, UpperFaces, LowerFaces );
-				SurfaceDefinitions["Yarn" + stringify(i) + "Lower"] = LowerFaces;
-				SurfaceDefinitions["Yarn" + stringify(i) + "Upper"] = UpperFaces;
+				if ( m_bWholeSurfaces )
+				{
+					vector<ELEMENT_FACE> Faces;
+					GetYarnSurface( i, Repeats, Faces );
+					SurfaceDefinitions["YarnSurf" + stringify(i)] = Faces;
+				}
+				else
+				{
+					vector<ELEMENT_FACE> UpperFaces, LowerFaces;
+					GetYarnSurfaces( i, Repeats, UpperFaces, LowerFaces );
+					SurfaceDefinitions["Yarn" + stringify(i) + "Lower"] = LowerFaces;
+					SurfaceDefinitions["Yarn" + stringify(i) + "Upper"] = UpperFaces;
+				}
 			}
 		}
 	}
@@ -649,12 +665,7 @@ void CSimulationAbaqus::CreateContacts(ostream &Output, const CTextileWeave &Wea
 			}
 		}
 	}
-	set<pair<int, int> >::iterator itContact;
-	for (itContact = Contacts.begin(); itContact != Contacts.end(); ++itContact)
-	{
-		CreateContact(Output, "Yarn" + stringify(itContact->first) + "Upper",
-							  "Yarn" + stringify(itContact->second) + "Lower", "Yarn");
-	}
+	OutputContacts( Output, Contacts );
 }
 
 void CSimulationAbaqus::CreateContacts(ostream &Output, const CTextile3DWeave &Weave)
@@ -675,10 +686,19 @@ void CSimulationAbaqus::CreateContacts(ostream &Output, const CTextile3DWeave &W
 			}
 		}
 	}
+	OutputContacts( Output, Contacts );
+}
+
+void CSimulationAbaqus::OutputContacts( ostream &Output, set<pair<int, int> > &Contacts )
+{
 	set<pair<int, int> >::iterator itContact;
 	for (itContact = Contacts.begin(); itContact != Contacts.end(); ++itContact)
 	{
-		CreateContact(Output, "Yarn" + stringify(itContact->first) + "Upper",
+		if ( m_bWholeSurfaces )
+			CreateContact(Output, "YarnSurf" + stringify(itContact->first),
+							  "YarnSurf" + stringify(itContact->second) , "Yarn");
+		else
+			CreateContact(Output, "Yarn" + stringify(itContact->first) + "Upper",
 							  "Yarn" + stringify(itContact->second) + "Lower", "Yarn");
 	}
 }
