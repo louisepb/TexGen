@@ -176,6 +176,8 @@ namespace TexGen
 		*/
 		void CreateSurfaces(ostream &Output, map<string, vector<ELEMENT_FACE> > &SurfaceDefinitions);
 
+		void CreateSurfaceDefinitions( int iNumYarns, const vector<XYZ> &Repeats, map<string, vector<ELEMENT_FACE> > &SurfaceDefinitions);
+
 		/// Create the contact definitions
 		/**
 		This function simply delegates the task to a function which takes

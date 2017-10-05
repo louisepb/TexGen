@@ -78,23 +78,7 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 	if ( !bRegenerateMesh )  // This is time consuming - if regenerating will get surfaces later
 	{
 		//PROFILE_BLOCK(GetYarnSurfaces)
-		for (i=0; i<iNumYarns; ++i)
-		{
-			TGLOG("Creating yarn " << i << " surface definitions");
-			if ( m_bWholeSurfaces )
-			{
-				vector<ELEMENT_FACE> Faces;
-				GetYarnSurface( i, Repeats, Faces );
-				SurfaceDefinitions["YarnSurf" + stringify(i)] = Faces;
-			}
-			else
-			{
-				vector<ELEMENT_FACE> UpperFaces, LowerFaces;
-				GetYarnSurfaces( i, Repeats, UpperFaces, LowerFaces );
-				SurfaceDefinitions["Yarn" + stringify(i) + "Lower"] = LowerFaces;
-				SurfaceDefinitions["Yarn" + stringify(i) + "Upper"] = UpperFaces;
-			}
-		}
+		CreateSurfaceDefinitions( iNumYarns, Repeats, SurfaceDefinitions);
 	}
 
 	vector<POINT_INFO> YarnElementInfo;
@@ -129,23 +113,7 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 			}
 
 			SurfaceDefinitions.clear();
-			for (i=0; i<iNumYarns; ++i)
-			{
-				TGLOG("Creating yarn " << i << " surface definitions");
-				if ( m_bWholeSurfaces )
-				{
-					vector<ELEMENT_FACE> Faces;
-					GetYarnSurface( i, Repeats, Faces );
-					SurfaceDefinitions["YarnSurf" + stringify(i)] = Faces;
-				}
-				else
-				{
-					vector<ELEMENT_FACE> UpperFaces, LowerFaces;
-					GetYarnSurfaces( i, Repeats, UpperFaces, LowerFaces );
-					SurfaceDefinitions["Yarn" + stringify(i) + "Lower"] = LowerFaces;
-					SurfaceDefinitions["Yarn" + stringify(i) + "Upper"] = UpperFaces;
-				}
-			}
+			CreateSurfaceDefinitions( iNumYarns, Repeats, SurfaceDefinitions);
 		}
 	}
 	
@@ -259,6 +227,27 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
     //PROFILER_UPDATE();
     //PROFILER_OUTPUT("ProfileDryFibreExportOutput.txt");
 	return true;
+}
+
+void CSimulationAbaqus::CreateSurfaceDefinitions( int iNumYarns, const vector<XYZ> &Repeats, map<string, vector<ELEMENT_FACE> > &SurfaceDefinitions)
+{
+	for (int i=0; i<iNumYarns; ++i)
+	{
+		TGLOG("Creating yarn " << i << " surface definitions");
+		if ( m_bWholeSurfaces )
+		{
+			vector<ELEMENT_FACE> Faces;
+			GetYarnSurface( i, Repeats, Faces );
+			SurfaceDefinitions["YarnSurf" + stringify(i)] = Faces;
+		}
+		else
+		{
+			vector<ELEMENT_FACE> UpperFaces, LowerFaces;
+			GetYarnSurfaces( i, Repeats, UpperFaces, LowerFaces );
+			SurfaceDefinitions["Yarn" + stringify(i) + "Lower"] = LowerFaces;
+			SurfaceDefinitions["Yarn" + stringify(i) + "Upper"] = UpperFaces;
+		}
+	}
 }
 
 void CSimulationAbaqus::GetYarnSurfaces(int iYarn, const vector<XYZ> &Repeats, vector<ELEMENT_FACE> &UpperFaces, vector<ELEMENT_FACE> &LowerFaces )
