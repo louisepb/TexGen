@@ -255,7 +255,8 @@ void CSimulationAbaqus::GetYarnSurfaces(int iYarn, const vector<XYZ> &Repeats, v
 	CMesh &VolumeMesh = m_YarnMeshes[iYarn];
 
 	CMesh SurfaceMesh = VolumeMesh;
-	
+	SurfaceMesh.RemoveElementType(CMesh::POLYGON);
+	SurfaceMesh.RemoveUnreferencedNodes();
 	SurfaceMesh.ConvertToSurfaceMesh();
 
 	// Make a list of nodes which lie on the yarn's end
@@ -276,7 +277,7 @@ void CSimulationAbaqus::GetYarnSurfaces(int iYarn, const vector<XYZ> &Repeats, v
 	// Get the yarn surface
 	int i, iType, iBoundaryNodes;
 	list<int>::iterator itIndex;
-	//vector<ELEMENT_FACE> UpperFaces, LowerFaces;
+	
 	ELEMENT_FACE Face;
 	for (iType = 0; iType < CMesh::NUM_ELEMENT_TYPES; ++iType)
 	{
@@ -326,9 +327,9 @@ void CSimulationAbaqus::GetYarnSurface(int iYarn, const vector<XYZ> &Repeats, ve
 	CMesh SurfaceMesh = VolumeMesh;
 	SurfaceMesh.RemoveElementType(CMesh::POLYGON);
 	SurfaceMesh.RemoveUnreferencedNodes();
-	SurfaceMesh.SaveToVTK("C://Users//epzlpb//TexGen//Knit//VolumeMesh");
+	//SurfaceMesh.SaveToVTK("C://Users//epzlpb//TexGen//Knit//VolumeMesh");
 	SurfaceMesh.ConvertToSurfaceMesh();
-	SurfaceMesh.SaveToVTK("C://Users//epzlpb//TexGen//Knit//SurfaceMesh");
+	//SurfaceMesh.SaveToVTK("C://Users//epzlpb//TexGen//Knit//SurfaceMesh");
 
 	// Make a list of nodes which lie on the yarn's end
 	set<int> BoundaryNodes;
@@ -348,7 +349,7 @@ void CSimulationAbaqus::GetYarnSurface(int iYarn, const vector<XYZ> &Repeats, ve
 	// Get the yarn surface
 	int i, iType, iBoundaryNodes;
 	list<int>::iterator itIndex;
-	//vector<ELEMENT_FACE> UpperFaces, LowerFaces;
+	
 	ELEMENT_FACE Face;
 	for (iType = 0; iType < CMesh::NUM_ELEMENT_TYPES; ++iType)
 	{
@@ -379,8 +380,6 @@ void CSimulationAbaqus::GetYarnSurface(int iYarn, const vector<XYZ> &Repeats, ve
 
 CSimulationAbaqus::ELEMENT_FACE CSimulationAbaqus::FindFaceIndex(int iYarn, const vector<int> &SurfIndices)
 {
-	//CMesh &VolumeMesh = m_YarnMeshes[iYarn];
-
 	CMesh VolumeMesh = m_YarnMeshes[iYarn];
 
 	VolumeMesh.RemoveElementType(CMesh::POLYGON);
@@ -390,6 +389,8 @@ CSimulationAbaqus::ELEMENT_FACE CSimulationAbaqus::FindFaceIndex(int iYarn, cons
 	int i, iElementIndex, iType;
 	for (iType = 0; iType < CMesh::NUM_ELEMENT_TYPES; ++iType)
 	{
+		if ( iType == CMesh::POLYGON )
+			continue;
 		CMesh::ELEMENT_TYPE Type = (CMesh::ELEMENT_TYPE)iType;
 		list<int> &Indices = VolumeMesh.GetIndices(Type);
 		for (itIndex = Indices.begin(), iElementIndex=0; itIndex != Indices.end(); ++iElementIndex)
