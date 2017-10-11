@@ -62,6 +62,8 @@ public:
 	// Straight yarns with some properties set
 	CTextile StraightYarns();
 
+	// Orthogonal weave with one warp and one binder
+	CTextileOrthogonal OrthogonalWeave();
 protected:
 
 };

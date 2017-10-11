@@ -405,7 +405,46 @@ CTextile CTextileFactory::StraightYarns()
 	return Textile;
 }
 
+CTextileOrthogonal CTextileFactory::OrthogonalWeave()
+{
+	CTextileOrthogonal Textile( 2, 2, 1.0, 1.0, 0.1, 0.1, false);
 
+	// Set the ratio of warp/binder yarns
+	Textile.SetWarpRatio( 1 );
+	Textile.SetBinderRatio( 1 );
+
+	// Add yarn layers.  There must always be one NoYarn layer and one Bindery layer
+	Textile.AddNoYarnLayer();
+	Textile.AddYLayers();
+	Textile.AddWarpLayer();
+	Textile.AddYLayers();
+	Textile.AddBinderLayer();
+
+	// Adjust the yarn widths, heights and spacings
+	Textile.SetWarpYarnWidths( 0.8 );
+
+	Textile.SetBinderYarnWidths( 0.4 );
+	Textile.SetBinderYarnHeights( 0.05 );
+	Textile.SetBinderYarnSpacings( 0.55 );
+
+	// Weft yarns
+	Textile.SetYYarnWidths(0.8);  
+
+	// Set the power of the power ellipses used
+	Textile.SetWarpYarnPower(0.6);
+	Textile.SetWeftYarnPower(0.6);
+	Textile.SetBinderYarnPower(0.6);
+
+	Textile.SetResolution(20);
+
+	// Set binder pattern
+	Textile.SwapBinderPosition( 0,1);
+
+	// Create a default domain to fit the textile
+	Textile.AssignDefaultDomain();
+
+	return Textile;
+}
 
 
 
