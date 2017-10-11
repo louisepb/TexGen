@@ -14,18 +14,20 @@ Core
 ** Added OutputDummyNodeSets, CreateMaterials and OutputStep functions to CPeriodicBoundaries so that can call from Python script
 ** Bugfix to enable rotated sections with hybrid sections
 ** Changed TextileWeave2D.SetInPlaneTangents to set to true or false
+** Added functionality to CSimulationAbaqus to export either whole yarn surfaces or upper and lower surfaces
 
 GUI
 ===
 ** Changed SaveToAbaqus to use CSimulationAbaqus so don't need to load Abaqus.py
 ** Bugfix in WeaveWizard3D to update number of binder layers in pattern dialog correctly
 ** Added Rotate Textile function
+** Added Upper and Lower or Whole Surface options to dry fibre export
 
 UnitTests
 =========
 ** Added TestRotateYarns in GeometricTests
-
-
+** Added DryFibreExport tests
+** Added orthogonal weave to textile factory
 
 v3.9.0
 ======
