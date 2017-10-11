@@ -15,6 +15,7 @@ Core
 ** Bugfix to enable rotated sections with hybrid sections
 ** Changed TextileWeave2D.SetInPlaneTangents to set to true or false
 ** Added functionality to CSimulationAbaqus to export either whole yarn surfaces or upper and lower surfaces
+** Bugfix to avoid crash if empty node set sent to CMesher SaveNodeSets
 
 GUI
 ===
