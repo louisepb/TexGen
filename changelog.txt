@@ -5,6 +5,7 @@ v3.9.1
 General
 =======
 ** Increased resolution in Core module structure graph for documentation
+** Added profile tests
 
 Core
 ====
@@ -16,6 +17,8 @@ Core
 ** Changed TextileWeave2D.SetInPlaneTangents to set to true or false
 ** Added functionality to CSimulationAbaqus to export either whole yarn surfaces or upper and lower surfaces
 ** Bugfix to avoid crash if empty node set sent to CMesher SaveNodeSets
+** Moved ConvertToInterpNodes into CTextile and also created CYarn function
+** Changed SlaveNode section meshes to pointers
 
 GUI
 ===
