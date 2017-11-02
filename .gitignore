@@ -12,3 +12,5 @@ Docs/TexGen.chm
 Docs/html/
 Python/*.py
 Python/*.zip
+Python/*_wrap.*
+

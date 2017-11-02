@@ -4,7 +4,7 @@ from TexGen.Core import *
 from TexGen.Renderer import *
 
 # Create a 4x4 2d woven textile with yarn spacing of 5 and thickness 2
-Textile = CTextileWeave2D(4, 4, 5, 2);
+Textile = CTextileWeave2D(4, 4, 5, 2, False);
 
 # Set the weave pattern
 Textile.SwapPosition(3, 0);

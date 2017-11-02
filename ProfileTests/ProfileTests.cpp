@@ -25,11 +25,10 @@ int main( int argc, char** argv)
 	CRectangularVoxelMesh Mesh("CPeriodicBoundaries");
 	
 	Mesh.SaveVoxelMesh(Textile, "ProfileVoxels", 100,100,30,true,true,MATERIAL_CONTINUUM);
-	//TEXGEN.AddTextile(Textile);
-	
-	/*CTexGenRenderer* Renderer = new CTexGenRenderer;
+	TEXGEN.AddTextile(Textile);
+	CTexGenRenderer* Renderer = new CTexGenRenderer;
 	Renderer->RenderTextile(Textile);
-	Renderer->Start();*/
+	Renderer->Start();
 	//PROFILE_END();
     //PROFILER_UPDATE();
     //PROFILER_OUTPUT("ProfileOutput.txt");

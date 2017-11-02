@@ -25,15 +25,23 @@ CSlaveNode::CSlaveNode(XYZ Position, XYZ Tangent, XYZ Up)
 :  CNode(Position, Tangent, Up)
 ,m_T(0)
 ,m_iIndex(0)
+,m_2DSectionMesh(NULL)
+,m_SectionMesh(NULL)
 {
 }
 
 CSlaveNode::~CSlaveNode(void)
 {
+	if ( m_2DSectionMesh != NULL )
+		delete m_2DSectionMesh;
+	if ( m_SectionMesh != NULL )
+		delete m_SectionMesh;
 }
 
 CSlaveNode::CSlaveNode(TiXmlElement &Element)
 : CNode(Element)
+,m_2DSectionMesh(NULL)
+,m_SectionMesh(NULL)
 {
 	Element.Attribute("T", &m_T);
 	Element.Attribute("Index", &m_iIndex);
@@ -45,7 +53,7 @@ CSlaveNode::CSlaveNode(TiXmlElement &Element)
 	{
 		m_SectionPoints.push_back(valueify<XYZ>(pSectionPoint->Attribute("value")));
 	}
-	TiXmlElement *pSectionMesh2D = Element.FirstChildElement("SectionMesh2D");
+	/*TiXmlElement *pSectionMesh2D = Element.FirstChildElement("SectionMesh2D");
 	if (pSectionMesh2D)
 	{
 		m_2DSectionMesh = CMesh(*pSectionMesh2D);
@@ -54,7 +62,7 @@ CSlaveNode::CSlaveNode(TiXmlElement &Element)
 	if (pSectionMesh2D)
 	{
 		m_SectionMesh = CMesh(*pSectionMesh);
-	}
+	}*/
 }
 
 void CSlaveNode::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType) const
@@ -76,12 +84,12 @@ void CSlaveNode::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputT
 		SectionPoint.SetAttribute("value", stringify(*itXYZ));
 		Element.InsertEndChild(SectionPoint);
 	}
-	TiXmlElement SectionMesh2D("SectionMesh2D");
+	/*TiXmlElement SectionMesh2D("SectionMesh2D");
 	m_2DSectionMesh.PopulateTiXmlElement(SectionMesh2D, OutputType);
 	Element.InsertEndChild(SectionMesh2D);
 	TiXmlElement SectionMesh("SectionMesh");
 	m_SectionMesh.PopulateTiXmlElement(SectionMesh, OutputType);
-	Element.InsertEndChild(SectionMesh);
+	Element.InsertEndChild(SectionMesh);*/
 }
 
 void CSlaveNode::UpdateSectionPoints(const vector<XY> *p2DSectionPoints)
@@ -124,14 +132,23 @@ XYZ CSlaveNode::GetPointOnSection(const XY &p2DSectionPoint)
 void CSlaveNode::UpdateSectionMesh(const CMesh *p2DSectionMesh)
 {
 	if (p2DSectionMesh)
-		m_2DSectionMesh = *p2DSectionMesh;
+	{
+		if ( m_2DSectionMesh == NULL )
+			m_2DSectionMesh = new CMesh;
+		else
+			m_2DSectionMesh->Clear();
+		*m_2DSectionMesh = *p2DSectionMesh;
+	}
 	// Clear any existing section mesh before creating the new one
-	m_SectionMesh.Clear();
+	if ( m_SectionMesh == NULL )
+		m_SectionMesh = new CMesh;
+	else
+		m_SectionMesh->Clear();
 
 	vector<XYZ>::iterator itNode;
 	XYZ Pos;
 	XYZ Side = GetSide();
-	vector<XYZ> MeshNodes2D = m_2DSectionMesh.GetNodes();
+	vector<XYZ> MeshNodes2D = m_2DSectionMesh->GetNodes();
 
 	for (itNode = MeshNodes2D.begin(); itNode != MeshNodes2D.end(); ++itNode)
 	{
@@ -140,12 +157,12 @@ void CSlaveNode::UpdateSectionMesh(const CMesh *p2DSectionMesh)
 		Pos += m_Up * itNode->y;
 		// Translate the point to its global position
 		Pos += m_Position;
-		m_SectionMesh.AddNode(Pos);
+		m_SectionMesh->AddNode(Pos);
 	}
 	int i;
 	for (i=0; i<CMesh::NUM_ELEMENT_TYPES; ++i)
 	{
-		m_SectionMesh.GetIndices((CMesh::ELEMENT_TYPE)i) = m_2DSectionMesh.GetIndices((CMesh::ELEMENT_TYPE)i);
+		m_SectionMesh->GetIndices((CMesh::ELEMENT_TYPE)i) = m_2DSectionMesh->GetIndices((CMesh::ELEMENT_TYPE)i);
 	}
 }
 
@@ -157,7 +174,7 @@ void CSlaveNode::Rotate(WXYZ Rotation)
 	{
 		(*itSectionPoint) = Rotation * (*itSectionPoint);
 	}
-	m_SectionMesh.Rotate(Rotation);
+	m_SectionMesh->Rotate(Rotation);
 }
 
 void CSlaveNode::Translate(XYZ Vector)
@@ -168,7 +185,7 @@ void CSlaveNode::Translate(XYZ Vector)
 	{
 		(*itSectionPoint) += Vector;
 	}
-	m_SectionMesh.Translate(Vector);
+	m_SectionMesh->Translate(Vector);
 }
 
 

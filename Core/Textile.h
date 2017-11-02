@@ -243,6 +243,10 @@ namespace TexGen
 		void SetAllYarnsPoissonsRatioY(double dValue);
 		void SetAllYarnsPoissonsRatioZ(double dValue);
 
+		/// Converts each yarn with constant cross-section to interpolate sections between nodes
+		/// Sets the section at each node to the original section
+		bool ConvertToInterpNodes() const;
+
 
 		/// If this textile is a woven textile get a pointer of that type else return NULL
 		/**

@@ -1139,6 +1139,17 @@ double CTextile::GetDomainVolumeFraction()
 	return FibreVolume/m_pDomain->GetVolume();
 }
 
+bool CTextile::ConvertToInterpNodes() const
+{
+	vector<CYarn>::iterator itYarn;
+
+	for (itYarn = m_Yarns.begin(); itYarn != m_Yarns.end(); ++itYarn)
+	{
+		if ( !itYarn->ConvertToInterpNodes() )
+			return false;
+	}
+	return true;
+}
 
 
 
