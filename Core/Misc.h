@@ -266,13 +266,13 @@ namespace TexGen
 			}
 			else
 			{
-				Output << endl;
+				Output << std::endl;
 				iLinePos = 0;
 			}
 			Output << *itValue;
 			++iLinePos;
 		}
-		Output << endl;
+		Output << std::endl;
 	}
 
 };	// namespace TexGen
