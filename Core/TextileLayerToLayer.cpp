@@ -745,6 +745,7 @@ int CTextileLayerToLayer::FindBinderHeight( const vector<PATTERN3D>& Cell, int H
 
 void CTextileLayerToLayer::ConvertToPatternDraft( /*CPatternDraft& PatternDraft*/ )
 {
+	m_PatternDraft.ClearWeavePattern();
 	for ( int i = m_iNumYYarns-1; i >=0; --i )
 	{
 		int iNumWefts = (int)m_YYarns[i].size();

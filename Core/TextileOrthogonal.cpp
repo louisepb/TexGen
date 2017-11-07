@@ -2096,6 +2096,7 @@ void CTextileOrthogonal::OffsetYarn( int i, int j, int k, double dHeight, int Ya
 
 void CTextileOrthogonal::ConvertToPatternDraft( /*CPatternDraft& PatternDraft*/ )
 {
+	m_PatternDraft.ClearWeavePattern();
 	for ( int i = m_iNumYYarns-1; i >=0; --i )
 	{
 		int iNumWefts = (int)m_YYarns[i].size();
