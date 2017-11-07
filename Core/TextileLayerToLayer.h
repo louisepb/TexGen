@@ -73,7 +73,7 @@ namespace TexGen
 		/// Returns number of binder layers in textile
 		virtual int GetNumBinderLayers() const;
 
-		virtual void ConvertToPatternDraft( /*CPatternDraft& PatternDraft*/ );
+		virtual void ConvertToPatternDraft( int iWeftOrder = BOTTOM_TO_TOP );
 
 	protected:
 		/// Finds cell index of the top binder yarn
