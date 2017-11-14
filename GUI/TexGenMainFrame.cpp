@@ -77,7 +77,8 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 	EVT_BUTTON_MENU_RANGE(ID_CreateDomainPlanes, ID_DeleteDomain, CTexGenMainFrame::OnDomains)
 	EVT_BUTTON_MENU_RANGE(ID_RunScript, ID_RecordMacro, CTexGenMainFrame::OnPython)
 	//EVT_CHECKBOX_MENU_RANGE( ID_OutputMessages, ID_OutputMessages, CTexGenMainFrame::OnOptions)
-	EVT_BUTTON_MENU_RANGE(ID_PatternDraft, ID_DomainVolumeFraction, CTexGenMainFrame::OnOptions)
+	EVT_BUTTON_MENU_RANGE(ID_PatternDraft, ID_DomainVolumeFraction, CTexGenMainFrame::OnTools)
+	EVT_BUTTON_MENU_RANGE(ID_OutputMessages, ID_OutputMessages, CTexGenMainFrame::OnOptions)
 
 	EVT_TEXT_ENTER(ID_PositionX, CTexGenMainFrame::OnPosition)
 	EVT_TEXT_ENTER(ID_PositionY, CTexGenMainFrame::OnPosition)
@@ -2459,17 +2460,11 @@ void COutlineHandler::OnDuplicateYarn(wxCommandEvent& event)
 	}
 }
 
-void CTexGenMainFrame::OnOptions(wxCommandEvent& event)
+void CTexGenMainFrame::OnTools(wxCommandEvent& event)
 {
 	string Command;
 	switch (event.GetId())
 	{
-	case ID_OutputMessages:
-		if (event.IsChecked())
-			CTexGen::GetInstance().SetMessages( true, CLoggerGUI() );
-		else
-			CTexGen::GetInstance().SetMessages( false, CLoggerNull() );
-		break;
 	case ID_PatternDraft:
 		{
 			string TextileName = GetTextileSelection();
@@ -2575,6 +2570,23 @@ void CTexGenMainFrame::OnOptions(wxCommandEvent& event)
 			wxMessageBox( VfMessage, wxT("Volume Fraction"), wxOK|wxCENTRE, this );
 		}
 		break;
+	default:
+		break;
+	}
+}
+
+void CTexGenMainFrame::OnOptions(wxCommandEvent& event)
+{
+	string Command;
+	switch (event.GetId())
+	{
+	case ID_OutputMessages:
+		if (event.IsChecked())
+			CTexGen::GetInstance().SetMessages( true, CLoggerGUI() );
+		else
+			CTexGen::GetInstance().SetMessages( false, CLoggerNull() );
+		break;
+	
 	default:
 		break;
 	}

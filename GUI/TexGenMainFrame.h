@@ -94,6 +94,7 @@ protected:
 	void OnPosition(wxCommandEvent& event);
 	void OnSnapSize(wxCommandEvent& event);
 
+	void OnTools(wxCommandEvent& event);
 	void OnOptions(wxCommandEvent& event);
 
 	void OnPeriodicBoundaries(wxCommandEvent& event);

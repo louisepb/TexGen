@@ -42,6 +42,7 @@ void CControlsWindow::BuildControls()
 	BuildDomainsPage();
 	BuildRenderingPage();
 	BuildPythonPage();
+	BuildToolsPage();
 	BuildOptionsPage();
 	ResizePages();
 }
@@ -588,15 +589,21 @@ void CControlsWindow::UpdateRenderWidget(int iID, const CTexGenRenderer *pRender
 	m_pMenuBar->Check(iID, bChecked);
 }
 
+void CControlsWindow::BuildToolsPage()
+{
+	wxMenu *pMenu = new wxMenu;
+	pMenu->Append(ID_PatternDraft, wxT("Create Pattern Draft"));
+	pMenu->Append(ID_QuickDomainVolumeFraction, wxT("Quick Calculate Domain Volume Fraction"));
+	pMenu->Append(ID_DomainVolumeFraction, wxT("Calculate Domain Volume Fraction"));
+	pMenu->Append(ID_YarnFibreVolumeFraction, wxT("Yarn Fibre Volume Fraction"));
+	m_pMenuBar->Append(pMenu, wxT("&Tools"));
+}
+
 void CControlsWindow::BuildOptionsPage()
 {
 	wxMenu *pMenu = new wxMenu;
 	pMenu->Append(ID_OutputMessages, wxT("Output Messages"), wxT(""), wxITEM_CHECK );
 	pMenu->Check(ID_OutputMessages, CTexGen::GetInstance().GetMessagesOn());
-	pMenu->Append(ID_PatternDraft, wxT("Create Pattern Draft"));
-	pMenu->Append(ID_QuickDomainVolumeFraction, wxT("Quick Calculate Domain Volume Fraction"));
-	pMenu->Append(ID_DomainVolumeFraction, wxT("Calculate Domain Volume Fraction"));
-	pMenu->Append(ID_YarnFibreVolumeFraction, wxT("Yarn Fibre Volume Fraction"));
 	m_pMenuBar->Append(pMenu, wxT("&Options"));
 }
 

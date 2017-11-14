@@ -47,6 +47,7 @@ protected:
 	void BuildPythonPage();
 	void ResizePages();
 	void BuildOptionsPage();
+	void BuildToolsPage();
 
 	void UpdateRenderWidget(int iID, const CTexGenRenderer *pRenderer, CTexGenRenderer::PROP_TYPE Type);
 	void UpdateCheckWidget(int iID, bool bChecked);
