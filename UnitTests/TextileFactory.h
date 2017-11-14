@@ -59,6 +59,9 @@ public:
 	// Simple plain weave
 	CTextileWeave2D PlainWeave();
 
+	// Layer to layer 3D weave
+	CTextileLayerToLayer LayerToLayerWeave();
+
 	// Straight yarns with some properties set
 	CTextile StraightYarns();
 

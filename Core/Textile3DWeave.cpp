@@ -2729,8 +2729,9 @@ void CTextile3DWeave::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, int 
 	m_bNeedsBuilding = true;
 }
 
-void CTextile3DWeave::ConvertToPatternDraft( /*CPatternDraft& PatternDraft*/ )
+void CTextile3DWeave::ConvertToPatternDraft( int iWeftOrder )
 {
+	m_PatternDraft.ClearWeavePattern();
 	for ( int i = m_iNumYYarns-1; i >=0; --i )
 	{
 		string Row;

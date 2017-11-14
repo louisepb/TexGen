@@ -2861,4 +2861,54 @@
 			</object>
 		</object>
 	</object>
+	<object class="wxDialog" name="WeftStackOrder">
+		<style>wxDEFAULT_DIALOG_STYLE</style>
+		<title>Weft Stack Ordering</title>
+		<centered>1</centered>
+		<object class="wxBoxSizer">
+			<orient>wxVERTICAL</orient>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxRadioBox" name="StackOrder">
+					<style>wxRA_SPECIFY_COLS</style>
+					<label></label>
+					<selection>0</selection>
+					<content>
+						<item>Bottom to Top</item>
+						<item>Top to Bottom</item>
+						<item>Alternating Stack Order</item>
+					</content>
+					<dimension>1</dimension>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="wxID_OK">
+							<label>OK</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="wxID_CANCEL">
+							<label>Cancel</label>
+							<default>0</default>
+						</object>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
 </resource>

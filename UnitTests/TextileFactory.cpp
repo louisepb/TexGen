@@ -334,6 +334,37 @@ CTextileWeave2D CTextileFactory::PlainWeave()
 	return Textile;
 }
 
+CTextileLayerToLayer CTextileFactory::LayerToLayerWeave()
+{
+	CTextileLayerToLayer Textile(2, 4, 1.4, 1, 0.2, 0.1, 2);
+	Textile.SetWarpRatio( 1 );
+	Textile.SetBinderRatio( 1);
+
+	Textile.SetupLayers( 3, 4, 2);
+	Textile.SetGapSize( 0 );
+	Textile.SetBinderPosition(0, 1, 0);
+	Textile.SetBinderPosition(1, 1, 1);
+	Textile.SetBinderPosition(2, 1, 3);
+	Textile.SetBinderPosition(3, 1, 2);
+
+	Textile.SetWarpYarnPower( 0.6);
+	Textile.SetWeftYarnPower( 0.6);
+	Textile.SetWarpYarnWidths(1.2);
+	Textile.SetWarpYarnHeights(0.2);
+	Textile.SetWarpYarnSpacings(1.4);
+	Textile.SetBinderYarnWidths(0.5);
+	Textile.SetBinderYarnHeights(0.05);
+	Textile.SetBinderYarnSpacings(0.6);
+
+	Textile.SetYYarnWidths(0.8);
+	Textile.SetYYarnHeights(0.1);
+	Textile.SetYYarnSpacings(1);
+
+	Textile.AssignDefaultDomain();
+	Textile.BuildTextile();
+	return Textile;
+}
+
 CTextile CTextileFactory::StraightYarns()
 {
 	// Create a textile

@@ -44,6 +44,13 @@ namespace TexGen
 		WEFT
 	};
 
+	enum
+	{
+		BOTTOM_TO_TOP,
+		TOP_TO_BOTTOM,
+		ALTERNATE_WEFT_STACK
+	};
+
 	typedef int PATTERN3D;
 
 	/// Data structure to keep track of yarn parameters
@@ -286,7 +293,7 @@ namespace TexGen
 		/// Set up row of pattern cells for one weft pattern using one row of weave pattern data and the layers pattern for the weave
 		virtual void SetupWeftRow( vector<int>& Layers, vector<int>& Row, int NumWarps, int Weft );
 
-		virtual void ConvertToPatternDraft( /*CPatternDraft& PatternDraft*/ );
+		virtual void ConvertToPatternDraft( int iWeftOrder = BOTTOM_TO_TOP );
 		bool NoYarnCell( vector<PATTERN3D> &Cell );
 
 		// Accessor methods

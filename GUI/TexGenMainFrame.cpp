@@ -2497,7 +2497,21 @@ void CTexGenMainFrame::OnOptions(wxCommandEvent& event)
 				return;
 			}
 
-			Command << "Weave.ConvertToPatternDraft()" << endl;
+			int iWeftOrder = 0;
+			if ( Type == "CTextileOrthogonal" || Type == "CTextileLayerToLayer" )
+			{
+				wxDialog WeftStackOrder;
+				if (wxXmlResource::Get()->LoadDialog(&WeftStackOrder, this, wxT("WeftStackOrder")))		
+					XRCCTRL(WeftStackOrder, "StackOrder", wxRadioBox)->SetValidator(wxGenericValidator(&iWeftOrder));
+	
+				if (WeftStackOrder.ShowModal() == wxID_OK)
+				{
+				}
+			}
+			if ( Type == "CTextileWeave2D" )
+				Command << "Weave.ConvertToPatternDraft()" << endl;
+			else
+				Command << "Weave.ConvertToPatternDraft(" << iWeftOrder << ")" << endl;
 			Command << "PatternDraft = Weave.GetPatternDraft()" << endl;
 			Command << "PatternDraft.CreatePatternDraft()" << endl;
 			
@@ -2517,7 +2531,6 @@ void CTexGenMainFrame::OnOptions(wxCommandEvent& event)
 			{
 				
 			}
-			
 		}
 		break;
 	case ID_DomainVolumeFraction:

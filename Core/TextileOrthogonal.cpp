@@ -2094,8 +2094,9 @@ void CTextileOrthogonal::OffsetYarn( int i, int j, int k, double dHeight, int Ya
 	}
 }
 
-void CTextileOrthogonal::ConvertToPatternDraft( /*CPatternDraft& PatternDraft*/ )
+void CTextileOrthogonal::ConvertToPatternDraft( int iWeftOrder )
 {
+	m_PatternDraft.ClearWeavePattern();
 	for ( int i = m_iNumYYarns-1; i >=0; --i )
 	{
 		int iNumWefts = (int)m_YYarns[i].size();
@@ -2112,48 +2113,39 @@ void CTextileOrthogonal::ConvertToPatternDraft( /*CPatternDraft& PatternDraft*/ 
 			
 			for ( int k = (int)Cell.size()-1; k >= 0; --k )
 			{
-				//if ( !( k == 1 && Cell[0] == PATTERN3D_NOYARN) )
-				//{
-					switch (Cell[k])
+				switch (Cell[k])
+				{
+				case PATTERN3D_XYARN:
+					for ( int iW = 0; iW < iNumWefts; ++iW )
 					{
-					case PATTERN3D_XYARN:
-						for ( int iW = 0; iW < iNumWefts; ++iW )
-						{
-							if ( !bWeftSet[iW] )
-								Rows[iW].push_back('1');
-							else
-								Rows[iW].push_back('0');   
-						}
-						break;
-					case PATTERN3D_YYARN:
-						/*for ( int iW = 0; iW < iNumWefts; ++iW )
-						{
-							if ( iW >= iWeft )
-							{
-								Rows[iW].push_back('0');
-							}
-							else
-								Rows[iW].push_back('1');
-						}*/
-						bWeftSet[iWeft] = true;
-						iWeft--;
-						break;
-					case PATTERN3D_NOYARN:
-						//Row.push_back('2');
-						break;
+						if ( !bWeftSet[iW] )
+							Rows[iW].push_back('1');
+						else
+							Rows[iW].push_back('0');   
 					}
-				//}
+					break;
+				case PATTERN3D_YYARN:
+					bWeftSet[iWeft] = true;
+					iWeft--;
+					break;
+				case PATTERN3D_NOYARN:
+					break;
+				}
 			}
 		}
-		/*if ( (int)Row.size() < m_iTotalXYarns )
+		
+		if ( iWeftOrder == BOTTOM_TO_TOP || (iWeftOrder == ALTERNATE_WEFT_STACK && i%2))
 		{
-			for ( int i = (int)Row.size()+1; i <= m_iTotalXYarns; ++i )
-			{
-				Row.push_back('2');
-			}
-		}*/
-		for ( int iW = iNumWefts-1 ; iW >=0; --iW )
-			m_PatternDraft.AddRow( Rows[iW] );
+			// Add wefts from bottom to top
+			for ( int iW = iNumWefts-1 ; iW >=0; --iW )
+				m_PatternDraft.AddRow( Rows[iW] );
+		}
+		else
+		{
+			// Add wefts from top to bottom
+			for ( int iW = 0 ; iW < iNumWefts; ++iW )
+				m_PatternDraft.AddRow( Rows[iW] );
+		}
 	}
 }
 

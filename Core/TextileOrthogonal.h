@@ -74,7 +74,7 @@ namespace TexGen
 		*/
 		virtual bool BuildTextile() const;
 
-		virtual void ConvertToPatternDraft( /*CPatternDraft& PatternDraft*/ );
+		virtual void ConvertToPatternDraft( int iWeftOrder = BOTTOM_TO_TOP );
 		/// Set up row of pattern cells for one weft pattern using one row of weave pattern data and the layers pattern for the weave
 		virtual void SetupWeftRow( vector<int>& Layers, vector<int>& Row, int NumWarps, int Weft );
 		void ConsolidateCells();
