@@ -19,6 +19,7 @@ Core
 ** Bugfix to avoid crash if empty node set sent to CMesher SaveNodeSets
 ** Moved ConvertToInterpNodes into CTextile and also created CYarn function
 ** Changed SlaveNode section meshes to pointers
+** Added weft stack ordering to ConvertToPatternDraft in orthogonal and layer to layer weaves
 
 GUI
 ===
@@ -26,12 +27,16 @@ GUI
 ** Bugfix in WeaveWizard3D to update number of binder layers in pattern dialog correctly
 ** Added Rotate Textile function
 ** Added Upper and Lower or Whole Surface options to dry fibre export
+** Enabled Create Pattern Draft option
+** Added dialog for weft stack ordering for pattern drafts
 
 UnitTests
 =========
 ** Added TestRotateYarns in GeometricTests
 ** Added DryFibreExport tests
 ** Added orthogonal weave to textile factory
+** Added layer to layer weave to textile factory
+** Added pattern draft tests
 
 v3.9.0
 ======
