@@ -1926,7 +1926,7 @@ int CMesher::GetQuadNodeToAdd( int i, int j )
 
 void CMesher::RemoveDuplicateNodes()
 {
-	vector<vector<int>>::iterator  itEdge;
+	vector<vector<int> >::iterator  itEdge;
 	RemoveDuplicateFaceNodes( m_FaceA );
 	RemoveDuplicateFaceNodes( m_FaceB );
 	RemoveDuplicateFaceNodes( m_FaceC );
