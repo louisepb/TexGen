@@ -48,22 +48,45 @@ def ModifyInstaller(FileName, NewVersion):
 	
 	return OldVersion
 
+def ModifyTestFile(FileName, NewVersion):
+	OldVersion = [0,0,0]
+	Source = open(FileName, 'r').read()
+	# OriginalSource = TGSource
+
+	pattern = r'TexGen v([0-9]*).([0-9]*).([0-9]*)'
+	Result = re.findall(pattern, Source)
+	assert(len(Result) == 1)
+	OldVersion = [int(x) for x in Result[0]]
+	replace = r'TexGen v%d.%d.%d' % tuple(NewVersion)
+	Source, NumChanges = re.subn(pattern, replace, Source)
+	assert(NumChanges == 1)
+
+	OutputFile = open(FileName, 'w')
+	OutputFile.write(Source)
+	
+	return OldVersion
+	
 def main():
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], "")
 		NewVersion = [float(x) for x in args]
 		assert(len(NewVersion) == 3)
 	except:
-		print 'Usage: python SetVersion.py <major> <minor> <revision>'
+		print('Usage: python SetVersion.py <major> <minor> <revision>')
 		return
 
 	FileNames = ['Core/TexGen.cpp', 'Installer/texgen.nsi', 'Installer/texgen-bundle.nsi', 'Installer/texgen2008.nsi',
              	'Installer/texgen-bundle2008.nsi', 'Installer/texgen-64bit-bundle2008.nsi','Installer/texgen-bundle2008_Python27.nsi',
-				'Installer/texgen-64bit-bundle-Python27-2008.nsi', 'Installer/texgen-64bit-bundle-Python27-2012.nsi',
-				'UnitTests/VoxelContinuumTest.inp','UnitTests/DryFibreULSurfaceTest.inp','UnitTests/DryFibreWholeSurfaceTest.inp']
+				'Installer/texgen-64bit-bundle-Python27-2008.nsi', 'Installer/texgen-64bit-bundle-Python27-2012.nsi']
+				
+	TestFileNames = ['UnitTests/VoxelContinuumTest.inp','UnitTests/DryFibreULSurfaceTest.inp','UnitTests/DryFibreWholeSurfaceTest.inp']
 	NumFiles = len(FileNames)
 	print('Length filenames = ', NumFiles )
+	
+	NumTestFiles = len(TestFileNames)
+	print('Length test filenames = ', NumTestFiles)
 	OldVersions = [None] * NumFiles
+	OldTestVersions = [None] * NumTestFiles
 	
 	OldVersions[0] = ModifySourceCode(FileNames[0], NewVersion)
 	
@@ -72,6 +95,9 @@ def main():
 		OldVersions[i] = ModifyInstaller(FileNames[i], NewVersion)
 		print( 'Modified OldVersions', i)
 		
+	for i in range(NumTestFiles):
+		OldTestVersions[i] = ModifyTestFile(TestFileNames[i], NewVersion)
+		print( 'Modified OldTestVersions', i)
 	
 	#OldVersions[1] = ModifyInstaller(FileNames[1], NewVersion)
 	#OldVersions[2] = ModifyInstaller(FileNames[2], NewVersion)
@@ -85,13 +111,19 @@ def main():
 	for v in OldVersions:
 		if v != OldVersion:
 			Conflict = True
+			
+	for v in OldTestVersions:
+		if v != OldVersion:
+			Conflict = True
 	
 	if Conflict:
-		print 'Version conflict between files:'
+		print('Version conflict between files:')
 		for FileName, OldVersion in zip(FileNames, OldVersions):
-			print 'Changed %s from %d.%d.%d to %d.%d.%d' % tuple([FileName] + OldVersion + NewVersion)
+			print( 'Changed %s from %d.%d.%d to %d.%d.%d' % tuple([FileName] + OldVersion + NewVersion))
+		for TestFileName, OldTestVersion in zip(TestFileNames, OldTestVersions):
+			print( 'Changed %s from %d.%d.%d to %d.%d.%d' % tuple([TestFileName] + OldTestVersion + NewVersion))
 	else:
-		print 'Changed TexGen from version %d.%d.%d to version %d.%d.%d' % tuple(OldVersion + NewVersion)
+		print('Changed TexGen from version %d.%d.%d to version %d.%d.%d' % tuple(OldVersion + NewVersion))
 
 
 if __name__ == '__main__':
