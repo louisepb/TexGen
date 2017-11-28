@@ -1,5 +1,5 @@
 ; Set the current version, this should change at each release
-!define VERSION "3.9.0"
+!define VERSION "3.10.0"
 !include "LogicLib.nsh"
 !include "MUI.nsh"
 !include "x64.nsh"
