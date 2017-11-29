@@ -244,6 +244,7 @@ namespace TexGen
 		
 		/// Check if X yarn is binder or warp. Returns true if binder
 		bool IsBinderYarn( int index ) const;
+		
 		/// Find next cell in y direction which isn't a binder yarn
 		int FindNextCellIndex( int index ) const;
 		/// Find next cell in x direction which isn't a noyarn
@@ -411,6 +412,9 @@ namespace TexGen
 		void RemoveCell( int x, int y);
 		/// Check that all cells are populated
 		bool CheckCells() const;
+
+		/// Check if any binder yarns in weave
+		bool BinderYarns() const;
 		
 		/// Class for generating pattern draft from weave pattern
 		CPatternDraft m_PatternDraft;

@@ -303,6 +303,7 @@ bool CTextile3DWeave::BuildTextile() const
 
 	TGLOGINDENT("Building textile weave \"" << GetName() << "\"");
 
+	bool bBinderYarns = BinderYarns();
 	vector<int> Yarns;
 
 	double x, y, z;
@@ -360,7 +361,8 @@ bool CTextile3DWeave::BuildTextile() const
 				{
 					z += m_YYarnData[j%m_iNumYYarns].dHeight;
 				}
-				else //if ( k > 0 )// PATTERN3D_NOYARN and not on bottom binder layer
+				//else //if ( k > 0 )// PATTERN3D_NOYARN and not on bottom binder layer
+				else if ( ((k > 0 && k < (int)Cell.size()-1) && bBinderYarns) || !bBinderYarns  ) 
 				{
 					int CellType = NextCell[k];
 					if ( CellType == PATTERN3D_NOYARN )
@@ -410,20 +412,33 @@ bool CTextile3DWeave::BuildTextile() const
 			int NextCellIndex = FindNextCellIndex(i);
 			const vector<PATTERN3D> &NextCell = GetCell(j%m_iNumYYarns, NextCellIndex);
 			
-			for (k=0; k<(int)Cell.size(); ++k)
+			if ( !bBinderYarns )
 			{
-				int Count = 0;
-				if (Cell[k] == PATTERN3D_YYARN )
+				for (k=0; k<(int)Cell.size(); ++k)
 				{
-					Count++;
-					if ( Count > iYCount )   // Allow for partial weft yarns
+					int Count = 0;
+					if (Cell[k] == PATTERN3D_YYARN )
 					{
-						Yarns.push_back(AddYarn(CYarn()));
-						iYCount++;
+						Count++;
+						if ( Count > iYCount )   // Allow for partial weft yarns
+						{
+							Yarns.push_back(AddYarn(CYarn()));
+							iYCount++;
+						}
 					}
 				}
 			}
-			
+			else if ( i == 0 )
+			{
+				for (k=0; k<(int)Cell.size(); ++k)
+				{
+					if (Cell[k] == PATTERN3D_YYARN)
+					{
+						Yarns.push_back(AddYarn(CYarn()));
+					}
+				}
+			}
+
 			m_YYarns[j] = Yarns;
 			iYarn = 0;
 			y += m_XYarnData[i%m_iNumXYarns].dSpacing/2.0;
@@ -443,7 +458,8 @@ bool CTextile3DWeave::BuildTextile() const
 				{
 					z += m_XYarnData[i%m_iNumXYarns].dHeight;
 				}
-				else //if ( k > 0 ) // PATTERN3D_NOYARN and not on bottom binder layer
+				//else //if ( k > 0 ) // PATTERN3D_NOYARN and not on bottom binder layer
+				else if ( ((k > 0 && k < (int)Cell.size()-1) && bBinderYarns) || !bBinderYarns  ) 
 				{
 					int CellType = NextCell[k];
 					if ( CellType == PATTERN3D_NOYARN )
@@ -1712,6 +1728,16 @@ bool CTextile3DWeave::IsBinderYarn( int index ) const
 	return m_BinderPattern[index];
 }
 
+bool CTextile3DWeave::BinderYarns() const
+{
+	for ( int i = 0; i < m_BinderPattern.size(); ++i )
+	{
+		if ( m_BinderPattern[i] )
+			return true;
+	}
+	return false;
+}
+
 void CTextile3DWeave::SetWarpRatio( int iWarpRatio )
 { 
 	m_iWarpRatio = iWarpRatio; 
@@ -2058,9 +2084,14 @@ int CTextile3DWeave::AddWeftNodes( int CurrentNode, int XNode, int i, int j ) co
 	if ( iIndex < (int)Cell.size() - 1 )
 	{
 		WarpAboveCellIndex = FindWarpAboveIndex( Cell, iIndex );
-		WarpAboveIndex = GetYarnIndex( i, j, WarpAboveCellIndex );
-		if ( WarpAboveIndex >= 0 )
-			WarpAboveNode = m_Yarns[WarpAboveIndex].GetNode( XNode )->GetPosition();
+		if ( WarpAboveCellIndex != -1 )
+		{
+			WarpAboveIndex = GetYarnIndex( i, j, WarpAboveCellIndex );
+			if ( WarpAboveIndex >= 0 )
+				WarpAboveNode = m_Yarns[WarpAboveIndex].GetNode( XNode )->GetPosition();
+		}
+		else 
+			WarpAboveIndex = -1;
 	}
 	else
 		WarpAboveIndex = -1;
