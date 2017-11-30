@@ -33,9 +33,13 @@ namespace TexGen
 	{
 	public:
 		/**
-		The constructor should contain a vector of section names that are assigned to the nodes
-		in the order given in the vector. The number of sections should be equal to the number of
-		nodes minus. For periodic yarns the last section should be the same as the first
+		\param bRamped, bPolar  Specify how points are interpolated between master nodes using
+			CYarnSectionInterp::InterpolatePoints()
+			If bRamped is set to true, the interpolation fraction given to functions in GetInterpedSection
+			and GetInterpedSectionMesh will be ramped using a cubic equation. Where du = 0 at u = 0, and du = 0
+			at u = 1. This provides a smoother transition between sections when the interpolation begins and ends.
+		\param bConstMesh Defines whether all section meshes are forced to have same configuration
+			ie number of rows and columns in mesh
 		*/
 		CYarnSectionInterpNode(bool bRamped = true, bool bPolar = false, bool bConstMesh = true);
 		CYarnSectionInterpNode(TiXmlElement &Element);
