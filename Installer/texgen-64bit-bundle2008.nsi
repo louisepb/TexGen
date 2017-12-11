@@ -65,7 +65,7 @@ Section "TexGen (required)" ;No components page, name is not important
   SetOutPath $INSTDIR\Python\libstd
 
   ; This should contain all the standard python libraries (from the python package)
-  File /r Python26\Lib\*.*
+  File /r Python26_64bit\Lib\*.*
 
   SetOutPath $INSTDIR\Python\libxtra\TexGen
 
@@ -78,7 +78,7 @@ Section "TexGen (required)" ;No components page, name is not important
   File ..\Python\Lib\TexGenv2.py
   File ..\Python\Lib\WiseTex.py
   File ..\Python\Lib\dataHandling.py
-  File ..\Pythogn\Lib\dataHandlingInPlane.py
+  File ..\Python\Lib\dataHandlingInPlane.py
   File ..\Python\Lib\effectiveMatPropRVE.py
   File ..\Python\Lib\WeavePattern.py
   File ..\Python\Core.py
