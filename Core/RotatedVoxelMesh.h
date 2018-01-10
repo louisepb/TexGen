@@ -40,7 +40,7 @@ namespace TexGen
 		/// Outputs nodes to .inp file and gets element information
 		void OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus = true );
 
-		XY				m_RotatedVoxSize[3];
+		XYZ				m_RotatedVoxSize[3];
 		XYZ				m_StartPoint;
 
 	};

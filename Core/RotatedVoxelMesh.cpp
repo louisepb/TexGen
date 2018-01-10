@@ -41,23 +41,24 @@ CRotatedVoxelMesh::~CRotatedVoxelMesh(void)
 bool CRotatedVoxelMesh::CalculateVoxelSizes( CTextile &Textile )
 {
 	XYZ DomSize;
-	double Angle1, Angle2;
+	double Angle1, Angle2, Angle3;
 	CMesh Mesh = Textile.GetDomain()->GetMesh();
 
 	m_StartPoint = Mesh.GetNode(0);
 	XYZ Node4 = Mesh.GetNode(4);
 	XYZ Node2 = Mesh.GetNode(2);
+	XYZ Node1 = Mesh.GetNode(1);
 	DomSize.x = GetLength( m_StartPoint, Node4 );
 	DomSize.y = GetLength( m_StartPoint, Node2 );
-	DomSize.z = GetLength( m_StartPoint, Mesh.GetNode(1) );
-	Angle1 = atan2( Node4.y - m_StartPoint.y, Node4.x - m_StartPoint.x );
-	Angle2 = atan2( Node2.y - m_StartPoint.y, Node2.x - m_StartPoint.x );
+	DomSize.z = GetLength( m_StartPoint, Node1 );
 
-	m_RotatedVoxSize[0].x = DomSize.x * cos(Angle1) / m_XVoxels;
-	m_RotatedVoxSize[0].y = DomSize.x * sin(Angle1) / m_XVoxels;
-	m_RotatedVoxSize[1].x = DomSize.y * cos(Angle2) / m_YVoxels;
-	m_RotatedVoxSize[1].y = DomSize.y * sin(Angle2) / m_YVoxels;
-	m_RotatedVoxSize[2].x = m_RotatedVoxSize[2].y = DomSize.z / m_ZVoxels;
+	XYZ XVec = Node4 - m_StartPoint;
+	XYZ YVec = Node2 - m_StartPoint;
+	XYZ ZVec = Node1 - m_StartPoint;
+	m_RotatedVoxSize[0] = XVec / m_XVoxels;
+	m_RotatedVoxSize[1] = YVec / m_YVoxels;
+	m_RotatedVoxSize[2] = ZVec / m_ZVoxels;
+
 	return true;
 }
 
@@ -71,19 +72,18 @@ void CRotatedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAb
 	
 	for ( z = 0; z <= m_ZVoxels; ++z )
 	{
-		StartPoint.x = m_StartPoint.x;
-		StartPoint.y = m_StartPoint.y;
-		StartPoint.z = m_StartPoint.z + m_RotatedVoxSize[2].x * z;
+		StartPoint = m_StartPoint + m_RotatedVoxSize[2] * z;
+		
 		for ( y = 0; y <= m_YVoxels; ++y )
 		{
-			StartPoint.x = m_StartPoint.x + m_RotatedVoxSize[1].x * y;
-			StartPoint.y = m_StartPoint.y + m_RotatedVoxSize[1].y * y;
+			XYZ YStartPoint;
+			YStartPoint = StartPoint + m_RotatedVoxSize[1] * y;
+			
 			for ( x = 0; x <=m_XVoxels; ++x )
 			{
 				XYZ Point;
-				Point.x = StartPoint.x + m_RotatedVoxSize[0].x * x;
-				Point.y = StartPoint.y + m_RotatedVoxSize[0].y * x;
-				Point.z = StartPoint.z;
+				Point = YStartPoint + m_RotatedVoxSize[0] * x;
+				
 				Output << iNodeIndex << ", ";
 				Output << Point << endl;
 
@@ -91,9 +91,13 @@ void CRotatedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAb
 				{
 					Point.x += 0.5*m_RotatedVoxSize[0].x;
 					Point.x += 0.5*m_RotatedVoxSize[1].x;
+					Point.x += 0.5*m_RotatedVoxSize[2].x;
 					Point.y += 0.5*m_RotatedVoxSize[0].y;
 					Point.y += 0.5*m_RotatedVoxSize[1].y;
-					Point.z += 0.5*m_RotatedVoxSize[2].x;
+					Point.y += 0.5*m_RotatedVoxSize[2].y;
+					Point.z += 0.5*m_RotatedVoxSize[0].z;
+					Point.z += 0.5*m_RotatedVoxSize[1].z;
+					Point.z += 0.5*m_RotatedVoxSize[2].z;
 					CentrePoints.push_back(Point);
 				}
 				++iNodeIndex;
