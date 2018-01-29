@@ -1033,6 +1033,10 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 					Command << "Vox = CStaggeredVoxelMesh('CStaggeredPeriodicBoundaries')" << endl;
 					Command << "Vox.SetOffset(" << ConvertString(XOffset) << ")" << endl;
 				}
+				else if ( iBoundaryConditions == ROTATED_BC	)
+				{
+					Command << "Vox = CRotatedVoxelMesh('CRotatedPeriodicBoundaries')" << endl;
+				}
 				else
 					Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
 				Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << "," << ConvertString(YVoxels) << "," << ConvertString(ZVoxels) 

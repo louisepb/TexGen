@@ -432,7 +432,7 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 	Output << "***********************" << endl;
 	Output << "*Output, field" << endl;
 
-	bool bOutputTransverse = iBoundaryConditions == MATERIAL_CONTINUUM || iBoundaryConditions == SHEARED_BC;
+	bool bOutputTransverse = iBoundaryConditions == MATERIAL_CONTINUUM || iBoundaryConditions == SHEARED_BC || iBoundaryConditions == ROTATED_BC;
 
 	if ( iBoundaryConditions == SINGLE_LAYER_RVE || iBoundaryConditions == STAGGERED_BC )
 	{

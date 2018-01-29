@@ -58,6 +58,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TextileOffsetAngleInterlock.h"
 #include "ShearedPeriodicBoundaries.h"
 #include "StaggeredPeriodicBoundaries.h"
+#include "RotatedPeriodicBoundaries.h"
 #include "ShearedTextileWeave2D.h"
 #include "TextileLayered.h"
 #include "PatternDraft.h"
