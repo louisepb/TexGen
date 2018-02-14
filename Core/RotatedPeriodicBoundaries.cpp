@@ -140,7 +140,7 @@ void CRotatedPeriodicBoundaries::OutputEquations( ostream& Output, int iBoundary
 	Output << "5" << endl;
 	//Output << "Edge3, 1, 1.0, Edge1, 1, -1.0, ConstraintsDriver0, 1, <xx>, ConstraintsDriver3, 1, <xy>" << endl;
 	//Output << "ConstraintsDriver4, 1, <xz>, ConstraintsDriver0, 1, <yx>, ConstraintsDriver3, 1, <yy>, ConstraintsDriver4, 1, <yz>" << endl;
-	Output << "Edge3, 1, 1.0, Edge1, 1, -1.0, ConstraintsDriver0, 1, " << -1.0*(m_DispVec[0].x + m_DispVec[2].x) << ", ConstraintsDriver3, 1, " << -1.0*(m_DispVec[0].y + m_DispVec[1].y) << endl;
+	Output << "Edge3, 1, 1.0, Edge1, 1, -1.0, ConstraintsDriver0, 1, " << -1.0*(m_DispVec[0].x + m_DispVec[1].x) << ", ConstraintsDriver3, 1, " << -1.0*(m_DispVec[0].y + m_DispVec[1].y) << endl;
 	Output << "ConstraintsDriver4, 1, " << -1.0*(m_DispVec[0].z + m_DispVec[1].z) << endl;
 	Output << "*Equation" << endl;
 	Output << "4" << endl;
