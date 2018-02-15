@@ -125,6 +125,10 @@ void CRotatedPeriodicBoundaries::OutputEquations( ostream& Output, int iBoundary
 	Output << "ConstraintsDriver2, 1, <zz>" << endl;
 
 	Output << "************************************************" << endl;
+	Output << "*** There seems to be an issue with using parameterised variables for repeated constraints " << endl;
+	Output << "*** ABAQUS should be able to combine these but it generates a system error, reported in the .dat file " << endl;
+	Output << "*** Only solution for this found is to add the values before exporting to the .inp file "  << endl;
+	Output << "*** Comments in following sections show which parameters have been added " << endl;
 	Output << "*Equation" << endl;
 	Output << "5" << endl;
 	Output << "Edge2, 1, 1.0, Edge1, 1, -1.0, ConstraintsDriver0, 1, <xx>, ConstraintsDriver3, 1, <xy>" << endl;
@@ -136,16 +140,18 @@ void CRotatedPeriodicBoundaries::OutputEquations( ostream& Output, int iBoundary
 	Output << "3" << endl;
 	Output << "Edge2, 3, 1.0, Edge1, 3, -1.0, ConstraintsDriver2, 1, <xz>" << endl;
 
+	Output << "*** ConstraintsDriver0 <xx> + <yx>" << endl;
+	Output << "*** ConstraintsDriver3 <xy> + <yy>" << endl;
+	Output << "*** ConstraintsDriver4 <xz> + <yz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "5" << endl;
-	//Output << "Edge3, 1, 1.0, Edge1, 1, -1.0, ConstraintsDriver0, 1, <xx>, ConstraintsDriver3, 1, <xy>" << endl;
-	//Output << "ConstraintsDriver4, 1, <xz>, ConstraintsDriver0, 1, <yx>, ConstraintsDriver3, 1, <yy>, ConstraintsDriver4, 1, <yz>" << endl;
 	Output << "Edge3, 1, 1.0, Edge1, 1, -1.0, ConstraintsDriver0, 1, " << -1.0*(m_DispVec[0].x + m_DispVec[1].x) << ", ConstraintsDriver3, 1, " << -1.0*(m_DispVec[0].y + m_DispVec[1].y) << endl;
 	Output << "ConstraintsDriver4, 1, " << -1.0*(m_DispVec[0].z + m_DispVec[1].z) << endl;
+	
+	Output << "*** ConstraintsDriver1 <xy> + <yy>" << endl;
+	Output << "*** ConstraintsDriver5 <xz> + <yz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "4" << endl;
-	//Output << "Edge3, 2, 1.0, Edge1, 2, -1.0, ConstraintsDriver1, 1, <xy>, ConstraintsDriver5, 1, <xz>" << endl;
-	//Output << "ConstraintsDriver1, 1, <yy>, ConstraintsDriver5, 1, <yz>" << endl;
 	Output << "Edge3, 2, 1.0, Edge1, 2, -1.0, ConstraintsDriver1, 1, " << -1.0*(m_DispVec[0].y + m_DispVec[1].y) << ", ConstraintsDriver5, 1, "<< -1.0*(m_DispVec[0].z + m_DispVec[1].z)  << endl;
 	Output << "*Equation" << endl;
 	Output << "3" << endl;
@@ -175,19 +181,19 @@ void CRotatedPeriodicBoundaries::OutputEquations( ostream& Output, int iBoundary
 	Output << "Edge6, 3, 1.0, Edge5, 3, -1.0" << endl;
 	Output << "ConstraintsDriver2, 1, <xz>" << endl;
 
+	Output << "*** ConstraintsDriver0 <xx> + <zx>" << endl;
+	Output << "*** ConstraintsDriver3 <xy> + <zy>" << endl;
+	Output << "*** ConstraintsDriver4 <xz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "5" << endl;
-	//Output << "Edge7, 1, 1.0, Edge5, 1, -1.0, ConstraintsDriver0, 1, <xx>" << endl;
-	//Output << "ConstraintsDriver3, 1, <xy>, ConstraintsDriver4, 1, <xz>" << endl;
-	//Output << "ConstraintsDriver0, 1, <zx>" << endl;
-	//Output << "ConstraintsDriver3, 1, <zy>, ConstraintsDriver4, 1, <zz>" << endl;
 	Output << "Edge7, 1, 1.0, Edge5, 1, -1.0, ConstraintsDriver0, 1, " << -1.0*(m_DispVec[0].x + m_DispVec[2].x) << endl;
 	Output << "ConstraintsDriver3, 1, " << -1.0*(m_DispVec[0].y + m_DispVec[2].y) << ", ConstraintsDriver4, 1, " << -1.0*(m_DispVec[0].z + m_DispVec[2].z) << endl;
+	
+	Output << "*** ConstraintsDriver1 <xy> + <zy>" << endl;
+	Output << "*** ConstraintsDriver5 <xz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "4" << endl;
 	Output << "Edge7, 2, 1.0, Edge5, 2, -1.0" << endl;
-	//Output << "ConstraintsDriver1, 1, <xy>, ConstraintsDriver5, 1, <xz>" << endl;
-	//Output << "ConstraintsDriver1, 1, <zy>, ConstraintsDriver5, 1, <zz>" << endl;
 	Output << "ConstraintsDriver1, 1, " << -1.0*(m_DispVec[0].y + m_DispVec[2].y) << ", ConstraintsDriver5, 1, " << -1.0*(m_DispVec[0].z + m_DispVec[2].z) << endl;
 	Output << "*Equation" << endl;
 	Output << "3" << endl;
@@ -220,19 +226,19 @@ void CRotatedPeriodicBoundaries::OutputEquations( ostream& Output, int iBoundary
 	Output << "Edge10, 3, 1.0, Edge9, 3, -1.0" << endl;
 	Output << "ConstraintsDriver2, 1, <yz>" << endl;
 
+	Output << "*** ConstraintsDriver0 <yx> + <zx>" << endl;
+	Output << "*** ConstraintsDriver3 <yy> + <zy>" << endl;
+	Output << "*** ConstraintsDriver4 <yz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "5" << endl;
-	//Output << "Edge11, 1, 1.0, Edge9, 1, -1.0,ConstraintsDriver0, 1, <yx>" << endl;
-	//Output << "ConstraintsDriver3, 1, <yy>, ConstraintsDriver4, 1, <yz>" << endl;
-	//Output << "ConstraintsDriver0, 1, <zx>" << endl;
-	//Output << "ConstraintsDriver3, 1, <zy>, ConstraintsDriver4, 1, <zz>" << endl;
 	Output << "Edge11, 1, 1.0, Edge9, 1, -1.0, ConstraintsDriver0, 1, " << -1.0*(m_DispVec[1].x + m_DispVec[2].x) << endl;
 	Output << "ConstraintsDriver3, 1, " << -1.0*(m_DispVec[1].y + m_DispVec[2].y) << ", ConstraintsDriver4, 1, " << -1.0*(m_DispVec[1].z + m_DispVec[2].z) << endl;
+	
+	Output << "*** ConstraintsDriver1 <yy> + <zy>" << endl;
+	Output << "*** ConstraintsDriver5 <yz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "4" << endl;
 	Output << "Edge11, 2, 1.0, Edge9, 2, -1.0" << endl;
-	//Output << "ConstraintsDriver1, 1, <yy>, ConstraintsDriver5, 1, <yz>" << endl;
-	//Output << "ConstraintsDriver1, 1, <zy>, ConstraintsDriver5, 1, <zz>" << endl;
 	Output << "ConstraintsDriver1, 1, " << -1.0*(m_DispVec[1].y + m_DispVec[2].y) << ", ConstraintsDriver5, 1, " << -1.0*(m_DispVec[1].z + m_DispVec[2].z) << endl;
 	Output << "*Equation" << endl;
 	Output << "3" << endl;
@@ -264,11 +270,11 @@ void CRotatedPeriodicBoundaries::OutputEquations( ostream& Output, int iBoundary
 	Output << "3" << endl;
 	Output << "MasterNode2, 3, 1.0, MasterNode1, 3, -1.0, ConstraintsDriver2, 1, <xz>" << endl;
 
+	Output << "*** ConstraintsDriver0 <xx> + <yx>" << endl;
+	Output << "*** ConstraintsDriver3 <xy> + <yy>" << endl;
+	Output << "*** ConstraintsDriver4 <xz> + <yz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "5" << endl;
-	//Output << "MasterNode3, 1, 1.0, MasterNode1, 1, -1.0, ConstraintsDriver0, 1, <xx>, ConstraintsDriver3, 1, <xy>" << endl;
-	//Output << "ConstraintsDriver4, 1, <xz>, ConstraintsDriver0, 1, <yx>, ConstraintsDriver3, 1, <yy>" << endl;
-	//Output << "ConstraintsDriver4, 1, <yz>" << endl;
 	Output << "MasterNode3, 1, 1.0, MasterNode1, 1, -1.0, ConstraintsDriver0, 1, " << -1.0*(m_DispVec[0].x + m_DispVec[1].x) << ", ConstraintsDriver3, 1, " << -1.0*(m_DispVec[0].y + m_DispVec[1].y) << endl;
 	Output << "ConstraintsDriver4, 1, " << -1.0*(m_DispVec[0].z + m_DispVec[1].z) << endl;
 	Output << "*Equation" << endl;
@@ -303,64 +309,64 @@ void CRotatedPeriodicBoundaries::OutputEquations( ostream& Output, int iBoundary
 	Output << "MasterNode5, 3, 1.0, MasterNode1, 3, -1.0" << endl;
 	Output << "ConstraintsDriver2, 1, <zz>" << endl;
 
+	Output << "*** ConstraintsDriver0 <xx> + <zx>" << endl;
+	Output << "*** ConstraintsDriver3 <xy> + <zy>" << endl;
+	Output << "*** ConstraintsDriver4 <xz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "5" << endl;
-	//Output << "MasterNode6, 1, 1.0, MasterNode1, 1, -1.0, ConstraintsDriver0, 1, <xx>" << endl;
-	//Output << "ConstraintsDriver3, 1, <xy>, ConstraintsDriver4, 1, <xz>" << endl;
-	//Output << "ConstraintsDriver0, 1, <zx>" << endl;
-	//Output << "ConstraintsDriver3, 1, <zy>, ConstraintsDriver4, 1, <zz>" << endl;
 	Output << "MasterNode6, 1, 1.0, MasterNode1, 1, -1.0, ConstraintsDriver0, 1, " << -1.0*(m_DispVec[0].x + m_DispVec[2].x) << endl;
 	Output << "ConstraintsDriver3, 1, " << -1.0*(m_DispVec[0].y + m_DispVec[2].y) << ", ConstraintsDriver4, 1, " << -1.0*(m_DispVec[0].z + m_DispVec[2].z) << endl;
+	
+	Output << "*** ConstraintsDriver1 <xy> + <zy>" << endl;
+	Output << "*** ConstraintsDriver5 <xz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "4" << endl;
 	Output << "MasterNode6, 2, 1.0, MasterNode1, 2, -1.0" << endl;
-	//Output << "ConstraintsDriver1, 1, <xy>, ConstraintsDriver5, 1, <xz>" << endl;
-	//Output << "ConstraintsDriver1, 1, <zy>, ConstraintsDriver5, 1, <zz>" << endl;
 	Output << "ConstraintsDriver1, 1, " << -1.0*(m_DispVec[0].y + m_DispVec[2].y) << ", ConstraintsDriver5, 1, " << -1.0*(m_DispVec[0].z + m_DispVec[2].z) << endl;
+	
+	Output << "*** ConstraintsDriver2 <xz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "3" << endl;
 	Output << "MasterNode6, 3, 1.0, MasterNode1, 3, -1.0" << endl;
-	//Output << "ConstraintsDriver2, 1, <xz>" << endl;
-	//Output << "ConstraintsDriver2, 1, <zz>" << endl;
 	Output << "ConstraintsDriver2, 1, " << -1.0*(m_DispVec[0].z + m_DispVec[2].z) << endl;
 	
+	Output << "*** ConstraintsDriver0 <xx> + <yx> +<zx>" << endl;
+	Output << "*** ConstraintsDriver3 <xy> + <yy> + <zy>" << endl;
+	Output << "*** ConstraintsDriver4 <xz> + <yz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "5" << endl;
-	//Output << "MasterNode7, 1, 1.0, MasterNode1, 1, -1.0, Cons-1.0*(traintsDriver0, 1, <xx>, ConstraintsDriver3, 1, <xy>" << endl;
-	//Output << "ConstraintsDriver4, 1, <xz>, ConstraintsDriver0, 1, <yx>, ConstraintsDriver3, 1, <yy>" << endl;
-	//Output << "ConstraintsDriver4, 1, <yz>, ConstraintsDriver0, 1, <zx>" << endl;
-	//Output << "ConstraintsDriver3, 1, <zy>, ConstraintsDriver4, 1, <zz>" << endl;
 	Output << "MasterNode7, 1, 1.0, MasterNode1, 1, -1.0, ConstraintsDriver0, 1, " << -1.0*(m_DispVec[0].x + m_DispVec[1].x + m_DispVec[2].x) << " , ConstraintsDriver3, 1, " << -1.0*(m_DispVec[0].y + m_DispVec[1].y + m_DispVec[2].y) << endl;
 	Output << "ConstraintsDriver4, 1, " << -1.0*(m_DispVec[0].z + m_DispVec[1].z + m_DispVec[2].z)<< endl;
+	
+	Output << "*** ConstraintsDriver1 <xy> + <yy> + <zy>" << endl;
+	Output << "*** ConstraintsDriver5 <xz> + <yz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "4" << endl;
-	//Output << "MasterNode7, 2, 1.0, MasterNode1, 2, -1.0, ConstraintsDriver1, 1, <xy>, ConstraintsDriver5, 1, <xz>" << endl;
-	//Output << "ConstraintsDriver1, 1, <yy>, ConstraintsDriver5, 1, <yz>, ConstraintsDriver1, 1, <zy>, ConstraintsDriver5, 1, <zz>" << endl;
 	Output << "MasterNode7, 2, 1.0, MasterNode1, 2, -1.0, ConstraintsDriver1, 1, " <<  -1.0*(m_DispVec[0].y + m_DispVec[1].y + m_DispVec[2].y) << ", ConstraintsDriver5, 1, " << -1.0*(m_DispVec[0].z + m_DispVec[1].z + m_DispVec[2].z)<< endl;
+	
+	Output << "*** ConstraintsDriver2 <xz> + <yz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "3" << endl;
-	//Output << "MasterNode7, 3, 1.0, MasterNode1, 3, -1.0, ConstraintsDriver2, 1, <xz>" << endl;
-	//Output << "ConstraintsDriver2, 1, <yz>, ConstraintsDriver2, 1, <zz>" << endl;
 	Output << "MasterNode7, 3, 1.0, MasterNode1, 3, -1.0, ConstraintsDriver2, 1, " << -1.0*(m_DispVec[0].z + m_DispVec[1].z + m_DispVec[2].z) << endl;
 
+	Output << "*** ConstraintsDriver0 <yx> + <zx>" << endl;
+	Output << "*** ConstraintsDriver3 <yy> + <zy>" << endl;
+	Output << "*** ConstraintsDriver4 <yz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "5" << endl;
-	//Output << "MasterNode8, 1, 1.0, MasterNode1, 1, -1.0,ConstraintsDriver0, 1, <yx>" << endl;
-	//Output << "ConstraintsDriver3, 1, <yy>, ConstraintsDriver4, 1, <yz>" << endl;
-	//Output << "ConstraintsDriver0, 1, <zx>" << endl;
-	//Output << "ConstraintsDriver3, 1, <zy>, ConstraintsDriver4, 1, <zz>" << endl;
 	Output << "MasterNode8, 1, 1.0, MasterNode1, 1, -1.0, ConstraintsDriver0, 1, " << -1.0*(m_DispVec[1].x + m_DispVec[2].x) << endl;
 	Output << "ConstraintsDriver3, 1, " << -1.0*(m_DispVec[1].y + m_DispVec[2].y) << ", ConstraintsDriver4, 1, " << -1.0*(m_DispVec[1].z + m_DispVec[2].z) << endl;
+	
+	Output << "*** ConstraintsDriver1 <yy> + <zy>" << endl;
+	Output << "*** ConstraintsDriver5 <yz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "4" << endl;
 	Output << "MasterNode8, 2, 1.0, MasterNode1, 2, -1.0" << endl;
-	//Output << "ConstraintsDriver1, 1, <yy>, ConstraintsDriver5, 1, <yz>" << endl;
-	//Output << "ConstraintsDriver1, 1, <zy>, ConstraintsDriver5, 1, <zz>" << endl;
 	Output << "ConstraintsDriver1, 1, " << -1.0*(m_DispVec[1].y + m_DispVec[2].y) << " , ConstraintsDriver5, 1, " << -1.0*(m_DispVec[1].z + m_DispVec[2].z) << endl;
+	
+	Output << "*** ConstraintsDriver2 <yz> + <zz>" << endl;
 	Output << "*Equation" << endl;
 	Output << "3" << endl;
 	Output << "MasterNode8, 3, 1.0, MasterNode1, 3, -1.0" << endl;
-	//Output << "ConstraintsDriver2, 1, <yz>" << endl;
-	//Output << "ConstraintsDriver2, 1, <zz>" << endl;
 	Output << "ConstraintsDriver2, 1, " << -1.0*(m_DispVec[1].z + m_DispVec[2].z) << endl;
 }
