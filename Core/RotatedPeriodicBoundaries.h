@@ -23,7 +23,7 @@ namespace TexGen
 {
 	using namespace std;
 
-	/// Class used to generate Abaqus input file for periodic boundary conditions for a textile with sheared domain. Note that equations are only valid for xy shear 
+	/// Class used to generate Abaqus input file for periodic boundary conditions for a textile with rotated domain. 
 	class CLASS_DECLSPEC CRotatedPeriodicBoundaries : public CPeriodicBoundaries
 	{
 	public:
@@ -36,6 +36,7 @@ namespace TexGen
 	private:
 		/// Output equations for rotated domain boundary conditions
 		void OutputEquations( ostream& Output, int iBoundaryConditions );
+		/// Displacement vectors for the three axes
 		XYZ m_DispVec[3];
 	};
 }; // namespace TexGen

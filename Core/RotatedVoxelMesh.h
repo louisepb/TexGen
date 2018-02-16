@@ -26,7 +26,7 @@ namespace TexGen
 
 	class CTextile;	
 
-	/// Class used to generate voxel mesh for output to ABAQUS
+	/// Class used to generate voxel mesh of rotated domain for output to ABAQUS
 	class CLASS_DECLSPEC CRotatedVoxelMesh : public CVoxelMesh
 	{
 	public:
