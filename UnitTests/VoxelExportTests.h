@@ -28,6 +28,7 @@ class CVoxelExportTests : public CppUnit::TestFixture
 {
 	CPPUNIT_TEST_SUITE(CVoxelExportTests);
 	CPPUNIT_TEST(TestContinuumExport);
+	CPPUNIT_TEST(TestRotatedExport);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -36,6 +37,7 @@ public:
 
 protected:
 	void TestContinuumExport();
+	void TestRotatedExport();
 
 	CTextileFactory m_TextileFactory;
 };

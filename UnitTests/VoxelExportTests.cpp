@@ -40,3 +40,17 @@ void CVoxelExportTests::TestContinuumExport()
 	// Compare to template file
 	CPPUNIT_ASSERT(CompareFiles("VoxelContinuumTest.inp","..\\..\\UnitTests\\VoxelContinuumTest.inp"));
 }
+
+void CVoxelExportTests::TestRotatedExport()
+{
+	CTextile Textile = m_TextileFactory.GetSingleYarn(3, 20);
+	Textile.Rotate(WXYZ(XYZ(0,0,1), PI/4.0));
+	CDomain* Domain = Textile.GetDomain();
+	Domain->Rotate(WXYZ(XYZ(0,0,1), PI/4.0));
+
+	CRotatedVoxelMesh Vox("CRotatedPeriodicBoundaries");
+	// Save yarns and matrix
+	Vox.SaveVoxelMesh(Textile,"RotatedVoxelMeshTest",10,10,10,true,true, ROTATED_BC );
+	// Compare to template file
+	CPPUNIT_ASSERT(CompareFiles("RotatedVoxelMeshTest.inp","..\\..\\UnitTests\\RotatedVoxelMeshTest.inp"));
+}
