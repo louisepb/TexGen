@@ -210,6 +210,7 @@
 								<item>Single Layer RVE</item>
 								<item>Staggered (Reduced Domain)</item>
 								<item>Sheared Domain</item>
+								<item>Rotated Domain</item>
 								<item>None</item>
 							</content>
 							<dimension>1</dimension>

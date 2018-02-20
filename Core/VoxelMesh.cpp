@@ -34,6 +34,8 @@ CVoxelMesh::CVoxelMesh(string Type)
 		m_PeriodicBoundaries = new CShearedPeriodicBoundaries;
 	else if ( Type == "CStaggeredPeriodicBoundaries" )
 		m_PeriodicBoundaries = new CStaggeredPeriodicBoundaries;
+	else if ( Type == "CRotatedPeriodicBoundaries" )
+		m_PeriodicBoundaries = new CRotatedPeriodicBoundaries;
 	else
 		m_PeriodicBoundaries = new CPeriodicBoundaries;
 }

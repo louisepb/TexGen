@@ -189,6 +189,7 @@ namespace std
 %include "../Core/RectangularVoxelMesh.h"
 %include "../Core/ShearedVoxelMesh.h"
 %include "../Core/StaggeredVoxelMesh.h"
+%include "../Core/RotatedVoxelMesh.h"
 %include "../Core/TetgenMesh.h"
 %include "../Core/PeriodicBoundaries.h"
 %include "../Core/ShearedPeriodicBoundaries.h"
