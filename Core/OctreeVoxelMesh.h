@@ -75,7 +75,8 @@ namespace TexGen
 		static vector< vector<int> > FaceZ_max;
 
 		static CTextile gTextile;
-		static pair<XYZ, XYZ>	g_DomainAABB;
+		static pair<XYZ, XYZ> g_DomainAABB;
+		static vector<char> materialInfo; 
 
 		/** Save Octree-refined mesh with an option of surface smoothing
 		\param int min_level
@@ -130,13 +131,17 @@ namespace TexGen
 		void fillMaterialInfo();
 		int isBoundary(double p[3]);
 
+		void storePointInfo(int refineLevel);
+		static int getPointsInfo(vector<XYZ> myPoints, int refineLevel);
+
+		//int refine_fn_uni(p4est_t * p4est, p4est_topidx_t which_tree, p4est_quadrant_t * quadrant);
 		static int refine_fn_uni(p4est_t * p4est, p4est_topidx_t which_tree, p4est_quadrant_t * quadrant);
 		static int refine_fn_periodic(p4est_t * p4est, p4est_topidx_t which_tree, p4est_quadrant_t * quadrant);
 		static int refine_fn_post(p4est_t * p4est, p4est_topidx_t which_tree, p4est_quadrant_t * quadrant);
 		static int refine_fn(p4est_t * p4est, p4est_topidx_t which_tree, p4est_quadrant_t * quadrant);
 
-		void extractSurfaceNodeSets(std::map< int, vector<int> > &NodeSurf, vector<int> &AllSurf);
-		void OutputSurfaces(const std::map<int, vector<int> > &NodeSurf, const vector<int> &AllSurf);
+		void extractSurfaceNodeSets(std::map< int, vector<int> > &NodeSurf, std::vector<int> &AllSurf);
+		void OutputSurfaces(const std::map<int, vector<int> > &NodeSurf, const std::vector<int> &AllSurf);
 		
 		p4est_t *p4est;
 		p4est_connectivity_t *conn;
@@ -152,6 +157,7 @@ namespace TexGen
 
 		vector< vector<int> > MaterialElements;
 		vector<Point> boundaryPoints;
+
 
 		bool bSmooth;
 		bool bSurface;

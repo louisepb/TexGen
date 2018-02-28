@@ -79,6 +79,7 @@ vector<vector<int>> COctreeVoxelMesh::FaceZ_max;
 
 CTextile COctreeVoxelMesh::gTextile;
 pair<XYZ, XYZ>	COctreeVoxelMesh::g_DomainAABB;
+vector<char> COctreeVoxelMesh::materialInfo; 
 
 // Tolerance is quarter of the max refinement
 int my_comparison(double x, double y) 
@@ -537,7 +538,7 @@ int COctreeVoxelMesh::refine_fn(p4est_t * p4est, p4est_topidx_t which_tree, p4es
 		}
 	}
 
-	double coef = 0.99;
+	double coef = 1.01;
 	vector<XYZ> ExtraPoints;
 	for (int i = 0; i < 8; i++) {
 		XYZ NewPoint;
@@ -549,9 +550,13 @@ int COctreeVoxelMesh::refine_fn(p4est_t * p4est, p4est_topidx_t which_tree, p4es
 	ExtraPoints.push_back(XYZ(cx, cy, cz));
 	CornerPoints.push_back(XYZ(cx, cy, cz));
 
+	if (getPointsInfo(CornerPoints, max_level ) == 1 || getPointsInfo(ExtraPoints, max_level) == 1 )
+		return 1;
+
+	/*
 	CornerInfo.clear();
-	//gTextile.GetPointInformation( CornerPoints, CornerInfo );
-	gTextile.GetPointInformation( ExtraPoints, CornerInfo );
+	gTextile.GetPointInformation( CornerPoints, CornerInfo );
+	//gTextile.GetPointInformation( ExtraPoints, CornerInfo );
 	vector<POINT_INFO>::iterator itData;
 	int temp, i;
 	for (itData = CornerInfo.begin(), i = 1; itData != CornerInfo.end(); ++itData, ++i) {
@@ -562,6 +567,7 @@ int COctreeVoxelMesh::refine_fn(p4est_t * p4est, p4est_topidx_t which_tree, p4es
 			refine = 1;
 		}
 	}
+	*/
 
 /*	if (my_comparison(z_min, g_DomainAABB.first.z) && refine == 1) {
 		int loc_x_min, loc_x_max, loc_y_min, loc_y_max;
@@ -648,7 +654,7 @@ int COctreeVoxelMesh::refine_fn(p4est_t * p4est, p4est_topidx_t which_tree, p4es
 		}
 	}
 	*/
-	return refine;
+	return 0;
 }
 
 // After main refinement is done we want to ensure that there are no hanging nodes at the surface
@@ -666,14 +672,12 @@ int COctreeVoxelMesh::refine_fn_post(p4est_t * p4est, p4est_topidx_t which_tree,
 	CentrePoint.z = 0;
 
 	// We do not want to refine deeper than a given maximum level. 
-
-
 	if (quadrant->level > max_level -1) {
 		return 0;
 	}
 
-	double coef = 1.51;
-	int trig = 0;
+	
+	//int trig = 0;
 	for (int i = 0; i < 8; i++) {
 		p4est_quadrant_corner_node(quadrant, i, &node_quadrant);
 		p4est_qcoord_to_vertex (p4est->connectivity, which_tree, node_quadrant.x, node_quadrant.y, node_quadrant.z, vxyz);
@@ -689,11 +693,13 @@ int COctreeVoxelMesh::refine_fn_post(p4est_t * p4est, p4est_topidx_t which_tree,
 	}
 
 	ExtraPoints.push_back(CentrePoint);
+	double coef = 2.01;
 	for (int i = 0; i < 8; i++) {
 		XYZ NewPoint;
-		NewPoint.x = (CornerPoints[i].x - CentrePoint.x)*coef + CentrePoint.x;
-		NewPoint.y = (CornerPoints[i].y - CentrePoint.y)*coef + CentrePoint.y;
-		NewPoint.z = (CornerPoints[i].z - CentrePoint.z)*coef + CentrePoint.z;
+		//NewPoint.x = (CornerPoints[i].x - CentrePoint.x)*coef + CentrePoint.x;
+		//NewPoint.y = (CornerPoints[i].y - CentrePoint.y)*coef + CentrePoint.y;
+		//NewPoint.z = (CornerPoints[i].z - CentrePoint.z)*coef + CentrePoint.z;
+		NewPoint = (CornerPoints[i] - CentrePoint)*coef + CentrePoint;
 		ExtraPoints.push_back(NewPoint);
 
 		NewPoint.x = (CornerPoints[i].x - CentrePoint.x)*coef + CentrePoint.x;
@@ -736,6 +742,9 @@ int COctreeVoxelMesh::refine_fn_post(p4est_t * p4est, p4est_topidx_t which_tree,
 		ExtraPoints.push_back(NewPoint);
 	}
 	
+	if (getPointsInfo(ExtraPoints, max_level) == 1)
+		return 1;
+	/*
 	ExtraInfo.clear();
 	gTextile.GetPointInformation( ExtraPoints, ExtraInfo );
 	vector<POINT_INFO>::iterator itData;
@@ -748,7 +757,7 @@ int COctreeVoxelMesh::refine_fn_post(p4est_t * p4est, p4est_topidx_t which_tree,
 			return 1;
 		}
 	}
-
+	*/
 	return 0;
 }
 
@@ -768,6 +777,118 @@ pair<int, int> most_common(vector<int> v) {
 
 	return std::make_pair(mostVal, mostCount);
 }
+
+// Return 1 is at least one of the points is not the same material as others
+// Return 0 is all the points are from the same materials
+int COctreeVoxelMesh::getPointsInfo(vector<XYZ> myPoints, int refineLevel)
+{
+	double x0 = g_DomainAABB.first.x;
+	double y0 = g_DomainAABB.first.y;
+	double z0 = g_DomainAABB.first.z;
+	double x_length = g_DomainAABB.second.x - x0;
+	double y_length = g_DomainAABB.second.y - y0;
+	double z_length = g_DomainAABB.second.z - z0;
+	
+	double dx = x_length / pow(2, refineLevel);
+	double dy = y_length / pow(2, refineLevel);
+	double dz = z_length / pow(2, refineLevel);
+
+	int num = pow(2, refineLevel) + 1;
+
+	int row_len = num;
+	int layer_len = num * num;
+
+	vector<XYZ>::const_iterator itPoint;
+	int previousMaterial;
+	int i = 0;
+
+	for (itPoint = myPoints.begin(); itPoint != myPoints.end(); ++itPoint)
+	{
+		double x = itPoint->x; 
+		double y = itPoint->y;
+		double z = itPoint->z;
+
+		if ( x > x0 + x_length )
+			x -= x_length;
+
+		if ( x < x0 )
+			x += x_length;
+
+		if ( y > y0 + y_length )
+			y -= y_length;
+
+		if ( y < y0 )
+			y += y_length;
+
+		if ( z > z0 + z_length )
+			z -= z_length;
+
+		if ( z < z0 )
+			z += z_length;
+
+		int index_i = ( (x - x0)/ dx - floor((x - x0) / dx) >= 0.5 ) ? ceil((x - x0) / dx) : floor((x - x0) / dx);
+		int index_j = ( (y - y0)/ dy - floor((y - y0) / dy) >= 0.5 ) ? ceil((y - y0) / dy) : floor((y - y0) / dy);
+		int index_k = ( (z - z0)/ dz - floor((z - z0) / dz) >= 0.5 ) ? ceil((z - z0) / dz) : floor((z - z0) / dz);
+
+		if ( index_i + row_len * index_j + layer_len * index_k > num * num * num || index_i + row_len * index_j + layer_len * index_k < 0)
+		{
+			TGERROR("Something is not right - index is outside of stored info");
+			TGERROR("X, Y, Z: " << x << ", " << y << ", " << z);
+			return 0;
+		}
+
+		//TGLOG("X: " << x << "(" << index_i << "), Y: " << y << "(" << index_j << "), Z: " << z << "(" << index_k << ")");
+
+		if (i == 0)
+			previousMaterial = materialInfo[index_i + row_len * index_j + layer_len * index_k];
+
+		if (i > 0 && previousMaterial != materialInfo[index_i + row_len * index_j + layer_len * index_k] )
+			return 1;
+
+		i++;
+	}
+	
+	return 0;
+}
+
+void COctreeVoxelMesh::storePointInfo(int refineLevel)
+{
+	vector<XYZ> myPoints;
+	vector<POINT_INFO> temp;
+	double x0 = g_DomainAABB.first.x;
+	double y0 = g_DomainAABB.first.y;
+	double z0 = g_DomainAABB.first.z;
+	double x_length = g_DomainAABB.second.x - x0;
+	double y_length = g_DomainAABB.second.y - y0;
+	double z_length = g_DomainAABB.second.z - z0;
+	
+	double dx = x_length / pow(2, refineLevel);
+	double dy = y_length / pow(2, refineLevel);
+	double dz = z_length / pow(2, refineLevel);
+
+	int num = pow(2, refineLevel) + 1;
+
+	for (int k = 0; k < num; k++)
+		for (int j = 0; j < num; j++)
+			for (int i = 0; i < num; i++)
+				myPoints.push_back(XYZ(x0 + dx*i, y0 + dy*j, z0 + dz*k));
+	
+	temp.clear();
+	gTextile.GetPointInformation(myPoints,temp);
+
+	vector<POINT_INFO>::const_iterator itInfo;
+
+	materialInfo.clear();
+	TGLOG("Infos " << myPoints.size());
+
+	for (itInfo = temp.begin(); itInfo != temp.end(); ++itInfo)
+		materialInfo.push_back(itInfo->iYarnIndex);
+	
+	TGLOG("Info stored. Elements = " << materialInfo.size());
+	temp.clear();
+}
+
+
 
 void COctreeVoxelMesh::fillMaterialInfo() {
 	vector <XYZ> myPoints;
@@ -833,7 +954,6 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 	//conn = p8est_connectivity_new_unitcube ();
 	//p4est = p4est_new (mpicomm, conn, 0, NULL, NULL);
 
-	//
 	int len = pow(2, max_level);
 	for (int i = 0; i < len + 1; i++) {
 		vector<int> temp(len, 0);
@@ -848,6 +968,10 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 	if (writeTempFile("temp_octree.inp", m_DomainAABB) == -1) {
 		return -1;
 	}
+
+	storePointInfo(max_level);
+	
+	TGLOG("Stored");
 
 	// Create a forest from the inp file
 	conn = p4est_connectivity_read_inp ("temp_octree.inp");
@@ -875,8 +999,10 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 	// P4EST_CONNECT_FULL is used for 2:1 balancing across all faces, edges and corners
 	p4est_balance (p4est, P4EST_CONNECT_FULL, NULL);
 	p4est_partition (p4est, 0, NULL);
+	TGLOG("Post-refinement now");
 
 	// Post refinement is needed to have the boundaries of the inclusions to be represented by the smallest refinement only
+	
 	for (int i = 0; i < 3; i++) {
 		p4est_refine (p4est, 0, refine_fn_post, NULL);
 		//p4est_refine (p4est, 1, refine_fn_periodic, NULL);
@@ -884,6 +1010,8 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 		p4est_balance (p4est, P4EST_CONNECT_FULL, NULL);
 		p4est_partition (p4est, 0, NULL);	
 	}
+
+	materialInfo.clear();
 
 	return 0;
 }
@@ -923,10 +1051,11 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 	timer.start("Starting octree refinement...");
 	if (CreateP4ESTRefinement(min_level, refine_level) == -1)
 		return;
+	
+	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, 1, 1, 1, true, true, 1);
+
 	timer.check("Octree refinement finished");
 	timer.stop();
-
-	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, 1, 1, 1, true, true, 1);
 }
 
 COctreeVoxelMesh::~COctreeVoxelMesh(void)
@@ -1093,16 +1222,19 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus )
 {
 	CTimer timer;
-	timer.start("Converting octree to nodes coordinates");
+	//timer.start("Starting octree refinement");
+	TGLOG("Converting octree to nodes coordinates");
 	ConvertOctreeToNodes();
-	timer.check("Octree converted");
-	timer.stop();
+	TGLOG("Octree converted");
+	//timer.stop();
 	
-	timer.start("Retrieving info on centre points");
+	//timer.start("Retrieving info on centre points");
+	TGLOG("Retrieving info on centre points");
 	gTextile.GetPointInformation(CentrePoints, m_ElementsInfo);
 	//fillMaterialInfo();
-	timer.check("Info retrieved");
-	timer.stop();
+	//timer.check("Info retrieved");
+	TGLOG("Info retrieved");
+	//timer.stop();
 
 	if (bSmooth || bSurface) {
 		map<int, vector<int>> NodeSurf;
@@ -1110,27 +1242,34 @@ void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAba
 		extractSurfaceNodeSets(NodeSurf, AllSurf);
 
 		if (bSmooth) {
-			timer.start("Smoothing starts");
+			//timer.start("Smoothing starts");
+			TGLOG("Smoothing starts");
 			smoothing(NodeSurf, AllSurf, smoothIter, smoothCoef1, smoothCoef2);
-			timer.check("Smoothing finished");
-			timer.stop();
+			//timer.check("Smoothing finished");
+			TGLOG("Smoothing finished");
+			//timer.stop();
 		}
 
 		if (bSurface) {
-			timer.start("Preparing interface definitions");
+			//timer.start("Preparing interface definitions");
+			TGLOG("Preparing interface definitions");
 			OutputSurfaces(NodeSurf, AllSurf);
-			timer.check("Interfaces defined");
-			timer.stop();
+			//timer.check("Interfaces defined");
+			TGLOG("Interfaces defined");
+			//timer.stop();
 		}
 	}
 
-	timer.start("Write the nodes");
+	//timer.start("Write the nodes");
+	TGLOG("Write the nodes");
 	map<int,XYZ>::iterator itNodes;
 	for (itNodes = AllNodes.begin(); itNodes != AllNodes.end(); ++itNodes) {
 		Output << itNodes->first << ", " << itNodes->second.x << ", " << itNodes->second.y << ", " << itNodes->second.z << endl;
 	}
-	timer.check("Nodes written");
-	timer.stop();
+	//timer.check("Nodes written");
+	TGLOG("Nodes written");
+	//timer.check("Octree refinement finished");
+	//timer.stop();
 }
 
 
@@ -1475,7 +1614,8 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 				// We do not want to have a node move more than 0.5 of a side length or of element diagonal
 				if ( fabs(node_move.x) > max_dx || fabs(node_move.y) > 0.5 * max_dy || fabs(node_move.z) > max_dz ||
 					sqrt( node_move.x * node_move.x + node_move.y * node_move.y + node_move.z * node_move.z) > diag)
-					AllNodes[itNodes->first] -= AllNodes[itNodes->first];
+					AllNodes[itNodes->first] -= AllLapl[itNodes->first];
+
 			}
 		}
 		AllLapl.clear();
@@ -1491,7 +1631,7 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 // * * For elements belonging to other materials - duplicate the node (for every material - one copy)
 // * * Replace original node's entries in elements with newly create elements
 // * Store original node and newly created in sets for surface definitions
-void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int>> &NodeSurf, const vector<int> &AllSurf) {
+void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, const vector<int> &AllSurf) {
 	vector<int> AllSurfElems;
 	vector<POINT_INFO>::iterator itData;
 	vector<int>::const_iterator itNodes;
