@@ -171,7 +171,7 @@ int COctreeVoxelMesh::storeHangingNode(int *all_lni, int *hanging_corner, int no
 		master_nodes.push_back(all_lni[h] + 1);
 	}
 
-	NodeConstraints.insert(std::make_pair(hanging_count, master_nodes));
+	NodeConstraints.insert(make_pair(hanging_count, master_nodes));
     return 0;
 }
 
@@ -205,7 +205,7 @@ void COctreeVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Texti
 	double x,y,z;
 
 	// Sort points by coordinate
-	std::sort(boundaryPoints.begin(), boundaryPoints.end());
+	sort(boundaryPoints.begin(), boundaryPoints.end());
 	double x_min = m_DomainAABB.first.x;
 	double x_max = m_DomainAABB.second.x;
 	double y_min = m_DomainAABB.first.y;
@@ -768,14 +768,14 @@ pair<int, int> most_common(vector<int> v) {
 	int mostCount = 0;
 
 	for (int i = 0; i < v.size(); i++) {
-		int c = std::count(v.begin(), v.end(), v[i]);
+		int c = count(v.begin(), v.end(), v[i]);
 		if (c > mostCount) {
 			mostCount = c;
 			mostVal = v[i];
 		}
 	}
 
-	return std::make_pair(mostVal, mostCount);
+	return make_pair(mostVal, mostCount);
 }
 
 // Return 1 is at least one of the points is not the same material as others
@@ -909,7 +909,7 @@ void COctreeVoxelMesh::fillMaterialInfo() {
 		}
 		pair<int, int> mat = most_common(v);
 		vector<int>::iterator it = find(v.begin(), v.end(), mat.first);
-		int pos = std::distance(v.begin(), it);
+		int pos = distance(v.begin(), it);
 		v.clear();
 		//m_ElementsInfo.push_back(myInfo[i*9 + pos]);
 		m_ElementsInfo.push_back(myInfo[i*9 + 0 * pos]);
@@ -1019,7 +1019,6 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 COctreeVoxelMesh::COctreeVoxelMesh(string Type)
 :CVoxelMesh(Type)
 {
-	m_PeriodicBoundaries = new CPeriodicBoundaries;
 }
 
 void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int min_level, int refine_level, bool smoothing, int iter, double s1, double s2, bool surfaceOutput, bool cohesive)
@@ -1141,7 +1140,7 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 				// The node is not hanging and therefore has correct numbering
 				if (!anyhang || hanging_corner[node_i] == -1) {
 					if (node_count - 1 < lnodes->element_nodes[P4EST_CHILDREN * k + node_i]) {                                    
-						AllNodes.insert(std::make_pair(lnodes->element_nodes[P4EST_CHILDREN * k + node_i] + 1, XYZ(vxyz[0], vxyz[1], vxyz[2])));
+						AllNodes.insert(make_pair(lnodes->element_nodes[P4EST_CHILDREN * k + node_i] + 1, XYZ(vxyz[0], vxyz[1], vxyz[2])));
 						node_count++;
 
 						if ( isBoundary(vxyz) ) {
@@ -1161,7 +1160,7 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 						node_elements[node_i] = used;
 					} else {
 						// The node has not appeared earlier, write it, form an element, store the node for further comparisons
-						AllNodes.insert(std::make_pair(++hanging_count, XYZ(vxyz[0], vxyz[1], vxyz[2])));
+						AllNodes.insert(make_pair(++hanging_count, XYZ(vxyz[0], vxyz[1], vxyz[2])));
 						node_elements[node_i] = hanging_count;
 						hang_coord[7][0] = vxyz[0];
 						hang_coord[7][1] = vxyz[1];
@@ -1190,7 +1189,7 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 			if ( quad->level == max_level ) {
 				vector<int>::iterator itNodes;
 				int i = 0;
-				std::vector<int> temp;
+				vector<int> temp;
 				for (itNodes = elemNodes.begin(); itNodes != elemNodes.end(); ++itNodes, i++) {
 					// No need to iterate through the elements which have this node as the loop will go through 
 					// these elements anyway. Only store the information available for this element - neighbouring nodes etc
@@ -1354,7 +1353,7 @@ int checkIndex(int currentElement, vector<int> nodes, const vector< vector<int>>
 			TGLOG(*itNodes);
 	}
 
-	elems.erase(std::remove(elems.begin(), elems.end(), currentElement), elems.end());
+	elems.erase(remove(elems.begin(), elems.end(), currentElement), elems.end());
 	pair<int, int> p = most_common(elems);
 	if (p.second == 4) {
 		if ( m_ElementsInfo[currentElement - 1].iYarnIndex == m_ElementsInfo[p.first - 1].iYarnIndex )
@@ -1499,7 +1498,7 @@ void COctreeVoxelMesh::extractSurfaceNodeSets(map<int, vector<int>> &NodeSurf, v
 
 	// Remove non-unique entries
 	for (itNodeSets = NodeSets.begin(); itNodeSets != NodeSets.end(); ++itNodeSets) {
-		std::vector<int> mat = itNodeSets->second;
+		vector<int> mat = itNodeSets->second;
 		sort(mat.begin(), mat.end());
 		mat.erase( unique(mat.begin(), mat.end()), mat.end() );
 		itNodeSets->second = mat;
@@ -1507,7 +1506,7 @@ void COctreeVoxelMesh::extractSurfaceNodeSets(map<int, vector<int>> &NodeSurf, v
 
 	// Create sets of surface nodes for each material (find nodes which fall into both material sets)
 	for (itNodeSets = NodeSets.begin(); itNodeSets != NodeSets.end(); ++itNodeSets) {
-		std::map<int,vector<int>>::iterator itTempNodeSet;
+		map<int,vector<int>>::iterator itTempNodeSet;
 		vector<int> currentSet;
 		for (itTempNodeSet = NodeSets.begin(); itTempNodeSet != NodeSets.end(); ++itTempNodeSet) {
 			if (itNodeSets->first != itTempNodeSet->first) {
@@ -1517,7 +1516,7 @@ void COctreeVoxelMesh::extractSurfaceNodeSets(map<int, vector<int>> &NodeSurf, v
 				sort(v2.begin(), v2.end());
 
 				vector<int> v_intersection;
-				std::set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), std::back_inserter(v_intersection));
+				set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(v_intersection));
 				currentSet.insert(currentSet.end(), v_intersection.begin(), v_intersection.end());
 			}
 		}
@@ -1539,7 +1538,7 @@ void COctreeVoxelMesh::extractSurfaceNodeSets(map<int, vector<int>> &NodeSurf, v
 void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const vector<int> &AllSurf, int iter, double c1, double c2)
 {
 	vector<POINT_INFO>::iterator itData;
-	std::map<int, vector<int>>::const_iterator itNodeSurf;
+	map<int, vector<int>>::const_iterator itNodeSurf;
 
 	int i;
 		
@@ -1548,20 +1547,20 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 	map<int,XYZ> PrevNodes;
 	map<int,XYZ> OldNodes = AllNodes;
 	
-	std:vector<int> v = AllSurf;
-	std::sort(v.begin(),v.end());
+	vector<int> v = AllSurf;
+	sort(v.begin(),v.end());
 
 	// Prepare the neighbour connections (leave only nodes which are on an interface)
-	std::map<int, vector<int>>::iterator itNeighbourNodes;
+	map<int, vector<int>>::iterator itNeighbourNodes;
 	map<int, vector<int>> NeighbourSurfNodes = NeighbourNodes;
 	for (itNeighbourNodes = NeighbourSurfNodes.begin(); itNeighbourNodes != NeighbourSurfNodes.end(); ++itNeighbourNodes) {
-		std::vector<int> temp;
+		vector<int> temp;
 		vector<int> v_intersection;
 		
 		temp = itNeighbourNodes->second; 
-		std::sort(temp.begin(), temp.end());
+		sort(temp.begin(), temp.end());
 		temp.erase( unique(temp.begin(), temp.end()), temp.end());
-		std::set_intersection(v.begin(), v.end(), temp.begin(), temp.end(), std::back_inserter(v_intersection));
+		set_intersection(v.begin(), v.end(), temp.begin(), temp.end(), back_inserter(v_intersection));
 		itNeighbourNodes->second = v_intersection;
 	}
 
@@ -1600,7 +1599,7 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 				}
 
 				if ( AllLapl.find(*itNodes) == AllLapl.end() ) {
-					AllLapl.insert(std::make_pair(*itNodes,laplacian));
+					AllLapl.insert(make_pair(*itNodes,laplacian));
 				}
 			}
 		}
@@ -1655,7 +1654,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 			//	minMaterial = m_ElementsInfo[*itEncounter - 1].iYarnIndex;
 			//}
 		}
-		int minMaterial = *std::min_element(temp.begin(), temp.end());
+		int minMaterial = *min_element(temp.begin(), temp.end());
 
 		vector<int> usedMaterial;
 		vector<int> usedNodes;
@@ -1696,7 +1695,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 	
 	for (itNodeSurf = MyNodeSurf.begin(); itNodeSurf != MyNodeSurf.end(); ++itNodeSurf) 
 	{
-		std::sort( itNodeSurf->second.begin(), itNodeSurf->second.end());
+		sort( itNodeSurf->second.begin(), itNodeSurf->second.end());
 		itNodeSurf->second.erase( unique(itNodeSurf->second.begin(), itNodeSurf->second.end()) , itNodeSurf->second.end() );
 	}
 
@@ -1704,7 +1703,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 
 	for (itElemSurf = MyElemSurf.begin(); itElemSurf != MyElemSurf.end(); ++itElemSurf) 
 	{
-		std::sort( itElemSurf->second.begin(), itElemSurf->second.end());
+		sort( itElemSurf->second.begin(), itElemSurf->second.end());
 		itElemSurf->second.erase( unique(itElemSurf->second.begin(), itElemSurf->second.end()) , itElemSurf->second.end() );
 	}
 
@@ -1761,7 +1760,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 			//	minMaterial = m_ElementsInfo[*itEncounter - 1].iYarnIndex;
 			//}
 		}
-		int minMaterial = *std::min_element(temp.begin(), temp.end());
+		int minMaterial = *min_element(temp.begin(), temp.end());
 
 		vector<int> usedMaterial;
 		vector<int> usedNodes;
@@ -1783,12 +1782,12 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 				vector<int>::iterator it = find(usedMaterial.begin(), usedMaterial.end(), m_ElementsInfo[*itEncounter-1].iYarnIndex); 
 				if (  usedMaterial.size() > 0 && it != usedMaterial.end() ) {
 					// The node has already been copied, replace corresponding nodes in the element
-					std::replace(AllElements[*itEncounter-1].begin(), AllElements[*itEncounter-1].end(), *itNodes, usedNodes[it - usedMaterial.begin()]);
+					replace(AllElements[*itEncounter-1].begin(), AllElements[*itEncounter-1].end(), *itNodes, usedNodes[it - usedMaterial.begin()]);
 				} else {
 					// Copy the existing node and replace it in the element
-					AllNodes.insert(std::make_pair(extraNodeCount, AllNodes[*itNodes]));
+					AllNodes.insert(make_pair(extraNodeCount, AllNodes[*itNodes]));
 					MyNodeSurf[m_ElementsInfo[*itEncounter-1].iYarnIndex].push_back(extraNodeCount);
-					std::replace(AllElements[*itEncounter-1].begin(), AllElements[*itEncounter-1].end(), *itNodes, extraNodeCount);
+					replace(AllElements[*itEncounter-1].begin(), AllElements[*itEncounter-1].end(), *itNodes, extraNodeCount);
 					
 					// Save info about the copied node
 					usedMaterial.push_back(m_ElementsInfo[*itEncounter - 1].iYarnIndex);
@@ -1801,7 +1800,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 
 	for (itNodeSurf = MyNodeSurf.begin(); itNodeSurf != MyNodeSurf.end(); ++itNodeSurf) 
 	{
-		std::sort( itNodeSurf->second.begin(), itNodeSurf->second.end());
+		sort( itNodeSurf->second.begin(), itNodeSurf->second.end());
 		itNodeSurf->second.erase( unique(itNodeSurf->second.begin(), itNodeSurf->second.end()) , itNodeSurf->second.end() );
 	}
 
