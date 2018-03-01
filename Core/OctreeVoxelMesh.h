@@ -127,7 +127,7 @@ namespace TexGen
 		/// Storing hanging nodes from octree-mesh to a vector for writing the constraints
 		int storeHangingNode(int *all_lni, int *hanging_corner, int node_i, int hanging_count);
 		/// Smoothing
-		void smoothing(const std::map< int, vector<int> > &NodeSurf, const vector<int> &AllSurf, int iter, double smoothCoef1, double smoothCoef2);
+		void smoothing(const std::map< int, vector<int> > &NodeSurf, const vector<int> &AllSurf);
 		void fillMaterialInfo();
 		int isBoundary(double p[3]);
 
@@ -139,6 +139,8 @@ namespace TexGen
 		static int refine_fn_periodic(p4est_t * p4est, p4est_topidx_t which_tree, p4est_quadrant_t * quadrant);
 		static int refine_fn_post(p4est_t * p4est, p4est_topidx_t which_tree, p4est_quadrant_t * quadrant);
 		static int refine_fn(p4est_t * p4est, p4est_topidx_t which_tree, p4est_quadrant_t * quadrant);
+
+		static void FindLocMinMax( int& XMin, int& XMax, int& YMin, int& YMax, XYZ& Min, XYZ& Max );
 
 		void extractSurfaceNodeSets(std::map< int, vector<int> > &NodeSurf, std::vector<int> &AllSurf);
 		void OutputSurfaces(const std::map<int, vector<int> > &NodeSurf, const std::vector<int> &AllSurf);
@@ -156,13 +158,13 @@ namespace TexGen
 		map<int, vector< pair<int, int> > > SurfaceElementFaces;
 
 		vector< vector<int> > MaterialElements;
-		vector<Point> boundaryPoints;
+		vector<Point> m_boundaryPoints;
 
 
-		bool bSmooth;
-		bool bSurface;
-		bool bCohesive;
-		double smoothCoef1, smoothCoef2;
-		int smoothIter;
+		bool m_bSmooth;
+		bool m_bSurface;
+		bool m_bCohesive;
+		double m_smoothCoef1, m_smoothCoef2;
+		int m_smoothIter;
 	};
 };	// namespace TexGen

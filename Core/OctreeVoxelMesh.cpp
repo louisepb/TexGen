@@ -181,7 +181,7 @@ void COctreeVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Texti
 	map<int, vector<int>>::iterator itConstraints;
 	for (itConstraints = NodeConstraints.begin(); itConstraints != NodeConstraints.end(); itConstraints++) {
 		for (int i = 0; i < 3; i++) { // Write for 3 DoFs
-			int num = itConstraints->second.size();
+			int num = (int)itConstraints->second.size();
 			Output << num + 1 << endl;
 			Output << itConstraints->first << ", " << i + 1 << ", 1, ";
 			for (int j = 0; j < num; ++j) {
@@ -205,7 +205,7 @@ void COctreeVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Texti
 	double x,y,z;
 
 	// Sort points by coordinate
-	sort(boundaryPoints.begin(), boundaryPoints.end());
+	sort(m_boundaryPoints.begin(), m_boundaryPoints.end());
 	double x_min = m_DomainAABB.first.x;
 	double x_max = m_DomainAABB.second.x;
 	double y_min = m_DomainAABB.first.y;
@@ -214,62 +214,62 @@ void COctreeVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Texti
 	double z_max = m_DomainAABB.second.z;
 
 	// The code checks if the point belongs to a vertex, edge or face
-	for (int i = 0; i < boundaryPoints.size(); i++) {
-		x = (double)boundaryPoints[i].x;
-		y = (double)boundaryPoints[i].y;
-		z = (double)boundaryPoints[i].z;
+	for (int i = 0; i < m_boundaryPoints.size(); i++) {
+		x = (double)m_boundaryPoints[i].x;
+		y = (double)m_boundaryPoints[i].y;
+		z = (double)m_boundaryPoints[i].z;
 		if		  ( my_comparison(x, x_min) && my_comparison(y, y_min) && my_comparison(z, z_min) ) {
-			vertices[0] = boundaryPoints[i].nodeNum;
+			vertices[0] = m_boundaryPoints[i].nodeNum;
 		} else if ( my_comparison(x, x_max) && my_comparison(y, y_min) && my_comparison(z, z_min) ) {
-			vertices[1] = boundaryPoints[i].nodeNum;
+			vertices[1] = m_boundaryPoints[i].nodeNum;
 		} else if ( my_comparison(x, x_max) && my_comparison(y, y_max) && my_comparison(z, z_min) ) {
-			vertices[2] = boundaryPoints[i].nodeNum;
+			vertices[2] = m_boundaryPoints[i].nodeNum;
 		} else if ( my_comparison(x, x_min) && my_comparison(y, y_max) && my_comparison(z, z_min) ) {
-			vertices[3] = boundaryPoints[i].nodeNum;
+			vertices[3] = m_boundaryPoints[i].nodeNum;
 		} else if ( my_comparison(x, x_min) && my_comparison(y, y_min) && my_comparison(z, z_max) ) {
-			vertices[4] = boundaryPoints[i].nodeNum;
+			vertices[4] = m_boundaryPoints[i].nodeNum;
 		} else if ( my_comparison(x, x_max) && my_comparison(y, y_min) && my_comparison(z, z_max) ) {
-			vertices[5] = boundaryPoints[i].nodeNum;
+			vertices[5] = m_boundaryPoints[i].nodeNum;
 		} else if ( my_comparison(x, x_max) && my_comparison(y, y_max) && my_comparison(z, z_max) ) {
-			vertices[6] = boundaryPoints[i].nodeNum;
+			vertices[6] = m_boundaryPoints[i].nodeNum;
 		} else if ( my_comparison(x, x_min) && my_comparison(y, y_max) && my_comparison(z, z_max) ) {
-			vertices[7] = boundaryPoints[i].nodeNum;
+			vertices[7] = m_boundaryPoints[i].nodeNum;
 		} else if ( my_comparison(x, x_min) && my_comparison(y, y_min) ) {
-			Edge1.push_back(boundaryPoints[i].nodeNum);
+			Edge1.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(x, x_max) && my_comparison(y, y_min) ) {
-			Edge2.push_back(boundaryPoints[i].nodeNum);
+			Edge2.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(x, x_max) && my_comparison(y, y_max) ) {
-			Edge3.push_back(boundaryPoints[i].nodeNum);
+			Edge3.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(x, x_min) && my_comparison(y, y_max) ) {
-			Edge4.push_back(boundaryPoints[i].nodeNum);
+			Edge4.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(x, x_min) && my_comparison(z, z_min) ) {
-			Edge5.push_back(boundaryPoints[i].nodeNum);
+			Edge5.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(x, x_max) && my_comparison(z, z_min) ) {
-			Edge6.push_back(boundaryPoints[i].nodeNum);
+			Edge6.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(x, x_max) && my_comparison(z, z_max) ) {
-			Edge7.push_back(boundaryPoints[i].nodeNum);
+			Edge7.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(x, x_min) && my_comparison(z, z_max) ) {
-			Edge8.push_back(boundaryPoints[i].nodeNum);
+			Edge8.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(y, y_min) && my_comparison(z, z_min) ) {
-			Edge9.push_back(boundaryPoints[i].nodeNum);
+			Edge9.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(y, y_max) && my_comparison(z, z_min) ) {
-			Edge10.push_back(boundaryPoints[i].nodeNum);
+			Edge10.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(y, y_max) && my_comparison(z, z_max) ) {
-			Edge11.push_back(boundaryPoints[i].nodeNum);
+			Edge11.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(y, y_min) && my_comparison(z, z_max) ) {
-			Edge12.push_back(boundaryPoints[i].nodeNum);
+			Edge12.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(x, x_max) ) {
-			FaceA.push_back(boundaryPoints[i].nodeNum);
+			FaceA.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(x, x_min) ) {
-			FaceB.push_back(boundaryPoints[i].nodeNum);
+			FaceB.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(y, y_max) ) {
-			FaceC.push_back(boundaryPoints[i].nodeNum);
+			FaceC.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(y, y_min) ) {
-			FaceD.push_back(boundaryPoints[i].nodeNum);
+			FaceD.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(z, z_max) ) {
-			FaceE.push_back(boundaryPoints[i].nodeNum);
+			FaceE.push_back(m_boundaryPoints[i].nodeNum);
 		} else if ( my_comparison(z, z_min) ) {
-			FaceF.push_back(boundaryPoints[i].nodeNum);
+			FaceF.push_back(m_boundaryPoints[i].nodeNum);
 		}
 	}
 
@@ -294,7 +294,7 @@ void COctreeVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Texti
 		m_PeriodicBoundaries->SetVertex( vertices[i] );
 	}
 
-	m_PeriodicBoundaries->CreatePeriodicBoundaries( Output, AllNodes.size() + 1, Textile, iBoundaryConditions, bMatrixOnly );
+	m_PeriodicBoundaries->CreatePeriodicBoundaries( Output, (int)AllNodes.size() + 1, Textile, iBoundaryConditions, bMatrixOnly );
 }
 
 int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus ) 
@@ -318,7 +318,7 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, boo
 	timer.check("Elements written");
 	timer.stop();
 
-	if ( bCohesive ) {
+	if ( m_bCohesive ) {
 		timer.start("Writing surfaces");
 		map<int, vector<int>>::iterator itSurfaceNodes;
 		for (itSurfaceNodes = SurfaceNodes.begin(); itSurfaceNodes != SurfaceNodes.end(); ++itSurfaceNodes) {
@@ -356,6 +356,16 @@ int COctreeVoxelMesh::refine_fn_uni(p4est_t * p4est, p4est_topidx_t which_tree, 
 	return 1;
 }
 
+void COctreeVoxelMesh::FindLocMinMax( int& XMin, int& XMax, int& YMin, int& YMax, XYZ& Min, XYZ& Max )
+{
+	double x_dist = (g_DomainAABB.second.x - g_DomainAABB.first.x)/pow(2, max_level);
+	double y_dist = (g_DomainAABB.second.y - g_DomainAABB.first.y)/pow(2, max_level);
+	XMin = (int)floor((Min.x - g_DomainAABB.first.x)/ x_dist);
+	XMax = (int)ceil((Max.x - g_DomainAABB.first.x) / x_dist);
+	YMin = (int)floor((Min.y - g_DomainAABB.first.y) / y_dist);
+	YMax = (int)ceil((Max.y - g_DomainAABB.first.y) / y_dist);
+}
+
 // TODO: Ensure that the mesh is periodic in X-Y-Z directions
 // Refinement only if at least two dissimilar materials are within an element
 int COctreeVoxelMesh::refine_fn_periodic(p4est_t * p4est, p4est_topidx_t which_tree, p4est_quadrant_t * quadrant) 
@@ -365,7 +375,8 @@ int COctreeVoxelMesh::refine_fn_periodic(p4est_t * p4est, p4est_topidx_t which_t
 	XYZ Point;
 	int refine = 0;
 	p4est_quadrant_t node_quadrant;
-	double x_min, x_max, y_min, y_max, z_min, z_max;
+	XYZ Min, Max;
+	///double x_min, x_max, y_min, y_max, z_min, z_max;
 	double vxyz[3];
 
 	for (int node_i=0; node_i < 8; node_i++) {
@@ -376,78 +387,60 @@ int COctreeVoxelMesh::refine_fn_periodic(p4est_t * p4est, p4est_topidx_t which_t
 		Point.z = vxyz[2];
 
 		if (node_i == 0) {
-			x_min = Point.x; x_max = Point.x;
-			y_min = Point.y; y_max = Point.y;
-			z_min = Point.z; z_max = Point.z;
+			Min.x = Max.x = Point.x;
+			Min.y = Max.y = Point.y;
+			Min.z = Max.z = Point.z;
 		} else {
-			if (Point.x < x_min)
-				x_min = Point.x;
-			if (Point.x > x_max)
-				x_max = Point.x;	
-			if (Point.y < y_min)
-				y_min = Point.y;
-			if (Point.y > y_max)
-				y_max = Point.y;
-			if (Point.z < z_min)
-				z_min = Point.z;
-			if (Point.z > z_max)
-				z_max = Point.z;
+			if (Point.x < Min.x)
+				Min.x = Point.x;
+			if (Point.x > Max.x)
+				Max.x = Point.x;	
+			if (Point.y < Min.y)
+				Min.y = Point.y;
+			if (Point.y > Max.y)
+				Max.y = Point.y;
+			if (Point.z < Max.z)
+				Max.z = Point.z;
+			if (Point.z > Max.z)
+				Max.z = Point.z;
 		}
 	}
 
-	if (my_comparison(z_min, g_DomainAABB.first.z) && refine == 1) {
-		int loc_x_min, loc_x_max, loc_y_min, loc_y_max;
-		double x_dist = (g_DomainAABB.second.x - g_DomainAABB.first.x)/pow(2, max_level);
-		double y_dist = (g_DomainAABB.second.y - g_DomainAABB.first.y)/pow(2, max_level);
-		loc_x_min = floor((x_min - g_DomainAABB.first.x)/ x_dist);
-		loc_x_max = ceil((x_max - g_DomainAABB.first.x) / x_dist);
-		loc_y_min = floor((y_min - g_DomainAABB.first.y) / y_dist);
-		loc_y_max = ceil((y_max - g_DomainAABB.first.y) / y_dist);
+	int XMin, XMax, YMin, YMax;
+	FindLocMinMax( XMin, XMax, YMin, YMax, Min, Max );
 
+	if (my_comparison(Min.z, g_DomainAABB.first.z) && refine == 1) {
 		//TGLOG("MIN: z_min " << z_min << ", "<<x_max <<", " << y_min);
 		//TGLOG("Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
 		//TGLOG("ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = loc_x_min; i < loc_x_max; i++)
-			for (int j = loc_y_min; j < loc_y_max; j++) {
+		for (int i = XMin; i < XMax; i++) {
+			for (int j = YMin; j < YMax; j++) {
 				//TGLOG("Refinement +1");
 				FaceZ_min[i][j] += 1;
 				//TGLOG(".");
 			}
+		}
 	}
 
-	if (my_comparison(z_max, g_DomainAABB.second.z) && refine == 1) {
-		int loc_x_min, loc_x_max, loc_y_min, loc_y_max;
-		double x_dist = (g_DomainAABB.second.x - g_DomainAABB.first.x)/pow(2, max_level);
-		double y_dist = (g_DomainAABB.second.y - g_DomainAABB.first.y)/pow(2, max_level);
-		loc_x_min = floor((x_min - g_DomainAABB.first.x)/ x_dist);
-		loc_x_max = ceil((x_max - g_DomainAABB.first.x) / x_dist);
-		loc_y_min = floor((y_min - g_DomainAABB.first.y) / y_dist);
-		loc_y_max = ceil((y_max - g_DomainAABB.first.y) / y_dist);
+	if (my_comparison(Max.z, g_DomainAABB.second.z) && refine == 1) {
 
 		//TGLOG("MAX: z_min " << z_max << ", "<<x_max <<", " << y_min);
 		//TGLOG("MAX: Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
 		//TGLOG("MAX: ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = loc_x_min; i < loc_x_max; i++) {
-			for (int j = loc_y_min; j < loc_y_max; j++) {
+		for (int i = XMin; i < XMax; i++) {
+			for (int j = YMin; j < YMax; j++) {
 				FaceZ_max[i][j] += 1;
 			}
 		}
 	}
 
-	if (my_comparison(z_max, g_DomainAABB.second.z)) {
-		int loc_x_min, loc_x_max, loc_y_min, loc_y_max;
-		double x_dist = (g_DomainAABB.second.x - g_DomainAABB.first.x)/pow(2, max_level);
-		double y_dist = (g_DomainAABB.second.y - g_DomainAABB.first.y)/pow(2, max_level);
-		loc_x_min = floor((x_min - g_DomainAABB.first.x)/ x_dist);
-		loc_x_max = ceil((x_max - g_DomainAABB.first.x) / x_dist);
-		loc_y_min = floor((y_min - g_DomainAABB.first.y) / y_dist);
-		loc_y_max = ceil((y_max - g_DomainAABB.first.y) / y_dist);
+	if (my_comparison(Max.z, g_DomainAABB.second.z)) {
 
 		//TGLOG("MAX: z_min " << z_max << ", "<<x_max <<", " << y_min);
 		//TGLOG("MAX: Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
 		//TGLOG("MAX: ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = loc_x_min; i < loc_x_max; i++) {
-			for (int j = loc_y_min; j < loc_y_max; j++) {
+		for (int i = XMin; i < XMax; i++) {
+			for (int j = YMin; j < YMax; j++) {
 				if (FaceZ_max[i][j] < FaceZ_min[i][j]) {
 					//TGLOG("Periodic refinement enacted!");
 					refine = 1;
@@ -457,20 +450,13 @@ int COctreeVoxelMesh::refine_fn_periodic(p4est_t * p4est, p4est_topidx_t which_t
 		}
 	}
 
-	if (my_comparison(z_min, g_DomainAABB.first.z)) {
-		int loc_x_min, loc_x_max, loc_y_min, loc_y_max;
-		double x_dist = (g_DomainAABB.second.x - g_DomainAABB.first.x)/pow(2, max_level);
-		double y_dist = (g_DomainAABB.second.y - g_DomainAABB.first.y)/pow(2, max_level);
-		loc_x_min = floor((x_min - g_DomainAABB.first.x)/ x_dist);
-		loc_x_max = ceil((x_max - g_DomainAABB.first.x) / x_dist);
-		loc_y_min = floor((y_min - g_DomainAABB.first.y) / y_dist);
-		loc_y_max = ceil((y_max - g_DomainAABB.first.y) / y_dist);
+	if (my_comparison(Min.z, g_DomainAABB.first.z)) {
 
 		//TGLOG("MIN: z_min " << z_min << ", "<<x_max <<", " << y_min);
 		//TGLOG("MAX: Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
 		//TGLOG("MAX: ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = loc_x_min; i < loc_x_max; i++) {
-			for (int j = loc_y_min; j < loc_y_max; j++) {
+		for (int i = XMin; i < XMax; i++) {
+			for (int j = YMin; j < YMax; j++) {
 				if (FaceZ_max[i][j] > FaceZ_min[i][j]) {
 					//TGLOG("Periodic refinement enacted!");
 					refine = 1;
@@ -1025,12 +1011,12 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 {
 	CTimer timer;
 	max_level = refine_level;
-	bSmooth = smoothing;
-	smoothIter = iter;
-	smoothCoef1 = s1;
-	smoothCoef2 = s2;
-	bSurface = surfaceOutput;
-	bCohesive = cohesive;
+	m_bSmooth = smoothing;
+	m_smoothIter = iter;
+	m_smoothCoef1 = s1;
+	m_smoothCoef2 = s2;
+	m_bSurface = surfaceOutput;
+	m_bCohesive = cohesive;
   	gTextile = Textile;
 	m_DomainAABB = Textile.GetDomain()->GetMesh().GetAABB();
 	g_DomainAABB = m_DomainAABB;
@@ -1040,8 +1026,8 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 		return;
 	}
 
-	if ( bSmooth) {
-		if (!( ((s1 > 0 && s1 == s2) || (s1 > 0 && s2 < 0 && s1 < -s2)) && iter > 0)) {
+	if ( m_bSmooth) {
+		if (!( ((s1 > 0 && s1 == s2) || (s1 > 0 && s2 < 0 && s1 < -s2)) && m_smoothIter > 0)) {
 			TGERROR("Smoothing coefficients are not correct. It should be:\n1. Coef1 = Coef2 - for Laplacian smoothing\n2. Coef1 < -Coef2 (and Coef1 > 0) - for non-shrinking smoothing\nIter > 0");
 			return;
 		}
@@ -1144,7 +1130,7 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 						node_count++;
 
 						if ( isBoundary(vxyz) ) {
-							boundaryPoints.push_back(Point(lnodes->element_nodes[P4EST_CHILDREN * k + node_i] + 1, vxyz[0], vxyz[1], vxyz[2]));
+							m_boundaryPoints.push_back(Point(lnodes->element_nodes[P4EST_CHILDREN * k + node_i] + 1, vxyz[0], vxyz[1], vxyz[2]));
 						}
 					}
 
@@ -1235,21 +1221,21 @@ void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAba
 	TGLOG("Info retrieved");
 	//timer.stop();
 
-	if (bSmooth || bSurface) {
+	if (m_bSmooth || m_bSurface) {
 		map<int, vector<int>> NodeSurf;
 		vector<int> AllSurf;
 		extractSurfaceNodeSets(NodeSurf, AllSurf);
 
-		if (bSmooth) {
+		if (m_bSmooth) {
 			//timer.start("Smoothing starts");
 			TGLOG("Smoothing starts");
-			smoothing(NodeSurf, AllSurf, smoothIter, smoothCoef1, smoothCoef2);
+			smoothing(NodeSurf, AllSurf);
 			//timer.check("Smoothing finished");
 			TGLOG("Smoothing finished");
 			//timer.stop();
 		}
 
-		if (bSurface) {
+		if (m_bSurface) {
 			//timer.start("Preparing interface definitions");
 			TGLOG("Preparing interface definitions");
 			OutputSurfaces(NodeSurf, AllSurf);
@@ -1535,12 +1521,10 @@ void COctreeVoxelMesh::extractSurfaceNodeSets(map<int, vector<int>> &NodeSurf, v
 	}
 }
 
-void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const vector<int> &AllSurf, int iter, double c1, double c2)
+void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const vector<int> &AllSurf)
 {
 	vector<POINT_INFO>::iterator itData;
 	map<int, vector<int>>::const_iterator itNodeSurf;
-
-	int i;
 		
 	double coef = 0.63;
 	map<int,XYZ> AllLapl;
@@ -1564,12 +1548,12 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 		itNeighbourNodes->second = v_intersection;
 	}
 
-	for (int iter_i = 0; iter_i < iter; iter_i++) {
-		if ( c2 > 0 || iter_i%2 == 0) {
+	for (int iter_i = 0; iter_i < m_smoothIter; iter_i++) {
+		if ( m_smoothCoef2 > 0 || iter_i%2 == 0) {
 			PrevNodes = AllNodes;
 		}
 
-		coef = (iter_i%2 == 0) ? c1 : c2;
+		coef = (iter_i%2 == 0) ? m_smoothCoef1 : m_smoothCoef2;
 		
 		double max_dx = 0.5*(m_DomainAABB.second.x - m_DomainAABB.first.x) / pow(2,max_level);
 		double max_dy = 0.5*(m_DomainAABB.second.y - m_DomainAABB.first.y) / pow(2,max_level);
