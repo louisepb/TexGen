@@ -131,6 +131,9 @@ namespace TexGen
 		void fillMaterialInfo();
 		int isBoundary(double p[3]);
 
+		int checkIndex(int currentElement, vector<int> nodes, const vector< vector<int> > &AllElements); 
+		pair<int, vector<int> > GetFaceIndices2(CMesh::ELEMENT_TYPE ElemType, const set<int> &NodeIndices, int currentElement, const vector< vector<int> > &AllElements);
+
 		void storePointInfo(int refineLevel);
 		static int getPointsInfo(vector<XYZ> myPoints, int refineLevel);
 
@@ -151,7 +154,7 @@ namespace TexGen
 		map<int,XYZ> AllNodes;
 		vector< std::vector<int> > AllElements;
 		map< int, vector<int> > NodeConstraints;
-		map< int, vector<int> > NodesEncounter;
+		map< int, vector<int> > m_NodesEncounter;
 		map< int, vector<int> > m_NeighbourNodes;
 
 		map< int, vector<int> > m_SurfaceNodes;

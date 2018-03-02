@@ -1051,7 +1051,7 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 
 			for(i = 0; i < 8; i++) {
 				elemNodes.push_back(node_elements[elem_order[i]]);
-				NodesEncounter[node_elements[i]].push_back(ElemCount);
+				m_NodesEncounter[node_elements[i]].push_back(ElemCount);
 			}
 			ElemCount++;
 			CentrePoints.push_back(CurrentCentre);
@@ -1207,14 +1207,14 @@ vector<int> GetFaceIndices(CMesh::ELEMENT_TYPE ElemType, const set<int> &NodeInd
 	return facesInd;
 }
 
-int checkIndex(int currentElement, vector<int> nodes, const vector< vector<int>> &AllElements, map< int, vector<int> > &NodesEncounter, const vector<POINT_INFO> &m_ElementsInfo) 
+int COctreeVoxelMesh::checkIndex(int currentElement, vector<int> nodes, const vector< vector<int>> &AllElements) 
 {
 	vector<int> elems;
 
 	vector<int>::const_iterator itNodes;
 	for(itNodes = nodes.begin(); itNodes != nodes.end(); ++itNodes) {
 		vector<int>::iterator itEnc;
-		for (itEnc = NodesEncounter[*itNodes].begin(); itEnc != NodesEncounter[*itNodes].end(); ++itEnc)
+		for (itEnc = m_NodesEncounter[*itNodes].begin(); itEnc != m_NodesEncounter[*itNodes].end(); ++itEnc)
 			elems.push_back(*itEnc);
 			//elems.insert(elems.end(), NodesEncounter[*itNodes].begin(), NodesEncounter[*itNodes].end());
 	}
@@ -1235,7 +1235,7 @@ int checkIndex(int currentElement, vector<int> nodes, const vector< vector<int>>
 	return 0;
 }
 
-pair<int, vector<int> > GetFaceIndices2(CMesh::ELEMENT_TYPE ElemType, const set<int> &NodeIndices, int currentElement, const vector< vector<int> > &AllElements, map< int, vector<int> > &NodesEncounter, const vector<POINT_INFO> &m_ElementsInfo)
+pair<int, vector<int> > COctreeVoxelMesh::GetFaceIndices2(CMesh::ELEMENT_TYPE ElemType, const set<int> &NodeIndices, int currentElement, const vector< vector<int> > &AllElements)
 {
 	//TGLOG("Checking element " << currentElement);
 	vector<int> facesInd;
@@ -1258,7 +1258,7 @@ pair<int, vector<int> > GetFaceIndices2(CMesh::ELEMENT_TYPE ElemType, const set<
 			n.push_back(AllElements[currentElement-1][2]);
 			n.push_back(AllElements[currentElement-1][3]);
 
-			int check = checkIndex(currentElement, n, AllElements, NodesEncounter, m_ElementsInfo);
+			int check = checkIndex(currentElement, n, AllElements);
 			if ( check != -1 )
 				facesInd.push_back(0), i++;
 		}
@@ -1270,7 +1270,7 @@ pair<int, vector<int> > GetFaceIndices2(CMesh::ELEMENT_TYPE ElemType, const set<
 			n.push_back(AllElements[currentElement-1][6]);
 			n.push_back(AllElements[currentElement-1][7]);
 
-			int check = checkIndex(currentElement, n, AllElements, NodesEncounter, m_ElementsInfo);
+			int check = checkIndex(currentElement, n, AllElements);
 			if ( check != -1 )
 				facesInd.push_back(1), i++;
 		}
@@ -1282,7 +1282,7 @@ pair<int, vector<int> > GetFaceIndices2(CMesh::ELEMENT_TYPE ElemType, const set<
 			n.push_back(AllElements[currentElement-1][4]);
 			n.push_back(AllElements[currentElement-1][5]);
 
-			int check = checkIndex(currentElement, n, AllElements, NodesEncounter, m_ElementsInfo);
+			int check = checkIndex(currentElement, n, AllElements);
 			if ( check != -1 )
 				facesInd.push_back(2), i++;
 		}
@@ -1294,7 +1294,7 @@ pair<int, vector<int> > GetFaceIndices2(CMesh::ELEMENT_TYPE ElemType, const set<
 			n.push_back(AllElements[currentElement-1][5]);
 			n.push_back(AllElements[currentElement-1][6]);
 
-			int check = checkIndex(currentElement, n, AllElements, NodesEncounter, m_ElementsInfo);
+			int check = checkIndex(currentElement, n, AllElements);
 			if ( check != -1 )
 				facesInd.push_back(3), i++;
 		}
@@ -1306,7 +1306,7 @@ pair<int, vector<int> > GetFaceIndices2(CMesh::ELEMENT_TYPE ElemType, const set<
 			n.push_back(AllElements[currentElement-1][6]);
 			n.push_back(AllElements[currentElement-1][7]);
 
-			int check = checkIndex(currentElement, n, AllElements, NodesEncounter, m_ElementsInfo);
+			int check = checkIndex(currentElement, n, AllElements);
 			if ( check != -1 )
 				facesInd.push_back(4), i++;
 		}
@@ -1318,7 +1318,7 @@ pair<int, vector<int> > GetFaceIndices2(CMesh::ELEMENT_TYPE ElemType, const set<
 			n.push_back(AllElements[currentElement-1][7]);
 			n.push_back(AllElements[currentElement-1][4]);
 
-			int check = checkIndex(currentElement, n, AllElements, NodesEncounter, m_ElementsInfo);
+			int check = checkIndex(currentElement, n, AllElements);
 			if ( check != -1 )
 				facesInd.push_back(5), i++;
 		}
@@ -1519,7 +1519,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 		//int minMaterial = NodeSurf.size() + 1;
 
 		vector<int> temp;
-		for (itEncounter = NodesEncounter[*itNodes].begin(); itEncounter != NodesEncounter[*itNodes].end(); ++itEncounter) {
+		for (itEncounter = m_NodesEncounter[*itNodes].begin(); itEncounter != m_NodesEncounter[*itNodes].end(); ++itEncounter) {
 			temp.push_back(m_ElementsInfo[*itEncounter - 1].iYarnIndex);
 			//if (m_ElementsInfo[*itEncounter - 1].iYarnIndex < minMaterial) {
 			//	minMaterial = m_ElementsInfo[*itEncounter - 1].iYarnIndex;
@@ -1537,7 +1537,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 		// * * copy the node, reassign the original node with copied node to the element definition
 		// * if this is not the first appearance of this material number
 		// * * find number of the copied node and reassign the original node with the copied node to the element definition
-		for (itEncounter = NodesEncounter[*itNodes].begin(); itEncounter != NodesEncounter[*itNodes].end(); ++itEncounter) {
+		for (itEncounter = m_NodesEncounter[*itNodes].begin(); itEncounter != m_NodesEncounter[*itNodes].end(); ++itEncounter) {
 
 			MyElemSurf[m_ElementsInfo[*itEncounter-1].iYarnIndex].push_back(*itEncounter);
 			MyNodeSurf[m_ElementsInfo[*itEncounter-1].iYarnIndex].push_back(*itNodes);
@@ -1564,7 +1564,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 		for (itElems = itElemSurf->second.begin(); itElems != itElemSurf->second.end(); ++itElems) {
 			set<int> CommonIndices = GetCommonIndices(MyNodeSurf[itElemSurf->first], AllElements[*itElems-1]);
 
-			pair<int,vector<int>> checkFaces = GetFaceIndices2(CMesh::HEX, CommonIndices, *itElems, AllElements, NodesEncounter, m_ElementsInfo);
+			pair<int,vector<int>> checkFaces = GetFaceIndices2(CMesh::HEX, CommonIndices, *itElems, AllElements);
 			if ( checkFaces.first != -1 ) {
 				vector<int>::iterator itFace;
 				for (itFace = checkFaces.second.begin(); itFace != checkFaces.second.end(); ++itFace) {
@@ -1583,7 +1583,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 		//int minMaterial = NodeSurf.size() + 1;
 
 		vector<int> temp;
-		for (itEncounter = NodesEncounter[*itNodes].begin(); itEncounter != NodesEncounter[*itNodes].end(); ++itEncounter) {
+		for (itEncounter = m_NodesEncounter[*itNodes].begin(); itEncounter != m_NodesEncounter[*itNodes].end(); ++itEncounter) {
 			temp.push_back(m_ElementsInfo[*itEncounter - 1].iYarnIndex);
 			//if (m_ElementsInfo[*itEncounter - 1].iYarnIndex < minMaterial) {
 			//	minMaterial = m_ElementsInfo[*itEncounter - 1].iYarnIndex;
@@ -1601,7 +1601,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 		// * * copy the node, reassign the original node with copied node to the element definition
 		// * if this is not the first appearance of this material number
 		// * * find number of the copied node and reassign the original node with the copied node to the element definition
-		for (itEncounter = NodesEncounter[*itNodes].begin(); itEncounter != NodesEncounter[*itNodes].end(); ++itEncounter) {
+		for (itEncounter = m_NodesEncounter[*itNodes].begin(); itEncounter != m_NodesEncounter[*itNodes].end(); ++itEncounter) {
 			
 			MyElemSurf[m_ElementsInfo[*itEncounter-1].iYarnIndex].push_back(*itEncounter);
 			
