@@ -321,7 +321,7 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, boo
 	if ( m_bCohesive ) {
 		timer.start("Writing surfaces");
 		map<int, vector<int>>::iterator itSurfaceNodes;
-		for (itSurfaceNodes = SurfaceNodes.begin(); itSurfaceNodes != SurfaceNodes.end(); ++itSurfaceNodes) {
+		for (itSurfaceNodes = m_SurfaceNodes.begin(); itSurfaceNodes != m_SurfaceNodes.end(); ++itSurfaceNodes) {
 			if ( itSurfaceNodes->first == -1) {
 				Output << "*NSET, NSET=SURFACE-NODES-MATRIX" << endl;
 			} else {
@@ -331,7 +331,7 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, boo
 		}
 
 		map<int, vector< pair<int,int> > >::iterator itSurfaceFaces;
-		for (itSurfaceFaces = SurfaceElementFaces.begin(); itSurfaceFaces != SurfaceElementFaces.end(); ++itSurfaceFaces) {
+		for (itSurfaceFaces = m_SurfaceElementFaces.begin(); itSurfaceFaces != m_SurfaceElementFaces.end(); ++itSurfaceFaces) {
 			if (itSurfaceFaces->first == -1) {
 				Output << "*SURFACE, NAME=SURFACE-MATRIX" << endl;
 			} else {
@@ -539,107 +539,6 @@ int COctreeVoxelMesh::refine_fn(p4est_t * p4est, p4est_topidx_t which_tree, p4es
 	if (getPointsInfo(CornerPoints, max_level ) == 1 || getPointsInfo(ExtraPoints, max_level) == 1 )
 		return 1;
 
-	/*
-	CornerInfo.clear();
-	gTextile.GetPointInformation( CornerPoints, CornerInfo );
-	//gTextile.GetPointInformation( ExtraPoints, CornerInfo );
-	vector<POINT_INFO>::iterator itData;
-	int temp, i;
-	for (itData = CornerInfo.begin(), i = 1; itData != CornerInfo.end(); ++itData, ++i) {
-		if (i == 1) {
-			temp = itData->iYarnIndex;
-		}
-		if (itData->iYarnIndex != temp) {
-			refine = 1;
-		}
-	}
-	*/
-
-/*	if (my_comparison(z_min, g_DomainAABB.first.z) && refine == 1) {
-		int loc_x_min, loc_x_max, loc_y_min, loc_y_max;
-		double x_dist = (g_DomainAABB.second.x - g_DomainAABB.first.x)/pow(2, max_level);
-		double y_dist = (g_DomainAABB.second.y - g_DomainAABB.first.y)/pow(2, max_level);
-		loc_x_min = floor((x_min - g_DomainAABB.first.x)/ x_dist);
-		loc_x_max = ceil((x_max - g_DomainAABB.first.x) / x_dist);
-		loc_y_min = floor((y_min - g_DomainAABB.first.y) / y_dist);
-		loc_y_max = ceil((y_max - g_DomainAABB.first.y) / y_dist);
-
-		//TGLOG("MIN: z_min " << z_min << ", "<<x_max <<", " << y_min);
-		//TGLOG("Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
-		//TGLOG("ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = loc_x_min; i < loc_x_max; i++)
-			for (int j = loc_y_min; j < loc_y_max; j++) {
-				//TGLOG("Refinement +1");
-				FaceZ_min[i][j] += 1;
-				//TGLOG(".");
-			}
-	}
-
-	if (my_comparison(z_max, g_DomainAABB.second.z) && refine == 1) {
-		int loc_x_min, loc_x_max, loc_y_min, loc_y_max;
-		double x_dist = (g_DomainAABB.second.x - g_DomainAABB.first.x)/pow(2, max_level);
-		double y_dist = (g_DomainAABB.second.y - g_DomainAABB.first.y)/pow(2, max_level);
-		loc_x_min = floor((x_min - g_DomainAABB.first.x)/ x_dist);
-		loc_x_max = ceil((x_max - g_DomainAABB.first.x) / x_dist);
-		loc_y_min = floor((y_min - g_DomainAABB.first.y) / y_dist);
-		loc_y_max = ceil((y_max - g_DomainAABB.first.y) / y_dist);
-
-		//TGLOG("MAX: z_min " << z_max << ", "<<x_max <<", " << y_min);
-		//TGLOG("MAX: Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
-		//TGLOG("MAX: ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = loc_x_min; i < loc_x_max; i++) {
-			for (int j = loc_y_min; j < loc_y_max; j++) {
-				FaceZ_max[i][j] += 1;
-			}
-		}
-	}
-
-	if (my_comparison(z_max, g_DomainAABB.second.z)) {
-		int loc_x_min, loc_x_max, loc_y_min, loc_y_max;
-		double x_dist = (g_DomainAABB.second.x - g_DomainAABB.first.x)/pow(2, max_level);
-		double y_dist = (g_DomainAABB.second.y - g_DomainAABB.first.y)/pow(2, max_level);
-		loc_x_min = floor((x_min - g_DomainAABB.first.x)/ x_dist);
-		loc_x_max = ceil((x_max - g_DomainAABB.first.x) / x_dist);
-		loc_y_min = floor((y_min - g_DomainAABB.first.y) / y_dist);
-		loc_y_max = ceil((y_max - g_DomainAABB.first.y) / y_dist);
-
-		//TGLOG("MAX: z_min " << z_max << ", "<<x_max <<", " << y_min);
-		//TGLOG("MAX: Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
-		//TGLOG("MAX: ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = loc_x_min; i < loc_x_max; i++) {
-			for (int j = loc_y_min; j < loc_y_max; j++) {
-				if (FaceZ_max[i][j] < FaceZ_min[i][j]) {
-					//TGLOG("Periodic refinement enacted!");
-					refine = 1;
-					FaceZ_max[i][j] += 1;
-				}
-			}
-		}
-	}
-
-	if (my_comparison(z_min, g_DomainAABB.first.z)) {
-		int loc_x_min, loc_x_max, loc_y_min, loc_y_max;
-		double x_dist = (g_DomainAABB.second.x - g_DomainAABB.first.x)/pow(2, max_level);
-		double y_dist = (g_DomainAABB.second.y - g_DomainAABB.first.y)/pow(2, max_level);
-		loc_x_min = floor((x_min - g_DomainAABB.first.x)/ x_dist);
-		loc_x_max = ceil((x_max - g_DomainAABB.first.x) / x_dist);
-		loc_y_min = floor((y_min - g_DomainAABB.first.y) / y_dist);
-		loc_y_max = ceil((y_max - g_DomainAABB.first.y) / y_dist);
-
-		//TGLOG("MIN: z_min " << z_min << ", "<<x_max <<", " << y_min);
-		//TGLOG("MAX: Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
-		//TGLOG("MAX: ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = loc_x_min; i < loc_x_max; i++) {
-			for (int j = loc_y_min; j < loc_y_max; j++) {
-				if (FaceZ_max[i][j] > FaceZ_min[i][j]) {
-					//TGLOG("Periodic refinement enacted!");
-					refine = 1;
-					FaceZ_min[i][j] += 1;
-				}
-			}
-		}
-	}
-	*/
 	return 0;
 }
 
@@ -730,20 +629,7 @@ int COctreeVoxelMesh::refine_fn_post(p4est_t * p4est, p4est_topidx_t which_tree,
 	
 	if (getPointsInfo(ExtraPoints, max_level) == 1)
 		return 1;
-	/*
-	ExtraInfo.clear();
-	gTextile.GetPointInformation( ExtraPoints, ExtraInfo );
-	vector<POINT_INFO>::iterator itData;
-	int temp, i;
-	for (itData = ExtraInfo.begin(), i = 0; itData != ExtraInfo.end(); ++itData, i++) {
-		if (i == 0) {
-			temp = itData->iYarnIndex;
-		}
-		if (itData->iYarnIndex != temp) {
-			return 1;
-		}
-	}
-	*/
+	
 	return 0;
 }
 
@@ -1190,9 +1076,9 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 						case 6: { a[0] = elemNodes[2]; a[1] = elemNodes[5]; a[2] = elemNodes[7]; break; }
 						case 7: { a[0] = elemNodes[3]; a[1] = elemNodes[4]; a[2] = elemNodes[6]; break; }
 					}
-					NeighbourNodes[*itNodes].push_back(a[0]);
-					NeighbourNodes[*itNodes].push_back(a[1]);
-					NeighbourNodes[*itNodes].push_back(a[2]);
+					m_NeighbourNodes[*itNodes].push_back(a[0]);
+					m_NeighbourNodes[*itNodes].push_back(a[1]);
+					m_NeighbourNodes[*itNodes].push_back(a[2]);
 				}
 			}
 
@@ -1536,8 +1422,8 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 
 	// Prepare the neighbour connections (leave only nodes which are on an interface)
 	map<int, vector<int>>::iterator itNeighbourNodes;
-	map<int, vector<int>> NeighbourSurfNodes = NeighbourNodes;
-	for (itNeighbourNodes = NeighbourSurfNodes.begin(); itNeighbourNodes != NeighbourSurfNodes.end(); ++itNeighbourNodes) {
+	
+	for (itNeighbourNodes = m_NeighbourNodes.begin(); itNeighbourNodes != m_NeighbourNodes.end(); ++itNeighbourNodes) {
 		vector<int> temp;
 		vector<int> v_intersection;
 		
@@ -1565,10 +1451,11 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 			for (itNodes = itNodeSurf->second.begin(); itNodes != itNodeSurf->second.end(); ++itNodes) {
 				vector<int>::iterator itNeighbour;
 				XYZ laplacian(0.0, 0.0, 0.0);
-				int num = NeighbourSurfNodes[*itNodes].size();
+				
+				int num = m_NeighbourNodes[*itNodes].size();
 				XYZ orig = AllNodes[*itNodes];
 
-				for (itNeighbour = NeighbourSurfNodes[*itNodes].begin(); itNeighbour != NeighbourSurfNodes[*itNodes].end(); ++itNeighbour) {
+				for (itNeighbour = m_NeighbourNodes[*itNodes].begin(); itNeighbour != m_NeighbourNodes[*itNodes].end(); ++itNeighbour) {
 					laplacian -= coef/num*(orig - AllNodes[*itNeighbour]);
 
 					// If a point is on a boundary, it should stay there
@@ -1654,25 +1541,6 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 
 			MyElemSurf[m_ElementsInfo[*itEncounter-1].iYarnIndex].push_back(*itEncounter);
 			MyNodeSurf[m_ElementsInfo[*itEncounter-1].iYarnIndex].push_back(*itNodes);
-			/*if (m_ElementsInfo[*itEncounter-1].iYarnIndex == minMaterial) {
-				MyNodeSurf[m_ElementsInfo[*itEncounter-1].iYarnIndex].push_back(*itNodes);
-			} else {
-				vector<int>::iterator it = find(usedMaterial.begin(), usedMaterial.end(), m_ElementsInfo[*itEncounter-1].iYarnIndex); 
-				if (  usedMaterial.size() > 0 && it != usedMaterial.end() ) {
-					// The node has already been copied, replace corresponding nodes in the element
-					std::replace(AllElements[*itEncounter-1].begin(), AllElements[*itEncounter-1].end(), *itNodes, usedNodes[it - usedMaterial.begin()]);
-				} else {
-					// Copy the existing node and replace it in the element
-					AllNodes.insert(std::make_pair(extraNodeCount, AllNodes[*itNodes]));
-					MyNodeSurf[m_ElementsInfo[*itEncounter-1].iYarnIndex].push_back(extraNodeCount);
-					std::replace(AllElements[*itEncounter-1].begin(), AllElements[*itEncounter-1].end(), *itNodes, extraNodeCount);
-					
-					// Save info about the copied node
-					usedMaterial.push_back(m_ElementsInfo[*itEncounter - 1].iYarnIndex);
-					usedNodes.push_back(extraNodeCount);
-					extraNodeCount++;
-				}
-			}*/
 		}
 	}
 
@@ -1683,7 +1551,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 		itNodeSurf->second.erase( unique(itNodeSurf->second.begin(), itNodeSurf->second.end()) , itNodeSurf->second.end() );
 	}
 
-	SurfaceNodes = MyNodeSurf;
+	m_SurfaceNodes = MyNodeSurf;
 
 	for (itElemSurf = MyElemSurf.begin(); itElemSurf != MyElemSurf.end(); ++itElemSurf) 
 	{
@@ -1700,32 +1568,9 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 			if ( checkFaces.first != -1 ) {
 				vector<int>::iterator itFace;
 				for (itFace = checkFaces.second.begin(); itFace != checkFaces.second.end(); ++itFace) {
-					SurfaceElementFaces[itElemSurf->first].push_back(make_pair(*itElems, *itFace + 1));
+					m_SurfaceElementFaces[itElemSurf->first].push_back(make_pair(*itElems, *itFace + 1));
 				}
 			}
-			//}
-
-			/*if (CommonIndices.size() == 4) {
-				int faceIndex = GetFaceIndex(CMesh::HEX, CommonIndices);
-				if (*itElems == 19911 || *itElems == 19841) {
-					pair<int,vector<int>> checkFaces = GetFaceIndices2(CMesh::HEX, CommonIndices, *itElems, AllElements, NodesEncounter, m_ElementsInfo);
-				}
-				if ( faceIndex > -1) {
-					SurfaceElementFaces[itElemSurf->first].push_back(make_pair(*itElems, faceIndex + 1));
-				}
-			}
-
-			if (CommonIndices.size() > 4) {
-				vector<int> faceInd = GetFaceIndices(CMesh::HEX, CommonIndices);
-
-				vector<int>::iterator itFace;				
-
-				if ( !faceInd.empty() )
-					for (itFace = faceInd.begin(); itFace != faceInd.end(); ++itFace)
-						SurfaceElementFaces[itElemSurf->first].push_back(make_pair(*itElems, *itFace + 1));
-			}
-			*/
-
 		}
 	}
 
@@ -1788,6 +1633,6 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 		itNodeSurf->second.erase( unique(itNodeSurf->second.begin(), itNodeSurf->second.end()) , itNodeSurf->second.end() );
 	}
 
-	SurfaceNodes = MyNodeSurf;
+	m_SurfaceNodes = MyNodeSurf;
 	
 }

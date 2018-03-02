@@ -148,16 +148,16 @@ namespace TexGen
 		p4est_t *p4est;
 		p4est_connectivity_t *conn;
 
-		std::map<int,XYZ> AllNodes;
-		std::vector< std::vector<int> > AllElements;
-		std::map< int, vector<int> > NodeConstraints;
-		std::map< int, vector<int> > NodesEncounter;
-		std::map< int, vector<int> > NeighbourNodes;
+		map<int,XYZ> AllNodes;
+		vector< std::vector<int> > AllElements;
+		map< int, vector<int> > NodeConstraints;
+		map< int, vector<int> > NodesEncounter;
+		map< int, vector<int> > m_NeighbourNodes;
 
-		std::map< int, vector<int> > SurfaceNodes;
-		map<int, vector< pair<int, int> > > SurfaceElementFaces;
+		map< int, vector<int> > m_SurfaceNodes;
+		map<int, vector< pair<int, int> > > m_SurfaceElementFaces;
 
-		vector< vector<int> > MaterialElements;
+		//vector< vector<int> > MaterialElements;
 		vector<Point> m_boundaryPoints;
 
 
