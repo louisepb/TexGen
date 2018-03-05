@@ -131,8 +131,8 @@ namespace TexGen
 		void fillMaterialInfo();
 		int isBoundary(double p[3]);
 
-		int checkIndex(int currentElement, vector<int> nodes, const vector< vector<int> > &AllElements); 
-		pair<int, vector<int> > GetFaceIndices2(CMesh::ELEMENT_TYPE ElemType, const set<int> &NodeIndices, int currentElement, const vector< vector<int> > &AllElements);
+		int checkIndex(int currentElement, vector<int> nodes); 
+		pair<int, vector<int> > GetFaceIndices2(CMesh::ELEMENT_TYPE ElemType, const set<int> &NodeIndices, int currentElement);
 
 		void storePointInfo(int refineLevel);
 		static int getPointsInfo(vector<XYZ> myPoints, int refineLevel);
@@ -152,8 +152,8 @@ namespace TexGen
 		p4est_connectivity_t *conn;
 
 		map<int,XYZ> AllNodes;
-		vector< std::vector<int> > AllElements;
-		map< int, vector<int> > NodeConstraints;
+		vector< std::vector<int> > m_AllElements;
+		map< int, vector<int> > m_NodeConstraints;
 		map< int, vector<int> > m_NodesEncounter;
 		map< int, vector<int> > m_NeighbourNodes;
 
