@@ -1728,6 +1728,20 @@ bool CTextile3DWeave::IsBinderYarn( int index ) const
 	return m_BinderPattern[index];
 }
 
+int CTextile3DWeave::GetXYarnIndex( int YarnInd )
+{
+	for ( int i = 0; i < m_XYarns.size(); ++i )
+	{
+		vector<int>::iterator itYarns;
+		for ( itYarns = m_XYarns[i].begin(); itYarns != m_XYarns[i].end(); ++itYarns )
+		{
+			if ( *itYarns == YarnInd )
+				return i;
+		}
+	}
+	return -1;
+}
+
 bool CTextile3DWeave::BinderYarns() const
 {
 	for ( int i = 0; i < m_BinderPattern.size(); ++i )
