@@ -39,10 +39,14 @@ ENDIF(WIN32)
 ADD_DEFINITIONS(-DEXPORT)
 
 IF(WIN32)
-TARGET_LINK_LIBRARIES(TexGenCore Triangle Octree TinyXML CSparse tetgenlib)
+TARGET_LINK_LIBRARIES(TexGenCore Triangle Octree TinyXML CSparse tetgenlib
+../../OctreeRefinement/libmylib_sc_w64.lib
+../../OctreeRefinement/libmylib_w64.lib)
 ELSE(WIN32)
 TARGET_LINK_LIBRARIES(TexGenCore Triangle Octree TinyXML CSparse tetgenlib)
 ENDIF(WIN32)
+
+INCLUDE_DIRECTORIES(../../OctreeRefinement/Include)
 
 INCLUDE(../Python/FindPythonSitePackages.cmake)
 IF(WIN32)
