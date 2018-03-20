@@ -90,24 +90,6 @@ int my_comparison(double x, double y)
 		return 0;
 }
 
-// Boundaries are in format:
-int COctreeVoxelMesh::isBoundary(double point[3]) 
-{
-	if ( my_comparison(point[0], m_DomainAABB.first.x) || my_comparison(point[0], m_DomainAABB.second.x)) {
-		return 1;
-	} else {
-		if ( my_comparison(point[1], m_DomainAABB.first.y) || my_comparison(point[1], m_DomainAABB.second.y)) {
-			return 1;
-		} else {
-			if ( my_comparison(point[2], m_DomainAABB.first.z) || my_comparison(point[2], m_DomainAABB.second.z)) {
-				return 1;
-			} else {
-				return 0;
-			}
-		}
-	}
-}
-
 // This function comes from a p4est example. It decodes tree information to node numbering.
 // I still have no idea how exactly it works :)
 static int
@@ -156,6 +138,168 @@ int duplicatedHangingNode(double vxyz[3], double hang_coord[8][3], int hang_nums
 	}
 	return -1;
 }
+
+pair<int, int> most_common(vector<int> v) {
+	int currentVal = v[0];
+	int currentCount = 0;
+	int mostVal = v[0];
+	int mostCount = 0;
+
+	for (int i = 0; i < v.size(); i++) {
+		int c = count(v.begin(), v.end(), v[i]);
+		if (c > mostCount) {
+			mostCount = c;
+			mostVal = v[i];
+		}
+	}
+
+	return make_pair(mostVal, mostCount);
+}
+
+// P4EST should be initialised with initial coordinates of the unit cell vertices
+// TODO: Try to initialise P4EST with several elements to have better refinement in a certain direction
+int writeTempFile(string filename, pair<XYZ, XYZ> myDomain) 
+{
+	ofstream TempFile(filename);
+	if (!TempFile) {
+		TGERROR("Cannot create an initialisation *.inp file " << filename);
+		return -1;
+	}
+	TempFile << "*HEADING" << endl;
+	TempFile << "This is a temp input for the octree refinement" << endl;
+	TempFile << "*NODE" << endl;
+	TempFile << "1, " << myDomain.first.x<< ", " << myDomain.first.y << ", " << myDomain.first.z << endl;
+	TempFile << "2, " << myDomain.second.x<< ", " << myDomain.first.y << ", " << myDomain.first.z << endl;
+	TempFile << "3, " << myDomain.first.x<< ", " << myDomain.second.y << ", " << myDomain.first.z << endl;
+	TempFile << "4, " << myDomain.second.x<< ", " << myDomain.second.y << ", " << myDomain.first.z << endl;
+
+	TempFile << "5, " << myDomain.first.x <<", " << myDomain.first.y << ", " << myDomain.second.z << endl;
+	TempFile << "6, " << myDomain.second.x<< ", " << myDomain.first.y << ", " << myDomain.second.z << endl;
+	TempFile << "7, " << myDomain.first.x<< ", " << myDomain.second.y << ", " << myDomain.second.z << endl;
+	TempFile << "8, " << myDomain.second.x<< ", " << myDomain.second.y << ", " << myDomain.second.z << endl;
+
+	TempFile << "*ELEMENT,TYPE=C3D8R" << endl;
+	TempFile << "1, 5, 7, 3, 1, 6, 8, 4, 2" << endl;
+	TempFile.close();
+	return 0;
+}
+
+vector<int> GetFaceIndices(CMesh::ELEMENT_TYPE ElemType, const set<int> &NodeIndices)
+{
+	vector<int> facesInd;
+	int numFaces = 0;
+	if (NodeIndices.size() == 5)
+		numFaces = 1;
+	if (NodeIndices.size() == 6)
+		numFaces = 2;
+	if (NodeIndices.size() == 7)
+		numFaces = 3;
+
+	// We are in trouble! All the nodes belong to a surface. There is no way to find out which element faces are on surface
+	if (NodeIndices.size() == 8) {
+		return facesInd;
+	}
+
+	int i = 0, k = 0;
+	while (i < numFaces) {
+		if (NodeIndices.count(0) && NodeIndices.count(1) && NodeIndices.count(2) && NodeIndices.count(3))
+			facesInd.push_back(0), i++;
+		if (NodeIndices.count(4) && NodeIndices.count(5) && NodeIndices.count(6) && NodeIndices.count(7))
+			facesInd.push_back(1), i++;
+		if (NodeIndices.count(0) && NodeIndices.count(1) && NodeIndices.count(4) && NodeIndices.count(5))
+			facesInd.push_back(2), i++;
+		if (NodeIndices.count(1) && NodeIndices.count(2) && NodeIndices.count(5) && NodeIndices.count(6))
+			facesInd.push_back(3), i++;
+		if (NodeIndices.count(2) && NodeIndices.count(3) && NodeIndices.count(6) && NodeIndices.count(7))
+			facesInd.push_back(4), i++;
+		if (NodeIndices.count(3) && NodeIndices.count(0) && NodeIndices.count(7) && NodeIndices.count(4))
+			facesInd.push_back(5), i++;
+		if (k++ > numFaces) {
+			// No faces found
+			return facesInd;
+		}
+	}
+
+	return facesInd;
+}
+
+int GetFaceIndex(CMesh::ELEMENT_TYPE ElemType, const set<int> &NodeIndices)
+{
+	// Face indices taken from abaqus manual 22.1.4 Three-dimensional solid element library
+	switch (ElemType)
+	{
+	case CMesh::HEX:
+		if (NodeIndices.count(0) && NodeIndices.count(1) && NodeIndices.count(2) && NodeIndices.count(3))
+			return 0;
+		if (NodeIndices.count(4) && NodeIndices.count(5) && NodeIndices.count(6) && NodeIndices.count(7))
+			return 1;
+		if (NodeIndices.count(0) && NodeIndices.count(1) && NodeIndices.count(4) && NodeIndices.count(5))
+			return 2;
+		if (NodeIndices.count(1) && NodeIndices.count(2) && NodeIndices.count(5) && NodeIndices.count(6))
+			return 3;
+		if (NodeIndices.count(2) && NodeIndices.count(3) && NodeIndices.count(6) && NodeIndices.count(7))
+			return 4;
+		if (NodeIndices.count(3) && NodeIndices.count(0) && NodeIndices.count(7) && NodeIndices.count(4))
+			return 5;
+		break;
+	}
+	assert(false);
+	return -1;
+}
+
+set<int> GetCommonIndices(const vector<int> &SurfIndices, const vector<int> &VolIndices)
+{
+	set<int> Common;
+	vector<int>::const_iterator itSurf;
+	vector<int>::const_iterator itVol;
+	int i;
+	for (itSurf = SurfIndices.begin(); itSurf != SurfIndices.end(); ++itSurf)
+	{
+		for (itVol = VolIndices.begin(), i=0; itVol != VolIndices.end(); ++itVol, ++i)
+		{
+			if (*itSurf == *itVol)
+			{
+				Common.insert(i);
+			}
+		}
+	}
+	return Common;
+}
+
+COctreeVoxelMesh::COctreeVoxelMesh(string Type)
+:CVoxelMesh(Type)
+{
+}
+
+COctreeVoxelMesh::~COctreeVoxelMesh(void)
+{
+	p4est_destroy (p4est);
+	TGLOG("P4est object destroyed");
+	p4est_connectivity_destroy (conn);
+	TGLOG("Connectivity destoyed");
+	m_ElementsInfo.clear();
+	//Centre
+}
+
+// Boundaries are in format:
+int COctreeVoxelMesh::isBoundary(double point[3]) 
+{
+	if ( my_comparison(point[0], m_DomainAABB.first.x) || my_comparison(point[0], m_DomainAABB.second.x)) {
+		return 1;
+	} else {
+		if ( my_comparison(point[1], m_DomainAABB.first.y) || my_comparison(point[1], m_DomainAABB.second.y)) {
+			return 1;
+		} else {
+			if ( my_comparison(point[2], m_DomainAABB.first.z) || my_comparison(point[2], m_DomainAABB.second.z)) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+	}
+}
+
+
 
 // This node is hanging and DOES NOT have a proper number, the master nodes should be stored
 // Number of node which is hanging is hanging_corner[i]
@@ -633,23 +777,6 @@ int COctreeVoxelMesh::refine_fn_post(p4est_t * p4est, p4est_topidx_t which_tree,
 	return 0;
 }
 
-pair<int, int> most_common(vector<int> v) {
-	int currentVal = v[0];
-	int currentCount = 0;
-	int mostVal = v[0];
-	int mostCount = 0;
-
-	for (int i = 0; i < v.size(); i++) {
-		int c = count(v.begin(), v.end(), v[i]);
-		if (c > mostCount) {
-			mostCount = c;
-			mostVal = v[i];
-		}
-	}
-
-	return make_pair(mostVal, mostCount);
-}
-
 // Return 1 is at least one of the points is not the same material as others
 // Return 0 is all the points are from the same materials
 int COctreeVoxelMesh::getPointsInfo(vector<XYZ> myPoints, int refineLevel)
@@ -788,34 +915,6 @@ void COctreeVoxelMesh::fillMaterialInfo() {
 	}
 }
 
-// P4EST should be initialised with initial coordinates of the unit cell vertices
-// TODO: Try to initialise P4EST with several elements to have better refinement in a certain direction
-int writeTempFile(string filename, pair<XYZ, XYZ> myDomain) 
-{
-	ofstream TempFile(filename);
-	if (!TempFile) {
-		TGERROR("Cannot create an initialisation *.inp file " << filename);
-		return -1;
-	}
-	TempFile << "*HEADING" << endl;
-	TempFile << "This is a temp input for the octree refinement" << endl;
-	TempFile << "*NODE" << endl;
-	TempFile << "1, " << myDomain.first.x<< ", " << myDomain.first.y << ", " << myDomain.first.z << endl;
-	TempFile << "2, " << myDomain.second.x<< ", " << myDomain.first.y << ", " << myDomain.first.z << endl;
-	TempFile << "3, " << myDomain.first.x<< ", " << myDomain.second.y << ", " << myDomain.first.z << endl;
-	TempFile << "4, " << myDomain.second.x<< ", " << myDomain.second.y << ", " << myDomain.first.z << endl;
-
-	TempFile << "5, " << myDomain.first.x <<", " << myDomain.first.y << ", " << myDomain.second.z << endl;
-	TempFile << "6, " << myDomain.second.x<< ", " << myDomain.first.y << ", " << myDomain.second.z << endl;
-	TempFile << "7, " << myDomain.first.x<< ", " << myDomain.second.y << ", " << myDomain.second.z << endl;
-	TempFile << "8, " << myDomain.second.x<< ", " << myDomain.second.y << ", " << myDomain.second.z << endl;
-
-	TempFile << "*ELEMENT,TYPE=C3D8R" << endl;
-	TempFile << "1, 5, 7, 3, 1, 6, 8, 4, 2" << endl;
-	TempFile.close();
-	return 0;
-}
-
 int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level) 
 {
 	// The MPI is not included in TexGen - initialise dummy mpi objects for purpose of P4EST
@@ -888,11 +987,6 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 	return 0;
 }
 
-COctreeVoxelMesh::COctreeVoxelMesh(string Type)
-:CVoxelMesh(Type)
-{
-}
-
 void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int min_level, int refine_level, bool smoothing, int iter, double s1, double s2, bool surfaceOutput, bool cohesive)
 {
 	CTimer timer;
@@ -927,16 +1021,6 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 
 	timer.check("Octree refinement finished");
 	timer.stop();
-}
-
-COctreeVoxelMesh::~COctreeVoxelMesh(void)
-{
-	p4est_destroy (p4est);
-	TGLOG("P4est object destroyed");
-	p4est_connectivity_destroy (conn);
-	TGLOG("Connectivity destoyed");
-	m_ElementsInfo.clear();
-	//Centre
 }
 
 bool COctreeVoxelMesh::CalculateVoxelSizes(CTextile &Textile)
@@ -1143,70 +1227,6 @@ void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAba
 	//timer.stop();
 }
 
-
-int GetFaceIndex(CMesh::ELEMENT_TYPE ElemType, const set<int> &NodeIndices)
-{
-	// Face indices taken from abaqus manual 22.1.4 Three-dimensional solid element library
-	switch (ElemType)
-	{
-	case CMesh::HEX:
-		if (NodeIndices.count(0) && NodeIndices.count(1) && NodeIndices.count(2) && NodeIndices.count(3))
-			return 0;
-		if (NodeIndices.count(4) && NodeIndices.count(5) && NodeIndices.count(6) && NodeIndices.count(7))
-			return 1;
-		if (NodeIndices.count(0) && NodeIndices.count(1) && NodeIndices.count(4) && NodeIndices.count(5))
-			return 2;
-		if (NodeIndices.count(1) && NodeIndices.count(2) && NodeIndices.count(5) && NodeIndices.count(6))
-			return 3;
-		if (NodeIndices.count(2) && NodeIndices.count(3) && NodeIndices.count(6) && NodeIndices.count(7))
-			return 4;
-		if (NodeIndices.count(3) && NodeIndices.count(0) && NodeIndices.count(7) && NodeIndices.count(4))
-			return 5;
-		break;
-	}
-	assert(false);
-	return -1;
-}
-
-vector<int> GetFaceIndices(CMesh::ELEMENT_TYPE ElemType, const set<int> &NodeIndices)
-{
-	vector<int> facesInd;
-	int numFaces = 0;
-	if (NodeIndices.size() == 5)
-		numFaces = 1;
-	if (NodeIndices.size() == 6)
-		numFaces = 2;
-	if (NodeIndices.size() == 7)
-		numFaces = 3;
-
-	// We are in trouble! All the nodes belong to a surface. There is no way to find out which element faces are on surface
-	if (NodeIndices.size() == 8) {
-		return facesInd;
-	}
-
-	int i = 0, k = 0;
-	while (i < numFaces) {
-		if (NodeIndices.count(0) && NodeIndices.count(1) && NodeIndices.count(2) && NodeIndices.count(3))
-			facesInd.push_back(0), i++;
-		if (NodeIndices.count(4) && NodeIndices.count(5) && NodeIndices.count(6) && NodeIndices.count(7))
-			facesInd.push_back(1), i++;
-		if (NodeIndices.count(0) && NodeIndices.count(1) && NodeIndices.count(4) && NodeIndices.count(5))
-			facesInd.push_back(2), i++;
-		if (NodeIndices.count(1) && NodeIndices.count(2) && NodeIndices.count(5) && NodeIndices.count(6))
-			facesInd.push_back(3), i++;
-		if (NodeIndices.count(2) && NodeIndices.count(3) && NodeIndices.count(6) && NodeIndices.count(7))
-			facesInd.push_back(4), i++;
-		if (NodeIndices.count(3) && NodeIndices.count(0) && NodeIndices.count(7) && NodeIndices.count(4))
-			facesInd.push_back(5), i++;
-		if (k++ > numFaces) {
-			// No faces found
-			return facesInd;
-		}
-	}
-
-	return facesInd;
-}
-
 int COctreeVoxelMesh::checkIndex(int currentElement, vector<int> nodes) 
 {
 	vector<int> elems;
@@ -1330,25 +1350,6 @@ pair<int, vector<int> > COctreeVoxelMesh::GetFaceIndices2(CMesh::ELEMENT_TYPE El
 	}
 
 	return make_pair(numFaces, facesInd);
-}
-
-set<int> GetCommonIndices(const vector<int> &SurfIndices, const vector<int> &VolIndices)
-{
-	set<int> Common;
-	vector<int>::const_iterator itSurf;
-	vector<int>::const_iterator itVol;
-	int i;
-	for (itSurf = SurfIndices.begin(); itSurf != SurfIndices.end(); ++itSurf)
-	{
-		for (itVol = VolIndices.begin(), i=0; itVol != VolIndices.end(); ++itVol, ++i)
-		{
-			if (*itSurf == *itVol)
-			{
-				Common.insert(i);
-			}
-		}
-	}
-	return Common;
 }
 
 // Populate sets of nodes which are at an interface and elements which have at least one onde at an interface

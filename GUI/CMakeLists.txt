@@ -34,6 +34,7 @@ FIND_PACKAGE(wxWidgets REQUIRED)
 FIND_PACKAGE(SWIG REQUIRED)
 FIND_PACKAGE(PythonLibs REQUIRED)
 
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../../OctreeRefinement/Include)
 INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS} ${wxWidgets_INCLUDE_DIRS} ${PYTHON_INCLUDE_PATH})
 
 ADD_DEFINITIONS(${wxWidgets_DEFINITIONS})
@@ -125,9 +126,9 @@ IF(WIN32)
 
 # Install the manifest file if VS2008. Haven't found way to access at build time from installation to get input folder
 	IF(MSVC90 OR MSVC11)
-		INSTALL(FILES ${CMAKE_BINARY_DIR}/Debug/TexGenGUI.exe.manifest
+		INSTALL(FILES ${CMAKE_BINARY_DIR}/Release/TexGenGUI.exe.manifest
 		DESTINATION ${CMAKE_INSTALL_PREFIX})
-		INSTALL(FILES ${CMAKE_BINARY_DIR}/Debug/TexGenGUI.exe.manifest
+		INSTALL(FILES ${CMAKE_BINARY_DIR}/Release/TexGenGUI.exe.manifest
 		DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../Installer)
 	ENDIF(MSVC90 OR MSVC11)	
 ELSE(WIN32)
