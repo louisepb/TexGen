@@ -17,3 +17,5 @@ Python/*_wrap.*
 # Directories #
 Binaries
 CMakeFiles
+.vs
+Scripts
