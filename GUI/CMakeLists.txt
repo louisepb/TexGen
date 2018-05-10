@@ -29,12 +29,13 @@ ELSE(UNIX)
 	SET(wxWidgets_USE_LIBS base core aui adv xrc xml html)
 ENDIF(UNIX)
 
-FIND_PACKAGE(VTK REQUIRED)
+FIND_PACKAGE(VTK 6.3 REQUIRED NO_MODULE)
 FIND_PACKAGE(wxWidgets REQUIRED)
 FIND_PACKAGE(SWIG REQUIRED)
 FIND_PACKAGE(PythonLibs REQUIRED)
 
 INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS} ${wxWidgets_INCLUDE_DIRS} ${PYTHON_INCLUDE_PATH})
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
 
 ADD_DEFINITIONS(${wxWidgets_DEFINITIONS})
 LINK_DIRECTORIES(${VTK_LIBRARY_DIRS} )
@@ -44,15 +45,7 @@ IF(UNIX)
 	TARGET_LINK_LIBRARIES(TexGenGUI
 		TexGenRenderer
 		TexGenCore
-		vtkGraphics
-		vtkFiltering
-		vtkCommon
-		vtkRendering
-		vtkWidgets
-		vtkftgl
-		vtksys
-		vtkexpat
-		vtkNetCDF
+		${VTK_LIBRARIES}
 		LatinHypercube
 		${wxWidgets_LIBRARIES}
 		#optimized ${PYTHON_LIBRARIES})
@@ -80,16 +73,17 @@ IF(WIN32)
 	TexGenCore
 	opengl32 
 	glu32
-	${VTK_LIBRARY_DIRS}/vtkGraphics
-	${VTK_LIBRARY_DIRS}/vtkFiltering
-	${VTK_LIBRARY_DIRS}/vtkCommon
-	${VTK_LIBRARY_DIRS}/vtkRendering
-	${VTK_LIBRARY_DIRS}/vtkWidgets
-	${VTK_LIBRARY_DIRS}/vtkftgl
-	${VTK_LIBRARY_DIRS}/vtksys
-	${VTK_LIBRARY_DIRS}/vtkexpat
-	${VTK_LIBRARY_DIRS}/vtknetcdf
-	${VTK_LIBRARY_DIRS}/vtkhdf5
+	${VTK_LIBRARIES}
+	#${VTK_LIBRARY_DIRS}/vtkGraphics
+	#${VTK_LIBRARY_DIRS}/vtkFiltering
+	#${VTK_LIBRARY_DIRS}/vtkCommon
+	#${VTK_LIBRARY_DIRS}/vtkRendering
+	#${VTK_LIBRARY_DIRS}/vtkWidgets
+	#${VTK_LIBRARY_DIRS}/vtkftgl
+	#${VTK_LIBRARY_DIRS}/vtksys
+	#${VTK_LIBRARY_DIRS}/vtkexpat
+	#${VTK_LIBRARY_DIRS}/vtknetcdf
+	#${VTK_LIBRARY_DIRS}/vtkhdf5
 	${wxWidgets_LIBRARIES}
 	optimized ${PYTHON_LIBRARIES}
 	comctl32
