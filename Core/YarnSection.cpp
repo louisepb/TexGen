@@ -93,6 +93,14 @@ CYarnSectionConstant* CYarnSection::GetSectionConstant()
 	return dynamic_cast<CYarnSectionConstant*>(this);
 }
 
+CYarnSectionInterpNode* CYarnSection::GetSectionInterpNode()
+{
+	return dynamic_cast<CYarnSectionInterpNode*>(this);
+}
+CYarnSectionInterpPosition* CYarnSection::GetSectionInterpPosition()
+{
+	return dynamic_cast<CYarnSectionInterpPosition*>(this);
+}
 
 
 
