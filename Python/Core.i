@@ -197,6 +197,8 @@ namespace std
 %include "../Core/Materials.h"
 
 %include "../Core/PatternDraft.h"
+%feature("notabstract") CBifurcationVoxelMesh;
+%include "../Core/BifurcationVoxelMesh.h"
 
 namespace TexGen
 {
@@ -349,7 +351,6 @@ namespace TexGen
 		return *self * dScalar;
 	}
 }
-
 
 
 
