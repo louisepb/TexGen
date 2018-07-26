@@ -45,8 +45,8 @@ CSectionHybrid::CSectionHybrid(const CSection &TopRight, const CSection &TopLeft
 	AddDivision(0.75);
 	AssignSection(0, TopRight);
 	AssignSection(1, TopLeft);
-	AssignSection(0, BottomLeft);
-	AssignSection(1, BottomRight);
+	AssignSection(2, BottomLeft);
+	AssignSection(3, BottomRight);
 }
 
 CSectionHybrid::~CSectionHybrid(void)
