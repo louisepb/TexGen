@@ -1,5 +1,15 @@
 Version History
 ---------------
+v3.11.0
+=======
+Core
+====
+** Bugfix to correct hybrid section constructor with 4 sections
+
+UnitTests
+=========
+** Added hybrid section tests
+
 v3.10.0
 ======
 General
