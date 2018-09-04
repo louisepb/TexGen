@@ -52,24 +52,24 @@ INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
 IF(WIN32)
 	TARGET_LINK_LIBRARIES(TexGenRenderer
 		TexGenCore opengl32 glu32
-		${VTK_LIBRARY_DIRS}/vtkGraphics
-		${VTK_LIBRARY_DIRS}/vtkFiltering
-		${VTK_LIBRARY_DIRS}/vtkCommon
-		${VTK_LIBRARY_DIRS}/vtkRendering
-		${VTK_LIBRARY_DIRS}/vtkHybrid
-		${VTK_LIBRARY_DIRS}/vtkIO
-		${VTK_LIBRARY_DIRS}/vtkWidgets
-		${VTK_LIBRARY_DIRS}/vtkzlib
-		${VTK_LIBRARY_DIRS}/vtkfreetype
-		${VTK_LIBRARY_DIRS}/vtkftgl
-		${VTK_LIBRARY_DIRS}/vtkpng
-		${VTK_LIBRARY_DIRS}/vtkImaging
-		${VTK_LIBRARY_DIRS}/vtkjpeg
-		${VTK_LIBRARY_DIRS}/vtktiff
-		${VTK_LIBRARY_DIRS}/vtksys
-		${VTK_LIBRARY_DIRS}/vtkexpat
-		${VTK_LIBRARY_DIRS}/vtknetcdf
-		${VTK_LIBRARY_DIRS}/vtkhdf5
-		${VTK_LIBRARY_DIRS}/vtkmetaio
+		${VTK_LIBRARY_DIRS}/vtkGraphics.lib
+		${VTK_LIBRARY_DIRS}/vtkFiltering.lib
+		${VTK_LIBRARY_DIRS}/vtkCommon.lib
+		${VTK_LIBRARY_DIRS}/vtkRendering.lib
+		${VTK_LIBRARY_DIRS}/vtkHybrid.lib
+		${VTK_LIBRARY_DIRS}/vtkIO.lib
+		${VTK_LIBRARY_DIRS}/vtkWidgets.lib
+		${VTK_LIBRARY_DIRS}/vtkzlib.lib
+		${VTK_LIBRARY_DIRS}/vtkfreetype.lib
+		${VTK_LIBRARY_DIRS}/vtkftgl.lib
+		${VTK_LIBRARY_DIRS}/vtkpng.lib
+		${VTK_LIBRARY_DIRS}/vtkImaging.lib
+		${VTK_LIBRARY_DIRS}/vtkjpeg.lib
+		${VTK_LIBRARY_DIRS}/vtktiff.lib
+		${VTK_LIBRARY_DIRS}/vtksys.lib
+		${VTK_LIBRARY_DIRS}/vtkexpat.lib
+		${VTK_LIBRARY_DIRS}/vtknetcdf.lib
+		${VTK_LIBRARY_DIRS}/vtkhdf5.lib
+		${VTK_LIBRARY_DIRS}/vtkmetaio.lib
 	)
 ENDIF(WIN32)

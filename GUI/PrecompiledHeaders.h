@@ -17,10 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =============================================================================*/
 
-#ifdef WIN32
-#	include <wx/wxprec.h>
+#ifdef __WIN32
+	#include <wx/wxprec.h>
 #else
-#	include <wx/wx.h>
+	//#include <wx/wx.h>
+	#include <C:/wxMSW-2.8.12/include/wx/wx.h>
 #endif
 
 // Prevent python.h from adding python24_d.lib to the linker in debug mode (that library does not exist)
@@ -57,28 +58,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 
-#include <wx/imaglist.h>
-#include <wx/artprov.h>
-#include <wx/stdpaths.h>
-#include <wx/cmdline.h>
-#include <wx/colordlg.h>
-#include <wx/valgen.h>
-#include <wx/choicebk.h>
-#include <wx/xrc/xmlres.h>
-#include <wx/tglbtn.h>
-#include <wx/spinctrl.h>
-#include <wx/wizard.h>
-#include <wx/listctrl.h>
-#include <wx/dnd.h>
-#include <wx/laywin.h>
-#include <wx/treectrl.h>
-#include <wx/grid.h>
-#include <wx/aui/auibook.h>
-#include <wx/config.h>
-#include <wx/dcbuffer.h>
-#include <wx/print.h>
-#include <wx/printdlg.h>
-#include <wx/hyperlink.h>
+#include <C:/wxMSW-2.8.12/include/wx/imaglist.h>
+#include <C:/wxMSW-2.8.12/include/wx/artprov.h>
+#include <C:/wxMSW-2.8.12/include/wx/stdpaths.h>
+#include <C:/wxMSW-2.8.12/include/wx/cmdline.h>
+#include <C:/wxMSW-2.8.12/include/wx/colordlg.h>
+#include <C:/wxMSW-2.8.12/include/wx/valgen.h>
+#include <C:/wxMSW-2.8.12/include/wx/choicebk.h>
+#include <C:/wxMSW-2.8.12/include/wx/xrc/xmlres.h>
+#include <C:/wxMSW-2.8.12/include/wx/tglbtn.h>
+#include <C:/wxMSW-2.8.12/include/wx/spinctrl.h>
+#include <C:/wxMSW-2.8.12/include/wx/wizard.h>
+#include <C:/wxMSW-2.8.12/include/wx/listctrl.h>
+#include <C:/wxMSW-2.8.12/include/wx/dnd.h>
+#include <C:/wxMSW-2.8.12/include/wx/laywin.h>
+#include <C:/wxMSW-2.8.12/include/wx/treectrl.h>
+#include <C:/wxMSW-2.8.12/include/wx/grid.h>
+#include <C:/wxMSW-2.8.12/include/wx/aui/auibook.h>
+#include <C:/wxMSW-2.8.12/include/wx/config.h>
+#include <C:/wxMSW-2.8.12/include/wx/dcbuffer.h>
+#include <C:/wxMSW-2.8.12/include/wx/print.h>
+#include <C:/wxMSW-2.8.12/include/wx/printdlg.h>
+#include <C:/wxMSW-2.8.12/include/wx/hyperlink.h>
 
 using namespace std;
 

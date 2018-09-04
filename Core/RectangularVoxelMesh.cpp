@@ -86,9 +86,10 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 			
 		}
 		RowInfo.clear();   // Changed to do layer at a time instead of row to optimise
-			Textile.GetPointInformation( CentrePoints, RowInfo );
-			m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end() );
-			CentrePoints.clear();
+		Textile.GetPointInformation( CentrePoints, RowInfo );
+		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end() );
+		CentrePoints.clear();
 	}
+
 	//Textile.GetPointInformation( CentrePoints, m_ElementsInfo );
 }
