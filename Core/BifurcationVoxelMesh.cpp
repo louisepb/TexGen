@@ -158,14 +158,13 @@ void CBifurcationVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 
 	if (!bAbaqus)  // if outputting in SCIRun format need to output number of voxels
 		Output << (m_XVoxels + 1)*(m_YVoxels + 1)*(m_ZVoxels + 1) << endl;
-
+	int counter = 0;
 	for (z = 0; z <= m_ZVoxels; ++z)
 	{
 		for (y = 0; y <= m_YVoxels; ++y)
 		{
 			for (x = 0; x <= m_XVoxels; ++x)
 			{
-
 				//define Point
 				Point.x = m_DomainAABB.first.x + m_VoxSize[0] * x;
 				Point.y = m_DomainAABB.first.y + m_VoxSize[1] * y;
@@ -178,54 +177,55 @@ void CBifurcationVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 
 				//If Point not the end point, calculate centrepoint of element
 				//Node index needs to be in order
+				
 				if (x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels)
 				{
-					//find centre point of element
-					Point.x += 0.5*m_VoxSize[0];
-					Point.y += 0.5*m_VoxSize[1];
-					Point.z += 0.5*m_VoxSize[2];
-
-
-					//If Point within volume, add to m_ElementsInfo
+					
+					//If corner nodes within volume
+					//calculate element centrepoint
+					//add to CentrePoints vector
 					if (Point.z < firstweb && Point.y <= a && Point.y >= b)
 					{
+						//find centre point of element
+						Point.x += 0.5*m_VoxSize[0];
+						Point.y += 0.5*m_VoxSize[1];
+						Point.z += 0.5*m_VoxSize[2];
+						
 						CentrePoints.push_back(Point);
-						RowInfo.clear();
-						Textile.GetPointInformation(CentrePoints, RowInfo);
-						m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end());
-						CentrePoints.clear();
+						//Output << "Counter is" << counter << endl;
+						//counter = counter + 1;
+						
 					}
 
 					else if (Point.z >= firstweb && Point.z <= secondweb && Point.y <= a && Point.y >= c)
 					{
+						//find centre point of element
+						Point.x += 0.5*m_VoxSize[0];
+						Point.y += 0.5*m_VoxSize[1];
+						Point.z += 0.5*m_VoxSize[2];
+
 						CentrePoints.push_back(Point);
-						RowInfo.clear();
-						Textile.GetPointInformation(CentrePoints, RowInfo);
-						m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end());
-						CentrePoints.clear();
+						//Output << "Counter is" << counter << endl;
+						//counter = counter + 1;
+
 					} 
 
 					else if (Point.z > secondweb && Point.y <= a && Point.y >= b)
 					{
+						//find centre point of element
+						Point.x += 0.5*m_VoxSize[0];
+						Point.y += 0.5*m_VoxSize[1];
+						Point.z += 0.5*m_VoxSize[2];
+
 						CentrePoints.push_back(Point);
-						RowInfo.clear();
-						Textile.GetPointInformation(CentrePoints, RowInfo);
-						m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end());
-						CentrePoints.clear();
+						//Output << "Counter is" << counter << endl;
+						//counter = counter + 1;
 					}
 
 					else
 					{
 						OutsidePoints.insert(OutsidePoints.end(), iNodeIndex);
 						
-						/*for (vector<int>::iterator count = OutsidePoints.begin(); count != OutsidePoints.end(); ++count)
-						{
-							Output << "OutsidePoints count is" << *count << endl;
-						}*/
-
-						
-						
-	
 					}
 
 				} //index of endpoint 
@@ -236,7 +236,10 @@ void CBifurcationVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 				
 
 		} //y
-		
+		RowInfo.clear();
+		Textile.GetPointInformation(CentrePoints, RowInfo);
+		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end()); //size should be equal to iElementNumber at end
+		CentrePoints.clear();
 	
 	} //z
 }
@@ -244,7 +247,7 @@ void CBifurcationVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 
 bool CBifurcationVoxelMesh::IsSubset(vector<int> A, vector<int> B)
 {
-	//this function should check if some elements in A are in B
+	//this function checks if some elements in A are in B
 	vector<int> Count;
 	for (vector<int>::iterator it = A.begin(); it != A.end(); ++it)
 	{
@@ -317,12 +320,9 @@ int CBifurcationVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix
 							Output << j << ", " << k << ", ";
 							Output << l << ", " << m << endl;
 							++iElementNumber;
-							//++itElementInfo;
+							
 						}			 
 				
-				
-					//iElementNumber;
-					//++itElementInfo; //remember to turn this back on!
 				}
 
 			}
@@ -338,7 +338,6 @@ int CBifurcationVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix
 		m_ElementsInfo = NewElementInfo;
 	}
 
-	int elenum = iElementNumber-1;
 	return (iElementNumber - 1);
 	
 }
