@@ -41,7 +41,7 @@ namespace TexGen
 		\param iNumBinderLayers  The number of binder layers alternating with wefts in the stack
 		*/ 
 		CTextileLayerToLayer(int iNumXYarns, int iNumYYarns, double dXSpacing, double dYSpacing,
-							double dXHeight, double dYHeight, int iNumBinderLayers);
+							double dXHeight, double dYHeight, int iNumBinderLayers, bool bShapeBinders = true);
 		CTextileLayerToLayer(TiXmlElement &Element);
 		virtual ~CTextileLayerToLayer(void);
 
@@ -72,19 +72,21 @@ namespace TexGen
 		int GetBinderOffset( int x, int y );
 		/// Returns number of binder layers in textile
 		virtual int GetNumBinderLayers() const;
+		/// Shape the binder yarns around the adjacent weft yarns
+		void ShapeBinderYarns() const;
 
 		virtual void ConvertToPatternDraft( int iWeftOrder = BOTTOM_TO_TOP );
 
 	protected:
 		/// Finds cell index of the top binder yarn
 		int FindTopBinderYarn( vector<PATTERN3D>& Cell );
-		/// Shape the binder yarns around the adjacent weft yarns
-		void ShapeBinderYarns() const;
+		
 		/// Add extra nodes to binder yarns to match shape of adjacent weft yarns
 		int AddBinderNodes( int CurrentNode, int i, int j, int Height ) const;
 
 		int FindBinderHeight( const vector<PATTERN3D>& Cell, int Height ) const;
 		
 		int m_iNumBinderLayers;
+		bool m_bShapeBinders;
 	};
 };	// namespace TexGen
