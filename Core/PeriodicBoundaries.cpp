@@ -85,9 +85,9 @@ void CPeriodicBoundaries::CreatePeriodicBoundaries( ostream& Output, int iDummyN
 	OutputVertexSets( Output ); 
 
 	OutputEquations( Output, iBoundaryConditions );
-	m_Materials.SetupMaterials( Textile );
+	// m_Materials.SetupMaterials( Textile );
 	
-	CreateMaterials( Output, Textile.GetNumYarns(), bMatrixOnly );
+	//CreateMaterials( Output, Textile.GetNumYarns(), bMatrixOnly );
 
 	OutputStep( Output, iBoundaryConditions );
 }
@@ -525,7 +525,7 @@ void CPeriodicBoundaries::OutputLoadCase(std::ostream &Output, int iCase )
 	Output << endl;
 }
 
-void CPeriodicBoundaries::CreateMaterials(ostream &Output, int iNumYarns, bool bMatrixOnly )
+/*void CPeriodicBoundaries::CreateMaterials(ostream &Output, int iNumYarns, bool bMatrixOnly )
 {
 	Output << "*****************" << endl;
 	Output << "*** MATERIALS ***" << endl;
@@ -574,4 +574,4 @@ void CPeriodicBoundaries::CreateMaterials( string Filename, int iNumYarns, bool 
 
 	ofstream Output(Filename.c_str(), ofstream::app);
 	CreateMaterials( Output, iNumYarns, bMatrixOnly );
-}
+}*/

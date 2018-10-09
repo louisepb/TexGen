@@ -323,6 +323,10 @@ void CVoxelMesh::SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputM
 	}
 	//PROFILE_BEGIN(OutputNodeSets);
 	OutputAllNodesSet( Filename, Output );
+
+	m_Materials.SetupMaterials( Textile );
+	m_Materials.OutputMaterials( Output, Textile.GetNumYarns(), bMatrixOnly );
+
 	//PROFILE_END();
 	if ( iBoundaryConditions != NO_BOUNDARY_CONDITIONS )
 	{

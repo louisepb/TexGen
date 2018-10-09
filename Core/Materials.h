@@ -83,9 +83,14 @@ namespace TexGen
 			/// Check if material constants have been assigned (ie != 0). Return false if all 0.0
 			bool CheckYarnConstants( pair< vector<double>, vector<double> > &Constants );
 
+			/// Output materials and assign to yarn element sets
+			void OutputMaterials( ostream &Output, int iNumYarns, bool bMatrixOnly );
+
 			map<string, pair< CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > > GetMaterials() { return m_Materials; }
 			map<int, string> GetMaterialAssignements() { return m_MaterialAssignements; }
 		protected:
+			/// Output materials and assign to yarn element sets
+			//void OutputMaterials(ostream &Output, int iNumYarns, bool bMatrixOnly );
 			map<int, string> m_MaterialAssignements;
 			map<string, pair< CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > > m_Materials;
 		};
