@@ -176,7 +176,7 @@ void CBifurcationVoxelMesh::SaveToAbaqus(string Filename, CTextile &Textile, boo
 	//CreateMaterials( Output, Textile.GetNumYarns(), bMatrixOnly);
 	//PROFILE_END();
 
-	CreateBifurcatedMaterials(Filename, Textile, true);
+	CreateBifurcatedMaterials(Output, Filename, Textile, false);
 	
 	/*if (iBoundaryConditions != NO_BOUNDARY_CONDITIONS)
 	{
@@ -385,16 +385,52 @@ int CBifurcationVoxelMesh::OutputHexElements(ostream &Output, CTextile &Textile,
 }
 
 
-void CBifurcationVoxelMesh::CreateBifurcatedMaterials(string Filename, CTextile& Textile, bool bAbaqus)
+void CBifurcationVoxelMesh::CreateBifurcatedMaterials(ostream& Output, string Filename, CTextile& Textile, bool bMatrixOnly)
 {
 	//CTextileMaterials m_Materials;
 	//CTextileMaterials Material = m_Materials;
 	m_Materials.SetupMaterials( Textile );
 
-	//CPeriodicBoundaries m_Boundaries;
-	//CPeriodicBoundaries Boundary = m_Boundaries;
-	m_Boundaries.CreateMaterials(Filename, Textile.GetNumYarns(), false);
+	int iNumYarns=Textile.GetNumYarns();
+	Output << "*****************" << endl;
+	Output << "*** MATERIALS ***" << endl;
+	Output << "*****************" << endl;
+	map<string, pair<CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > > Materials = m_Materials.GetMaterials();
+	map<int, string> MaterialAssignements = m_Materials.GetMaterialAssignements();
+	
+	map<string, pair<CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > >::iterator itMaterial;
+	for (itMaterial = Materials.begin(); itMaterial != Materials.end(); ++itMaterial)
+	{
+		Output << "*Material, Name=" << itMaterial->first << endl;
+		if ( itMaterial->second.first->GetConstants().size() == 2 )
+			Output << itMaterial->second.first->GetAbaqusCommands();	
+		else
+			Output << itMaterial->second.first->GetAbaqusCommands( "ENGINEERING CONSTANTS" );
 
+		if ( itMaterial->second.second->GetConstants().size() == 1 )
+			Output << itMaterial->second.second->GetThermAbaqusCommands("");	
+		else
+			Output << itMaterial->second.second->GetThermAbaqusCommands( "ORTHO" );
+	}
+	int i;
+	string MatName;
+	for (i = -1; i < iNumYarns; ++i)
+	{
+		if (MaterialAssignements.count(i))
+			MatName = MaterialAssignements[i];
+		else
+			MatName = Materials.begin()->first;
+		if ( i == -1 )
+		{
+			Output << "*Solid Section, ElSet=Matrix, Material=" << MatName << endl;
+			Output << "1.0," << endl;
+		}
+		else if (!bMatrixOnly)
+		{
+			Output << "*Solid Section, ElSet=Yarn" << i << ", Material=" << MatName << ", Orientation=TexGenOrientations" << endl;
+			Output << "1.0," << endl;
+		}
+	}
 }
 
-//why can CPeriodicBoundaries call SetupMaterials from CTextileMaterials?
+//why can CPeriodicBoundaries call SetupMaterials from CTextileMaterials: because it's not a protected function

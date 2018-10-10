@@ -2,6 +2,7 @@
 #pragma once
 #include "VoxelMesh.h"
 #include "Materials.h"
+#include "PeriodicBoundaries.h"
 //#include <set>
 #include <algorithm>
 
@@ -28,11 +29,15 @@ namespace TexGen
 
 		void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType = 0);
 
+		CTextileMaterials& GetMaterials() { return m_Materials; }
+
+		//CPeriodicBoundaries& GetPeriodicBoundaries() {return m_Boundaries; }
 		
 	protected:
+
 		CTextileMaterials m_Materials;
 
-		CPeriodicBoundaries m_Boundaries;
+		//CPeriodicBoundaries m_Boundaries;
 
 		double m_a;
 		double m_b;
@@ -58,7 +63,7 @@ namespace TexGen
 
 		int OutputHexElements(ostream &Output, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true);
 
-		void CBifurcationVoxelMesh::CreateBifurcatedMaterials(string Filename, CTextile& Textile, bool bAbaqus);
+		void CBifurcationVoxelMesh::CreateBifurcatedMaterials(ostream& Output, string Filename, CTextile& Textile, bool bMatrixOnly);
 
 		
 

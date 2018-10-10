@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Materials.h"
+//#include "BifurcationVoxelMesh.h"
 
 namespace TexGen
 {
@@ -30,6 +31,7 @@ namespace TexGen
 	/// Class used to generate Abaqus output for periodic boundary conditions
 	class CLASS_DECLSPEC CPeriodicBoundaries
 	{
+	//friend class CBifurcationVoxelMesh;
 	public:
 		CPeriodicBoundaries(int NumEdges = 12, int NumVertices = 8);
 		~CPeriodicBoundaries(void);
