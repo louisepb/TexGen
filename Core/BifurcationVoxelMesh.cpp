@@ -9,17 +9,51 @@
 
 using namespace TexGen;
 
-CBifurcationVoxelMesh::CBifurcationVoxelMesh(string Type) : CVoxelMesh(Type), a(0.0)
-, b(0.0)
-, c(0.0)
-, firstweb(0.0)
-, secondweb(0.0)
+CBifurcationVoxelMesh::CBifurcationVoxelMesh(string Type) : CVoxelMesh(Type)
 {
 }
 
 CBifurcationVoxelMesh::~CBifurcationVoxelMesh(void)
 {
 	//delete m_PeriodicBoundaries;
+}
+
+void CBifurcationVoxelMesh::InitialiseBifurcationVoxelMesh(double a, double b, double c, double firstweb, double secondweb, double flangelength)
+{
+	m_a=a;
+	m_b=b;
+	m_c=c;
+	m_firstweb=firstweb;
+	m_secondweb=secondweb;
+	m_flangelength=flangelength;
+	return;
+}
+
+
+
+double CBifurcationVoxelMesh::geta()
+{
+	return m_a;
+}
+
+double CBifurcationVoxelMesh::getb()
+{
+	return m_b;
+}
+
+double CBifurcationVoxelMesh::getc()
+{
+	return m_c;
+}
+
+double CBifurcationVoxelMesh::getsecondweb()
+{
+	return m_secondweb;
+}
+
+double CBifurcationVoxelMesh::getflangelength()
+{
+	return m_flangelength;
 }
 
 void CBifurcationVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType)
@@ -114,8 +148,7 @@ void CBifurcationVoxelMesh::SaveToAbaqus(string Filename, CTextile &Textile, boo
 		Output << "*Element, Type=C3D8" << endl;
 	}
 	//PROFILE_BEGIN(OutputHexElements);
-	Output << "**iNumHexElements," << iNumHexElements << endl;
-	iNumHexElements = OutputHexElements(Output, bOutputMatrix, bOutputYarn);
+	iNumHexElements = OutputHexElements(Output, Textile, bOutputMatrix, bOutputYarn);
 	
 
 
@@ -137,13 +170,20 @@ void CBifurcationVoxelMesh::SaveToAbaqus(string Filename, CTextile &Textile, boo
 	}
 	//PROFILE_BEGIN(OutputNodeSets);
 	OutputAllNodesSet(Filename, Output);
+
+	//m_Materials.SetUpMaterials( Textile );
+
+	//CreateMaterials( Output, Textile.GetNumYarns(), bMatrixOnly);
 	//PROFILE_END();
-	if (iBoundaryConditions != NO_BOUNDARY_CONDITIONS)
+
+	CreateBifurcatedMaterials(Filename, Textile, true);
+	
+	/*if (iBoundaryConditions != NO_BOUNDARY_CONDITIONS)
 	{
 		//PROFILE_BEGIN(OutputPBCs);
 		OutputPeriodicBoundaries(Output, Textile, iBoundaryConditions, bMatrixOnly);
 		//PROFILE_END();
-	}
+	}*/
 	TGLOG("Finished saving to Abaqus");
 }
 
@@ -152,9 +192,8 @@ void CBifurcationVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 {
 	int x, y, z;
 	int iNodeIndex = 1;
-	vector<XYZ> CentrePoints;
-	vector<POINT_INFO> RowInfo;
 	XYZ Point;
+	double tol=0.0001; //needs to be smaller than a reasonable voxel size
 
 	if (!bAbaqus)  // if outputting in SCIRun format need to output number of voxels
 		Output << (m_XVoxels + 1)*(m_YVoxels + 1)*(m_ZVoxels + 1) << endl;
@@ -172,63 +211,51 @@ void CBifurcationVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 
 				//output corners of elements
 				if (bAbaqus)
-					Output << iNodeIndex << ", ";
+					Output << iNodeIndex << ", ";																																																																																													
 				Output << Point << endl;
 
 				//If Point not the end point, calculate centrepoint of element
 				//Node index needs to be in order
 				
-				if (x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels)
+				if (x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels+1) //make sure you know what you want here
 				{
 					
-					//If corner nodes within volume
-					//calculate element centrepoint
-					//add to CentrePoints vector
-					if (Point.z < firstweb && Point.y <= a && Point.y >= b)
+					//If node outside the bounded volume as defined by the following if statements
+					// add to the outsidepoints vector
+					if (Point.z >=m_secondweb-tol && Point.z <m_secondweb+tol && Point.y < m_b-tol)
 					{
-						//find centre point of element
-						Point.x += 0.5*m_VoxSize[0];
-						Point.y += 0.5*m_VoxSize[1];
-						Point.z += 0.5*m_VoxSize[2];
-						
-						CentrePoints.push_back(Point);
-						//Output << "Counter is" << counter << endl;
-						//counter = counter + 1;
+						Output << "**Point is in the domain but don't write the centre point" << endl;
+					}
+
+					else if (Point.z >=m_a-tol && Point.y >=m_b-tol)
+					{
+						Output << "**Point is in the domain but don't write the centre point" << endl;
+					}
+
+					else if (Point.z < m_firstweb-tol && Point.y <= m_a+tol && Point.y >= m_b-tol)
+					{
 						
 					}
 
-					else if (Point.z >= firstweb && Point.z <= secondweb && Point.y <= a && Point.y >= c)
+					else if (Point.z >= m_firstweb-tol && Point.z <m_secondweb-tol && Point.y <= m_a+tol && Point.y >= m_c-tol)
 					{
-						//find centre point of element
-						Point.x += 0.5*m_VoxSize[0];
-						Point.y += 0.5*m_VoxSize[1];
-						Point.z += 0.5*m_VoxSize[2];
-
-						CentrePoints.push_back(Point);
-						//Output << "Counter is" << counter << endl;
-						//counter = counter + 1;
 
 					} 
 
-					else if (Point.z > secondweb && Point.y <= a && Point.y >= b)
-					{
-						//find centre point of element
-						Point.x += 0.5*m_VoxSize[0];
-						Point.y += 0.5*m_VoxSize[1];
-						Point.z += 0.5*m_VoxSize[2];
 
-						CentrePoints.push_back(Point);
-						//Output << "Counter is" << counter << endl;
-						//counter = counter + 1;
+					else if (Point.z >= m_secondweb-tol && Point.z < m_a-tol && Point.y <= m_a+tol && Point.y >= m_b-tol)
+					{
+						//do nothing
 					}
+
+					
 
 					else
 					{
 						OutsidePoints.insert(OutsidePoints.end(), iNodeIndex);
-						
 					}
-
-				} //index of endpoint 
+				
+				}
 
 				++iNodeIndex;
 			} //x
@@ -236,12 +263,10 @@ void CBifurcationVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 				
 
 		} //y
-		RowInfo.clear();
-		Textile.GetPointInformation(CentrePoints, RowInfo);
-		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end()); //size should be equal to iElementNumber at end
-		CentrePoints.clear();
+
 	
-	} //z
+	}//z
+
 }
 
 
@@ -264,11 +289,13 @@ bool CBifurcationVoxelMesh::IsSubset(vector<int> A, vector<int> B)
 		return false;
 }
 
-int CBifurcationVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus)
+int CBifurcationVoxelMesh::OutputHexElements(ostream &Output, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus)
 {
 	int numx = m_XVoxels + 1;
 	int numy = m_YVoxels + 1;
 	int x, y, z;
+	vector<XYZ> CentrePoints;
+	vector<POINT_INFO> RowInfo;
 	vector<POINT_INFO>::iterator itElementInfo = m_ElementsInfo.begin();
 	int iElementNumber = 1;
 
@@ -276,9 +303,8 @@ int CBifurcationVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix
 
 	if (!bAbaqus)
 		Output << m_XVoxels*m_YVoxels*m_ZVoxels << endl;
-
 	
-
+	int nodeindextemp=0;
 	for (z = 0; z < m_ZVoxels; ++z)
 	{
 		for (y = 0; y < m_YVoxels; ++y)
@@ -321,13 +347,29 @@ int CBifurcationVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix
 							Output << l << ", " << m << endl;
 							++iElementNumber;
 							
-						}			 
+							//find centrepoint
+							Point.x += 0.5*m_VoxSize[0];
+							Point.y += 0.5*m_VoxSize[1];
+							Point.z += 0.5*m_VoxSize[2];
+							
+
+							CentrePoints.push_back(Point);
+
+
+						}
+
+						++nodeindextemp;
 				
 				}
 
 			}
 		
+
 		}
+		RowInfo.clear();
+		Textile.GetPointInformation(CentrePoints, RowInfo);
+		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end()); //size should be equal to iElementNumber at end
+		CentrePoints.clear();
 
 	}
 
@@ -341,3 +383,18 @@ int CBifurcationVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix
 	return (iElementNumber - 1);
 	
 }
+
+
+void CBifurcationVoxelMesh::CreateBifurcatedMaterials(string Filename, CTextile& Textile, bool bAbaqus)
+{
+	//CTextileMaterials m_Materials;
+	//CTextileMaterials Material = m_Materials;
+	m_Materials.SetupMaterials( Textile );
+
+	//CPeriodicBoundaries m_Boundaries;
+	//CPeriodicBoundaries Boundary = m_Boundaries;
+	m_Boundaries.CreateMaterials(Filename, Textile.GetNumYarns(), false);
+
+}
+
+//why can CPeriodicBoundaries call SetupMaterials from CTextileMaterials?
