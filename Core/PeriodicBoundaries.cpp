@@ -85,9 +85,6 @@ void CPeriodicBoundaries::CreatePeriodicBoundaries( ostream& Output, int iDummyN
 	OutputVertexSets( Output ); 
 
 	OutputEquations( Output, iBoundaryConditions );
-	// m_Materials.SetupMaterials( Textile );
-	
-	//CreateMaterials( Output, Textile.GetNumYarns(), bMatrixOnly );
 
 	OutputStep( Output, iBoundaryConditions );
 }
@@ -524,54 +521,3 @@ void CPeriodicBoundaries::OutputLoadCase(std::ostream &Output, int iCase )
 	Output << "*End Load Case" << endl;
 	Output << endl;
 }
-
-/*void CPeriodicBoundaries::CreateMaterials(ostream &Output, int iNumYarns, bool bMatrixOnly )
-{
-	Output << "*****************" << endl;
-	Output << "*** MATERIALS ***" << endl;
-	Output << "*****************" << endl;
-	map<string, pair<CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > > Materials = m_Materials.GetMaterials();
-	map<int, string> MaterialAssignements = m_Materials.GetMaterialAssignements();
-	
-	map<string, pair<CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > >::iterator itMaterial;
-	for (itMaterial = Materials.begin(); itMaterial != Materials.end(); ++itMaterial)
-	{
-		Output << "*Material, Name=" << itMaterial->first << endl;
-		if ( itMaterial->second.first->GetConstants().size() == 2 )
-			Output << itMaterial->second.first->GetAbaqusCommands();	
-		else
-			Output << itMaterial->second.first->GetAbaqusCommands( "ENGINEERING CONSTANTS" );
-
-		if ( itMaterial->second.second->GetConstants().size() == 1 )
-			Output << itMaterial->second.second->GetThermAbaqusCommands("");	
-		else
-			Output << itMaterial->second.second->GetThermAbaqusCommands( "ORTHO" );
-	}
-	int i;
-	string MatName;
-	for (i = -1; i < iNumYarns; ++i)
-	{
-		if (MaterialAssignements.count(i))
-			MatName = MaterialAssignements[i];
-		else
-			MatName = Materials.begin()->first;
-		if ( i == -1 )
-		{
-			Output << "*Solid Section, ElSet=Matrix, Material=" << MatName << endl;
-			Output << "1.0," << endl;
-		}
-		else if (!bMatrixOnly)
-		{
-			Output << "*Solid Section, ElSet=Yarn" << i << ", Material=" << MatName << ", Orientation=TexGenOrientations" << endl;
-			Output << "1.0," << endl;
-		}
-	}	
-}
-
-void CPeriodicBoundaries::CreateMaterials( string Filename, int iNumYarns, bool bMatrixOnly )
-{
-	AddExtensionIfMissing(Filename, ".inp");
-
-	ofstream Output(Filename.c_str(), ofstream::app);
-	CreateMaterials( Output, iNumYarns, bMatrixOnly );
-}*/

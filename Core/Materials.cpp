@@ -189,8 +189,6 @@ void CTextileMaterials::OutputMaterials(ostream &Output, int iNumYarns, bool bMa
 	Output << "*****************" << endl;
 	Output << "*** MATERIALS ***" << endl;
 	Output << "*****************" << endl;
-	//map<string, pair<CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > > Materials = m_Materials.GetMaterials();
-	//map<int, string> MaterialAssignements = GetMaterialAssignements();
 	
 	map<string, pair<CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > >::iterator itMaterial;
 	for (itMaterial = m_Materials.begin(); itMaterial != m_Materials.end(); ++itMaterial)
