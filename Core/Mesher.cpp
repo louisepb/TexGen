@@ -170,12 +170,18 @@ void CMesher::SaveVolumeMeshToABAQUS(string Filename, string TextileName )
 		}
 	}
 	m_VolumeMesh.SaveToABAQUS(Filename, &ElementsInfo, false, false);
+
+	ofstream Output(Filename.c_str(), ofstream::app );
+	// Output material properties
+	m_Materials.SetupMaterials( *pTextile );
+	m_Materials.OutputMaterials( Output, pTextile->GetNumYarns(), false );
+
 	if ( m_iBoundaryConditions != NO_BOUNDARY_CONDITIONS )
 	{
 		m_PeriodicBoundaries->SetDomainSize( pTextile->GetDomain()->GetMesh() );
 		if (SaveNodeSets() )
 		{
-			ofstream Output(Filename.c_str(), ofstream::app );
+			//ofstream Output(Filename.c_str(), ofstream::app );
 			Output << "*****************" << endl;
 			Output << "*** NODE SETS ***" << endl;
 			Output << "*****************" << endl;
