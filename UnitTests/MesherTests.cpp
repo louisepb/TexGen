@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =============================================================================*/
 
 #include "MesherTests.h"
+#include "TestUtilities.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CMesherTests);
 
@@ -41,7 +42,9 @@ void CMesherTests::TestSimpleMesh()
 	Mesher.SetMergeTolerance(0.02);
 	CPPUNIT_ASSERT(Mesher.CreateMesh(Textile));
 	Mesher.SaveVolumeMeshToVTK("vmesh.vtu");
+	CPPUNIT_ASSERT(CompareFiles("vmesh.vtu","..\\..\\UnitTests\\vmesh.vtu"));
 	Mesher.SaveVolumeMeshToABAQUS("vmesh.inp", Textile);
+	CPPUNIT_ASSERT(CompareFiles("vmesh.inp","..\\..\\UnitTests\\vmesh.inp"));
 }
 
 void CMesherTests::TestInvertedElements()
