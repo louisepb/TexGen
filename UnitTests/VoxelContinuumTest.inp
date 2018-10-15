@@ -2428,6 +2428,24 @@ TexGenOrientationVectors
 ** AllNodes - Node set containing all elements
 *NSet, NSet=AllNodes, Generate
 1, 1331, 1
+*****************
+*** MATERIALS ***
+*****************
+*Material, Name=Mat0
+*Elastic
+3e+009, 0.2
+*Expansion
+6.5e-006
+*Material, Name=Mat1
+*Elastic, type=ENGINEERING CONSTANTS
+2e+011, 1e+010, 1e+010, 0.3, 0.4, 0.4, 5e+009, 5e+009
+5e+009
+*Expansion, type=ORTHO
+-2e-007, 3e-006, 3e-006
+*Solid Section, ElSet=Matrix, Material=Mat0
+1.0,
+*Solid Section, ElSet=Yarn0, Material=Mat1, Orientation=TexGenOrientations
+1.0,
 ************************************
 *** PERIODIC BOUNDARY CONDITIONS ***
 ************************************
@@ -2727,24 +2745,6 @@ MasterNode8, 2, 1.0, MasterNode1, 2, -1.0, ConstraintsDriver1, 1, -1, Constraint
 *Equation
 3
 MasterNode8, 3, 1.0, MasterNode1, 3, -1.0, ConstraintsDriver2, 1, -1
-*****************
-*** MATERIALS ***
-*****************
-*Material, Name=Mat0
-*Elastic
-3e+009, 0.2
-*Expansion
-6.5e-006
-*Material, Name=Mat1
-*Elastic, type=ENGINEERING CONSTANTS
-2e+011, 1e+010, 1e+010, 0.3, 0.4, 0.4, 5e+009, 5e+009
-5e+009
-*Expansion, type=ORTHO
--2e-007, 3e-006, 3e-006
-*Solid Section, ElSet=Matrix, Material=Mat0
-1.0,
-*Solid Section, ElSet=Yarn0, Material=Mat1, Orientation=TexGenOrientations
-1.0,
 *******************
 *** CREATE STEP ***
 *******************

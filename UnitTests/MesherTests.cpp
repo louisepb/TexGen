@@ -34,23 +34,14 @@ void CMesherTests::TestSimpleMesh()
 {
 	CTextileWeave2D Textile = m_TextileFactory.CottonWeave();
 	Textile.SetFibreArea(0.01, "mm^2");
-//	Textile.SetGapSize(0.02);
 
 	CMesher Mesher;
-//	Mesher.SetHybrid(true);
-//	Mesher.SetQuadratic(true);
 	Mesher.SetPeriodic(true);
 	Mesher.SetSeed(0.05);
 	Mesher.SetMergeTolerance(0.02);
 	CPPUNIT_ASSERT(Mesher.CreateMesh(Textile));
-/*	CMesh Mesh = Mesher.GetMesh();
-	Mesh.ConvertToSurfaceMesh();
-	Mesh.SaveToVTK("mesh-validated");
-	CMesh SurfaceMesh;
-	Textile.AddSurfaceToMesh(SurfaceMesh, true);
-	SurfaceMesh.SaveToVTK("mesh-surface");*/
 	Mesher.SaveVolumeMeshToVTK("vmesh.vtu");
-	Mesher.SaveVolumeMeshToABAQUS("vmesh.inp", Textile.GetName());
+	Mesher.SaveVolumeMeshToABAQUS("vmesh.inp", Textile);
 }
 
 void CMesherTests::TestInvertedElements()

@@ -81,6 +81,7 @@ namespace TexGen
 
 		void SaveVolumeMeshToVTK(string Filename);
 		void SaveVolumeMeshToABAQUS(string Filename, string TextileName);
+		void SaveVolumeMeshToABAQUS(string Filename, CTextile& Textile );
 
 		const CMesh &GetMesh() { return m_VolumeMesh; }
 		const list<MESHER_ELEMENT_DATA> *GetElementData(CMesh::ELEMENT_TYPE ElementType);
@@ -207,7 +208,7 @@ namespace TexGen
 		vector<int> m_Vertices;
 
 		// Class for export of material properties
-		CTextileMaterials m_Materials;
+		CTextileMaterials* m_Materials;
 	};
 
 };	// namespace TexGen
