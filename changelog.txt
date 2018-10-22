@@ -5,6 +5,9 @@ v3.11.0
 Core
 ====
 ** Bugfix to correct hybrid section constructor with 4 sections
+** Moved OutputMaterials function into CTextileMaterials so that material properties are still output in .inp file when no PBCs
+** Bugfix to correct volume mesh export due to additiono of rotated option
+** Added PBCs for rotated textiles
 
 UnitTests
 =========
