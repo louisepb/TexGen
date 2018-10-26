@@ -2598,8 +2598,7 @@ void CTexGenMainFrame::OnOptions(wxCommandEvent& event)
 
 void CTexGenMainFrame::LaunchSurvey()
 {
-	wxStandardPaths paths;
-	wxString path = paths.GetUserConfigDir();
+	wxString path = wxStandardPaths::Get().GetUserConfigDir();
 	wxString Filename = path + wxT("/.count.txt");
 
 	if ( !wxFileExists( Filename ) )
