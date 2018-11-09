@@ -20,24 +20,13 @@ IF(UNIX)
 	SET_TARGET_PROPERTIES(TexGenRenderer PROPERTIES LINK_FLAGS "-Wl,-rpath,${VTK_DIR}/bin -L${VTK_DIR}/bin")
 	TARGET_LINK_LIBRARIES(TexGenRenderer
 		TexGenCore
-		vtkGraphics
-		vtkFiltering
-		vtkCommon
-		vtkRendering
-		vtkHybrid
-		vtkIO
-		vtkWidgets
-		vtkzlib
-		vtkfreetype
+		vtkRenderingCore
+		vtkRenderingFreeType
+		vtkRenderingImage
+		vtkRenderingTkTCL
+		vtkViewsCore
 		vtkftgl
-		vtkpng
-		vtkImaging
-		vtkjpeg
-		vtktiff
 		vtksys
-		vtkexpat
-		vtkNetCDF
-		vtkhdf5
 		vtkmetaio
 	)
 ENDIF(UNIX)
