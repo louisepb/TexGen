@@ -19,6 +19,10 @@
 #include "PrecompiledHeaders.h"
 #include "wxVTKRenderWindowInteractor.h"
 
+#include "vtkAutoInit.h" 
+VTK_MODULE_INIT(vtkRenderingOpenGL); // VTK was built with vtkRenderingOpenGL
+VTK_MODULE_INIT(vtkRenderingFreeType);
+
 //This is needed for vtk 3.1 :
 #ifndef VTK_MAJOR_VERSION
 #  include "vtkVersion.h"

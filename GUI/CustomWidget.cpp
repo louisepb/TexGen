@@ -24,6 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "vtkCallbackCommand.h"
 #include "vtkCellPicker.h"
 
+#include "vtkAutoInit.h" 
+VTK_MODULE_INIT(vtkRenderingOpenGL); // VTK was built with vtkRenderingOpenGL
+VTK_MODULE_INIT(vtkInteractionStyle);
+
 vtkStandardNewMacro(vtkCustomWidget);
 
 vtkCustomWidget::vtkCustomWidget()
