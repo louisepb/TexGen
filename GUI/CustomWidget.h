@@ -46,7 +46,7 @@ public:
 	// Instantiate the object.
 	static vtkCustomWidget *New();
 
-	vtkTypeRevisionMacro(vtkCustomWidget, vtk3DWidget);
+    vtkTypeMacro(vtkCustomWidget, vtk3DWidget);
 //	void PrintSelf(ostream& os, vtkIndent indent) {;}
 
 	// Description:
