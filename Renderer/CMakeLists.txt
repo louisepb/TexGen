@@ -20,14 +20,7 @@ IF(UNIX)
 	SET_TARGET_PROPERTIES(TexGenRenderer PROPERTIES LINK_FLAGS "-Wl,-rpath,${VTK_DIR}/bin -L${VTK_DIR}/bin")
 	TARGET_LINK_LIBRARIES(TexGenRenderer
 		TexGenCore
-		vtkRenderingCore
-		vtkRenderingFreeType
-		vtkRenderingImage
-		vtkRenderingTkTCL
-		vtkViewsCore
-		vtkftgl
-		vtksys
-		vtkmetaio
+        ${VTK_LIBRARIES}
 	)
 ENDIF(UNIX)
 
@@ -41,24 +34,6 @@ INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
 IF(WIN32)
 	TARGET_LINK_LIBRARIES(TexGenRenderer
 		TexGenCore opengl32 glu32
-		${VTK_LIBRARY_DIRS}/vtkGraphics
-		${VTK_LIBRARY_DIRS}/vtkFiltering
-		${VTK_LIBRARY_DIRS}/vtkCommon
-		${VTK_LIBRARY_DIRS}/vtkRendering
-		${VTK_LIBRARY_DIRS}/vtkHybrid
-		${VTK_LIBRARY_DIRS}/vtkIO
-		${VTK_LIBRARY_DIRS}/vtkWidgets
-		${VTK_LIBRARY_DIRS}/vtkzlib
-		${VTK_LIBRARY_DIRS}/vtkfreetype
-		${VTK_LIBRARY_DIRS}/vtkftgl
-		${VTK_LIBRARY_DIRS}/vtkpng
-		${VTK_LIBRARY_DIRS}/vtkImaging
-		${VTK_LIBRARY_DIRS}/vtkjpeg
-		${VTK_LIBRARY_DIRS}/vtktiff
-		${VTK_LIBRARY_DIRS}/vtksys
-		${VTK_LIBRARY_DIRS}/vtkexpat
-		${VTK_LIBRARY_DIRS}/vtknetcdf
-		${VTK_LIBRARY_DIRS}/vtkhdf5
-		${VTK_LIBRARY_DIRS}/vtkmetaio
+        ${VTK_LIBRARIES}
 	)
 ENDIF(WIN32)
