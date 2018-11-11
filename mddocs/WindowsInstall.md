@@ -1,50 +1,18 @@
-Requirements on Ubuntu 18.04 LTS:
+In order to compile [TexGen](../README.md) and all of its modules, the following software is required:
 
-    sudo apt-get install cmake cmake-curses-gui
-    sudo apt-get install swig libvtk6-dev libvtk6.3 libvtk6-qt-dev libvtk6.3-qt
-    sudo apt-get install libwxgtk3.0-dev
+The following programs are needed to build TexGen:
 
-Next, clone the repo
+1. CMake
+2. SWIG 
 
-    git clone https://github.com/louisepb/TexGen.git
-    cd TexGen
-    mkdir bin
-    cd bin
-    ccmake ../
+The following libraries are needed to link to TexGen:
 
-Press 'c' to configure, and set first to only core compile by setting to following settings (press 't' for this full list):
+1. VTK
+2. wxWidgets
+3. OpenCascade
+4. Python 
 
-    BUILD_CASCADE_EXPORT             OFF                                                                                                                          
-    BUILD_DOCUMENTATION              OFF                                                                                                                          
-    BUILD_EXAMPLES                   OFF                                                                                                                          
-    BUILD_GUI                        OFF                                                                                                                          
-    BUILD_PROFILE                    OFF                                                                                                                          
-    BUILD_PYTHON_INTERFACE           OFF                                                                                                                          
-    BUILD_RENDERER                   OFF                                                                                                                          
-    BUILD_SHARED                     ON                                                                                                                           
-    BUILD_UNIT_TESTS                 OFF                                                                                                                          
-    CMAKE_BACKWARDS_COMPATIBILITY    2.4                                                                                                                          
-    CMAKE_BUILD_TYPE                                                                                                                                              
-    CMAKE_INSTALL_PREFIX             /usr/local                                                                                                                   
-    PYTHON_SITEPACKAGES_DIR          PYTHON_SITEPACKAGES_DIR-NOTFOUND                                                                                             
-    Qt5Core_DIR                      /usr/lib/x86_64-linux-gnu/cmake/Qt5Core                                                                                      
-    Qt5Gui_DIR                       /usr/lib/x86_64-linux-gnu/cmake/Qt5Gui                                                                                       
-    Qt5Network_DIR                   /usr/lib/x86_64-linux-gnu/cmake/Qt5Network                                                                                   
-    Qt5WebKit_DIR                    /usr/lib/x86_64-linux-gnu/cmake/Qt5WebKit                                                                                    
-    SWIG_EXECUTABLE                  /usr/bin/swig3.0                                                                                                             
-    VTK_DIR                          /usr/lib/cmake/vtk-6.3                                                                                                       
-    wxWidgets_CONFIG_EXECUTABLE      /usr/bin/wx-config
+# Build using Visual Studio 2017 Community on Windows 10
 
-Press 'c' again to see there are no errors (in case of errors, change settings to fix these).
+We present here how to build TexGen on Windows 10 using VS2017. 
 
-Press 'g' to generate the makefiles and exit
-
-Now compile with:
-
-    make 
-
-which will build targets `TexGenCore` and `LatinHypercube`.
-
-Install with:
-
-    make install
