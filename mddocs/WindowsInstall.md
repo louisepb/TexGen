@@ -71,7 +71,7 @@ You can click the `Advanced` checkbox to indicate components to build. For TexGe
 Press `Configure`. No errors should appear (in red). If so, fix the errors, and press `Configure` again. When no errors, press `Generate`, which will create a solution for VS2017.
 
 Now that you have created a VS2017 project, start VS2017, and open __YOUR_LOCATION\Downloads\VTK-6.3.0\VTK-6.3.0\bin\VTK.sln__
-Select in Solution Explorer target ALL_BUILD, and build VTK. 
+Select in Solution Explorer target ALL_BUILD, set in the toolbar as configuration __Release__, and build VTK (F7). 
 
 When finished, start VS2017 as admin (right-click in start menu`-->more-->run as admin`), select VTK.sln, select target `INSTALL`and build this (F7) to install VTK to __C:\Program Files (x86)\VTK__.
 
@@ -102,7 +102,7 @@ You can click the `Advanced` checkbox to indicate components to build. It is rec
 Press `Configure`. No errors should appear (in red). If so, fix the errors, and press `Configure` again. When no errors, press `Generate`, which will create a solution for VS2017.
 
 Now that you have created a VS2017 project, start VS2017, and open __YOUR_LOCATION/Documents/GitHub/TexGen/bin/TexGen.sln__
-Select in Solution Explorer target `ALL_BUILD`, and build TexGen. 
+Select in Solution Explorer target `ALL_BUILD`, set in the toolbar as configuration __Release__, and build TexGen. 
 
 In order to build the GUI, you need to set the options in cmake instead as: 
 
