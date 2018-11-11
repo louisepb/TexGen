@@ -43,7 +43,7 @@ Now compile with:
 
     make 
 
-which will build targets TexGenCore and LatinHypercube
+which will build targets `TexGenCore` and `LatinHypercube`.
 
 Install with:
 
