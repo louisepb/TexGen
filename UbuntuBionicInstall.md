@@ -2,7 +2,7 @@ Requirements on Ubuntu 18.04 LTS:
 
     sudo apt-get install cmake cmake-curses-gui
     sudo apt-get install swig libvtk6-dev libvtk6.3 libvtk6-qt-dev libvtk6.3-qt
-    sudo apt-get install libwxgtk3.0-dev libgtk2.0-dev
+    sudo apt-get install libwxgtk3.0-dev
 
 Next, clone the repo
 
