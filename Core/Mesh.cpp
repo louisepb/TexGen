@@ -2209,12 +2209,20 @@ bool CMesh::SaveToABAQUS(string Filename, const vector<POINT_INFO> *pElementInfo
 		{
 			if (itData->iYarnIndex != -1)
 			{
-				XYZ Up = itData->Up;
-				XYZ Dir = itData->Orientation;
+				if ( GetLength(itData->Up ) )
+				{
+					XYZ Up = itData->Up;
+					XYZ Dir = itData->Orientation;
 				
-				XYZ Perp = CrossProduct(Dir, Up);
-				Normalise(Perp);
-				OriOutput << i << ", " << Dir << ",   " << Perp << endl;
+					XYZ Perp = CrossProduct(Dir, Up);
+					Normalise(Perp);
+					OriOutput << i << ", " << Dir << ",   " << Perp << endl;
+				}
+				else
+				{
+					// Default orientation
+					OriOutput << i << ", 1.0, 0.0, 0.0,   0.0, 1.0, 0.0" << endl;
+				}
 			}
 			else
 			{

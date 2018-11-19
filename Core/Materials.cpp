@@ -184,6 +184,55 @@ bool CTextileMaterials::CheckYarnConstants( pair< vector<double>, vector<double>
 	return bSetDefault;
 }
 
+void CTextileMaterials::OutputMaterials(ostream &Output, int iNumYarns, bool bMatrixOnly )
+{
+	Output << "*****************" << endl;
+	Output << "*** MATERIALS ***" << endl;
+	Output << "*****************" << endl;
+	
+	map<string, pair<CObjectContainer<CMaterial>, CObjectContainer<CMaterial> > >::iterator itMaterial;
+	for (itMaterial = m_Materials.begin(); itMaterial != m_Materials.end(); ++itMaterial)
+	{
+		Output << "*Material, Name=" << itMaterial->first << endl;
+		if ( itMaterial->second.first->GetConstants().size() == 2 )
+			Output << itMaterial->second.first->GetAbaqusCommands();	
+		else
+			Output << itMaterial->second.first->GetAbaqusCommands( "ENGINEERING CONSTANTS" );
+
+		if ( itMaterial->second.second->GetConstants().size() == 1 )
+			Output << itMaterial->second.second->GetThermAbaqusCommands("");	
+		else
+			Output << itMaterial->second.second->GetThermAbaqusCommands( "ORTHO" );
+	}
+	int i;
+	string MatName;
+	for (i = -1; i < iNumYarns; ++i)
+	{
+		if (m_MaterialAssignements.count(i))
+			MatName = m_MaterialAssignements[i];
+		else
+			MatName = m_Materials.begin()->first;
+		if ( i == -1 )
+		{
+			Output << "*Solid Section, ElSet=Matrix, Material=" << MatName << endl;
+			Output << "1.0," << endl;
+		}
+		else if (!bMatrixOnly)
+		{
+			Output << "*Solid Section, ElSet=Yarn" << i << ", Material=" << MatName << ", Orientation=TexGenOrientations" << endl;
+			Output << "1.0," << endl;
+		}
+	}	
+}
+
+/*void CTextileMaterials::OutputMaterials( string Filename, int iNumYarns, bool bMatrixOnly )
+{
+	AddExtensionIfMissing(Filename, ".inp");
+
+	ofstream Output(Filename.c_str(), ofstream::app);
+	OutputMaterials( Output, iNumYarns, bMatrixOnly );
+}*/
+
 string CUMAT::GetAbaqusCommands( string Type )
 {
 	ostringstream Output;
