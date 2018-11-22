@@ -19,12 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma once
 
-<<<<<<< HEAD
+
 #include "Materials.h"
 
 
-=======
->>>>>>> 2f0a6eaee5777d537792f172da327d258cb56227
+
 namespace TexGen
 {
 	//class CMaterial;
