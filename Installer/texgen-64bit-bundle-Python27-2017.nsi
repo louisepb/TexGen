@@ -57,7 +57,7 @@ Section "TexGen (required)" ;No components page, name is not important
   File ..\GUI\TexGen.xrc	
   File msvcp140.dll
   File vcruntime140.dll
-  ;File ..\Docs\TexGen.chm
+  File ..\Docs\TexGen.chm
   File TexGenGUI.exe.manifest
 
   SetOutPath $INSTDIR\Python\libstd
@@ -81,30 +81,30 @@ Section "TexGen (required)" ;No components page, name is not important
   File ..\Python\Lib\WeavePattern.py
   File ..\Python\Core.py
   File ..\Python\Renderer.py
- ; File ..\Python\Export.py
+  File ..\Python\Export.py
   File _Core.pyd
   File _Renderer.pyd
- ; File _Export.pyd
+  File _Export.pyd
   File TexGenCore.dll
- ; File OpenCascade64bit\TKBO.DLL
-  ;File OpenCascade64bit\TKBOOL.DLL
-  ;File OpenCascade64bit\TKBREP.DLL
-  ;File OpenCascade64bit\TKERNEL.DLL
-  ;File OpenCascade64bit\TKG2D.DLL
-  ;File OpenCascade64bit\TKG3D.DLL
-  ;File OpenCascade64bit\TKGEOMALGO.DLL
-  ;File OpenCascade64bit\TKGEOMBASE.DLL
-  ;File OpenCascade64bit\TKIGES.DLL
-  ;File OpenCascade64bit\TKMATH.DLL
-  ;File OpenCascade64bit\TKOFFSET.DLL
-  ;File OpenCascade64bit\TKPRIM.DLL
-  ;File OpenCascade64bit\TKSHHEALING.DLL
-  ;File OpenCascade64bit\TKSTEP.DLL
-  ;File OpenCascade64bit\TKSTEP209.DLL
-  ;File OpenCascade64bit\TKSTEPATTR.DLL
-  ;File OpenCascade64bit\TKSTEPBASE.DLL
-  ;File OpenCascade64bit\TKTOPALGO.DLL
-  ;File OpenCascade64bit\TKXSBASE.DLL
+  File OpenCascade64bit\TKBO.DLL
+  File OpenCascade64bit\TKBOOL.DLL
+  File OpenCascade64bit\TKBREP.DLL
+  File OpenCascade64bit\TKERNEL.DLL
+  File OpenCascade64bit\TKG2D.DLL
+  File OpenCascade64bit\TKG3D.DLL
+  File OpenCascade64bit\TKGEOMALGO.DLL
+  File OpenCascade64bit\TKGEOMBASE.DLL
+  File OpenCascade64bit\TKIGES.DLL
+  File OpenCascade64bit\TKMATH.DLL
+  File OpenCascade64bit\TKOFFSET.DLL
+  File OpenCascade64bit\TKPRIM.DLL
+  File OpenCascade64bit\TKSHHEALING.DLL
+  File OpenCascade64bit\TKSTEP.DLL
+  File OpenCascade64bit\TKSTEP209.DLL
+  File OpenCascade64bit\TKSTEPATTR.DLL
+  File OpenCascade64bit\TKSTEPBASE.DLL
+  File OpenCascade64bit\TKTOPALGO.DLL
+  File OpenCascade64bit\TKXSBASE.DLL
  ; File msvcp71.dll
  ; File msvcr71.dll
 
@@ -177,7 +177,7 @@ Section "Uninstall"
   Delete $INSTDIR\Python\libxtra\TexGen\WiseTex.pyc
   Delete $INSTDIR\Python\libxtra\TexGen\Core.pyc
   Delete $INSTDIR\Python\libxtra\TexGen\Renderer.pyc
- ; Delete $INSTDIR\Python\libxtra\TexGen\Export.pyc
+  Delete $INSTDIR\Python\libxtra\TexGen\Export.pyc
   Delete $INSTDIR\Python\libxtra\TexGen\dataHandling.py
   Delete $INSTDIR\Python\libxtra\TexGen\dataHandlingInPlane.py
   Delete $INSTDIR\Python\libxtra\TexGen\effectiveMatPropRVE.py
@@ -185,10 +185,10 @@ Section "Uninstall"
         
   Delete $INSTDIR\Python\libxtra\TexGen\_Core.pyd
   Delete $INSTDIR\Python\libxtra\TexGen\_Renderer.pyd
- ; Delete $INSTDIR\Python\libxtra\TexGen\_Export.pyd
+  Delete $INSTDIR\Python\libxtra\TexGen\_Export.pyd
   Delete $INSTDIR\Python\libxtra\TexGen\TexGenCore.dll
         
-  /* Delete $INSTDIR\Python\libxtra\TexGen\TKBO.DLL
+  Delete $INSTDIR\Python\libxtra\TexGen\TKBO.DLL
   Delete $INSTDIR\Python\libxtra\TexGen\TKBOOL.DLL
   Delete $INSTDIR\Python\libxtra\TexGen\TKBREP.DLL
   Delete $INSTDIR\Python\libxtra\TexGen\TKERNEL.DLL
@@ -206,7 +206,7 @@ Section "Uninstall"
   Delete $INSTDIR\Python\libxtra\TexGen\TKSTEPATTR.DLL
   Delete $INSTDIR\Python\libxtra\TexGen\TKSTEPBASE.DLL
   Delete $INSTDIR\Python\libxtra\TexGen\TKTOPALGO.DLL
-  Delete $INSTDIR\Python\libxtra\TexGen\TKXSBASE.DLL */
+  Delete $INSTDIR\Python\libxtra\TexGen\TKXSBASE.DLL 
   ;Delete $INSTDIR\Python\libxtra\TexGen\msvcp71.dll
   ;Delete $INSTDIR\Python\libxtra\TexGen\msvcr71.dll
 
