@@ -184,8 +184,6 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 
 	ofstream Output(Filename.c_str(), ios::app);
 
-	
-	//SetupMaterials( Textile );
 	m_Materials.SetupMaterials( Textile );
 	TGLOG("Creating materials");
 	CreateMaterials(Output, Filename);

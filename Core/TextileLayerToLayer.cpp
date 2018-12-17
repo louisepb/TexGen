@@ -24,10 +24,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace TexGen;
 
 // Build a weave unit cell of given width, height, yarn spacing and fabric thickness
-CTextileLayerToLayer::CTextileLayerToLayer(int iNumXYarns, int iNumYYarns, double dXSpacing, double dYSpacing, double dXHeight, double dYHeight, int iNumBinderLayers)
+CTextileLayerToLayer::CTextileLayerToLayer(int iNumXYarns, int iNumYYarns, double dXSpacing, double dYSpacing, double dXHeight, double dYHeight, int iNumBinderLayers, bool bShapeBinders)
 : CTextile3DWeave( iNumXYarns, iNumYYarns, dXSpacing, dYSpacing, dXHeight, dYHeight)
 {
 	m_iNumBinderLayers = iNumBinderLayers;
+	m_bShapeBinders = bShapeBinders;
 }
 
 CTextileLayerToLayer::CTextileLayerToLayer(TiXmlElement &Element)
@@ -378,7 +379,8 @@ bool CTextileLayerToLayer::BuildTextile() const
 		}
 	}
 
-	ShapeBinderYarns();
+	if ( m_bShapeBinders )
+		ShapeBinderYarns();
 
 	// Add repeats and set interpolation
 	dWidth = GetWidth();

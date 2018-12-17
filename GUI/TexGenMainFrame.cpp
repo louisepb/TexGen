@@ -685,6 +685,8 @@ void CTexGenMainFrame::OnSaveVolumeMesh(wxCommandEvent& event)
 
 		wxRadioBox* PeriodicBoundariesCtrl = (wxRadioBox*)FindWindow(XRCID("PeriodicBoundaries"));
 		PeriodicBoundariesCtrl->Enable((unsigned int)STAGGERED_BC, false);
+		PeriodicBoundariesCtrl->Enable((unsigned int)ROTATED_BC, false);
+		
 
 		if (MeshOptions.ShowModal() == wxID_OK)
 		{
@@ -2674,6 +2676,7 @@ void CVolumeMeshOptions::OnPeriodicBoundariesUpdate(wxUpdateUIEvent& event)
 		event.Enable(true);
 		wxRadioBox* PeriodicBoundariesCtrl = (wxRadioBox*)FindWindow(XRCID("PeriodicBoundaries"));
 		PeriodicBoundariesCtrl->Enable(STAGGERED_BC, false);
+		PeriodicBoundariesCtrl->Enable(ROTATED_BC, false);
 	}
 	else
 	{

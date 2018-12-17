@@ -144,11 +144,19 @@ void CMesher::SaveVolumeMeshToVTK(string Filename)
 
 void CMesher::SaveVolumeMeshToABAQUS(string Filename, string TextileName )
 {
+	CTextile* pTextile = TEXGEN.GetTextile(TextileName);
+	if ( pTextile == NULL )
+	{
+		TGERROR("Cannot save to ABAQUS: no textile created");
+		return;
+	}
+	SaveVolumeMeshToABAQUS( Filename, *pTextile );
+}
+
+void CMesher::SaveVolumeMeshToABAQUS(string Filename, CTextile& Textile )
+{
 	TGLOG("Replacing spaces in filename with underscore for ABAQUS compatibility");
 	Filename = ReplaceFilenameSpaces( Filename );
-
-	CTextile* pTextile = TEXGEN.GetTextile(TextileName);
-
 	vector<POINT_INFO> ElementsInfo;
 	POINT_INFO Info;
 	list<MESHER_ELEMENT_DATA>::const_iterator itData;
@@ -170,19 +178,27 @@ void CMesher::SaveVolumeMeshToABAQUS(string Filename, string TextileName )
 		}
 	}
 	m_VolumeMesh.SaveToABAQUS(Filename, &ElementsInfo, false, false);
+
+	ofstream Output(Filename.c_str(), ofstream::app );
+	// Output material properties
+	m_Materials = new CTextileMaterials;
+	m_Materials->SetupMaterials( Textile );
+	m_Materials->OutputMaterials( Output, Textile.GetNumYarns(), false );
+	delete( m_Materials );
+
 	if ( m_iBoundaryConditions != NO_BOUNDARY_CONDITIONS )
 	{
-		m_PeriodicBoundaries->SetDomainSize( pTextile->GetDomain()->GetMesh() );
+		m_PeriodicBoundaries->SetDomainSize( Textile.GetDomain()->GetMesh() );
 		if (SaveNodeSets() )
 		{
-			ofstream Output(Filename.c_str(), ofstream::app );
+			//ofstream Output(Filename.c_str(), ofstream::app );
 			Output << "*****************" << endl;
 			Output << "*** NODE SETS ***" << endl;
 			Output << "*****************" << endl;
 			Output << "** AllNodes - Node set containing all elements" << endl;
 			Output << "*NSet, NSet=AllNodes, Generate" << endl;
 			Output << "1, " << m_VolumeMesh.GetNumNodes() << ", 1" << endl;
-			m_PeriodicBoundaries->CreatePeriodicBoundaries( Output, m_VolumeMesh.GetNumNodes() + 1, *pTextile, m_iBoundaryConditions, false );
+			m_PeriodicBoundaries->CreatePeriodicBoundaries( Output, m_VolumeMesh.GetNumNodes() + 1, Textile, m_iBoundaryConditions, false );
 		}
 		else
 			TGERROR("Unable to generate node sets");

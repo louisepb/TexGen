@@ -52,6 +52,44 @@ void CGeometricTests::TestLenticularSection()
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.5*dHeight, Point.y, 1e-9);
 }
 
+void CGeometricTests::TestHybridQuarterSection()
+{
+	CSectionHybrid Section(CSectionEllipse(2,2), CSectionEllipse(1,2), CSectionEllipse(1,1), CSectionEllipse(2,1));
+
+	XY Point;
+	Point = Section.GetPoint(0);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, Point.x, 1e-9);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, Point.y, 1e-9);
+	Point = Section.GetPoint(0.25);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, Point.x, 1e-9);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, Point.y, 1e-9);
+	Point = Section.GetPoint(0.5);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.5, Point.x, 1e-9);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, Point.y, 1e-9);
+	Point = Section.GetPoint(0.75);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, Point.x, 1e-9);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.5, Point.y, 1e-9);
+}
+
+void CGeometricTests::TestHybridHalfSection()
+{
+	CSectionHybrid Section(CSectionEllipse(2,2), CSectionEllipse(2,1));
+
+	XY Point;
+	Point = Section.GetPoint(0);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, Point.x, 1e-9);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, Point.y, 1e-9);
+	Point = Section.GetPoint(0.25);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, Point.x, 1e-9);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, Point.y, 1e-9);
+	Point = Section.GetPoint(0.5);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(-1.0, Point.x, 1e-9);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, Point.y, 1e-9);
+	Point = Section.GetPoint(0.75);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, Point.x, 1e-9);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(-0.5, Point.y, 1e-9);
+}
+
 void CGeometricTests::TestPointInsideYarn()
 {
 	// Build a single yarn of diameter 1, going from (0,0,0) to (1,0,0)

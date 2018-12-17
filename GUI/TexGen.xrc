@@ -705,12 +705,13 @@
 					<style>wxRA_SPECIFY_COLS</style>
 					<tooltip>This controls the periodic boundary conditions to be applied.\nFor a rectangular domain whether the RVE is considered as 3D or 2.5D \nSheared domain - sheared in the xy direction only\nStaggered - applies an offset in the x direction to apply reduced domain boundary conditions</tooltip>
 					<label>Periodic Boundary Conditions</label>
-					<selection>4</selection>
+					<selection>5</selection>
 					<content>
 						<item>Material Continuum</item>
 						<item>Single Layer RVE</item>
 						<item>Staggered (Reduced Domain)</item>
 						<item>Sheared Domain</item>
+						<item>Rotated Domain</item>
 						<item>None</item>
 					</content>
 					<dimension>1</dimension>
