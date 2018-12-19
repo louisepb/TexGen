@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include <cmath>
+#include <algorithm>
 #include <assert.h>
 #include <stdlib.h>
 #include <memory.h>

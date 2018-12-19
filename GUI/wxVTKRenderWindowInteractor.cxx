@@ -19,12 +19,16 @@
 #include "PrecompiledHeaders.h"
 #include "wxVTKRenderWindowInteractor.h"
 
+#include "vtkAutoInit.h" 
+VTK_MODULE_INIT(vtkRenderingOpenGL); // VTK was built with vtkRenderingOpenGL
+VTK_MODULE_INIT(vtkRenderingFreeType);
+
 //This is needed for vtk 3.1 :
 #ifndef VTK_MAJOR_VERSION
 #  include "vtkVersion.h"
 #endif
 
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
 #  include "vtkCommand.h"
 #else
 #  include "vtkInteractorStyle.h"
@@ -268,7 +272,7 @@ void wxVTKRenderWindowInteractor::OnTimer(wxTimerEvent& WXUNUSED(event))
   if (!Enabled)
     return;
     
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::TimerEvent, NULL);
 #else
@@ -359,7 +363,7 @@ void wxVTKRenderWindowInteractor::OnSize(wxSizeEvent& WXUNUSED(event))
     return;
     }
 
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
   InvokeEvent(vtkCommand::ConfigureEvent, NULL);
 #endif
   //this will check for Handle
@@ -372,7 +376,7 @@ void wxVTKRenderWindowInteractor::OnMotion(wxMouseEvent &event)
     {
     return;
     }
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
   SetEventInformationFlipY(event.GetX(), event.GetY(), 
     event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
 
@@ -391,7 +395,7 @@ void wxVTKRenderWindowInteractor::OnEnter(wxMouseEvent &event)
     return;
     }
 
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
   SetEventInformationFlipY(event.GetX(), event.GetY(), 
       event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
@@ -411,7 +415,7 @@ void wxVTKRenderWindowInteractor::OnLeave(wxMouseEvent &event)
     return;
     }
 
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
   SetEventInformationFlipY(event.GetX(), event.GetY(), 
       event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
@@ -431,7 +435,7 @@ void wxVTKRenderWindowInteractor::OnKeyDown(wxKeyEvent &event)
     return;
     }
 
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
   int keycode = event.GetKeyCode();
   char key = '\0';
@@ -460,7 +464,7 @@ void wxVTKRenderWindowInteractor::OnKeyUp(wxKeyEvent &event)
     return;
     }
 
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
   int keycode = event.GetKeyCode();
   char key = '\0';
@@ -489,14 +493,14 @@ void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event)
     }
   ActiveButton = event.GetEventType();
 
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
   SetEventInformationFlipY(event.GetX(), event.GetY(), 
     event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
 #endif
 
   if(event.RightDown())
   {
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::RightButtonPressEvent, NULL);
 #else            
@@ -507,7 +511,7 @@ void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event)
   }
   else if(event.LeftDown())
   {
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::LeftButtonPressEvent, NULL);
 #else            
@@ -518,7 +522,7 @@ void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event)
   }
   else if(event.MiddleDown())
   {
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::MiddleButtonPressEvent, NULL);
 #else            
@@ -548,14 +552,14 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
     return;
     }
 
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
   SetEventInformationFlipY(event.GetX(), event.GetY(), 
     event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
 #endif
   
   if(ActiveButton == wxEVT_RIGHT_DOWN)
   {
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::RightButtonReleaseEvent, NULL);
 #else            
@@ -566,7 +570,7 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
   }
   else if(ActiveButton == wxEVT_LEFT_DOWN)
   {
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::LeftButtonReleaseEvent, NULL);
 #else            
@@ -577,7 +581,7 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
   }
   else if(ActiveButton == wxEVT_MIDDLE_DOWN)
   {
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::MiddleButtonReleaseEvent, NULL);
 #else            
@@ -597,7 +601,7 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
 void wxVTKRenderWindowInteractor::OnMouseWheel(wxMouseEvent& event)
 {
 // Mouse wheel was only added after VTK 4.4 (I think...)
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 2)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 2)
   // new style
   //Set vtk event information ... The numebr of wheel rotations is stored in
   //the x varible.  y varible is zero
@@ -640,7 +644,7 @@ void wxVTKRenderWindowInteractor::Render()
       {
       RenderWindow->Render();
       }
-#if VTK_MAJOR_VERSION == 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 2)
+#if VTK_MAJOR_VERSION >= 5 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 2)
     else if(GetHandleHack())
       {
       //this means the user has reparented us; let's adapt to the

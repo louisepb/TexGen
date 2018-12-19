@@ -17,11 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =============================================================================*/
 
-#ifdef WIN32
-#	include <wx/wxprec.h>
-#else
-#	include <wx/wx.h>
-#endif
+#include <wx/wx.h>
 
 // Prevent python.h from adding python24_d.lib to the linker in debug mode (that library does not exist)
 /*#ifdef WIN32

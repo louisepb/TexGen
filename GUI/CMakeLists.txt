@@ -41,19 +41,7 @@ LINK_DIRECTORIES(${VTK_LIBRARY_DIRS} )
 IF(UNIX)
 	ADD_DEFINITIONS("`pkg-config --cflags gtk+-2.0`")
 	ADD_DEFINITIONS("`wx-config --cflags`")
-	TARGET_LINK_LIBRARIES(TexGenGUI
-		TexGenRenderer
-		TexGenCore
-		vtkGraphics
-		vtkFiltering
-		vtkCommon
-		vtkRendering
-		vtkWidgets
-		vtkftgl
-		vtksys
-		vtkexpat
-		vtkNetCDF
-		LatinHypercube
+	TARGET_LINK_LIBRARIES(${VTK_LIBRARIES}
 		${wxWidgets_LIBRARIES}
 		#optimized ${PYTHON_LIBRARIES})
 		${PYTHON_LIBRARIES})
@@ -80,16 +68,7 @@ IF(WIN32)
 	TexGenCore
 	opengl32 
 	glu32
-	${VTK_LIBRARY_DIRS}/vtkGraphics
-	${VTK_LIBRARY_DIRS}/vtkFiltering
-	${VTK_LIBRARY_DIRS}/vtkCommon
-	${VTK_LIBRARY_DIRS}/vtkRendering
-	${VTK_LIBRARY_DIRS}/vtkWidgets
-	${VTK_LIBRARY_DIRS}/vtkftgl
-	${VTK_LIBRARY_DIRS}/vtksys
-	${VTK_LIBRARY_DIRS}/vtkexpat
-	${VTK_LIBRARY_DIRS}/vtknetcdf
-	${VTK_LIBRARY_DIRS}/vtkhdf5
+    ${VTK_LIBRARIES}
 	${wxWidgets_LIBRARIES}
 	optimized ${PYTHON_LIBRARIES}
 	comctl32

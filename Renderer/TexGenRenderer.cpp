@@ -470,7 +470,7 @@ vtkActor *CTexGenRenderer::ConvertToActor(vtkPolyData *pPolyData)
 {
 	vtkActor *pActor = vtkActor::New();
 	vtkPolyDataMapper *pPolyDataMapper = vtkPolyDataMapper::New();
-	pPolyDataMapper->SetInput(pPolyData);
+	pPolyDataMapper->SetInputData(pPolyData);
 	pActor->SetMapper(pPolyDataMapper);
 
 	pPolyDataMapper->Delete();
@@ -896,7 +896,7 @@ void CTexGenRenderer::RenderPath(CTextile &Textile, int iYarn)
 
 	vtkTubeFilter* pProfileTubes = vtkTubeFilter::New();
 	pProfileTubes->SetNumberOfSides(8);
-	pProfileTubes->SetInput(pPolyData);
+	pProfileTubes->SetInputData(pPolyData);
 	pProfileTubes->SetRadius(dRadius);
 	pProfileTubes->CappingOn();
 
@@ -982,8 +982,8 @@ void CTexGenRenderer::RenderInterference(CTextile &Textile, bool bDepth)
 	pBalls->SetThetaResolution(10);
 
 	vtkGlyph3D* pGlyphPoints = vtkGlyph3D::New();
-	pGlyphPoints->SetInput(pPolyData);
-	pGlyphPoints->SetSource(pBalls->GetOutput());
+	pGlyphPoints->SetInputData(pPolyData);
+	pGlyphPoints->SetSourceData(pBalls->GetOutput());
 
 	if ( bDepth )
 	{
@@ -1111,8 +1111,8 @@ void CTexGenRenderer::RenderGrid(CTextile &Textile, int iResX, int iResY, int iR
 	vtkGlyph3D* pGlyphPoints = vtkGlyph3D::New();
 	pGlyphPoints->SetScaleFactor(dLength);
 	pGlyphPoints->SetVectorModeToUseVector();
-	pGlyphPoints->SetSource(pArrow->GetOutput());
-	pGlyphPoints->SetInput(pPolyData);
+	pGlyphPoints->SetSourceData(pArrow->GetOutput());
+	pGlyphPoints->SetInputData(pPolyData);
 
 	vtkPolyDataMapper* pGlyphMapper = vtkPolyDataMapper::New();
 	pGlyphMapper->SetInputConnection(pGlyphPoints->GetOutputPort());
@@ -1137,7 +1137,7 @@ bool CTexGenRenderer::RenderImage(string FileName, double dMaxDim, XYZ Orientati
 //	vtkPNGReader* pReader = vtkPNGReader::New();
 	pReader->SetFileName(FileName.c_str());
 	vtkImageActor* pImageActor = vtkImageActor::New();
-	pImageActor->SetInput(pReader->GetOutput());
+	pImageActor->SetInputData(pReader->GetOutput());
 	double Bounds[6];
 	pImageActor->GetBounds(Bounds);
 	double dMaxBound = Bounds[1] - Bounds[0];
@@ -1317,7 +1317,7 @@ vtkAlgorithm *CTexGenRenderer::CalculateNormals(vtkPolyData *pInput)
 	pPolyDataNormals->ComputeCellNormalsOn();
 	pPolyDataNormals->FlipNormalsOff();
 
-	pPolyDataNormals->SetInput(pInput);
+	pPolyDataNormals->SetInputData(pInput);
 
 	pInput->Delete();
 
@@ -1418,7 +1418,7 @@ bool CTexGenRenderer::SaveMeshToVTK(string FileName, const CMesh &Mesh)
 		FileName += ".vtp";
 	vtkPolyData* pPolyData = GetPolyData(Mesh);
 	vtkXMLPolyDataWriter* pPolyDataWriter = vtkXMLPolyDataWriter::New(); 
-	pPolyDataWriter->SetInput(pPolyData);
+	pPolyDataWriter->SetInputData(pPolyData);
 	pPolyDataWriter->SetDataModeToBinary();
 	pPolyDataWriter->SetFileName(FileName.c_str());
 	bool bSuccess = pPolyDataWriter->Write()?true:false;
