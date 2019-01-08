@@ -335,6 +335,12 @@ void CVoxelMesh::SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputM
 		OutputPeriodicBoundaries( Output, Textile, iBoundaryConditions, bMatrixOnly );
 		//PROFILE_END();
 	}
+
+	else
+	{
+		OutputPeriodicBoundaries( Output, Textile, iBoundaryConditions, bMatrixOnly );	
+	}
+
 	TGLOG("Finished saving to Abaqus");
 }
 

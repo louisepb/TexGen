@@ -195,6 +195,7 @@ namespace std
 %include "../Core/ShearedPeriodicBoundaries.h"
 %include "../Core/StaggeredPeriodicBoundaries.h"
 %include "../Core/Materials.h"
+%include "../Core/OctreeVoxelMesh.h"
 
 %include "../Core/PatternDraft.h"
 %feature("notabstract") CBifurcationVoxelMesh;

@@ -10,6 +10,7 @@ IF(BUILD_PYTHON_INTERFACE)
 
 	# Set where to find the python header files
 	INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
+	INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../OctreeRefinement/Include)
 
 	# Add the swig command to the build
 	ADD_CUSTOM_COMMAND(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/Core_wrap.cxx"

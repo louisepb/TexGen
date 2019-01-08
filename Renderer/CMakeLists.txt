@@ -44,6 +44,7 @@ ENDIF(UNIX)
 
 FIND_PACKAGE(VTK REQUIRED)
 
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../OctreeRefinement/Include)
 INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
 
 # Note ${VTK_LIBRARY_DIRS} are necessary for MSVC++, libs arn't found otherwise

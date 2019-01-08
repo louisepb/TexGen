@@ -13,6 +13,21 @@ UnitTests
 =========
 ** Added hybrid section tests
 
+v3.10.1
+=======
+Core
+====
+** Added functions to create voxel mesh and periodic boundary conditions for rotated domains
+
+GUI
+===
+** Added rotated boundary conditions option to Voxel Mesh Export
+
+UnitTests
+=========
+** Added rotated voxel mesh export test
+
+
 v3.10.0
 ======
 General

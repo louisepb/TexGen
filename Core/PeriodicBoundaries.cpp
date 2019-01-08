@@ -84,9 +84,13 @@ void CPeriodicBoundaries::CreatePeriodicBoundaries( ostream& Output, int iDummyN
 	OutputEdgeSets( Output );
 	OutputVertexSets( Output ); 
 
-	OutputEquations( Output, iBoundaryConditions );
 
-	OutputStep( Output, iBoundaryConditions );
+	//George change to not output these if no boundary conditions
+	if ( iBoundaryConditions != NO_BOUNDARY_CONDITIONS)
+	{
+		OutputEquations( Output, iBoundaryConditions );
+		OutputStep( Output, iBoundaryConditions );
+	}
 }
 
 void CPeriodicBoundaries::OutputSets( ostream& Output, vector<int>& Set, string SetName)
