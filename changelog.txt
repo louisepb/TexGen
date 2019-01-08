@@ -2,6 +2,12 @@ Version History
 ---------------
 v3.11.0
 =======
+General
+=======
+** Upgraded to VTK 6.3.0
+** Changed CMakelists files for VS2017
+** Created installer for VS2017 build
+
 Core
 ====
 ** Bugfix to correct hybrid section constructor with 4 sections
@@ -12,6 +18,7 @@ Core
 UnitTests
 =========
 ** Added hybrid section tests
+
 
 v3.10.0
 ======
