@@ -85,3 +85,13 @@ void CVoxelExportTests::TestOctreeExport()
 	// Compare to template file
 	CPPUNIT_ASSERT(CompareFiles("OctreeVoxelMeshTest.inp","..\\..\\UnitTests\\OctreeVoxelMeshTest.inp"));
 }
+void CVoxelExportTests::TestOctreeExport()
+{
+	CTextile Textile = m_TextileFactory.GetSingleYarn(3, 20);
+
+	COctreeVoxelMesh Vox;
+	// Save yarns and matrix
+	Vox.SaveVoxelMesh(Textile,"OctreeVoxelMeshTest", 5, 6, true, 10, 0.3, 0.3, false, false );
+	// Compare to template file
+	CPPUNIT_ASSERT(CompareFiles("OctreeVoxelMeshTest.inp","..\\..\\UnitTests\\OctreeVoxelMeshTest.inp"));
+}
