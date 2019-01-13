@@ -1016,7 +1016,8 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 	if (CreateP4ESTRefinement(min_level, refine_level) == -1)
 		return;
 
-	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, 1, 1, 1, true, true, 1);
+	//George - saving smooth voxel mesh with no periodic boundary conditions add if statement later
+	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, 1, 1, 1, true, true, 5, 1);
 
 	timer.check("Octree refinement finished");
 	timer.stop();
