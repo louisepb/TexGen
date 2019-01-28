@@ -91,6 +91,9 @@ void CPeriodicBoundaries::CreatePeriodicBoundaries( ostream& Output, int iDummyN
 		OutputEquations( Output, iBoundaryConditions );
 		OutputStep( Output, iBoundaryConditions );
 	}
+
+	OutputFullFaceSets( Output );
+
 }
 
 void CPeriodicBoundaries::OutputSets( ostream& Output, vector<int>& Set, string SetName)
@@ -154,6 +157,53 @@ void CPeriodicBoundaries::OutputVertexSets( ostream& Output )
 		Vertex[0] = m_Vertices[i];
 		OutputSets( Output, Vertex, "MasterNode" + stringify(i+1) );
 	}
+}
+
+void CPeriodicBoundaries::OutputFullFaceSets( ostream& Output )
+{
+	//Output if don't want PBC
+	Output << "*NSet, NSet= TopSurfaceNodes";
+	Output << ", Unsorted" << endl;
+	WriteValues( Output, m_FaceC.first, 16 );
+	Output << ", " << endl;
+	for (int i = 6; i < 8; i++)
+	{
+		WriteValues( Output, m_Edges[i], 16 );
+		Output << ", " << endl;
+	}
+
+	for (int i = 10; i < 12; i++)
+	{
+		WriteValues( Output, m_Edges[i], 16 );
+		Output << ", " << endl;
+	}
+	
+	for (int i = 4; i < m_NumVertices; ++i )
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
+
+	Output << "*NSet, NSet= BottomSurfaceNodes";
+	Output << ", Unsorted" << endl;
+	WriteValues( Output, m_FaceC.second, 16 );
+	Output << ", " << endl;
+	for (int i = 4; i < 6; i++)
+	{
+		WriteValues( Output, m_Edges[i], 16 );
+		Output << ", " << endl;
+	}
+	
+	for (int i = 8; i < 10; i++)
+	{
+		WriteValues( Output, m_Edges[i], 16 );
+		Output << ", " << endl;
+	}
+	
+	for (int i = 0; i < m_NumVertices/2; ++i )
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
+
 }
 
 void CPeriodicBoundaries::OutputEquations( ostream& Output, int iBoundaryConditions )

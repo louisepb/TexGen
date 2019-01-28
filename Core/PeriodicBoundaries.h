@@ -87,6 +87,8 @@ namespace TexGen
 		void OutputStep( ostream& Output, int iBoundaryConditions );
 		/// Output 6 load cases
 		void OutputLoadCase( ostream& Output, int iCase );
+
+		void OutputFullFaceSets( ostream& Output );
 		
 	};
 }; // namespace TexGen
