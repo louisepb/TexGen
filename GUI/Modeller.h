@@ -154,7 +154,7 @@ protected:
 	bool m_bSelectPaths;
 	bool m_bSelectSurfaces;
 	bool m_bSelectImages;
-//	bool m_bIgnoreSelectionChange;
+	bool m_bIgnoreSelectionEvent;
 };
 
 

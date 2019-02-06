@@ -48,7 +48,7 @@ CModeller::CModeller(CTexGenRenderer *pRenderer, string TextileName)
 , m_bSelectPaths(true)
 , m_bSelectSurfaces(true)
 , m_bSelectImages(true)
-//, m_bIgnoreSelectionChange(false)
+, m_bIgnoreSelectionEvent(false)
 {
 //	CreateTestTextile();
 	CreateWidgets();
@@ -155,6 +155,9 @@ void CModeller::OnButtonDown(wxMouseEvent &event)
 		int *eventPos = rwi->GetEventPosition();
 		if (!HitWidget(eventPos[0], eventPos[1]))
 		{
+			m_bIgnoreSelectionEvent = true;  // Change to wxWidgets3 treectrl->UnselectAll added wxEVT_TREE_SEL_CHANGED event
+											  // leading to a recursive call of DeselectAll which corrupted m_SelectedObjects
+											  // Check m_bIgnoreSelectionEvent in OnOutlinerSelectionChanged stops this
 			if (!event.ShiftDown())
 				DeselectAll();
 			if (!bPicked && m_bSelectNodes)
@@ -165,6 +168,7 @@ void CModeller::OnButtonDown(wxMouseEvent &event)
 				bPicked = SelectSurface(eventPos[0], eventPos[1]);
 			if (!bPicked && m_bSelectImages)
 				bPicked = SelectImage(eventPos[0], eventPos[1]);
+			m_bIgnoreSelectionEvent = false;
 		}
 	}
 	if (bPicked)
@@ -361,6 +365,7 @@ void CModeller::SelectObject(PROP_INFO* pObject, bool bUpdateOutliner)
 		UpdateWidget();
 		UpdateOutlinerSelection();
 	}
+
 }
 
 void CModeller::HighlightSelectedObjects()
@@ -369,8 +374,9 @@ void CModeller::HighlightSelectedObjects()
 	vector<vtkProp*> Props;
 	vector<vtkProp*>::iterator itProp;
 	vtkActor* pActor;
+	
 	for (itObject = m_SelectedObjects.begin(); itObject != m_SelectedObjects.end(); ++itObject)
-	{
+	{	
 		Props = m_pRenderer->GetProps(*itObject);
 		for (itProp = Props.begin(); itProp != Props.end(); ++itProp)
 		{
@@ -1529,6 +1535,7 @@ void CModeller::UpdateOutlinerSelection()
 		{
 			PROP_YARN_INFO* pYarnInfo = dynamic_cast<PROP_YARN_INFO*>(*itObject);
 			PROP_NODE_INFO* pNodeInfo = dynamic_cast<PROP_NODE_INFO*>(*itObject);
+			
 			wxTreeItemId SelectItem;
 			if (pYarnInfo)
 			{
@@ -1549,7 +1556,7 @@ void CModeller::UpdateOutlinerSelection()
 
 void CModeller::OnOutlinerSelectionChanged(wxPanel* pOutliner)
 {
-	if (!pOutliner/* || m_bIgnoreSelectionChange*/)
+	if (!pOutliner || m_bIgnoreSelectionEvent)
 		return;
 	wxTreeCtrl* pTreeCtrl = XRCCTRL(*pOutliner, "TreeCtrl", wxTreeCtrl);
 	if (pTreeCtrl)
