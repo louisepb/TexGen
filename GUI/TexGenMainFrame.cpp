@@ -884,15 +884,13 @@ void CTexGenMainFrame::OnSaveSTEP(wxCommandEvent& event)
 
 void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 {
-
 	string TextileName = GetTextileSelection();
 	stringstream Command;
 
 	wxString XScale = wxT("1.0");
 	wxString YScale = wxT("1.0");
 	wxString ZScale = wxT("1.0");
-	//wxString YoungsModulus = wxT("13000.0");
-	//wxString PoissonsRatio = wxT("0.3");
+	
 	wxString IntersectionTolerance = wxT("0.0000001");
 	bool bAdjustIntersections = false;
 	bool bIncludePlates = false;
@@ -917,8 +915,6 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 		XRCCTRL(AbaqusInput, "XScale", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &XScale));
 		XRCCTRL(AbaqusInput, "YScale", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &YScale));
 		XRCCTRL(AbaqusInput, "ZScale", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &ZScale));
-		/*XRCCTRL(AbaqusInput, "YoungsModulus", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &YoungsModulus));
-		XRCCTRL(AbaqusInput, "PoissonsRatio", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &PoissonsRatio));*/
 		XRCCTRL(AbaqusInput, "AdjustIntersections", wxCheckBox)->SetValidator(wxGenericValidator(&bAdjustIntersections));
 		XRCCTRL(AbaqusInput, "IntersectionTolerance", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &IntersectionTolerance));
 		XRCCTRL(AbaqusInput, "IncludePlates", wxCheckBox)->SetValidator(wxGenericValidator(&bIncludePlates));
@@ -940,16 +936,8 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 				string strContact = iContactSurfaces ? "True" : "False";
 				Command << "deformer.SetWholeSurfaces(" << strContact << ")" << endl;
 
-				//#deformer.SetFortranProgram('LinearElasticUMAT.for')
-				//Command << "deformer.SetMaterial('ISO', [" << ConvertString(YoungsModulus) << "," << ConvertString(PoissonsRatio) << "])" << endl;
-				//#deformer.SetSimulationFilesPrefix(Abaquspre)
-
-				//name = baseName + '.tg3'
-				//ReadFromXML(name)
 				Command << "textile = GetTextile('" + TextileName + "')" << endl;
 
-				//#name = deformer.GetSimulationFilesPrefix()
-				//Command << "deformer.CreateAbaqusInputFile(textile, 'TestAbaqus' + '.inp')" << endl;
 				double Tolerance;
 				IntersectionTolerance.ToDouble( &Tolerance );
 				Command << "deformer.CreateAbaqusInputFile(textile, r\'" << ConvertString(dialog.GetPath()) << "'," << bRegenerateMesh << "," << iElementType << "," 
@@ -959,15 +947,6 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 			}
 		}
 	}
-
-	
-
-/*if not deformer.CreateAbaqusInputFile(textile, baseName + '.inp'):
-	raise RuntimeError('Unable to create ABAQUS input file')
-else:
-    print 'Abaqus input files are complete now.'*/
-
-
 }
 
 void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
