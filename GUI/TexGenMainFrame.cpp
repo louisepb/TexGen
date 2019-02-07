@@ -453,6 +453,8 @@ void CTexGenMainFrame::OnSaveScreenshot(wxCommandEvent& event)
 	
 	if (wxXmlResource::Get()->LoadDialog(&ScreenShot, this, wxT("ScreenShot")))
 	{
+		int Magnification = 1;
+		XRCCTRL(ScreenShot, "Magnification", wxSpinCtrl)->SetValidator(wxGenericValidator( &Magnification));
 		if ( ScreenShot.ShowModal() == wxID_OK )
 		{
 			wxFileDialog dialog
@@ -471,10 +473,7 @@ void CTexGenMainFrame::OnSaveScreenshot(wxCommandEvent& event)
 				Command = "GetRenderWindow().TakeScreenShot(r\"";
 				Command += ConvertString(dialog.GetPath());
 				Command += "\", ";
-				
-				wxSpinCtrl* MagCtrl = (wxSpinCtrl*)FindWindow(XRCID("Magnification"));
-				
-				Command += stringify(MagCtrl->GetValue());
+				Command += stringify(Magnification);
 				Command += ")";
 				SendPythonCode(Command);
 			}
