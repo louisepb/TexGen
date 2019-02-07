@@ -951,7 +951,6 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 
 void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 {
-
 	string TextileName = GetTextileSelection();
 	stringstream Command;
 
@@ -961,7 +960,7 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 	wxString XOffset = wxT("0.0");
 	
 	bool bOutputMatrix = true;
-	bool bOutputYarns = false;
+	bool bOutputYarns = true;
 	int  iBoundaryConditions = 0;
 	int iElementType = 0;
 
@@ -1021,14 +1020,6 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 			
 		}
 	}
-	
-
-/*if not deformer.CreateAbaqusInputFile(textile, baseName + '.inp'):
-	raise RuntimeError('Unable to create ABAQUS input file')
-else:
-    print 'Abaqus input files are complete now.'*/
-
-
 }
 
 void CTexGenMainFrame::OnPeriodicBoundaries(wxCommandEvent& event)
