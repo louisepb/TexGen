@@ -300,7 +300,7 @@
 				<flag>wxALIGN_CENTER</flag>
 				<border>5</border>
 				<object class="wxFlexGridSizer">
-					<rows>3</rows>
+					<rows>4</rows>
 					<cols>4</cols>
 					<vgap>0</vgap>
 					<hgap>0</hgap>
