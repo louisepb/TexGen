@@ -662,11 +662,10 @@ void CTexGenMainFrame::OnSaveVolumeMesh(wxCommandEvent& event)
 		}
 	}
 
-//	int iMeshType = 0;
 	int iElementOrder = 0;
 	bool bProjectMidSideNodes = true;
 	bool bPeriodic = false;
-	int iBoundaryConditions;
+	int iBoundaryConditions = MATERIAL_CONTINUUM;
 
 	wxString SeedSize = wxString::Format(wxT("%.4f"), dSeedSize);
 	
@@ -674,18 +673,14 @@ void CTexGenMainFrame::OnSaveVolumeMesh(wxCommandEvent& event)
 	CVolumeMeshOptions MeshOptions(this);
 	
 	{
-//		XRCCTRL(MeshOptions, "MeshType", wxRadioBox)->SetValidator(wxGenericValidator(&iMeshType));
 		XRCCTRL(MeshOptions, "ElementOrder", wxRadioBox)->SetValidator(wxGenericValidator(&iElementOrder));
 		XRCCTRL(MeshOptions, "ProjectMidSideNodes", wxCheckBox)->SetValidator(wxGenericValidator(&bProjectMidSideNodes));
 		XRCCTRL(MeshOptions, "Periodic", wxCheckBox)->SetValidator(wxGenericValidator(&bPeriodic));
 		XRCCTRL(MeshOptions, "SeedSize", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &SeedSize));
 		XRCCTRL(MeshOptions, "MergeTolerance", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &MergeTolerance));
 		XRCCTRL(MeshOptions, "PeriodicBoundaries", wxRadioBox)->SetValidator(wxGenericValidator(&iBoundaryConditions));
-
-		wxRadioBox* PeriodicBoundariesCtrl = (wxRadioBox*)FindWindow(XRCID("PeriodicBoundaries"));
-		PeriodicBoundariesCtrl->Enable((unsigned int)STAGGERED_BC, false);
-		PeriodicBoundariesCtrl->Enable((unsigned int)ROTATED_BC, false);
-		
+		XRCCTRL(MeshOptions,"PeriodicBoundaries", wxRadioBox)->Enable((unsigned int)STAGGERED_BC, false);
+		XRCCTRL(MeshOptions,"PeriodicBoundaries", wxRadioBox)->Enable((unsigned int)ROTATED_BC, false);
 
 		if (MeshOptions.ShowModal() == wxID_OK)
 		{
@@ -707,8 +702,7 @@ void CTexGenMainFrame::OnSaveVolumeMesh(wxCommandEvent& event)
 					Command << "mesher = CMesher(" << iBoundaryConditions << ")" << endl;
 				else
 					Command << "mesher = CMesher()" << endl;
-/*				if (iMeshType == 1)
-					Command << "mesher.SetHybrid(True)" << endl;*/
+
 				if (iElementOrder == 1)
 					Command << "mesher.SetQuadratic(True)" << endl;
 				if (!bProjectMidSideNodes)
