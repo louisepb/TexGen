@@ -50,7 +50,6 @@ CModeller::CModeller(CTexGenRenderer *pRenderer, string TextileName)
 , m_bSelectImages(true)
 , m_bIgnoreSelectionEvent(false)
 {
-//	CreateTestTextile();
 	CreateWidgets();
 	CreatePicker();
 }
@@ -111,26 +110,6 @@ void CModeller::CreateWidgets()
 	m_pCustomWidget->AddObserver(vtkCommand::StartInteractionEvent, m_pCallBack);
 	m_pCustomWidget->AddObserver(vtkCommand::InteractionEvent, m_pCallBack);
 	m_pCustomWidget->AddObserver(vtkCommand::EndInteractionEvent, m_pCallBack);
-}
-
-void CModeller::CreateTestTextile()
-{
-	CTextile* pTextile = TEXGEN.GetTextile(m_TextileName);
-	if (!pTextile)
-		return;
-	CYarn Yarn;
-	Yarn.AddNode(CNode(XYZ(0,0,0)));
-	Yarn.AddNode(CNode(XYZ(5,0,0)));
-	Yarn.AddNode(CNode(XYZ(10,0,0)));
-	pTextile->AddYarn(Yarn);
-	Yarn.Translate(XYZ(0, 10, 0));
-	pTextile->AddYarn(Yarn);
-	Yarn.Rotate(WXYZ(XYZ(0, 0, 1), PI/2));
-	Yarn.Translate(XYZ(10, 0, 2));
-	pTextile->AddYarn(Yarn);
-	Yarn.Translate(XYZ(10, 0, 0));
-	pTextile->AddYarn(Yarn);
-	SetDefaultRenderState();
 }
 
 void CModeller::SetDefaultRenderState()
@@ -210,10 +189,6 @@ void CModeller::CreatePicker()
 {
 	m_pCellPicker = vtkCellPicker::New();
 	m_pCellPicker->SetTolerance(0.001);
-//	m_pCellPicker->InitializePickList();
-//	m_pCellPicker->AddPickList(m_pXArrow);
-//	m_pCellPicker->AddPickList(m_pYArrow);
-//	m_pCellPicker->AddPickList(m_pZArrow);
 	m_pCellPicker->PickFromListOn();
 	m_pPropPicker = vtkPropPicker::New();
 	m_pPropPicker->PickFromListOn();
@@ -341,9 +316,6 @@ void CModeller::DeselectObject(PROP_INFO* pObject, bool bUpdateWidget, bool bUpd
 			if (pActor)
 			{
 				m_pRenderer->ApplyDefaultColor(pActor);
-/*				pActor->GetProperty()->SetDiffuseColor(m_pRenderer->GetDefaultPropColor(pActor).Array());
-				pActor->GetProperty()->SetSpecular(.3);
-				pActor->GetProperty()->SetSpecularPower(30);*/
 			}
 		}
 		delete *itObject;
@@ -712,14 +684,6 @@ void CModeller::InsertNodes()
 			assert(itNodeInfo->iNode >= 0 && itNodeInfo->iNode < (int)Nodes.size());
 			if (itNodeInfo->iNode > 0)
 			{
-	/*			vector<CNode>::const_iterator itNode;
-				int i;
-				for (itNode = Nodes.begin(), i=0; itNode != Nodes.end(); ++itNode, ++i)
-				{
-					CNode Node = *itNode;
-					Node.SetPosition(Node.GetPosition() + DeltaPos);
-					Yarn.ReplaceNode(i, Node);
-				}*/
 				const CNode &PrevNode = Nodes[itNodeInfo->iNode-1];
 				const CNode &NextNode = Nodes[itNodeInfo->iNode];
 
@@ -776,7 +740,6 @@ void CModeller::DuplicateYarns()
 			SelectObject(new PROP_YARN_INFO(YarnInfo));
 		}
 
-//		m_pRenderer->RefreshView();
 		UpdateOutlinerItems();
 	}
 }
@@ -926,7 +889,6 @@ void CModeller::AssignRepeatsToSelectedObjects()
 		wxGrid* pGrid = XRCCTRL(Dialog, "RepeatsGrid", wxGrid);
 		int iNumRepeats = max((int)Repeats.size(), 3);
 		pGrid->CreateGrid(iNumRepeats, 3);
-//		wxGridTableBase* pTable = pGrid->GetTable();
 		for (i=0; i<(int)Repeats.size(); ++i)
 		{
 			for (j=0; j<3; ++j)
@@ -985,9 +947,6 @@ void CModeller::AssignRepeatsToSelectedObjects()
 			CTexGenMainFrame *pMainFrame = ((CTexGenApp*)wxTheApp)->GetMainFrame();
 			pMainFrame->SendPythonCode(StringStream.str());
 			RefreshSelectedYarns();
-/*			double x = pTable->GetValueAsDouble(0, 0);
-			double y = pTable->GetValueAsDouble(0, 1);
-			double z = pTable->GetValueAsDouble(0, 2);*/
 		}
 	}
 }
@@ -1330,16 +1289,11 @@ void CModeller::CreateYarn()
 			}
 			StringStream << "yarn.AddNode(CNode(XYZ(" << End << ")))" << endl;
 			StringStream << "GetTextile('" << m_TextileName << "').AddYarn(yarn)" << endl;
-/*			for (itYarn=SelectedYarns.begin(); itYarn!=SelectedYarns.end(); ++itYarn)
-			{
-				StringStream << "yarns[" << itYarn->iYarn << "].AssignInterpolation(interpolation)" << endl;
-			}*/
 			CTexGenMainFrame *pMainFrame = ((CTexGenApp*)wxTheApp)->GetMainFrame();
 			pMainFrame->SendPythonCode(StringStream.str());
 			if (bFirstYarn)
 			{
 				SetDefaultRenderState();
-//				pMainFrame->RefreshTextile(m_TextileName);
 			}
 			else
 			{

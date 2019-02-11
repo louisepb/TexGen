@@ -7,6 +7,7 @@ General
 ** Upgraded to VTK 6.3.0
 ** Changed CMakelists files for VS2017
 ** Created installer for VS2017 build
+** Upgraded to wxWidgets3.0.4
 
 Core
 ====
@@ -14,6 +15,11 @@ Core
 ** Moved OutputMaterials function into CTextileMaterials so that material properties are still output in .inp file when no PBCs
 ** Bugfix to correct volume mesh export due to additiono of rotated option
 ** Added PBCs for rotated textiles
+
+GUI
+===
+** Various bugfixes to give compatibility with wxWidgets3
+** Bugfix in print pattern draft so doesn't exit program if cancel
 
 UnitTests
 =========
