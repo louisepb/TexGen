@@ -1,6 +1,6 @@
 Version History
 ---------------
-v3.11.0
+v3.10.1
 =======
 General
 =======
@@ -11,10 +11,11 @@ General
 
 Core
 ====
-** Bugfix to correct hybrid section constructor with 4 sections
-** Moved OutputMaterials function into CTextileMaterials so that material properties are still output in .inp file when no PBCs
-** Bugfix to correct volume mesh export due to additiono of rotated option
-** Added PBCs for rotated textiles
+** Added functions to create voxel mesh and periodic boundary conditions for rotated domains
+
+GUI
+===
+** Added rotated boundary conditions option to Voxel Mesh Export
 
 GUI
 ===
@@ -23,7 +24,7 @@ GUI
 
 UnitTests
 =========
-** Added hybrid section tests
+** Added rotated voxel mesh export test
 
 
 v3.10.0
