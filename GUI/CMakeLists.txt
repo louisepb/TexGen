@@ -74,16 +74,6 @@ IF(WIN32)
 	opengl32 
 	glu32
 	${VTK_LIBRARIES}
-	#${VTK_LIBRARY_DIRS}/vtkGraphics
-	#${VTK_LIBRARY_DIRS}/vtkFiltering
-	#${VTK_LIBRARY_DIRS}/vtkCommon
-	#${VTK_LIBRARY_DIRS}/vtkRendering
-	#${VTK_LIBRARY_DIRS}/vtkWidgets
-	#${VTK_LIBRARY_DIRS}/vtkftgl
-	#${VTK_LIBRARY_DIRS}/vtksys
-	#${VTK_LIBRARY_DIRS}/vtkexpat
-	#${VTK_LIBRARY_DIRS}/vtknetcdf
-	#${VTK_LIBRARY_DIRS}/vtkhdf5
 	${wxWidgets_LIBRARIES}
 	optimized ${PYTHON_LIBRARIES}
 	comctl32
