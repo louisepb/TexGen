@@ -16,6 +16,7 @@ Core
 ** Made ShapeBinderYarns function public
 ** Bugfix to correct 4 quarter hybrid section constructor
 ** Added functions to access inherited class pointers in CYarnSection
+** Added yarn number to volume fraction error messages
 
 GUI
 ===

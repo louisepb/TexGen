@@ -1029,7 +1029,7 @@ double CSimulationAbaqus::GetSectionVolumeFraction( double Area, CTextile &Texti
 		double dFibreArea = pYarn->GetFibreArea(Textile.GetGeometryScale()+"^2");
 		if (dFibreArea == 0)
 			dFibreArea = Textile.GetFibreArea(Textile.GetGeometryScale()+"^2");
-		dVolumeFraction = pYarn->GetFibreDistribution()->GetVolumeFraction(Area, dFibreArea);
+		dVolumeFraction = pYarn->GetFibreDistribution()->GetVolumeFraction(Area, dFibreArea, Yarn);
 	}
 	else
 	{

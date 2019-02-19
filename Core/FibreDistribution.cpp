@@ -39,7 +39,7 @@ void CFibreDistribution::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE
 	Element.SetAttribute("type", GetType());
 }
 
-double CFibreDistribution::GetVolumeFraction(double dArea, double dFibreArea) const
+double CFibreDistribution::GetVolumeFraction(double dArea, double dFibreArea, int YarnIndex) const
 {
 	return -1.0;
 }
