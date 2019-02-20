@@ -24,6 +24,7 @@ GUI
 ** Various bugfixes for wxWidgets3 compatability
 ** Bugfix in print pattern draft so doesn't exit program if cancel 
 ** Added ROTATED_BC to VolumeMesh export dialog
+** Corrected size of rendered domain for textiles with very small dimensions
 
 UnitTests
 =========
