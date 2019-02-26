@@ -278,6 +278,8 @@ COctreeVoxelMesh::~COctreeVoxelMesh(void)
 	p4est_connectivity_destroy (conn);
 	TGLOG("Connectivity destoyed");
 	m_ElementsInfo.clear();
+	
+	
 	//Centre
 }
 

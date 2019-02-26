@@ -91,5 +91,15 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 		CentrePoints.clear();
 	}
 
+	OutputInterfaceSurfaces();
 	//Textile.GetPointInformation( CentrePoints, m_ElementsInfo );
+}
+
+void CRectangularVoxelMesh::OutputInterfaceSurfaces()
+{
+	COctreeVoxelMesh OctMesh;
+	map<int, vector<int>> NodeSurf;
+	vector<int> AllSurf;
+	OctMesh.extractSurfaceNodeSets(NodeSurf, AllSurf);
+	OctMesh.OutputSurfaces(NodeSurf, AllSurf);
 }

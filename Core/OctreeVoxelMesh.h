@@ -55,6 +55,7 @@ namespace TexGen
 	/// Class used to generate octree-refine voxel mesh for output to ABAQUS
 	class CLASS_DECLSPEC COctreeVoxelMesh : public CVoxelMesh
 	{
+		friend class CRectangularVoxelMesh;
 	public:
 		/**
 		\param Type String giving periodic boundary condition type
