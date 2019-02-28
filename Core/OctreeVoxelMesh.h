@@ -118,7 +118,7 @@ namespace TexGen
 		bool CalculateVoxelSizes(CTextile &Textile);
 
 		/// Outputs nodes to .inp file and gets element information
-		void OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus = true );
+		void OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus = true, bool surfaceOutput = false );
 		/// Output elements to .inp file
 		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true );
 		/// Store info (nodes at boundaries) for periodic BCs

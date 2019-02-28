@@ -277,8 +277,7 @@ COctreeVoxelMesh::~COctreeVoxelMesh(void)
 	TGLOG("P4est object destroyed");
 	p4est_connectivity_destroy (conn);
 	TGLOG("Connectivity destoyed");
-	m_ElementsInfo.clear();
-	
+	//m_ElementsInfo.clear();
 	
 	//Centre
 }
@@ -1018,8 +1017,9 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 	if (CreateP4ESTRefinement(min_level, refine_level) == -1)
 		return;
 
-	//George - saving smooth voxel mesh with no periodic boundary conditions add if statement later
+	//G - saving smooth voxel mesh with no periodic boundary conditions
 	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, 1, 1, 1, true, true, 5, 1);
+
 
 	timer.check("Octree refinement finished");
 	timer.stop();
@@ -1174,10 +1174,15 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 	p4est_lnodes_destroy (lnodes);
 	TGLOG("Num of elements: " << m_AllElements.size());
 
+	// George - Oct mesh members here that need to be replaced by rect mesh versions for extractSurfaceNodeSets and OutputSurfaces:
+	// m_AllElements, AllNodes, m_NodesEncounter
+
 }
 
-void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus )
+void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool surfaceOutput, bool bAbaqus )
 {
+	//George  - 
+
 	CTimer timer;
 	//timer.start("Starting octree refinement");
 	TGLOG("Converting octree to nodes coordinates");
@@ -1408,6 +1413,8 @@ void COctreeVoxelMesh::extractSurfaceNodeSets(map<int, vector<int>> &NodeSurf, v
 				AllSurf.push_back(*itNodes);
 		}
 	}
+
+	//George - m_AllElementsInfo, m_AllElements needs to be replaced by rect mesh version, 
 }
 
 void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const vector<int> &AllSurf)

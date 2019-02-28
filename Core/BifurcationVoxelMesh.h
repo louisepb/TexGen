@@ -27,7 +27,7 @@ namespace TexGen
 
 		void CBifurcationVoxelMesh::InitialiseBifurcationVoxelMesh(double a, double b, double c, double firstweb, double secondweb, double flangelength);
 
-		void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType = 0);
+		void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, bool surfaceOutput, int iBoundaryConditions, int iElementType = 0);
 
 		CTextileMaterials& GetMaterials() { return m_Materials; }
 
@@ -54,12 +54,12 @@ namespace TexGen
 		double getflangelength();
 		bool IsSubset(vector<int> A, vector<int> B);
 
-		void SaveToAbaqus(string Filename, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, int iBoundaryConditions, int iElementType);
+		void SaveToAbaqus(string Filename, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, bool surfaceOutput, int iBoundaryConditions, int iElementType);
 		/// Calculate voxel size based on number of voxels on each axis and domain size
 		bool CalculateVoxelSizes(CTextile &Textile);
 
 		/// Save To Abaqus and output nodes that fall within desired space
-		void OutputNodes( ostream &Output, CTextile &Textile, bool bAbaqus = true);
+		void OutputNodes( ostream &Output, CTextile &Textile, bool surfaceOutput, bool bAbaqus = true);
 
 		int OutputHexElements(ostream &Output, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true);
 

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma once
 #include "VoxelMesh.h"
+#include "OctreeVoxelMesh.h"
 
 namespace TexGen
 { 
@@ -29,6 +30,7 @@ namespace TexGen
 	/// Class used to generate voxel mesh for output to ABAQUS
 	class CLASS_DECLSPEC CRectangularVoxelMesh : public CVoxelMesh
 	{
+		friend class COctreeMesh;
 	public:
 		/// 
 		/**
@@ -37,7 +39,14 @@ namespace TexGen
 		CRectangularVoxelMesh(string Type= "CPeriodicBoundaries");
 		virtual ~CRectangularVoxelMesh(void);
 
+		void SaveVoxelMeshg(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, bool surfaceOutput, int iBoundaryConditions, int iElementType);
+
 	protected:
+
+		COctreeVoxelMesh OctMesh;
+
+		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus );
+
 		/// Calculate voxel size based on number of voxels on each axis and domain size
 		bool CalculateVoxelSizes(CTextile &Textile);
 		
@@ -46,11 +55,15 @@ namespace TexGen
 		void SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, int iBoundaryConditions, int iElementType );
 		
 		/// Outputs nodes to .inp file and gets element information
-		void OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus = true );
+		void OutputNodes(ostream &Output, CTextile &Textile, bool surfaceOutput, bool bAbaqus = true);
 
-		void OutputInterfaceSurfaces();
+		void OutputInterfaceSurfaces(ostream& Output, CTextile& Textile, bool bAbaqus);
 		/// Voxel size for each axis
 		double			m_VoxSize[3];
+
+		map<int,XYZ> Nodes;
+
+		vector< std::vector<int> > AllElements;
 
 	};
 };	// namespace TexGen

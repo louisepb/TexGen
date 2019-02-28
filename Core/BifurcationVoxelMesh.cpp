@@ -56,7 +56,7 @@ double CBifurcationVoxelMesh::getflangelength()
 	return m_flangelength;
 }
 
-void CBifurcationVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType)
+void CBifurcationVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, bool surfaceOutput, int iBoundaryConditions, int iElementType)
 {
 	//PROFILE_SHARED_DEFINE(ProfileTest)
 	//PROFILE_FUNC()
@@ -82,7 +82,7 @@ void CBifurcationVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilena
 	//GetYarnGridIntersections(Textile);
 	CTimer timer;
 	timer.start("Timing SaveToAbaqus");
-	SaveToAbaqus(OutputFilename, Textile, bOutputMatrix, bOutputYarns, iBoundaryConditions, iElementType);
+	SaveToAbaqus(OutputFilename, Textile, bOutputMatrix, bOutputYarns, surfaceOutput, iBoundaryConditions, iElementType);
 	timer.check("End of SaveToAbaqus");
 	timer.stop();
 
@@ -106,7 +106,7 @@ bool CBifurcationVoxelMesh::CalculateVoxelSizes(CTextile &Textile)
 }
 
 
-void CBifurcationVoxelMesh::SaveToAbaqus(string Filename, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, int iBoundaryConditions, int iElementType)
+void CBifurcationVoxelMesh::SaveToAbaqus(string Filename, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, bool surfaceOutput, int iBoundaryConditions, int iElementType)
 {
 	//PROFILE_FUNC();
 	AddExtensionIfMissing(Filename, ".inp");
@@ -131,7 +131,7 @@ void CBifurcationVoxelMesh::SaveToAbaqus(string Filename, CTextile &Textile, boo
 	Output << "************" << endl;
 	Output << "*Node" << endl;
 	//PROFILE_BEGIN(OutputNodes);
-	OutputNodes(Output, Textile);
+	OutputNodes(Output, Textile, surfaceOutput);
 
 	
 
@@ -188,7 +188,7 @@ void CBifurcationVoxelMesh::SaveToAbaqus(string Filename, CTextile &Textile, boo
 }
 
 
-void CBifurcationVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus)
+void CBifurcationVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool surfaceOutput, bool bAbaqus)
 {
 	int x, y, z;
 	int iNodeIndex = 1;
