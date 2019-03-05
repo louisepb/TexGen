@@ -1528,6 +1528,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 		vector<int>::iterator itEncounter;
 		//int minMaterial = NodeSurf.size() + 1;
 
+		//looping through the elements containing this node
 		vector<int> temp;
 		for (itEncounter = m_NodesEncounter[*itNodes].begin(); itEncounter != m_NodesEncounter[*itNodes].end(); ++itEncounter) {
 			temp.push_back(m_ElementsInfo[*itEncounter - 1].iYarnIndex);

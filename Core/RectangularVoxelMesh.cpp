@@ -65,10 +65,12 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 	numx = m_XVoxels + 1;
 	numy = m_YVoxels + 1;
 	int iNodeIndex = 1;
+	int ElementCount = 1;
 	vector<XYZ> CentrePoints;
 	vector<POINT_INFO> RowInfo;
 	XYZ Point;
 	vector<int> elementNodes;
+	
 
 	if ( !bAbaqus )  // if outputting in SCIRun format need to output number of voxels
 		Output << (m_XVoxels+1)*(m_YVoxels+1)*(m_ZVoxels+1) << endl;
@@ -88,36 +90,40 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 				Output << Point << endl;
 				Nodes.insert(make_pair(iNodeIndex, Point));
 
-				//George - these are the nodes at the corner of each element
-
-				int c1 = (x+1) +y*numx + z*numx*numy + 1;
-				int c2 = (x+1) + (y+1)*numx + z*numx*numy + 1;
-				int c3 = x + (y+1)*numx + z*numx*numy + 1;
-				int c4 = x + y*numx + z*numx*numy + 1;
-				int c5 = (x+1) +y*numx + (z+1)*numx*numy + 1;
-				int c6 = (x+1) +(y+1)*numx + (z+1)*numx*numy + 1;
-				int c7 = x +(y+1)*numx + (z+1)*numx*numy + 1;
-				int c8 = x +y*numx + (z+1)*numx*numy + 1;
-				elementNodes.push_back(c1);
-				elementNodes.push_back(c2);
-				elementNodes.push_back(c3);
-				elementNodes.push_back(c4);
-				elementNodes.push_back(c5);
-				elementNodes.push_back(c6);
-				elementNodes.push_back(c7);
-				elementNodes.push_back(c8);
-
-				AllElements.push_back(elementNodes);
-
-				elementNodes.clear();
-			
-
 				if ( x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels )
 				{
 					Point.x += 0.5*m_VoxSize[0];
 					Point.y += 0.5*m_VoxSize[1];
 					Point.z += 0.5*m_VoxSize[2];
 					CentrePoints.push_back(Point);
+
+					//George - these are the nodes at the corner of each element
+					int c1 = (x+1) +y*numx + z*numx*numy + 1;
+					int c2 = (x+1) + (y+1)*numx + z*numx*numy + 1;
+					int c3 = x + (y+1)*numx + z*numx*numy + 1;
+					int c4 = x + y*numx + z*numx*numy + 1;
+					int c5 = (x+1) +y*numx + (z+1)*numx*numy + 1;
+					int c6 = (x+1) +(y+1)*numx + (z+1)*numx*numy + 1;
+					int c7 = x +(y+1)*numx + (z+1)*numx*numy + 1;
+					int c8 = x +y*numx + (z+1)*numx*numy + 1;
+					elementNodes.push_back(c1);
+					elementNodes.push_back(c2);
+					elementNodes.push_back(c3);
+					elementNodes.push_back(c4);
+					elementNodes.push_back(c5);
+					elementNodes.push_back(c6);
+					elementNodes.push_back(c7);
+					elementNodes.push_back(c8);
+
+					//this needs to happen up until the last node for x<m_xVoxels otherwise get double counting of centrepoints
+					AllElements.push_back(elementNodes);
+					for (int i=0; i<8; i++)
+					{
+						NodesEncounter[elementNodes[i]].push_back(ElementCount);
+					}
+					//NodesEncounter.push_back(iNodeIndex, elementNodes);
+					ElementCount++;
+					elementNodes.clear();
 				}
 				++iNodeIndex;
 			}
@@ -125,9 +131,10 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 		}
 		RowInfo.clear();   // Changed to do layer at a time instead of row to optimise
 		Textile.GetPointInformation( CentrePoints, RowInfo );
+		// should this go here or does it double count elements??
 		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end() );
 		
-		//CentrePoints.clear();
+		CentrePoints.clear();
 	}
 
 	if (surfaceOutput)
@@ -144,8 +151,12 @@ void CRectangularVoxelMesh::OutputInterfaceSurfaces(ostream& Output, CTextile& T
 
 	map<int, vector<int>> NodeSurf;
 	vector<int> AllSurf;
-
+	OctMesh.m_bSmooth=false;
 	OctMesh.m_bCohesive=true;
+	OctMesh.m_smoothCoef1=0.0;
+	OctMesh.m_smoothCoef2=0.0;
+	OctMesh.m_smoothIter=0;
+
 
 	//OctMesh.ConvertOctreeToNodes();
 
@@ -153,17 +164,24 @@ void CRectangularVoxelMesh::OutputInterfaceSurfaces(ostream& Output, CTextile& T
 	//George - assign rect mesh version of allelements to the octree mesh class as m_AllElements, not sure this is working as it should 
 	OctMesh.m_AllElements = AllElements;
 	//haven't done this one yet
-	//OctMesh.m_NodesEncounter = NodesEncounter;
+	OctMesh.m_NodesEncounter = NodesEncounter;
 	vector<XYZ> CentrePoints;
-	OctMesh.gTextile.GetPointInformation(CentrePoints, m_ElementsInfo);
+	//if chnage this to Textile.GetPI then can sub in to octmesh later
+	Textile.GetPointInformation(CentrePoints, m_ElementsInfo);
+	//OctMesh.gTextile.GetPointInformation(CentrePoints, m_ElementsInfo);
 	OctMesh.m_ElementsInfo=m_ElementsInfo;
 	OctMesh.extractSurfaceNodeSets(NodeSurf, AllSurf);
 
 	//not OctMesh data members, this works for now
 	NodeSurf=NodeSurf;
 	AllSurf=AllSurf;
+
+	//if the nodes need to be ordered for this to work then will have to find the correct ordering for them
 	
 	OctMesh.OutputSurfaces(NodeSurf, AllSurf);
+
+	//octree output surfaces adds the copied nodes
+	Nodes=OctMesh.AllNodes;
 
 	//will use this to output all the nodes instead of in RectMesh::OutputNodes(), output both for now until I see it works
 	map<int,XYZ>::iterator itNodes;
@@ -181,5 +199,6 @@ int CRectangularVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix
 	//want to override the base class function, they should work the same
 	int elemnum = OctMesh.OutputHexElements(Output, bOutputMatrix, bOutputYarn, bAbaqus );
 	
+	//int elemnum = CVoxelMesh::OutputHexElements(Output, bOutputMatrix, bOutputYarn, bAbaqus );
 	return elemnum;
 }

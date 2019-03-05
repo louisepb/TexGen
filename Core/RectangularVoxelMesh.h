@@ -64,6 +64,7 @@ namespace TexGen
 		map<int,XYZ> Nodes;
 
 		vector< std::vector<int> > AllElements;
+		map<int, vector<int>> NodesEncounter;
 
 	};
 };	// namespace TexGen
