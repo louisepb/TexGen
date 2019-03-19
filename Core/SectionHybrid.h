@@ -28,7 +28,7 @@ namespace TexGen
 	class CLASS_DECLSPEC CSectionHybrid : public CSection
 	{
 	public:
-		/// Empty hybrid section, parts can be added with the AddPart function
+		/// Empty hybrid section, parts can be added with the AddDivision and AssignSection functions
 		CSectionHybrid(void);
 		/// Hybrid of two sections split into the upper and lower half
 		CSectionHybrid(const CSection &TopHalf, const CSection &BottomHalf);
