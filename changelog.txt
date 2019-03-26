@@ -9,6 +9,7 @@ General
 ** Created installer for VS2017 build
 ** Upgraded to wxWidgets3.0.4
 ** Added installer file for VS2017 build
+** Added CFXImportVTK.exe and chamis_model_final.for to Utilities folder in installation
 
 Core
 ====
