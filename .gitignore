@@ -8,6 +8,7 @@ Installer/OpenCascade64bit_7/
 Installer/Python_64bit/
 Installer/Python27Lib/
 Installer/*.exe
+!Installer/CFXImportVTK.exe
 Installer/*.dll
 Installer/*.pyd
 Installer/*.manifest
