@@ -2,17 +2,40 @@ Version History
 ---------------
 v3.10.1
 =======
+
+=======
+General
+=======
+** Upgraded to VTK 6.3.0
+** Changed CMakelists files for VS2017
+** Created installer for VS2017 build
+** Upgraded to wxWidgets3.0.4
+** Added installer file for VS2017 build
+** Added CFXImportVTK.exe and chamis_model_final.for to Utilities folder in installation
+
 Core
 ====
 ** Added functions to create voxel mesh and periodic boundary conditions for rotated domains
+** Made ShapeBinderYarns function public
+** Bugfix to correct 4 quarter hybrid section constructor
+** Added functions to access inherited class pointers in CYarnSection
+** Added yarn number to volume fraction error messages
 
 GUI
 ===
 ** Added rotated boundary conditions option to Voxel Mesh Export
+** Various bugfixes for wxWidgets3 compatability
+** Bugfix in print pattern draft so doesn't exit program if cancel 
+** Added ROTATED_BC to VolumeMesh export dialog
+** Corrected size of rendered domain for textiles with very small dimensions
 
 UnitTests
 =========
 ** Added rotated voxel mesh export test
+** Added files for mesher tests
+** Added hybrid section tests
+** Added GetXYarnIndex test to Textile3DTests
+** Added rotated voxel test
 
 v3.10.0
 ======

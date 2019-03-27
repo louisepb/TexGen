@@ -19,8 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma once
 
+#include <iterator>
 #include "Mesh.h"
 #include "BasicVolumes.h"
+#include "Materials.h"
 
 namespace TexGen
 { 
@@ -30,6 +32,7 @@ namespace TexGen
 	class CTextile;
 	class CGeometrySolver;
 	class CPeriodicBoundaries;
+	class CMaterials;
 
 	enum FACE
 	{
@@ -78,6 +81,7 @@ namespace TexGen
 
 		void SaveVolumeMeshToVTK(string Filename);
 		void SaveVolumeMeshToABAQUS(string Filename, string TextileName);
+		void SaveVolumeMeshToABAQUS(string Filename, CTextile& Textile );
 
 		const CMesh &GetMesh() { return m_VolumeMesh; }
 		const list<MESHER_ELEMENT_DATA> *GetElementData(CMesh::ELEMENT_TYPE ElementType);
@@ -202,6 +206,9 @@ namespace TexGen
 		vector<int> m_FaceF;
 		vector< vector<int> > m_Edges;
 		vector<int> m_Vertices;
+
+		// Class for export of material properties
+		CTextileMaterials* m_Materials;
 	};
 
 };	// namespace TexGen

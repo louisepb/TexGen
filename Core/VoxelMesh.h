@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include "Mesh.h"
+#include "Materials.h"
 
 namespace TexGen
 { 
@@ -27,6 +28,7 @@ namespace TexGen
 
 	class CTextile;	
 	class CPeriodicBoundaries;
+	class CMaterials;
 
 	/// Class used to generate voxel mesh for output to ABAQUS
 	class CLASS_DECLSPEC CVoxelMesh
@@ -45,6 +47,11 @@ namespace TexGen
 		void AddElementInfo(vector<POINT_INFO> &RowInfo);
 		/// Outputs yarn orientations and element sets to .ori and .eld files
 		void OutputOrientationsAndElementSets( string Filename );
+
+		CTextileMaterials& GetMaterials() { return m_Materials; }
+
+	protected:
+		CTextileMaterials m_Materials;
 
 	private:
 		CVoxelMesh( const CVoxelMesh& CopyMe );  // Shouldn't need to copy - implement if need arises

@@ -42,23 +42,37 @@ double CFibreDistributionConst::IntegrateDistribution(const vector<XY> &Section)
 	return CSection::GetArea(Section);
 }
 
-double CFibreDistributionConst::GetVolumeFraction(const vector<XY> &Section, double dFibreArea, XY Location) const
+double CFibreDistributionConst::GetVolumeFraction(const vector<XY> &Section, double dFibreArea, XY Location, int YarnIndex) const
 {
 	double dArea = IntegrateDistribution(Section);
 	double dVf = dFibreArea/dArea;
 	if (dVf>0.86||dVf<0)
 	{
-		TGERROR("Warning: Volume fraction is not realistic: " << dVf);
+		if ( YarnIndex == -1)
+		{
+			TGERROR("Warning: Volume fraction is not realistic " << dVf);
+		}
+		else
+		{
+			TGERROR("Warning: Volume fraction is not realistic: " << dVf << ", Yarn: " << YarnIndex);
+		}
 	}
 	return dVf;
 }
 
-double CFibreDistributionConst::GetVolumeFraction(double dArea, double dFibreArea) const
+double CFibreDistributionConst::GetVolumeFraction(double dArea, double dFibreArea, int YarnIndex) const
 {
 	double dVf = dFibreArea/dArea;
 	if (dVf>0.86||dVf<0)
 	{
-		TGERROR("Warning: Volume fraction is not realistic: " << dVf);
+		if ( YarnIndex == -1)
+		{
+			TGERROR("Warning: Volume fraction is not realistic " << dVf);
+		}
+		else
+		{
+			TGERROR("Warning: Volume fraction is not realistic: " << dVf << ", Yarn: " << YarnIndex);
+		}
 	}
 	return dVf;
 }

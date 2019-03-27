@@ -296,9 +296,9 @@ namespace TexGen
 		XYZ m_BottomPlatePos;
 		double m_dInitialPlateGap;
 		bool m_bWholeSurfaces;
-		//map<string, CObjectContainer<CMaterial> > m_Materials;
+		
 		CTextileMaterials m_Materials;
-		//map<int, string> m_MaterialAssignements;
+		
 		string m_StaticStepParameters;
 		CObjectContainer<CSurfaceInteraction> m_YarnInteraction;
 		CObjectContainer<CSurfaceInteraction> m_PlateInteraction;

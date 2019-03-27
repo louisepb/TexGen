@@ -28,6 +28,8 @@ namespace TexGen
 
 	class CSection;
 	class CYarnSectionConstant;
+	class CYarnSectionInterpNode;
+	class CYarnSectionInterpPosition;
 
 	/// Structure used to represent the position along the length of a yarn
 	struct CLASS_DECLSPEC YARN_POSITION_INFORMATION
@@ -96,7 +98,15 @@ namespace TexGen
 
 		bool GetForceMeshLayers() const {return m_bForceEqualMeshLayers;}
 
+		/// Get a pointer of that the inherited class
+		/**
+		Internally the function just returns dynamic_cast<CYarnSectionConstant*>(this)  etc
+		This is mainly useful in the python interface because type casting is not supported
+		in this language.
+		*/
 		CYarnSectionConstant* GetSectionConstant();
+		CYarnSectionInterpNode* GetSectionInterpNode();
+		CYarnSectionInterpPosition* GetSectionInterpPosition();
 
 	protected:
 	};

@@ -29,6 +29,8 @@ class CGeometricTests : public CppUnit::TestFixture
 	CPPUNIT_TEST_SUITE(CGeometricTests);
 	CPPUNIT_TEST(TestPointInsideYarn);
 	CPPUNIT_TEST(TestLenticularSection);
+	CPPUNIT_TEST(TestHybridQuarterSection);
+	CPPUNIT_TEST(TestHybridHalfSection);
 	CPPUNIT_TEST(TestQuaternionRotation);
 	CPPUNIT_TEST(TestConvertRotation);
 	CPPUNIT_TEST(TestGetClosestPointFunctions);
@@ -44,6 +46,8 @@ public:
 protected:
 	void TestPointInsideYarn();
 	void TestLenticularSection();
+	void TestHybridQuarterSection();
+	void TestHybridHalfSection();
 	void TestQuaternionRotation();
 	void TestConvertRotation();
 

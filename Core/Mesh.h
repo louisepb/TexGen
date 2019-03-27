@@ -192,7 +192,7 @@ namespace TexGen
 		\param Tolerance Nodes within Tolerance distance of each other will be assumed to be at the same position and merged together
 		\return Number of nodes merged together
 		*/
-		int MergeNodes(const double Tolerance = 1e-6);
+		int MergeNodes(const double Tolerance = 1e-8);
 
 		/// Remove nodes that are not referenced by any elements
 		int RemoveUnreferencedNodes();

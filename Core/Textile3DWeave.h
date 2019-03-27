@@ -244,6 +244,8 @@ namespace TexGen
 		
 		/// Check if X yarn is binder or warp. Returns true if binder
 		bool IsBinderYarn( int index ) const;
+		/// Get the XYarn index (ie the y position) of a yarn given the yarn index. 
+		int GetXYarnIndex( int YarnInd );
 		
 		/// Find next cell in y direction which isn't a binder yarn
 		int FindNextCellIndex( int index ) const;

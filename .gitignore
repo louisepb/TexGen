@@ -1,10 +1,14 @@
 Build/
 64-bitBuild/
 LinuxBuild/
+BuildVTK6/
+BuildWidgets3/
 Installer/OpenCascade64bit/
+Installer/OpenCascade64bit_7/
 Installer/Python_64bit/
 Installer/Python27Lib/
 Installer/*.exe
+!Installer/CFXImportVTK.exe
 Installer/*.dll
 Installer/*.pyd
 Installer/*.manifest
@@ -14,3 +18,8 @@ Python/*.py
 Python/*.zip
 Python/*_wrap.*
 
+# Directories #
+Binaries
+CMakeFiles
+.vs
+Scripts

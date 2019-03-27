@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =============================================================================*/
 
 #include "MesherTests.h"
+#include "TestUtilities.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CMesherTests);
 
@@ -34,23 +35,16 @@ void CMesherTests::TestSimpleMesh()
 {
 	CTextileWeave2D Textile = m_TextileFactory.CottonWeave();
 	Textile.SetFibreArea(0.01, "mm^2");
-//	Textile.SetGapSize(0.02);
 
 	CMesher Mesher;
-//	Mesher.SetHybrid(true);
-//	Mesher.SetQuadratic(true);
 	Mesher.SetPeriodic(true);
 	Mesher.SetSeed(0.05);
 	Mesher.SetMergeTolerance(0.02);
 	CPPUNIT_ASSERT(Mesher.CreateMesh(Textile));
-/*	CMesh Mesh = Mesher.GetMesh();
-	Mesh.ConvertToSurfaceMesh();
-	Mesh.SaveToVTK("mesh-validated");
-	CMesh SurfaceMesh;
-	Textile.AddSurfaceToMesh(SurfaceMesh, true);
-	SurfaceMesh.SaveToVTK("mesh-surface");*/
 	Mesher.SaveVolumeMeshToVTK("vmesh.vtu");
-	Mesher.SaveVolumeMeshToABAQUS("vmesh.inp", Textile.GetName());
+	CPPUNIT_ASSERT(CompareFiles("vmesh.vtu","..\\..\\UnitTests\\vmesh.vtu"));
+	Mesher.SaveVolumeMeshToABAQUS("vmesh.inp", Textile);
+	CPPUNIT_ASSERT(CompareFiles("vmesh.inp","..\\..\\UnitTests\\vmesh.inp"));
 }
 
 void CMesherTests::TestInvertedElements()

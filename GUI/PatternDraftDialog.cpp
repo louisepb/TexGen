@@ -266,7 +266,7 @@ void CPatternDraftDialog::OnPrint( wxCommandEvent& event )
 	if ( !myPrint->PerformPageSetup(true) )
 	{
 		delete myPrint;
-		exit(0);
+		return;
 	}
 	wxPrintDialogData data(myPrint->GetPrintData());
     wxPrinter printer(&data);

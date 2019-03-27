@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "vtkCallbackCommand.h"
 #include "vtkCellPicker.h"
 
-vtkCxxRevisionMacro(vtkCustomWidget, "$Revision: 1.0 $");
 vtkStandardNewMacro(vtkCustomWidget);
 
 vtkCustomWidget::vtkCustomWidget()
@@ -45,7 +44,7 @@ vtkCustomWidget::vtkCustomWidget()
 //		pArrow->SetShaftResolution(8);
 //		pArrow->SetTipResolution(8);
 		vtkPolyDataMapper* pPolyDataMapper = vtkPolyDataMapper::New();
-		pPolyDataMapper->SetInput(pArrow->GetOutput());
+		pPolyDataMapper->SetInputConnection(pArrow->GetOutputPort());
 		vtkActor* pActor = vtkActor::New();
 		pActor->SetMapper(pPolyDataMapper);
 		pActor->SetScale(2);

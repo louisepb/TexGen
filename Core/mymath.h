@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <memory.h>
 #include <ostream>
 #include <istream>
+#include <algorithm>
 
 #define PI 3.1415926535897932384626433832795
 /// Namespace containing a series of customised math operations not found in the standard c++ library

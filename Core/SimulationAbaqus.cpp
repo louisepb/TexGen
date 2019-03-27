@@ -184,8 +184,6 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 
 	ofstream Output(Filename.c_str(), ios::app);
 
-	
-	//SetupMaterials( Textile );
 	m_Materials.SetupMaterials( Textile );
 	TGLOG("Creating materials");
 	CreateMaterials(Output, Filename);
@@ -1031,7 +1029,7 @@ double CSimulationAbaqus::GetSectionVolumeFraction( double Area, CTextile &Texti
 		double dFibreArea = pYarn->GetFibreArea(Textile.GetGeometryScale()+"^2");
 		if (dFibreArea == 0)
 			dFibreArea = Textile.GetFibreArea(Textile.GetGeometryScale()+"^2");
-		dVolumeFraction = pYarn->GetFibreDistribution()->GetVolumeFraction(Area, dFibreArea);
+		dVolumeFraction = pYarn->GetFibreDistribution()->GetVolumeFraction(Area, dFibreArea, Yarn);
 	}
 	else
 	{

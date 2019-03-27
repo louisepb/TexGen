@@ -33,7 +33,7 @@ namespace TexGen
 			string GetType() const {return "CFibreDistribution1DQuad";}
 			void PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType) const;
 
-			double GetVolumeFraction(const vector<XY> &Section, double dFibreArea, XY Location) const;
+			double GetVolumeFraction(const vector<XY> &Section, double dFibreArea, XY Location, int YarnIndex = -1) const;
 
 		protected:
 			double ComputeMaxX(const vector<XY> &Section) const;

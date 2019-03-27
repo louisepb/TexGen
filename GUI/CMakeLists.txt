@@ -29,13 +29,14 @@ ELSE(UNIX)
 	SET(wxWidgets_USE_LIBS base core aui adv xrc xml html)
 ENDIF(UNIX)
 
-FIND_PACKAGE(VTK REQUIRED)
+FIND_PACKAGE(VTK 6.3 REQUIRED NO_MODULE)
 FIND_PACKAGE(wxWidgets REQUIRED)
 FIND_PACKAGE(SWIG REQUIRED)
 FIND_PACKAGE(PythonLibs REQUIRED)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../OctreeRefinement/Include)
 INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS} ${wxWidgets_INCLUDE_DIRS} ${PYTHON_INCLUDE_PATH})
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
 
 ADD_DEFINITIONS(${wxWidgets_DEFINITIONS})
 LINK_DIRECTORIES(${VTK_LIBRARY_DIRS} )
@@ -45,15 +46,7 @@ IF(UNIX)
 	TARGET_LINK_LIBRARIES(TexGenGUI
 		TexGenRenderer
 		TexGenCore
-		vtkGraphics
-		vtkFiltering
-		vtkCommon
-		vtkRendering
-		vtkWidgets
-		vtkftgl
-		vtksys
-		vtkexpat
-		vtkNetCDF
+		${VTK_LIBRARIES}
 		LatinHypercube
 		${wxWidgets_LIBRARIES}
 		#optimized ${PYTHON_LIBRARIES})
@@ -81,16 +74,7 @@ IF(WIN32)
 	TexGenCore
 	opengl32 
 	glu32
-	${VTK_LIBRARY_DIRS}/vtkGraphics
-	${VTK_LIBRARY_DIRS}/vtkFiltering
-	${VTK_LIBRARY_DIRS}/vtkCommon
-	${VTK_LIBRARY_DIRS}/vtkRendering
-	${VTK_LIBRARY_DIRS}/vtkWidgets
-	${VTK_LIBRARY_DIRS}/vtkftgl
-	${VTK_LIBRARY_DIRS}/vtksys
-	${VTK_LIBRARY_DIRS}/vtkexpat
-	${VTK_LIBRARY_DIRS}/vtknetcdf
-	${VTK_LIBRARY_DIRS}/vtkhdf5
+	${VTK_LIBRARIES}
 	${wxWidgets_LIBRARIES}
 	optimized ${PYTHON_LIBRARIES}
 	comctl32
@@ -125,12 +109,12 @@ IF(WIN32)
 	RUNTIME DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../Installer)
 
 # Install the manifest file if VS2008. Haven't found way to access at build time from installation to get input folder
-	IF(MSVC90 OR MSVC11)
+	IF(MSVC90 OR MSVC11 OR MSVC14)
 		INSTALL(FILES ${CMAKE_BINARY_DIR}/Release/TexGenGUI.exe.manifest
 		DESTINATION ${CMAKE_INSTALL_PREFIX})
 		INSTALL(FILES ${CMAKE_BINARY_DIR}/Release/TexGenGUI.exe.manifest
 		DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../Installer)
-	ENDIF(MSVC90 OR MSVC11)	
+	ENDIF(MSVC90 OR MSVC11 OR MSVC14)	
 ELSE(WIN32)
 	INSTALL(TARGETS TexGenGUI
 	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

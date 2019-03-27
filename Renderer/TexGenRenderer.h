@@ -182,7 +182,7 @@ namespace TexGen
 		void RenderGrid(CTextile &Textile, int iResX = 20, int iResY = 20, int iResZ = 20, double dLengthModifier = 1);
 
 		/// Render an image
-		bool RenderImage(string FileName, double dMaxDim = 1, XYZ Orientation = XYZ());
+		//bool RenderImage(string FileName, double dMaxDim = 1, XYZ Orientation = XYZ());
 
 		/// Set the render window background color where r g and b vary between 0 and 1
 		void SetBackgroundColor(COLOR Color);

@@ -48,9 +48,8 @@ CModeller::CModeller(CTexGenRenderer *pRenderer, string TextileName)
 , m_bSelectPaths(true)
 , m_bSelectSurfaces(true)
 , m_bSelectImages(true)
-//, m_bIgnoreSelectionChange(false)
+, m_bIgnoreSelectionEvent(false)
 {
-//	CreateTestTextile();
 	CreateWidgets();
 	CreatePicker();
 }
@@ -113,26 +112,6 @@ void CModeller::CreateWidgets()
 	m_pCustomWidget->AddObserver(vtkCommand::EndInteractionEvent, m_pCallBack);
 }
 
-void CModeller::CreateTestTextile()
-{
-	CTextile* pTextile = TEXGEN.GetTextile(m_TextileName);
-	if (!pTextile)
-		return;
-	CYarn Yarn;
-	Yarn.AddNode(CNode(XYZ(0,0,0)));
-	Yarn.AddNode(CNode(XYZ(5,0,0)));
-	Yarn.AddNode(CNode(XYZ(10,0,0)));
-	pTextile->AddYarn(Yarn);
-	Yarn.Translate(XYZ(0, 10, 0));
-	pTextile->AddYarn(Yarn);
-	Yarn.Rotate(WXYZ(XYZ(0, 0, 1), PI/2));
-	Yarn.Translate(XYZ(10, 0, 2));
-	pTextile->AddYarn(Yarn);
-	Yarn.Translate(XYZ(10, 0, 0));
-	pTextile->AddYarn(Yarn);
-	SetDefaultRenderState();
-}
-
 void CModeller::SetDefaultRenderState()
 {
 	m_pRenderer->SetXRay(true);
@@ -155,6 +134,9 @@ void CModeller::OnButtonDown(wxMouseEvent &event)
 		int *eventPos = rwi->GetEventPosition();
 		if (!HitWidget(eventPos[0], eventPos[1]))
 		{
+			m_bIgnoreSelectionEvent = true;  // Change to wxWidgets3 treectrl->UnselectAll added wxEVT_TREE_SEL_CHANGED event
+											  // leading to a recursive call of DeselectAll which corrupted m_SelectedObjects
+											  // Check m_bIgnoreSelectionEvent in OnOutlinerSelectionChanged stops this
 			if (!event.ShiftDown())
 				DeselectAll();
 			if (!bPicked && m_bSelectNodes)
@@ -165,6 +147,7 @@ void CModeller::OnButtonDown(wxMouseEvent &event)
 				bPicked = SelectSurface(eventPos[0], eventPos[1]);
 			if (!bPicked && m_bSelectImages)
 				bPicked = SelectImage(eventPos[0], eventPos[1]);
+			m_bIgnoreSelectionEvent = false;
 		}
 	}
 	if (bPicked)
@@ -206,10 +189,6 @@ void CModeller::CreatePicker()
 {
 	m_pCellPicker = vtkCellPicker::New();
 	m_pCellPicker->SetTolerance(0.001);
-//	m_pCellPicker->InitializePickList();
-//	m_pCellPicker->AddPickList(m_pXArrow);
-//	m_pCellPicker->AddPickList(m_pYArrow);
-//	m_pCellPicker->AddPickList(m_pZArrow);
 	m_pCellPicker->PickFromListOn();
 	m_pPropPicker = vtkPropPicker::New();
 	m_pPropPicker->PickFromListOn();
@@ -337,9 +316,6 @@ void CModeller::DeselectObject(PROP_INFO* pObject, bool bUpdateWidget, bool bUpd
 			if (pActor)
 			{
 				m_pRenderer->ApplyDefaultColor(pActor);
-/*				pActor->GetProperty()->SetDiffuseColor(m_pRenderer->GetDefaultPropColor(pActor).Array());
-				pActor->GetProperty()->SetSpecular(.3);
-				pActor->GetProperty()->SetSpecularPower(30);*/
 			}
 		}
 		delete *itObject;
@@ -361,6 +337,7 @@ void CModeller::SelectObject(PROP_INFO* pObject, bool bUpdateOutliner)
 		UpdateWidget();
 		UpdateOutlinerSelection();
 	}
+
 }
 
 void CModeller::HighlightSelectedObjects()
@@ -369,8 +346,9 @@ void CModeller::HighlightSelectedObjects()
 	vector<vtkProp*> Props;
 	vector<vtkProp*>::iterator itProp;
 	vtkActor* pActor;
+	
 	for (itObject = m_SelectedObjects.begin(); itObject != m_SelectedObjects.end(); ++itObject)
-	{
+	{	
 		Props = m_pRenderer->GetProps(*itObject);
 		for (itProp = Props.begin(); itProp != Props.end(); ++itProp)
 		{
@@ -706,14 +684,6 @@ void CModeller::InsertNodes()
 			assert(itNodeInfo->iNode >= 0 && itNodeInfo->iNode < (int)Nodes.size());
 			if (itNodeInfo->iNode > 0)
 			{
-	/*			vector<CNode>::const_iterator itNode;
-				int i;
-				for (itNode = Nodes.begin(), i=0; itNode != Nodes.end(); ++itNode, ++i)
-				{
-					CNode Node = *itNode;
-					Node.SetPosition(Node.GetPosition() + DeltaPos);
-					Yarn.ReplaceNode(i, Node);
-				}*/
 				const CNode &PrevNode = Nodes[itNodeInfo->iNode-1];
 				const CNode &NextNode = Nodes[itNodeInfo->iNode];
 
@@ -770,7 +740,6 @@ void CModeller::DuplicateYarns()
 			SelectObject(new PROP_YARN_INFO(YarnInfo));
 		}
 
-//		m_pRenderer->RefreshView();
 		UpdateOutlinerItems();
 	}
 }
@@ -920,7 +889,6 @@ void CModeller::AssignRepeatsToSelectedObjects()
 		wxGrid* pGrid = XRCCTRL(Dialog, "RepeatsGrid", wxGrid);
 		int iNumRepeats = max((int)Repeats.size(), 3);
 		pGrid->CreateGrid(iNumRepeats, 3);
-//		wxGridTableBase* pTable = pGrid->GetTable();
 		for (i=0; i<(int)Repeats.size(); ++i)
 		{
 			for (j=0; j<3; ++j)
@@ -979,9 +947,6 @@ void CModeller::AssignRepeatsToSelectedObjects()
 			CTexGenMainFrame *pMainFrame = ((CTexGenApp*)wxTheApp)->GetMainFrame();
 			pMainFrame->SendPythonCode(StringStream.str());
 			RefreshSelectedYarns();
-/*			double x = pTable->GetValueAsDouble(0, 0);
-			double y = pTable->GetValueAsDouble(0, 1);
-			double z = pTable->GetValueAsDouble(0, 2);*/
 		}
 	}
 }
@@ -1324,16 +1289,11 @@ void CModeller::CreateYarn()
 			}
 			StringStream << "yarn.AddNode(CNode(XYZ(" << End << ")))" << endl;
 			StringStream << "GetTextile('" << m_TextileName << "').AddYarn(yarn)" << endl;
-/*			for (itYarn=SelectedYarns.begin(); itYarn!=SelectedYarns.end(); ++itYarn)
-			{
-				StringStream << "yarns[" << itYarn->iYarn << "].AssignInterpolation(interpolation)" << endl;
-			}*/
 			CTexGenMainFrame *pMainFrame = ((CTexGenApp*)wxTheApp)->GetMainFrame();
 			pMainFrame->SendPythonCode(StringStream.str());
 			if (bFirstYarn)
 			{
 				SetDefaultRenderState();
-//				pMainFrame->RefreshTextile(m_TextileName);
 			}
 			else
 			{
@@ -1529,6 +1489,7 @@ void CModeller::UpdateOutlinerSelection()
 		{
 			PROP_YARN_INFO* pYarnInfo = dynamic_cast<PROP_YARN_INFO*>(*itObject);
 			PROP_NODE_INFO* pNodeInfo = dynamic_cast<PROP_NODE_INFO*>(*itObject);
+			
 			wxTreeItemId SelectItem;
 			if (pYarnInfo)
 			{
@@ -1549,7 +1510,7 @@ void CModeller::UpdateOutlinerSelection()
 
 void CModeller::OnOutlinerSelectionChanged(wxPanel* pOutliner)
 {
-	if (!pOutliner/* || m_bIgnoreSelectionChange*/)
+	if (!pOutliner || m_bIgnoreSelectionEvent)
 		return;
 	wxTreeCtrl* pTreeCtrl = XRCCTRL(*pOutliner, "TreeCtrl", wxTreeCtrl);
 	if (pTreeCtrl)

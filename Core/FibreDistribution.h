@@ -42,9 +42,9 @@ namespace TexGen
 			virtual void PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType) const;
 
 			/// Get the volume fraction for a given location
-			virtual double GetVolumeFraction(const vector<XY> &Section, double dFibreArea, XY Location) const = 0;
+			virtual double GetVolumeFraction(const vector<XY> &Section, double dFibreArea, XY Location, int YarnIndex=-1) const = 0;
 			/// Get the volume fraction given an area
-			virtual double GetVolumeFraction(double dArea, double dFibreArea) const;
+			virtual double GetVolumeFraction(double dArea, double dFibreArea, int YarnIndex=-1) const;
 
 
 		protected:

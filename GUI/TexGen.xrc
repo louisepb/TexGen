@@ -11,7 +11,7 @@
 				<flag>wxEXPAND</flag>
 				<border>5</border>
 				<object class="wxFlexGridSizer">
-					<rows>2</rows>
+					<rows>3</rows>
 					<cols>3</cols>
 					<vgap>0</vgap>
 					<hgap>0</hgap>
@@ -113,7 +113,7 @@
 				<flag>wxEXPAND</flag>
 				<border>5</border>
 				<object class="wxFlexGridSizer">
-					<rows>2</rows>
+					<rows>7</rows>
 					<cols>2</cols>
 					<vgap>0</vgap>
 					<hgap>0</hgap>
@@ -300,7 +300,7 @@
 				<flag>wxALIGN_CENTER</flag>
 				<border>5</border>
 				<object class="wxFlexGridSizer">
-					<rows>3</rows>
+					<rows>4</rows>
 					<cols>4</cols>
 					<vgap>0</vgap>
 					<hgap>0</hgap>
@@ -705,12 +705,13 @@
 					<style>wxRA_SPECIFY_COLS</style>
 					<tooltip>This controls the periodic boundary conditions to be applied.\nFor a rectangular domain whether the RVE is considered as 3D or 2.5D \nSheared domain - sheared in the xy direction only\nStaggered - applies an offset in the x direction to apply reduced domain boundary conditions</tooltip>
 					<label>Periodic Boundary Conditions</label>
-					<selection>4</selection>
+					<selection>5</selection>
 					<content>
 						<item>Material Continuum</item>
 						<item>Single Layer RVE</item>
 						<item>Staggered (Reduced Domain)</item>
 						<item>Sheared Domain</item>
+						<item>Rotated Domain</item>
 						<item>None</item>
 					</content>
 					<dimension>1</dimension>
@@ -801,7 +802,7 @@
 				<flag>wxEXPAND</flag>
 				<border>5</border>
 				<object class="wxFlexGridSizer">
-					<rows>2</rows>
+					<rows>6</rows>
 					<cols>3</cols>
 					<vgap>0</vgap>
 					<hgap>0</hgap>
@@ -1304,11 +1305,11 @@
 					</object>
 					<object class="choicebookpage">
 						<label>Power Ellipse</label>
-						<selected>0</selected>
+						<selected>1</selected>
 						<object class="wxPanel" name="PowerEllipse">
 							<style>wxTAB_TRAVERSAL</style>
 							<object class="wxFlexGridSizer">
-								<rows>3</rows>
+								<rows>0</rows>
 								<cols>2</cols>
 								<vgap>0</vgap>
 								<hgap>0</hgap>

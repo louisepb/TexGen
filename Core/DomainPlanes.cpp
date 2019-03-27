@@ -1089,7 +1089,7 @@ void CDomainPlanes::BuildMesh()
 
 bool CDomainPlanes::FillGaps(CMesh &Mesh, const PLANE &Plane, vector<int> &Polygon, bool bMeshGaps )
 {
-	const double TOL = 1e-6;
+	const double TOL = 1e-9;
 
 	int i1, i2, i3, i4;
 	const XYZ *p1, *p2, *p3, *p4;
@@ -1189,7 +1189,7 @@ bool CDomainPlanes::FillGaps(CMesh &Mesh, const PLANE &Plane, vector<int> &Polyg
 	vector<pair<int, int> >::iterator itSegment;
 
 	// Find closed loops
-	int iIndex, iFirstIndex, iPrevIndex;
+	int iIndex, iFirstIndex;
 	bool bFound;
 
 #ifdef _DEBUG
@@ -1281,12 +1281,29 @@ bool CDomainPlanes::FillGaps(CMesh &Mesh, const PLANE &Plane, vector<int> &Polyg
 			return false;
 		}
 
+		// Check for two points next to each other which are the same
+		// Happens on issue #2 - would be better to find cause
+		vector<int>::iterator itCurrent = ClosedLoop.begin(); 
+		vector<int>::iterator itNext = itCurrent+1;
+		while(itNext != ClosedLoop.end() )
+		{
+			if (*itCurrent == *itNext )
+			{
+				itNext = ClosedLoop.erase(itNext);
+			}
+			else
+			{
+				++itCurrent;
+				++itNext;
+			}
+		}
+
 		// Check for spike in loop where points two apart are the same
 		// Would be better to find the root cause of this happening
 		
 		vector<int>::iterator itPrev = ClosedLoop.begin(); 
-		vector<int>::iterator itCurrent = itPrev+1; 
-		vector<int>::iterator itNext = itCurrent+1;
+		itCurrent = itPrev+1; 
+		itNext = itCurrent+1;
 
 		while( itNext != ClosedLoop.end() )
 		{

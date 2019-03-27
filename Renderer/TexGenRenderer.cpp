@@ -470,7 +470,7 @@ vtkActor *CTexGenRenderer::ConvertToActor(vtkPolyData *pPolyData)
 {
 	vtkActor *pActor = vtkActor::New();
 	vtkPolyDataMapper *pPolyDataMapper = vtkPolyDataMapper::New();
-	pPolyDataMapper->SetInput(pPolyData);
+	pPolyDataMapper->SetInputData(pPolyData);
 	pActor->SetMapper(pPolyDataMapper);
 
 	pPolyDataMapper->Delete();
@@ -669,7 +669,9 @@ void CTexGenRenderer::RenderDomain(const CDomain &Domain, COLOR Color, double dO
 	CDomain* pCopy = Domain.Copy();
 
 	// Get rid of flicker between the ends of the yarns and the domain by growing the domain a little
-	pCopy->Grow(1e-3);
+	pair<XYZ, XYZ> Limits = Domain.GetMesh().GetAABB();
+	double extend = GetLength(Limits.second - Limits.first)*1e-3;
+	pCopy->Grow(extend);
 	CMesh Mesh = pCopy->GetMesh();
 
 	delete pCopy;
@@ -896,7 +898,7 @@ void CTexGenRenderer::RenderPath(CTextile &Textile, int iYarn)
 
 	vtkTubeFilter* pProfileTubes = vtkTubeFilter::New();
 	pProfileTubes->SetNumberOfSides(8);
-	pProfileTubes->SetInput(pPolyData);
+	pProfileTubes->SetInputData(pPolyData);
 	pProfileTubes->SetRadius(dRadius);
 	pProfileTubes->CappingOn();
 
@@ -982,8 +984,8 @@ void CTexGenRenderer::RenderInterference(CTextile &Textile, bool bDepth)
 	pBalls->SetThetaResolution(10);
 
 	vtkGlyph3D* pGlyphPoints = vtkGlyph3D::New();
-	pGlyphPoints->SetInput(pPolyData);
-	pGlyphPoints->SetSource(pBalls->GetOutput());
+	pGlyphPoints->SetInputData(pPolyData);
+	pGlyphPoints->SetSourceConnection(pBalls->GetOutputPort());
 
 	if ( bDepth )
 	{
@@ -1111,8 +1113,8 @@ void CTexGenRenderer::RenderGrid(CTextile &Textile, int iResX, int iResY, int iR
 	vtkGlyph3D* pGlyphPoints = vtkGlyph3D::New();
 	pGlyphPoints->SetScaleFactor(dLength);
 	pGlyphPoints->SetVectorModeToUseVector();
-	pGlyphPoints->SetSource(pArrow->GetOutput());
-	pGlyphPoints->SetInput(pPolyData);
+	pGlyphPoints->SetSourceConnection(pArrow->GetOutputPort());
+	pGlyphPoints->SetInputData(pPolyData);
 
 	vtkPolyDataMapper* pGlyphMapper = vtkPolyDataMapper::New();
 	pGlyphMapper->SetInputConnection(pGlyphPoints->GetOutputPort());
@@ -1129,7 +1131,7 @@ void CTexGenRenderer::RenderGrid(CTextile &Textile, int iResX, int iResY, int iR
 	AddProp(PROP_ORIENTATION, pGlyph);
 }
 
-bool CTexGenRenderer::RenderImage(string FileName, double dMaxDim, XYZ Orientation)
+/*bool CTexGenRenderer::RenderImage(string FileName, double dMaxDim, XYZ Orientation)
 {
 	vtkImageReader2* pReader = vtkImageReader2Factory::CreateImageReader2(FileName.c_str());
 	if (!pReader)
@@ -1137,7 +1139,7 @@ bool CTexGenRenderer::RenderImage(string FileName, double dMaxDim, XYZ Orientati
 //	vtkPNGReader* pReader = vtkPNGReader::New();
 	pReader->SetFileName(FileName.c_str());
 	vtkImageActor* pImageActor = vtkImageActor::New();
-	pImageActor->SetInput(pReader->GetOutput());
+	pImageActor->SetInputData(pReader->GetOutputDataObject(());
 	double Bounds[6];
 	pImageActor->GetBounds(Bounds);
 	double dMaxBound = Bounds[1] - Bounds[0];
@@ -1152,7 +1154,7 @@ bool CTexGenRenderer::RenderImage(string FileName, double dMaxDim, XYZ Orientati
 	m_ImageProps[pImageActor] = Info;
 	AddProp(PROP_IMAGE, pImageActor);
 	return true;
-}
+}*/
 
 void CTexGenRenderer::ResetCamera(XYZ LookDirection)
 {
@@ -1317,7 +1319,7 @@ vtkAlgorithm *CTexGenRenderer::CalculateNormals(vtkPolyData *pInput)
 	pPolyDataNormals->ComputeCellNormalsOn();
 	pPolyDataNormals->FlipNormalsOff();
 
-	pPolyDataNormals->SetInput(pInput);
+	pPolyDataNormals->SetInputData(pInput);
 
 	pInput->Delete();
 
@@ -1418,7 +1420,7 @@ bool CTexGenRenderer::SaveMeshToVTK(string FileName, const CMesh &Mesh)
 		FileName += ".vtp";
 	vtkPolyData* pPolyData = GetPolyData(Mesh);
 	vtkXMLPolyDataWriter* pPolyDataWriter = vtkXMLPolyDataWriter::New(); 
-	pPolyDataWriter->SetInput(pPolyData);
+	pPolyDataWriter->SetInputData(pPolyData);
 	pPolyDataWriter->SetDataModeToBinary();
 	pPolyDataWriter->SetFileName(FileName.c_str());
 	bool bSuccess = pPolyDataWriter->Write()?true:false;

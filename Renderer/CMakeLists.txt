@@ -20,32 +20,15 @@ IF(UNIX)
 	SET_TARGET_PROPERTIES(TexGenRenderer PROPERTIES LINK_FLAGS "-Wl,-rpath,${VTK_DIR}/bin -L${VTK_DIR}/bin")
 	TARGET_LINK_LIBRARIES(TexGenRenderer
 		TexGenCore
-		vtkGraphics
-		vtkFiltering
-		vtkCommon
-		vtkRendering
-		vtkHybrid
-		vtkIO
-		vtkWidgets
-		vtkzlib
-		vtkfreetype
-		vtkftgl
-		vtkpng
-		vtkImaging
-		vtkjpeg
-		vtktiff
-		vtksys
-		vtkexpat
-		vtkNetCDF
-		vtkhdf5
-		vtkmetaio
+		${VTK_LIBRARIES}
 	)
 ENDIF(UNIX)
 
-FIND_PACKAGE(VTK REQUIRED)
+FIND_PACKAGE(VTK 6.3 REQUIRED NO_MODULE)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../OctreeRefinement/Include)
 INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
 
 # Note ${VTK_LIBRARY_DIRS} are necessary for MSVC++, libs arn't found otherwise
 # Please do not remove unless the source of the problem is resolved
@@ -53,24 +36,6 @@ INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
 IF(WIN32)
 	TARGET_LINK_LIBRARIES(TexGenRenderer
 		TexGenCore opengl32 glu32
-		${VTK_LIBRARY_DIRS}/vtkGraphics
-		${VTK_LIBRARY_DIRS}/vtkFiltering
-		${VTK_LIBRARY_DIRS}/vtkCommon
-		${VTK_LIBRARY_DIRS}/vtkRendering
-		${VTK_LIBRARY_DIRS}/vtkHybrid
-		${VTK_LIBRARY_DIRS}/vtkIO
-		${VTK_LIBRARY_DIRS}/vtkWidgets
-		${VTK_LIBRARY_DIRS}/vtkzlib
-		${VTK_LIBRARY_DIRS}/vtkfreetype
-		${VTK_LIBRARY_DIRS}/vtkftgl
-		${VTK_LIBRARY_DIRS}/vtkpng
-		${VTK_LIBRARY_DIRS}/vtkImaging
-		${VTK_LIBRARY_DIRS}/vtkjpeg
-		${VTK_LIBRARY_DIRS}/vtktiff
-		${VTK_LIBRARY_DIRS}/vtksys
-		${VTK_LIBRARY_DIRS}/vtkexpat
-		${VTK_LIBRARY_DIRS}/vtknetcdf
-		${VTK_LIBRARY_DIRS}/vtkhdf5
-		${VTK_LIBRARY_DIRS}/vtkmetaio
+		${VTK_LIBRARIES}
 	)
 ENDIF(WIN32)

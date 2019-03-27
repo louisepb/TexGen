@@ -1720,12 +1720,28 @@ void CTextile3DWeave::SwapPosition(int x, int y, int iLevel1, int iLevel2)
 
 bool CTextile3DWeave::IsBinderYarn( int index ) const
 {
-	/*int iRepeat = m_iWarpRatio + m_iBinderRatio;
+	if ( m_BinderPattern.size() > index )
+		return m_BinderPattern[index];
+
+	int iRepeat = m_iWarpRatio + m_iBinderRatio;
 
 	if ( (index % iRepeat) < m_iWarpRatio )
 		return WARP;
-	return BINDER;*/
-	return m_BinderPattern[index];
+	return BINDER;
+}
+
+int CTextile3DWeave::GetXYarnIndex( int YarnInd )
+{
+	for ( int i = 0; i < m_XYarns.size(); ++i )
+	{
+		vector<int>::iterator itYarns;
+		for ( itYarns = m_XYarns[i].begin(); itYarns != m_XYarns[i].end(); ++itYarns )
+		{
+			if ( *itYarns == YarnInd )
+				return i;
+		}
+	}
+	return -1;
 }
 
 bool CTextile3DWeave::BinderYarns() const
