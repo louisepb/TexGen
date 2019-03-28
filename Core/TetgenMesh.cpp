@@ -148,13 +148,13 @@ void CTetgenMesh::SaveTetgenMesh( CTextile &Textile, string OutputFilename, stri
 				SeedSides( ArrayPoints2D[0] );
 				Triangulate( ArrayPoints2D, TriangleMesh, ConvertRef );
 			}
-			NumEdgeTris += TriangleMesh.GetIndices(CMesh::TRI).size() / iNumNodes;
+			NumEdgeTris += (int)TriangleMesh.GetIndices(CMesh::TRI).size() / iNumNodes;
 			TriangulatedMeshes.push_back( TriangleMesh );
 			}
 		
 	}
 
-	m_in.numberoffacets = m_Mesh.GetNumElements() + DomainMeshes.size();
+	m_in.numberoffacets = (int)m_Mesh.GetNumElements() + (int)DomainMeshes.size();
 	m_in.facetlist = new tetgenio::facet[m_in.numberoffacets];
 
 	// Add facets for yarn elements
@@ -202,7 +202,7 @@ void CTetgenMesh::SaveTetgenMesh( CTextile &Textile, string OutputFilename, stri
 			int iNumNodes = 3;
 
 			f = &m_in.facetlist[i];
-			f->numberofpolygons = TriIndices.size()/iNumNodes;
+			f->numberofpolygons = (int)TriIndices.size()/iNumNodes;
 			f->polygonlist = new tetgenio::polygon[f->numberofpolygons];
 			f->numberofholes = 0;
 			f->holelist = NULL;
@@ -249,7 +249,7 @@ void CTetgenMesh::SaveTetgenMesh( CTextile &Textile, string OutputFilename, stri
 			if ( PolygonIndices.empty() )
 				f->numberofpolygons = 1;
 			else
-				f->numberofpolygons = PolygonNumVertices[iFace].size() + 1;  // Number of polygons + the quad
+				f->numberofpolygons = (int)PolygonNumVertices[iFace].size() + 1;  // Number of polygons + the quad
 			f->polygonlist = new tetgenio::polygon[f->numberofpolygons];
 			f->numberofholes = 0;
 			f->holelist = NULL;
@@ -325,13 +325,19 @@ void CTetgenMesh::SaveTetgenMesh( CTextile &Textile, string OutputFilename, stri
 	}
 	
 	string strOutput;
-	int size = OutputFilename.length();
+	string strInput;
+	int size = (int)OutputFilename.length();
 	
 	char* TetgenOutput = new char[size];
+	char* TetgenInput = new char[size+5];
 	strOutput = RemoveExtension( OutputFilename, ".inp" );
+	strInput = strOutput + "Input";
 	strcpy(TetgenOutput, strOutput.c_str());
+	strcpy( TetgenInput, strInput.c_str());
 	
-	m_in.save_poly(TetgenOutput);
+	m_in.save_nodes(TetgenInput);
+	m_in.save_poly(TetgenInput);
+	delete [] TetgenInput;
 
 	// Check the input mesh first
 	try
@@ -358,8 +364,8 @@ void CTetgenMesh::SaveTetgenMesh( CTextile &Textile, string OutputFilename, stri
 	// Output mesh to files 'barout.node', 'barout.ele' and 'barout.face'.
 	m_out.save_nodes(TetgenOutput);
 	m_out.save_elements(TetgenOutput);
-	delete [] TetgenOutput;
 	m_out.save_faces(TetgenOutput);
+	delete [] TetgenOutput;
 
 	SaveToAbaqus( OutputFilename, Textile );
 }
@@ -968,7 +974,7 @@ bool CTetgenMesh::Triangulate( vector<vector<XY> > &PolygonPoints, CMesh& Output
 	{
 		vector<XY>::iterator itPolyPoints;
 		int j = 0;
-		int iNumPolyPoints = (*itArrayPolygonPoints).size();
+		int iNumPolyPoints = (int)(*itArrayPolygonPoints).size();
 		int StartIndex = i;
 		for (itPolyPoints = (*itArrayPolygonPoints).begin(); itPolyPoints != (*itArrayPolygonPoints).end(); ++itPolyPoints)
 		{
