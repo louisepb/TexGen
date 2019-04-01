@@ -161,7 +161,7 @@ void CPeriodicBoundaries::OutputVertexSets( ostream& Output )
 
 void CPeriodicBoundaries::OutputFullFaceSets( ostream& Output )
 {
-	//Output if don't want PBC
+	//George  - Output if don't want PBC
 	Output << "*NSet, NSet= TopSurfaceNodes";
 	Output << ", Unsorted" << endl;
 	WriteValues( Output, m_FaceC.first, 16 );
@@ -204,6 +204,82 @@ void CPeriodicBoundaries::OutputFullFaceSets( ostream& Output )
 		Output << m_Vertices[i] << ", " << endl;
 	}
 
+	//sort out the loop values after they're written
+	Output << "*NSet, NSet = surface1";
+	Output << ", Unsorted" << endl;
+	WriteValues( Output, m_FaceA.second, 16 );
+	Output << ", " << endl;
+	for (int i = 0; i < 1; i++)
+	{
+		WriteValues( Output, m_Edges[i], 16 );
+		Output << ", " << endl;
+	}
+
+	for (int i = 3; i < 5; i++)
+	{
+		WriteValues( Output, m_Edges[i], 16 );
+		Output << ", " << endl;
+	}
+
+	for (int i = 7; i < 8; i++)
+	{
+		WriteValues( Output, m_Edges[i], 16 );
+		Output << ", " << endl;
+	}
+
+	for (int i = 0; i < 1; ++i )
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
+
+	for (int i = 3; i < 5; ++i )
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
+
+	for (int i = 7; i < 8; ++i )
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
+
+	
+	Output << "*NSet, NSet = surface2";
+	Output << ", Unsorted" << endl;
+	WriteValues( Output, m_FaceB.second, 16 );
+	Output << ", " << endl;
+	for (int i = 0; i < 1; i++)
+	{
+		WriteValues( Output, m_Edges[i], 16 );
+		Output << ", " << endl;
+	}
+
+	for (int i = 1; i < 2; i++)
+	{
+		WriteValues( Output, m_Edges[i], 16 );
+		Output << ", " << endl;
+	}
+
+	for (int i = 8; i < 9; i++)
+	{
+		WriteValues( Output, m_Edges[i], 16 );
+		Output << ", " << endl;
+	}
+
+	for (int i=11; i < 12; i++)
+	{
+		WriteValues( Output, m_Edges[i], 16 );
+		Output << ", " << endl;
+	}
+
+	for (int i = 0; i < 2; ++i )
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
+
+	for (int i = 4; i < 6; ++i )
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
 }
 
 void CPeriodicBoundaries::OutputEquations( ostream& Output, int iBoundaryConditions )

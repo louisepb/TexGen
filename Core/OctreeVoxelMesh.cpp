@@ -1174,14 +1174,10 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 	p4est_lnodes_destroy (lnodes);
 	TGLOG("Num of elements: " << m_AllElements.size());
 
-	// George - Oct mesh members here that need to be replaced by rect mesh versions for extractSurfaceNodeSets and OutputSurfaces:
-	// m_AllElements, AllNodes, m_NodesEncounter
-
 }
 
 void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool surfaceOutput, bool bAbaqus )
 {
-	//George  - 
 
 	CTimer timer;
 	//timer.start("Starting octree refinement");
@@ -1414,7 +1410,6 @@ void COctreeVoxelMesh::extractSurfaceNodeSets(map<int, vector<int>> &NodeSurf, v
 		}
 	}
 
-	//George - m_AllElementsInfo, m_AllElements needs to be replaced by rect mesh version, 
 }
 
 void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const vector<int> &AllSurf)

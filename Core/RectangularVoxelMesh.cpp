@@ -85,9 +85,14 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 				Point.x = m_DomainAABB.first.x + m_VoxSize[0] * x;
 				Point.y = m_DomainAABB.first.y + m_VoxSize[1] * y;
 				Point.z = m_DomainAABB.first.z + m_VoxSize[2] * z;
-				if ( bAbaqus )
-					Output << iNodeIndex << ", ";
-				Output << Point << endl;
+				if (!surfaceOutput)
+				{
+					if ( bAbaqus )
+						Output << iNodeIndex << ", ";
+					Output << Point << endl;
+					
+				}
+
 				Nodes.insert(make_pair(iNodeIndex, Point));
 
 				if ( x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels )
@@ -131,7 +136,6 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 		}
 		RowInfo.clear();   // Changed to do layer at a time instead of row to optimise
 		Textile.GetPointInformation( CentrePoints, RowInfo );
-		// should this go here or does it double count elements??
 		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end() );
 		
 		CentrePoints.clear();
@@ -161,12 +165,10 @@ void CRectangularVoxelMesh::OutputInterfaceSurfaces(ostream& Output, CTextile& T
 	//OctMesh.ConvertOctreeToNodes();
 
 	OctMesh.AllNodes=Nodes;
-	//George - assign rect mesh version of allelements to the octree mesh class as m_AllElements, not sure this is working as it should 
+	//George - assign rect mesh version of allelements to the octree mesh class as m_AllElements
 	OctMesh.m_AllElements = AllElements;
-	//haven't done this one yet
 	OctMesh.m_NodesEncounter = NodesEncounter;
 	vector<XYZ> CentrePoints;
-	//if chnage this to Textile.GetPI then can sub in to octmesh later
 	Textile.GetPointInformation(CentrePoints, m_ElementsInfo);
 	//OctMesh.gTextile.GetPointInformation(CentrePoints, m_ElementsInfo);
 	OctMesh.m_ElementsInfo=m_ElementsInfo;
@@ -183,15 +185,12 @@ void CRectangularVoxelMesh::OutputInterfaceSurfaces(ostream& Output, CTextile& T
 	//octree output surfaces adds the copied nodes
 	Nodes=OctMesh.AllNodes;
 
-	//will use this to output all the nodes instead of in RectMesh::OutputNodes(), output both for now until I see it works
+	//will use this to output all the nodes instead of in RectMesh::OutputNodes()
 	map<int,XYZ>::iterator itNodes;
 	for (itNodes = Nodes.begin(); itNodes != Nodes.end(); ++itNodes) {
 		Output << itNodes->first << ", " << itNodes->second.x << ", " << itNodes->second.y << ", " << itNodes->second.z << endl;
 	}
 
-	//OctMesh.m_bCohesive = true;
-
-	//OctMesh.OutputNodes(Output, Textile, bAbaqus);
 }
 
 int CRectangularVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus )

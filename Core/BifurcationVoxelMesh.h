@@ -3,7 +3,6 @@
 #include "VoxelMesh.h"
 #include "Materials.h"
 #include "PeriodicBoundaries.h"
-//#include <set>
 #include <algorithm>
 
 namespace TexGen
@@ -25,7 +24,7 @@ namespace TexGen
 		CBifurcationVoxelMesh(string Type); 
 		virtual ~CBifurcationVoxelMesh(void);
 
-		void CBifurcationVoxelMesh::InitialiseBifurcationVoxelMesh(double a, double b, double c, double firstweb, double secondweb, double flangelength);
+		void InitialiseBifurcationVoxelMesh(double a, double b, double c, double firstweb, double secondweb, double flangelength);
 
 		void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, bool surfaceOutput, int iBoundaryConditions, int iElementType = 0);
 
@@ -63,7 +62,7 @@ namespace TexGen
 
 		int OutputHexElements(ostream &Output, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true);
 
-		void CBifurcationVoxelMesh::CreateBifurcatedMaterials(ostream& Output, string Filename, CTextile& Textile, bool bMatrixOnly);
+		void CreateBifurcatedMaterials(ostream& Output, string Filename, CTextile& Textile, bool bMatrixOnly);
 
 		
 
