@@ -74,7 +74,6 @@ public:
 	void DeselectObject(PROP_INFO* pObject, bool bUpdateWidget = true, bool bUpdateOutliner = true);
 	void DeselectAll(bool bUpdateOutliner = true);
 	void SelectObject(PROP_INFO* pObject, bool bUpdateOutliner = true);
-	void CreateTestTextile();
 	void SetActiveTool(TOOLS Tool);
 	TOOLS GetActiveTool() const {return m_ActiveTool;}
 	void OnWidgetStartMove();
@@ -154,7 +153,7 @@ protected:
 	bool m_bSelectPaths;
 	bool m_bSelectSurfaces;
 	bool m_bSelectImages;
-//	bool m_bIgnoreSelectionChange;
+	bool m_bIgnoreSelectionEvent;
 };
 
 

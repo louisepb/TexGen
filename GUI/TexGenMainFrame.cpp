@@ -453,6 +453,8 @@ void CTexGenMainFrame::OnSaveScreenshot(wxCommandEvent& event)
 	
 	if (wxXmlResource::Get()->LoadDialog(&ScreenShot, this, wxT("ScreenShot")))
 	{
+		int Magnification = 1;
+		XRCCTRL(ScreenShot, "Magnification", wxSpinCtrl)->SetValidator(wxGenericValidator( &Magnification));
 		if ( ScreenShot.ShowModal() == wxID_OK )
 		{
 			wxFileDialog dialog
@@ -471,10 +473,7 @@ void CTexGenMainFrame::OnSaveScreenshot(wxCommandEvent& event)
 				Command = "GetRenderWindow().TakeScreenShot(r\"";
 				Command += ConvertString(dialog.GetPath());
 				Command += "\", ";
-				
-				wxSpinCtrl* MagCtrl = (wxSpinCtrl*)FindWindow(XRCID("Magnification"));
-				
-				Command += stringify(MagCtrl->GetValue());
+				Command += stringify(Magnification);
 				Command += ")";
 				SendPythonCode(Command);
 			}
@@ -663,11 +662,10 @@ void CTexGenMainFrame::OnSaveVolumeMesh(wxCommandEvent& event)
 		}
 	}
 
-//	int iMeshType = 0;
 	int iElementOrder = 0;
 	bool bProjectMidSideNodes = true;
 	bool bPeriodic = false;
-	int iBoundaryConditions;
+	int iBoundaryConditions = MATERIAL_CONTINUUM;
 
 	wxString SeedSize = wxString::Format(wxT("%.4f"), dSeedSize);
 	
@@ -675,18 +673,14 @@ void CTexGenMainFrame::OnSaveVolumeMesh(wxCommandEvent& event)
 	CVolumeMeshOptions MeshOptions(this);
 	
 	{
-//		XRCCTRL(MeshOptions, "MeshType", wxRadioBox)->SetValidator(wxGenericValidator(&iMeshType));
 		XRCCTRL(MeshOptions, "ElementOrder", wxRadioBox)->SetValidator(wxGenericValidator(&iElementOrder));
 		XRCCTRL(MeshOptions, "ProjectMidSideNodes", wxCheckBox)->SetValidator(wxGenericValidator(&bProjectMidSideNodes));
 		XRCCTRL(MeshOptions, "Periodic", wxCheckBox)->SetValidator(wxGenericValidator(&bPeriodic));
 		XRCCTRL(MeshOptions, "SeedSize", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &SeedSize));
 		XRCCTRL(MeshOptions, "MergeTolerance", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &MergeTolerance));
 		XRCCTRL(MeshOptions, "PeriodicBoundaries", wxRadioBox)->SetValidator(wxGenericValidator(&iBoundaryConditions));
-
-		wxRadioBox* PeriodicBoundariesCtrl = (wxRadioBox*)FindWindow(XRCID("PeriodicBoundaries"));
-		PeriodicBoundariesCtrl->Enable((unsigned int)STAGGERED_BC, false);
-		PeriodicBoundariesCtrl->Enable((unsigned int)ROTATED_BC, false);
-		
+		XRCCTRL(MeshOptions,"PeriodicBoundaries", wxRadioBox)->Enable((unsigned int)STAGGERED_BC, false);
+		XRCCTRL(MeshOptions,"PeriodicBoundaries", wxRadioBox)->Enable((unsigned int)ROTATED_BC, false);
 
 		if (MeshOptions.ShowModal() == wxID_OK)
 		{
@@ -708,8 +702,7 @@ void CTexGenMainFrame::OnSaveVolumeMesh(wxCommandEvent& event)
 					Command << "mesher = CMesher(" << iBoundaryConditions << ")" << endl;
 				else
 					Command << "mesher = CMesher()" << endl;
-/*				if (iMeshType == 1)
-					Command << "mesher.SetHybrid(True)" << endl;*/
+
 				if (iElementOrder == 1)
 					Command << "mesher.SetQuadratic(True)" << endl;
 				if (!bProjectMidSideNodes)
@@ -891,15 +884,13 @@ void CTexGenMainFrame::OnSaveSTEP(wxCommandEvent& event)
 
 void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 {
-
 	string TextileName = GetTextileSelection();
 	stringstream Command;
 
 	wxString XScale = wxT("1.0");
 	wxString YScale = wxT("1.0");
 	wxString ZScale = wxT("1.0");
-	//wxString YoungsModulus = wxT("13000.0");
-	//wxString PoissonsRatio = wxT("0.3");
+	
 	wxString IntersectionTolerance = wxT("0.0000001");
 	bool bAdjustIntersections = false;
 	bool bIncludePlates = false;
@@ -924,8 +915,6 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 		XRCCTRL(AbaqusInput, "XScale", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &XScale));
 		XRCCTRL(AbaqusInput, "YScale", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &YScale));
 		XRCCTRL(AbaqusInput, "ZScale", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &ZScale));
-		/*XRCCTRL(AbaqusInput, "YoungsModulus", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &YoungsModulus));
-		XRCCTRL(AbaqusInput, "PoissonsRatio", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &PoissonsRatio));*/
 		XRCCTRL(AbaqusInput, "AdjustIntersections", wxCheckBox)->SetValidator(wxGenericValidator(&bAdjustIntersections));
 		XRCCTRL(AbaqusInput, "IntersectionTolerance", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &IntersectionTolerance));
 		XRCCTRL(AbaqusInput, "IncludePlates", wxCheckBox)->SetValidator(wxGenericValidator(&bIncludePlates));
@@ -947,16 +936,8 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 				string strContact = iContactSurfaces ? "True" : "False";
 				Command << "deformer.SetWholeSurfaces(" << strContact << ")" << endl;
 
-				//#deformer.SetFortranProgram('LinearElasticUMAT.for')
-				//Command << "deformer.SetMaterial('ISO', [" << ConvertString(YoungsModulus) << "," << ConvertString(PoissonsRatio) << "])" << endl;
-				//#deformer.SetSimulationFilesPrefix(Abaquspre)
-
-				//name = baseName + '.tg3'
-				//ReadFromXML(name)
 				Command << "textile = GetTextile('" + TextileName + "')" << endl;
 
-				//#name = deformer.GetSimulationFilesPrefix()
-				//Command << "deformer.CreateAbaqusInputFile(textile, 'TestAbaqus' + '.inp')" << endl;
 				double Tolerance;
 				IntersectionTolerance.ToDouble( &Tolerance );
 				Command << "deformer.CreateAbaqusInputFile(textile, r\'" << ConvertString(dialog.GetPath()) << "'," << bRegenerateMesh << "," << iElementType << "," 
@@ -966,20 +947,10 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 			}
 		}
 	}
-
-	
-
-/*if not deformer.CreateAbaqusInputFile(textile, baseName + '.inp'):
-	raise RuntimeError('Unable to create ABAQUS input file')
-else:
-    print 'Abaqus input files are complete now.'*/
-
-
 }
 
 void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 {
-
 	string TextileName = GetTextileSelection();
 	stringstream Command;
 
@@ -989,7 +960,7 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 	wxString XOffset = wxT("0.0");
 	
 	bool bOutputMatrix = true;
-	bool bOutputYarns = false;
+	bool bOutputYarns = true;
 	int  iBoundaryConditions = 0;
 	int iElementType = 0;
 
@@ -1049,14 +1020,6 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 			
 		}
 	}
-	
-
-/*if not deformer.CreateAbaqusInputFile(textile, baseName + '.inp'):
-	raise RuntimeError('Unable to create ABAQUS input file')
-else:
-    print 'Abaqus input files are complete now.'*/
-
-
 }
 
 void CTexGenMainFrame::OnPeriodicBoundaries(wxCommandEvent& event)
@@ -2600,8 +2563,7 @@ void CTexGenMainFrame::OnOptions(wxCommandEvent& event)
 
 void CTexGenMainFrame::LaunchSurvey()
 {
-	wxStandardPaths paths;
-	wxString path = paths.GetUserConfigDir();
+	wxString path = wxStandardPaths::Get().GetUserConfigDir();
 	wxString Filename = path + wxT("/.count.txt");
 
 	if ( !wxFileExists( Filename ) )
