@@ -127,9 +127,17 @@ def ImportWeavePattern( Filename ):
 				BinderHeight = float(parts[1])
 				BinderHeightUnits = parts[2]
 			else:
-				Pattern.AddRow( line )
-				LineVector = StringToIntVector( line )
-				WeftMatrix.append(LineVector) 
+				allNumeric = True
+				for part in parts:
+					if not part.isdigit():
+						allNumeric = False
+						print 'Error in weave pattern line, not all numeric'
+						break
+				
+				if allNumeric == True:	
+					Pattern.AddRow( line )
+					LineVector = StringToIntVector( line )
+					WeftMatrix.append(LineVector) 
 
 	file.close()
 
