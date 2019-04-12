@@ -568,10 +568,7 @@ void CSimulationAbaqus::CreateMaterials(ostream &Output, string Filename)
 
 	Output << "*Section Controls, Name=HourglassEnhanced, Hourglass=Enhanced, SECOND ORDER ACCURACY=YES" << endl;
 	Output << "** Note: Additional element data are stored as a depvars:" << endl;
-	Output << "** 1 - Yarn Index (-1 for matrix, first yarn starting at 0)" << endl;
-	Output << "** 2/3 - Location (x and y cross-section coordinates of element relative to yarn centerline)" << endl;
-	Output << "** 4 - Volume fraction" << endl;
-	Output << "** 5 - Distance of element from the surface of the yarn (for yarn elements only, distance is negative)" << endl;
+	WriteElementsHeader( Output );
 	Output << "*Initial Conditions, Type=Solution, Input=" << StripPath(ElementDataFilename) << endl;
 }
 

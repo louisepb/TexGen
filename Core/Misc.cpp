@@ -153,6 +153,28 @@ namespace TexGen
 			return Filename.replace( iPos+1, iEnd, str );
 		}
 	}
+
+	void WriteOrientationsHeader( std::ostream &Output )
+	{
+		Output << "********************" << std::endl;
+		Output << "*** ORIENTATIONS ***" << std::endl;
+		Output << "********************" << std::endl;
+		Output << "** Orientation vectors" << std::endl;
+		Output << "** 1st vector represents the fibre direction" << std::endl;
+		Output << "** 2nd vector is an arbitrary vector perpendicular to the first" << std::endl;
+	}
+
+	void WriteElementsHeader( std::ostream &Output )
+	{
+		Output << "********************" << std::endl;
+		Output << "*** ELEMENT DATA ***" << std::endl;
+		Output << "********************" << std::endl;
+		Output << "** Element data stored as a depvars " << std::endl;
+		Output << "** 1 - Yarn Index (-1 for matrix, first yarn starting at 0) " << std::endl;
+		Output << "** 2/3 - Location (x and y cross-section coordinates of element relative to yarn centerline) " << std::endl;
+		Output << "** 4 - Volume fraction " << std::endl;
+		Output << "** 5 - Distance of element from the surface of the yarn (for yarn elements only, distance is negative) " << std::endl;
+	}
 }
 
 

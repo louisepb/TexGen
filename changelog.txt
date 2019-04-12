@@ -18,6 +18,8 @@ Core
 ** Bugfix to correct 4 quarter hybrid section constructor
 ** Added functions to access inherited class pointers in CYarnSection
 ** Added yarn number to volume fraction error messages
+** Added write orientation and elements header functions to misc.cpp
+** Included headers in all Abaqus .eld and .ori files
 
 GUI
 ===
