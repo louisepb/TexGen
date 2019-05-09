@@ -304,7 +304,8 @@ void CVoxelMesh::SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputM
 		Output << "*Element, Type=C3D8" << endl;
 	}
 	//PROFILE_BEGIN(OutputHexElements);
-	iNumHexElements = OutputHexElements( Output, bOutputMatrix, bOutputYarn );
+	bool bAbaqus = true;
+		iNumHexElements = OutputHexElements( Output, bOutputMatrix, bOutputYarn );
 	//PROFILE_END();
 	bool bMatrixOnly = false;
 	if ( bOutputMatrix && !bOutputYarn )
