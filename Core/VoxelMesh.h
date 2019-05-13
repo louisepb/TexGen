@@ -42,7 +42,7 @@ namespace TexGen
 		\param iBoundaryConditions as in enum PERIODIC_BOUNDARY_CONDITIONS
 		\param iElementType 0 for C3D8R, 1 for C3D8
 		*/
-		virtual void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, bool surfaceOutput, int iBoundaryConditions, int iElementType = 0);
+		void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, bool surfaceOutput, int iBoundaryConditions, int iElementType = 0);
 		/// Add a row of element information
 		void AddElementInfo(vector<POINT_INFO> &RowInfo);
 		/// Outputs yarn orientations and element sets to .ori and .eld files
@@ -80,7 +80,7 @@ namespace TexGen
 		/**
 		\ return Maximum element index
 		*/
-		virtual int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true );
+		virtual int OutputHexElements(ostream &Output, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true ) = 0;
 		/// Outputs yarn orientations and element sets to .ori and .eld files
 		void OutputOrientationsAndElementSets( string Filename, ostream &Output );
 		/// Outputs all elements when only outputting matrix

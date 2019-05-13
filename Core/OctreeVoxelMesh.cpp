@@ -442,7 +442,8 @@ void COctreeVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Texti
 	m_PeriodicBoundaries->CreatePeriodicBoundaries( Output, (int)AllNodes.size() + 1, Textile, iBoundaryConditions, bMatrixOnly );
 }
 
-int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus )
+//ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true
+int COctreeVoxelMesh::OutputHexElements(ostream &Output, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus )
 {
 	CTimer timer;
 	timer.start("Writing elements");
@@ -1018,7 +1019,8 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 		return;
 
 	//G - saving smooth voxel mesh with no periodic boundary conditions
-	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, 1, 1, 1, true, true, 5, 1);
+	//CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, bool surfaceOutput, int iBoundaryConditions, int iElementType = 0
+	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, 1, 1, 1, true, true, true, 5, 1);
 
 
 	timer.check("Octree refinement finished");

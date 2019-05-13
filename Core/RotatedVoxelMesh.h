@@ -40,6 +40,8 @@ namespace TexGen
 		/// Outputs nodes to .inp file and gets element information
 		void OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus = true );
 
+		//int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true );
+
 		XYZ				m_RotatedVoxSize[3];
 		XYZ				m_StartPoint;
 

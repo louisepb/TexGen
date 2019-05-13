@@ -45,7 +45,7 @@ namespace TexGen
 
 		COctreeVoxelMesh OctMesh;
 
-		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true);
+		int OutputHexElements(ostream &Output, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true );
 
 		/// Calculate voxel size based on number of voxels on each axis and domain size
 		bool CalculateVoxelSizes(CTextile &Textile);

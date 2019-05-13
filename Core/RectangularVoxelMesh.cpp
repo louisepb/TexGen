@@ -193,10 +193,10 @@ void CRectangularVoxelMesh::OutputInterfaceSurfaces(ostream& Output, CTextile& T
 
 }
 
-int CRectangularVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus )
+int CRectangularVoxelMesh::OutputHexElements(ostream &Output, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus )
 {
 	//want to override the base class function, they should work the same
-	int elemnum = OctMesh.OutputHexElements(Output, bOutputMatrix, bOutputYarn, bAbaqus );
+	int elemnum = OctMesh.OutputHexElements(Output, Textile, bOutputMatrix, bOutputYarn, bAbaqus );
 	
 	//int elemnum = CVoxelMesh::OutputHexElements(Output, bOutputMatrix, bOutputYarn, bAbaqus );
 	return elemnum;

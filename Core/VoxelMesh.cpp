@@ -303,9 +303,10 @@ void CVoxelMesh::SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputM
 	{
 		Output << "*Element, Type=C3D8" << endl;
 	}
+	//ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true
 	//PROFILE_BEGIN(OutputHexElements);
 	bool bAbaqus = true;
-		iNumHexElements = OutputHexElements( Output, bOutputMatrix, bOutputYarn );
+		iNumHexElements = OutputHexElements( Output, Textile, bOutputMatrix, bOutputYarn, bAbaqus );
 	//PROFILE_END();
 	bool bMatrixOnly = false;
 	if ( bOutputMatrix && !bOutputYarn )
@@ -378,7 +379,7 @@ void CVoxelMesh::SaveToSCIRun( string Filename, CTextile &Textile )
 	//Output the voxel HEX elements
 	int iNumHexElements = 0;
 	
-	iNumHexElements = OutputHexElements( OutputElements, true, true, false );
+	iNumHexElements = OutputHexElements( OutputElements, Textile, true, true, false );
 	
 	TGLOG("Finished saving to SCIRun format");
 }
@@ -387,7 +388,7 @@ void CVoxelMesh::SaveToSCIRun( string Filename, CTextile &Textile )
 
 
 
-int CVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus )
+int CVoxelMesh::OutputHexElements(ostream &Output, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus )
 {
 	int numx = m_XVoxels + 1;
 	int numy = m_YVoxels + 1;
@@ -444,6 +445,8 @@ int CVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOut
 	}
 	return ( iElementNumber-1 );
 }
+
+
 
 void CVoxelMesh::OutputOrientationsAndElementSets( string Filename )
 {
