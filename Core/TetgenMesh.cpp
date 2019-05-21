@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 extern "C"
 {
 #include "../Triangle/triangle.h"
+#include "../Triangle/triangle_api.h"
 }
 
 using namespace TexGen;
@@ -951,8 +952,14 @@ bool CTetgenMesh::Triangulate( vector<vector<XY> > &PolygonPoints, CMesh& Output
 	Switches << "pzAPBq" << setiosflags(ios::fixed) << setprecision(20) << dMinAngle << "a" << dMaxArea;
 	Switches << "YY";
 
-	triangulateio TriangleInput;
-	triangulateio TriangleOutput;
+	triangleio TriangleInput;
+	triangleio TriangleOutput;
+
+	context *ctx;
+	ctx = triangle_context_create();
+
+	triangle_context_options(ctx, (char*)Switches.str().c_str());
+
 	memset(&TriangleInput, 0, sizeof(TriangleInput));
 	memset(&TriangleOutput, 0, sizeof(TriangleOutput));
 
@@ -1010,8 +1017,7 @@ bool CTetgenMesh::Triangulate( vector<vector<XY> > &PolygonPoints, CMesh& Output
 		TriangleInput.regionlist[i*4+3] = 0;	// this is unused
 	}*/
 
-//	triangulate(szSwitches, &TriangleInput, &TriangleOutput, NULL);
-	triangulate((char*)Switches.str().c_str(), &TriangleInput, &TriangleOutput, NULL);
+	triangle_mesh_create(ctx, &TriangleInput);
 
 
 	delete [] TriangleInput.pointlist;
@@ -1019,6 +1025,8 @@ bool CTetgenMesh::Triangulate( vector<vector<XY> > &PolygonPoints, CMesh& Output
 //	delete [] TriangleInput.regionlist;
 
 //	m_ProjectedMesh.Clear();
+	triangle_mesh_copy(ctx, &TriangleOutput, 1, 1);
+
 	vector<XY> Points2D;
 	for (int i=0; i<TriangleOutput.numberofpoints; ++i)
 	{
@@ -1046,10 +1054,12 @@ bool CTetgenMesh::Triangulate( vector<vector<XY> > &PolygonPoints, CMesh& Output
 		//m_TriangleRegions.push_back((int)TriangleOutput.triangleattributelist[i]);
 	}
 
-	trifree(TriangleOutput.pointlist);
-	trifree(TriangleOutput.trianglelist);
+	triangle_free(TriangleOutput.pointlist);
+	triangle_free(TriangleOutput.trianglelist);
 	//trifree(TriangleOutput.triangleattributelist);
 //	trifree(TriangleOutput.neighborlist);
+
+	triangle_context_destroy(ctx);
 	return true;
 }
 

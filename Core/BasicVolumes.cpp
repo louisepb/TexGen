@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 extern "C"
 {
 #include "../Triangle/triangle.h"
+#include "../Triangle/triangle_api.h"
 }
 
 using namespace TexGen;
@@ -884,8 +885,16 @@ bool CBasicVolumes::MeshProjectedAreas()
 	if (m_bCreatePeriodic)
 		Switches << "Y";
 
-	triangulateio TriangleInput;
-	triangulateio TriangleOutput;
+	//triangulateio TriangleInput;
+	//triangulateio TriangleOutput;
+
+	triangleio TriangleInput, TriangleOutput;
+
+	context *ctx;
+	ctx = triangle_context_create();
+
+	triangle_context_options(ctx, (char*)Switches.str().c_str());
+
 	memset(&TriangleInput, 0, sizeof(TriangleInput));
 	memset(&TriangleOutput, 0, sizeof(TriangleOutput));
 
@@ -925,7 +934,8 @@ bool CBasicVolumes::MeshProjectedAreas()
 	}
 
 //	triangulate(szSwitches, &TriangleInput, &TriangleOutput, NULL);
-	triangulate((char*)Switches.str().c_str(), &TriangleInput, &TriangleOutput, NULL);
+	//triangulate((char*)Switches.str().c_str(), &TriangleInput, &TriangleOutput, NULL);
+	triangle_mesh_create(ctx, &TriangleInput);
 
 
 	delete [] TriangleInput.pointlist;
@@ -933,6 +943,9 @@ bool CBasicVolumes::MeshProjectedAreas()
 	delete [] TriangleInput.regionlist;
 
 	m_ProjectedMesh.Clear();
+
+	//triangleio_reset( &TriangleOutput)
+	triangle_mesh_copy(ctx, &TriangleOutput, 1, 1);
 
 	XYZ Point;
 	for (i=0; i<TriangleOutput.numberofpoints; ++i)
@@ -967,10 +980,12 @@ bool CBasicVolumes::MeshProjectedAreas()
 		m_TriangleNeighbors.push_back(TriangleOutput.neighborlist[i]);
 	}*/
 
-	trifree(TriangleOutput.pointlist);
-	trifree(TriangleOutput.trianglelist);
-	trifree(TriangleOutput.triangleattributelist);
+	triangle_free(TriangleOutput.pointlist);
+	triangle_free(TriangleOutput.trianglelist);
+	triangle_free(TriangleOutput.triangleattributelist);
 //	trifree(TriangleOutput.neighborlist);
+
+	triangle_context_destroy(ctx);
 	return true;
 }
 

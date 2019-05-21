@@ -53,7 +53,7 @@ void CSectionMeshTriangulate::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT
 
 bool CSectionMeshTriangulate::CreateMesh(const vector<XY> &Section) const
 {
-	char szSwitches[128];
+	/*char szSwitches[128];
 
 	double dSectionArea = CSection::GetArea(Section);
 
@@ -113,7 +113,8 @@ bool CSectionMeshTriangulate::CreateMesh(const vector<XY> &Section) const
 
 	trifree(TriangleOutput.pointlist);
 	trifree(TriangleOutput.trianglelist);
-	return true;
+	return true;*/
+	return false;
 }
 
 CMesh CSectionMeshTriangulate::GetSimpleMesh(const vector<XY> &Section)

@@ -39,9 +39,9 @@ ENDIF(WIN32)
 ADD_DEFINITIONS(-DEXPORT)
 
 IF(WIN32)
-TARGET_LINK_LIBRARIES(TexGenCore Triangle Octree TinyXML CSparse tetgenlib)
+TARGET_LINK_LIBRARIES(TexGenCore triangle triangle-api Octree TinyXML CSparse tetgenlib)
 ELSE(WIN32)
-TARGET_LINK_LIBRARIES(TexGenCore Triangle Octree TinyXML CSparse tetgenlib)
+TARGET_LINK_LIBRARIES(TexGenCore triangle triangle-api Octree TinyXML CSparse tetgenlib)
 ENDIF(WIN32)
 
 INCLUDE(../Python/FindPythonSitePackages.cmake)
