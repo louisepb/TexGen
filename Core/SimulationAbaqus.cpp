@@ -627,8 +627,16 @@ void CSimulationAbaqus::CreateContacts(ostream &Output, const CTextile &Textile)
 		int i;
 		for (i=0; i<Textile.GetNumYarns(); ++i)
 		{
-			CreateContact(Output, "Yarn" + stringify(i) + "Upper", "TopPlate", "Plate");
-			CreateContact(Output, "Yarn" + stringify(i) + "Lower", "BottomPlate", "Plate");
+			if ( m_bWholeSurfaces )
+			{
+				CreateContact(Output, "YarnSurf" + stringify(i), "TopPlate", "Plate");
+				CreateContact(Output, "YarnSurf" + stringify(i), "BottomPlate", "Plate");			  
+			}
+			else
+			{
+				CreateContact(Output, "Yarn" + stringify(i) + "Upper", "TopPlate", "Plate");
+				CreateContact(Output, "Yarn" + stringify(i) + "Lower", "BottomPlate", "Plate");
+			}
 		}
 	}
 }
