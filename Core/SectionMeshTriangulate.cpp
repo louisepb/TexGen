@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 extern "C"
 {
 #include "../Triangle/triangle.h"
+#include "../Triangle/triangle_api.h"
 }
 
 using namespace TexGen;
@@ -53,23 +54,31 @@ void CSectionMeshTriangulate::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT
 
 bool CSectionMeshTriangulate::CreateMesh(const vector<XY> &Section) const
 {
-	/*char szSwitches[128];
+	// Needs testing if start to use - changed to new triangle functions
+	stringstream Switches;
 
 	double dSectionArea = CSection::GetArea(Section);
 
 	double dMaxArea = dSectionArea*m_dMaxArea;
 
-#ifdef _DEBUG
-	sprintf(szSwitches, "pzPBq%fa%f", m_dMinAngle, dMaxArea);
-#else // _DEBUG
-	sprintf(szSwitches, "pzQPBq%fa%f", m_dMinAngle, dMaxArea);
-#endif // _DEBUG
+	#ifndef _DEBUG
+	Switches << "Q";
+#endif
+	// Triangle has trouble parsing values given in scientific format so use fixed format with a
+	// rediculously high precision to get around the problem
+	Switches << "pzAPBq" << setiosflags(ios::fixed) << setprecision(20) << m_dMinAngle << "a" << dMaxArea;
 
-	triangulateio TriangleInput;
-	triangulateio TriangleOutput;
+	triangleio TriangleInput, TriangleOutput;
+
+	context *ctx;
+	ctx = triangle_context_create();
+
+	triangle_context_options(ctx, (char*)Switches.str().c_str());
+
 	memset(&TriangleInput, 0, sizeof(TriangleInput));
 	memset(&TriangleOutput, 0, sizeof(TriangleOutput));
 
+	// Input nodes
 	TriangleInput.pointlist = new REAL [Section.size()*2];
 	TriangleInput.numberofpoints = (int)Section.size();
 
@@ -80,6 +89,7 @@ bool CSectionMeshTriangulate::CreateMesh(const vector<XY> &Section) const
 		TriangleInput.pointlist[i*2+1] = Section[i].y;
 	}
 
+	// Input segments
 	TriangleInput.segmentlist = new int [Section.size()*2];
 	TriangleInput.numberofsegments = (int)Section.size();
 
@@ -89,12 +99,14 @@ bool CSectionMeshTriangulate::CreateMesh(const vector<XY> &Section) const
 		TriangleInput.segmentlist[i*2+1] = (i+1)%Section.size();
 	}
 
-	triangulate(szSwitches, &TriangleInput, &TriangleOutput, NULL);
+	triangle_mesh_create(ctx, &TriangleInput);
 
 	delete [] TriangleInput.pointlist;
 	delete [] TriangleInput.segmentlist;
 
 	m_Mesh.Clear();
+
+	triangle_mesh_copy(ctx, &TriangleOutput, 1, 1);
 
 	XYZ Point;
 	for (i=0; i<TriangleOutput.numberofpoints; ++i)
@@ -111,10 +123,11 @@ bool CSectionMeshTriangulate::CreateMesh(const vector<XY> &Section) const
 		m_Mesh.GetIndices(CMesh::TRI).push_back(TriangleOutput.trianglelist[i*3+2]);
 	}
 
-	trifree(TriangleOutput.pointlist);
-	trifree(TriangleOutput.trianglelist);
-	return true;*/
-	return false;
+	triangle_free(TriangleOutput.pointlist);
+	triangle_free(TriangleOutput.trianglelist);
+	triangle_context_destroy(ctx);
+
+	return true;
 }
 
 CMesh CSectionMeshTriangulate::GetSimpleMesh(const vector<XY> &Section)

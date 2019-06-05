@@ -851,7 +851,6 @@ void CBasicVolumes::CalculateYarnIndices()
 
 bool CBasicVolumes::MeshProjectedAreas()
 {
-//	char szSwitches[128];
 	stringstream Switches;
 
 	double dMaxArea = 0.5*m_dSeed*m_dSeed;
@@ -870,11 +869,6 @@ bool CBasicVolumes::MeshProjectedAreas()
 	// -a Imposes a maximum triangle area constraint. A fixed area constraint (that applies to every triangle) may be specified after the `a', or varying area constraints may be read from a .poly file or .area file.
 	// -Y Prohibits the insertion of Steiner points on the mesh boundary
 
-/*#ifdef _DEBUG
-	sprintf(szSwitches, "pzAPBq%fa%f", dMinAngle, dMaxArea);
-#else // _DEBUG
-	sprintf(szSwitches, "pzAQPBq%fa%f", dMinAngle, dMaxArea);
-#endif // _DEBUG*/
 #ifndef _DEBUG
 	Switches << "Q";
 #endif
@@ -884,9 +878,6 @@ bool CBasicVolumes::MeshProjectedAreas()
 
 	if (m_bCreatePeriodic)
 		Switches << "Y";
-
-	//triangulateio TriangleInput;
-	//triangulateio TriangleOutput;
 
 	triangleio TriangleInput, TriangleOutput;
 
@@ -933,8 +924,6 @@ bool CBasicVolumes::MeshProjectedAreas()
 		TriangleInput.regionlist[i*4+3] = 0;	// this is unused
 	}
 
-//	triangulate(szSwitches, &TriangleInput, &TriangleOutput, NULL);
-	//triangulate((char*)Switches.str().c_str(), &TriangleInput, &TriangleOutput, NULL);
 	triangle_mesh_create(ctx, &TriangleInput);
 
 
@@ -944,7 +933,6 @@ bool CBasicVolumes::MeshProjectedAreas()
 
 	m_ProjectedMesh.Clear();
 
-	//triangleio_reset( &TriangleOutput)
 	triangle_mesh_copy(ctx, &TriangleOutput, 1, 1);
 
 	XYZ Point;
@@ -975,15 +963,9 @@ bool CBasicVolumes::MeshProjectedAreas()
 		m_TriangleRegions.push_back((int)TriangleOutput.triangleattributelist[i]);
 	}
 
-/*	for (i=0; i<TriangleOutput.numberoftriangles*3; ++i)
-	{
-		m_TriangleNeighbors.push_back(TriangleOutput.neighborlist[i]);
-	}*/
-
 	triangle_free(TriangleOutput.pointlist);
 	triangle_free(TriangleOutput.trianglelist);
 	triangle_free(TriangleOutput.triangleattributelist);
-//	trifree(TriangleOutput.neighborlist);
 
 	triangle_context_destroy(ctx);
 	return true;
