@@ -20,6 +20,8 @@ Core
 ** Added yarn number to volume fraction error messages
 ** Added write orientation and elements header functions to misc.cpp
 ** Included headers in all Abaqus .eld and .ori files
+** Changed triangle library to https://github.com/wo80/Triangle to address memory issues in Win10 build
+** Added whole surface output to dry fibre export with compression plates
 
 GUI
 ===
