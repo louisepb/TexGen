@@ -1,14 +1,18 @@
 ; Set the current version, this should change at each release
 !define VERSION "3.11.0"
+!define PYTHONDLL python27.dll
+!define PYTHONVER "2.7"
 !include "LogicLib.nsh"
 !include "MUI.nsh"
 !include "x64.nsh"
 
+Var PythonDir
+
 ; The name of the installer
-Name "TexGen-64bit ${VERSION}"
+Name "TexGen ${VERSION}"
 
 ; The file to write
-OutFile "texgen-bundle-64bit-Python27-${VERSION}.exe"
+OutFile "texgen-Python27-${VERSION}.exe"
 
 ; TexGen version
 VIProductVersion "${VERSION}"
@@ -23,50 +27,93 @@ InstallDir $PROGRAMFILES64\TexGen
 ; overwrite the old one automatically)
 InstallDirRegKey HKLM "Software\TexGen" "Install_Dir"
 
+; Check that the python dll is present in the system path
+Function CheckPython
+  ClearErrors
+  ReadRegStr $PythonDir HKLM SOFTWARE\Python\PythonCore\${PYTHONVER}\InstallPath ""
+  ${If} ${Errors}
+    ClearErrors
+    ReadRegStr $PythonDir HKCU SOFTWARE\Python\PythonCore\${PYTHONVER}\InstallPath ""
+  ${EndIf}
+
+  ${If} ${Errors}
+    MessageBox MB_YESNO|MB_ICONEXCLAMATION "Python ${PYTHONVER} doesn't seem to be installed, it is required for TexGen to run! \
+                     $\nPlease download it from http://www.python.org/ \
+                     $\n$\nContinue with installation anyway?" IDYES yes IDNO no
+    no:
+      Quit
+    yes:
+  ${EndIf}
+FunctionEnd
+
+LangString TEXT_PYTHON_TITLE ${LANG_ENGLISH} "Python Extension Installation"
+LangString TEXT_PYTHON_SUBTITLE ${LANG_ENGLISH} "Please locate the directory where Python is installed."
+
+Function PythonPage
+  Call CheckPython
+  !insertmacro MUI_HEADER_TEXT "$(TEXT_PYTHON_TITLE)" "$(TEXT_PYTHON_SUBTITLE)"
+  !insertmacro MUI_INSTALLOPTIONS_WRITE "PythonPage.ini" "Field 2" "State" "$PythonDir"
+  !insertmacro MUI_INSTALLOPTIONS_DISPLAY "PythonPage.ini"
+FunctionEnd
+
+; Check on startup
+Function .onInit
+  !insertmacro MUI_INSTALLOPTIONS_EXTRACT "PythonPage.ini"
+FunctionEnd
+
+;--------------------------------
 
 ; Pages
 
 !insertmacro MUI_PAGE_LICENSE "..\gpl.txt"
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
+Page custom PythonPage ;Python custom page
 !insertmacro MUI_PAGE_INSTFILES
 
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
+;Page license
+;Page components
+;Page custom PythonPage
+;Page directory
+;Page instfiles
+
+;UninstPage uninstConfirm
+;UninstPage instfiles
 
 !insertmacro MUI_LANGUAGE "English"
 ;--------------------------------
 
 ; The stuff to install
 Section "TexGen (required)" ;No components page, name is not important
-
+    
   ; Check if 64bit OS
   ${If} ${RunningX64}
 	 DetailPrint "Running on x64"
   ${Else}
 	 Abort "Not x64 system - please install 32 bit version"
-  ${EndIf}
-
+  ${EndIf}	
+	
   SectionIn RO
-  
+
   SetOutPath $INSTDIR
 
   File TexGenGUI.exe
   File TexGenCore.dll
-  File Python27_64bit\python27.dll
-  File ..\GUI\TexGen.xrc	
+  File ..\GUI\TexGen.xrc
   File msvcp140.dll
   File vcruntime140.dll
   ;File ..\Docs\TexGen.chm
-  File TexGenGUI.exe.manifest
+  File TexGenGUi.exe.manifest
+  File Python27_64bit\Python27.dll  ; Copy dll anyway in case subversion TexGen is compiled with doesn't match version already installed
 
-  SetOutPath $INSTDIR\Python\libstd
+!insertmacro MUI_INSTALLOPTIONS_READ $PythonDir "PythonPage.ini" "Field 2" "State"
+  ;Call CopyPythonDLLIfNeeded
 
-  ; This should contain all the standard python libraries (from the python package)
-  File /r Python27Lib\*.*
-
+  ;SetOutPath $PythonDir\Lib\site-packages\TexGen
   SetOutPath $INSTDIR\Python\libxtra\TexGen
-
+  
   File ..\Python\__init__.py
   File ..\Python\Lib\Abaqus.py
   File ..\Python\Lib\Ansys.py
@@ -108,7 +155,6 @@ Section "TexGen (required)" ;No components page, name is not important
  ; File msvcp71.dll
  ; File msvcr71.dll
 
-
   SetOutPath $INSTDIR\Scripts
 
   File ..\Python\Scripts\2dweave.py
@@ -118,7 +164,6 @@ Section "TexGen (required)" ;No components page, name is not important
   File ..\Python\Scripts\polyester.py
   File ..\Python\Scripts\LayeredTextile.py
   File ..\Python\Scripts\LayeredTextile2.py
-  
 
   SetOutPath $INSTDIR\Data
 
@@ -134,6 +179,7 @@ Section "TexGen (required)" ;No components page, name is not important
 
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\TexGen "Install_Dir" "$INSTDIR"
+  WriteRegStr HKLM SOFTWARE\TexGen "Python_Dir" "$PythonDir"
 
   ; Write the uninstall keys for Windows
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\TexGen" "DisplayName" "TexGen"
@@ -161,7 +207,8 @@ SectionEnd
 
 Section "Uninstall"
   
-  ; Find out where the TexGen extensions were installed
+  ; Find out where the TexGen extensions where installed
+  ReadRegStr $PythonDir HKLM SOFTWARE\TexGen "Python_Dir"
   ReadRegStr $INSTDIR HKLM SOFTWARE\TexGen "Install_Dir"
 
   ; Remove registry keys
@@ -169,30 +216,27 @@ Section "Uninstall"
   DeleteRegKey HKLM "SOFTWARE\TexGen"
 
   ; Remove files and uninstaller
-  ;Delete $INSTDIR\Python\libstd\*.*
-  RMDir /r $INSTDIR\Python\libstd
-
-
-  Delete $INSTDIR\Python\libxtra\TexGen\Abaqus.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\Ansys.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\Completer.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\FlowTex.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\GridFile.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\TexGenv2.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\WiseTex.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\Core.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\Renderer.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\Export.pyc
+  Delete $INSTDIR\Python\libxtra\TexGen\__init__.py
+  Delete $INSTDIR\Python\libxtra\TexGen\Abaqus.py
+  Delete $INSTDIR\Python\libxtra\TexGen\Ansys.py
+  Delete $INSTDIR\Python\libxtra\TexGen\Completer.py
+  Delete $INSTDIR\Python\libxtra\TexGen\FlowTex.py
+  Delete $INSTDIR\Python\libxtra\TexGen\GridFile.py
+  Delete $INSTDIR\Python\libxtra\TexGen\TexGenv2.py
+  Delete $INSTDIR\Python\libxtra\TexGen\WiseTex.py
+  Delete $INSTDIR\Python\libxtra\TexGen\Core.py
+  Delete $INSTDIR\Python\libxtra\TexGen\Renderer.py
+  Delete $INSTDIR\Python\libxtra\TexGen\Export.py
   Delete $INSTDIR\Python\libxtra\TexGen\dataHandling.py
   Delete $INSTDIR\Python\libxtra\TexGen\dataHandlingInPlane.py
   Delete $INSTDIR\Python\libxtra\TexGen\effectiveMatPropRVE.py
   Delete $INSTDIR\Python\libxtra\TexGen\WeavePattern.py
-        
+
   Delete $INSTDIR\Python\libxtra\TexGen\_Core.pyd
   Delete $INSTDIR\Python\libxtra\TexGen\_Renderer.pyd
   Delete $INSTDIR\Python\libxtra\TexGen\_Export.pyd
   Delete $INSTDIR\Python\libxtra\TexGen\TexGenCore.dll
-        
+
   Delete $INSTDIR\Python\libxtra\TexGen\TKBO.DLL
   Delete $INSTDIR\Python\libxtra\TexGen\TKBOOL.DLL
   Delete $INSTDIR\Python\libxtra\TexGen\TKBREP.DLL
@@ -211,9 +255,9 @@ Section "Uninstall"
   Delete $INSTDIR\Python\libxtra\TexGen\TKSTEPATTR.DLL
   Delete $INSTDIR\Python\libxtra\TexGen\TKSTEPBASE.DLL
   Delete $INSTDIR\Python\libxtra\TexGen\TKTOPALGO.DLL
-  Delete $INSTDIR\Python\libxtra\TexGen\TKXSBASE.DLL 
-  ;Delete $INSTDIR\Python\libxtra\TexGen\msvcp71.dll
-  ;Delete $INSTDIR\Python\libxtra\TexGen\msvcr71.dll
+  Delete $INSTDIR\Python\libxtra\TexGen\TKXSBASE.DLL
+  ;Delete $PythonDir\Lib\site-packages\TexGen\msvcp71.dll
+  ;Delete $PythonDir\Lib\site-packages\TexGen\msvcr71.dll
 
   Delete $INSTDIR\TexGenGUI.exe
   Delete $INSTDIR\TexGenCore.dll
@@ -241,6 +285,7 @@ Section "Uninstall"
   Delete $INSTDIR\Utilities\chamis_model_final.for
 
   Delete $INSTDIR\uninstall.exe
+  Delete $INSTDIR\${PYTHONDLL}
 
   ; Remove shortcuts, if any
   SetShellVarContext all  ; Doesn't delete shortcuts in Windows 7 without this
@@ -248,8 +293,8 @@ Section "Uninstall"
 
   ; Remove directories used
   RMDir "$SMPROGRAMS\TexGen"
+  ;RMDir "$PythonDir\Lib\site-packages\TexGen"
   RMDir "$INSTDIR\Python\libxtra\TexGen"
-  RMDir "$INSTDIR\Python\libstd"
   RMDir "$INSTDIR\Python\libxtra"
   RMDir "$INSTDIR\Python"
   RMDir "$INSTDIR\Scripts"
