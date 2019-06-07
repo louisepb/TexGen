@@ -40,7 +40,9 @@ namespace TexGen
 		/// Outputs nodes to .inp file and gets element information
 		void OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus = true );
 
+		/// x, y, z lengths of rotated voxels
 		XYZ				m_RotatedVoxSize[3];
+		/// Reference point for generating voxel grid (Point 0 of domain mesh)
 		XYZ				m_StartPoint;
 
 	};
