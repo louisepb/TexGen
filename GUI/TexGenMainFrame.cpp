@@ -69,7 +69,7 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 	EVT_AUINOTEBOOK_PAGE_CLOSE(ID_ViewerNoteBook, CTexGenMainFrame::OnViewerNotebookClose)
 
 	EVT_CHECKBOX_MENU_RANGE(ID_RenderNodes, ID_TrimtoDomain, CTexGenMainFrame::OnRendering)
-	EVT_BUTTON_MENU_RANGE(ID_ChangeBackgroundColor, ID_ChangeSurfaceColor, CTexGenMainFrame::OnRendering)
+	EVT_BUTTON_MENU_RANGE(ID_ChangeBackgroundColor, ID_RefreshView, CTexGenMainFrame::OnRendering)
 	EVT_BUTTON_MENU_RANGE(ID_CreateEmptyTextile, ID_RotateTextile, CTexGenMainFrame::OnTextiles)
 	EVT_BUTTON_MENU_RANGE(ID_CreateYarn, ID_YarnFibreVolumeFraction, CTexGenMainFrame::OnModeller)
 	EVT_RADIOBUTTON_MENU_RANGE(ID_SelectTool, ID_ScaleTool, CTexGenMainFrame::OnModeller)
@@ -1993,6 +1993,12 @@ void CTexGenMainFrame::OnRendering(wxCommandEvent& event)
 			string Color = GetUserSelectedColor();
 			if (!Color.empty())
 				Command = "GetRenderWindow('" + TextileName + "').SetPropsColor(CTexGenRenderer.PROP_SURFACE, " + Color + ")";
+		}
+		break;
+	case ID_RefreshView:
+		{
+			RefreshTextile( TextileName );
+			Command = "GetRenderWindow('" + TextileName + "').RefreshView()\n";
 		}
 		break;
 	}
