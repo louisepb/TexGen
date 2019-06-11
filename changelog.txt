@@ -1,5 +1,11 @@
 Version History
 ---------------
+v3.11.1
+=======
+GUI
+===
+** Added Refresh View option to Render menu
+
 v3.11.0
 =======
 General
