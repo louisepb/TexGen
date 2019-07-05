@@ -441,7 +441,7 @@ namespace TexGen
 				after this which affect the model definition are ignored.
 		\param bCreateMaterial Create a material definition? Set this to false if you plan to create your own
 				material definition.
-		\param iElementType C3D8R if 0, C3D8R if 1
+		\param iElementType C3D8R if 0, C3D8 if 1
 		*/
 		bool SaveToABAQUS(string Filename, const vector<POINT_INFO> *pElementInfo = NULL, bool bCreateStep = true, bool bCreateMaterial = true, int iElementType = 0);
 

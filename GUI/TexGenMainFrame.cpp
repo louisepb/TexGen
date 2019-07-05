@@ -751,7 +751,8 @@ void CTexGenMainFrame::OnSaveSurfaceMesh(wxCommandEvent& event)
 				wxT("VTK unstructured grid file (*.vtu)|*.vtu|")
 				wxT("ASCII STL file (*.stl)|*.stl|")
 				wxT("Binary STL file (*.stl;*stlb)|*.stl;*stlb|")
-				wxT("SCIRun file (*.pts)|*.pts|"),
+				wxT("SCIRun file (*.pts)|*.pts|")
+				wxT("ABAQUS input file (*.inp)|*.inp|"),
 				wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
 			);
 			dialog.CentreOnParent();
@@ -780,6 +781,8 @@ void CTexGenMainFrame::OnSaveSurfaceMesh(wxCommandEvent& event)
 				case 3:
 					Command << "mesh.SaveToSCIRun(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
 					break;
+				case 4:
+					Command << "mesh.SaveToABAQUS(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
 				}
 				SendPythonCode(Command.str());
 			}
