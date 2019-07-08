@@ -782,7 +782,8 @@ void CTexGenMainFrame::OnSaveSurfaceMesh(wxCommandEvent& event)
 					Command << "mesh.SaveToSCIRun(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
 					break;
 				case 4:
-					Command << "mesh.SaveToABAQUS(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
+					Command << "SurfaceMesh = CSurfaceMeshExport( mesh )" << endl;
+					Command << "SurfaceMesh.SaveSurfaceMeshToABAQUS(r'" << ConvertString(dialog.GetPath()) << "', textile)" << endl;
 				}
 				SendPythonCode(Command.str());
 			}
