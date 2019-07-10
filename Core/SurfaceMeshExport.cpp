@@ -23,8 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 using namespace TexGen;
-CSurfaceMeshExport::CSurfaceMeshExport( CMesh SurfaceMesh )
-: m_SurfaceMesh( SurfaceMesh )
+CSurfaceMeshExport::CSurfaceMeshExport( bool bTrimSurface, bool bExportDomain )
+: m_bTrimSurface( bTrimSurface )
+, m_bExportDomain( bExportDomain )
 {
 }
 
@@ -32,12 +33,57 @@ CSurfaceMeshExport::~CSurfaceMeshExport(void)
 {
 }
 
-void CSurfaceMeshExport::SaveSurfaceMeshToABAQUS(string Filename, CTextile& Textile )
+bool CSurfaceMeshExport::SaveSurfaceMeshToABAQUS(string Filename, CTextile& Textile )
 {
 	TGLOG("Replacing spaces in filename with underscore for ABAQUS compatibility");
 	Filename = ReplaceFilenameSpaces( Filename );
-	GetElementInfo( Textile );
+
+	int iNumYarns = Textile.GetNumYarns();
+	if (iNumYarns == 0)
+		return false;
+	const CDomain* pDomain = Textile.GetDomain();
+	if (!pDomain)
+	{
+		TGERROR("Unable to create ABAQUS input file: No domain specified");
+		return false;
+	}
+
+	m_YarnMeshes.clear();
+	int i;
+	m_YarnMeshes.resize(iNumYarns);
+
 	
+	for (i=0; i<iNumYarns; ++i)  // Create surface mesh for each yarn 
+	{
+		CYarn* pYarn = Textile.GetYarn(i);
+		bool bMesh = false;
+		if (m_bTrimSurface)
+			bMesh = pYarn->AddSurfaceToMesh( m_YarnMeshes[i], *pDomain );
+		else
+			bMesh = pYarn->AddSurfaceToMesh( m_YarnMeshes[i]);
+					
+		if ( !bMesh )
+		{
+			TGERROR("Unable to create ABAQUS input file: Failed to create surface mesh for yarn " << i );
+			return false;
+		}
+	}
+
+	GetElementInfo( Textile );
+
+	for(i=0; i<iNumYarns; ++i)  // Add meshes into single mesh
+	{
+		if ( !m_YarnMeshes[i].NodesEmpty() )
+		{
+			m_YarnMeshes[i].RemoveUnreferencedNodes();
+			m_SurfaceMesh.InsertMesh(m_YarnMeshes[i]);
+		}
+	}
+	
+	// then assemble
+
+	BuildIndexOffsets();
+
 	m_SurfaceMesh.SaveToABAQUS(Filename, &m_ElementInfo, false, false ); 
 
 	ofstream Output(Filename.c_str(), ofstream::app );
@@ -64,14 +110,44 @@ void CSurfaceMeshExport::SaveSurfaceMeshToABAQUS(string Filename, CTextile& Text
 		else
 			TGERROR("Unable to generate node sets");
 	}*/
+	return true;
 }
 
 void CSurfaceMeshExport::GetElementInfo( CTextile& Textile )
-{
-	vector<XYZ> CentrePoints;
-	if ( !m_SurfaceMesh.GetIndices(CMesh::QUAD).empty() )
+{	
+	TGLOG("Getting point information");
+	vector<POINT_INFO> YarnElementInfo;
+	for ( int i = 0; i < Textile.GetNumYarns(); ++i )
 	{
-		CentrePoints = m_SurfaceMesh.GetElementCenters(CMesh::QUAD);
-		Textile.GetPointInformation( CentrePoints, m_ElementInfo );
+		if (!m_YarnMeshes[i].GetIndices(CMesh::QUAD).empty() )
+		{
+			YarnElementInfo.clear();
+			Textile.GetPointInformation( m_YarnMeshes[i].GetElementCenters( (CMesh::QUAD) ), YarnElementInfo, i, 0.005, true );		
+			m_ElementInfo.insert( m_ElementInfo.end(), YarnElementInfo.begin(), YarnElementInfo.end() );
+		}
+	}
+}
+
+void CSurfaceMeshExport::BuildIndexOffsets()
+{
+	// Where yarn meshes are combined to create ABAQUS file
+	// need to create offsets for node and element numbering
+	int i, iNumYarns = (int)m_YarnMeshes.size();
+	
+	int iElemIndexOffset = 0;
+	m_ElementIndexOffsets.clear();
+	
+	for (i=0; i<iNumYarns; ++i)
+	{
+		m_ElementIndexOffsets[i] = iElemIndexOffset;
+		iElemIndexOffset += m_YarnMeshes[i].GetNumElements(CMesh::QUAD);
+	}
+	
+	m_NodeIndexOffsets.clear();
+	int iNodeIndexOffset = 0;
+	for (i=0; i<iNumYarns; ++i)
+	{
+		m_NodeIndexOffsets[i] = iNodeIndexOffset;
+		iNodeIndexOffset += m_YarnMeshes[i].GetNumNodes();
 	}
 }

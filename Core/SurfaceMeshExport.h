@@ -31,21 +31,39 @@ namespace TexGen
 	class CLASS_DECLSPEC CSurfaceMeshExport
 	{
 	public:
-		CSurfaceMeshExport( CMesh SurfaceMesh );
+		CSurfaceMeshExport( bool bTrimSurface = true, bool bExportDomain = false );
 		~CSurfaceMeshExport(void);
 		
-		void SaveSurfaceMeshToABAQUS(string Filename, CTextile& Textile );
+		/// Save surface mesh to ABAQUS input file
+		/**
+		\param Filename including path. Any spaces will be stripped in function
+		\param Textile to be exported
+		\return True if export successful, False if not
+		*/
+		bool SaveSurfaceMeshToABAQUS(string Filename, CTextile& Textile );
 
 		const CMesh &GetMesh() { return m_SurfaceMesh; }
 
 	protected:
 		/// Get the element info for centre points of surface mesh elements
 		void GetElementInfo( CTextile& Textile );
+		/// Generate node and element offsets for merging individual yarn nodes and elements into one ABAQUS file
+		void BuildIndexOffsets();
 
 		CMesh m_SurfaceMesh;
+		vector<CMesh> m_YarnMeshes;
 		vector<POINT_INFO> m_ElementInfo;
 
-		// Class for export of material properties
+		typedef int YarnNumber;
+		map<YarnNumber, int> m_ElementIndexOffsets;
+		map<YarnNumber, int> m_NodeIndexOffsets;
+
+		/// True if surfaces to be trimmed to domain
+		bool m_bTrimSurface;
+		/// True if domain surface is to be exported
+		bool m_bExportDomain;
+
+		/// Class for export of material properties
 		CTextileMaterials* m_Materials;
 	};
 

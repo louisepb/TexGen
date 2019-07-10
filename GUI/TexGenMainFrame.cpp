@@ -59,6 +59,7 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 	EVT_MENU(ID_SaveSTEP, CTexGenMainFrame::OnSaveSTEP)
 	EVT_MENU(ID_SaveABAQUS, CTexGenMainFrame::OnSaveABAQUS)
 	EVT_MENU(ID_SaveABAQUSVoxels, CTexGenMainFrame::OnSaveABAQUSVoxels)
+	EVT_MENU(ID_SaveABAQUSSurface, CTexGenMainFrame::OnSaveABAQUSSurface)
 	EVT_MENU(ID_ToggleControls, CTexGenMainFrame::OnWindow)
 	EVT_MENU(ID_ToggleLogWindow, CTexGenMainFrame::OnWindow)
 	EVT_MENU(ID_ToggleOutliner, CTexGenMainFrame::OnWindow)
@@ -155,6 +156,7 @@ CTexGenMainFrame::CTexGenMainFrame(const wxString& title, const wxPoint& pos, co
 			wxMenu *pAbaqusSubMenu = new wxMenu;
 			pAbaqusSubMenu->Append(ID_SaveABAQUS, wxT("&ABAQUS Dry Fibre File..."));
 			pAbaqusSubMenu->Append(ID_SaveABAQUSVoxels, wxT("ABAQUS &Voxel File..."));
+			pAbaqusSubMenu->Append(ID_SaveABAQUSSurface, wxT("ABAQUS &Surface Mesh File..."));
 			pExportSubMenu->Append(wxID_ANY, wxT("&ABAQUS File"), pAbaqusSubMenu);
 		}
 		pMenuFile->Append(wxID_ANY, wxT("&Export"), pExportSubMenu);
@@ -751,8 +753,7 @@ void CTexGenMainFrame::OnSaveSurfaceMesh(wxCommandEvent& event)
 				wxT("VTK unstructured grid file (*.vtu)|*.vtu|")
 				wxT("ASCII STL file (*.stl)|*.stl|")
 				wxT("Binary STL file (*.stl;*stlb)|*.stl;*stlb|")
-				wxT("SCIRun file (*.pts)|*.pts|")
-				wxT("ABAQUS input file (*.inp)|*.inp|"),
+				wxT("SCIRun file (*.pts)|*.pts|"),
 				wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
 			);
 			dialog.CentreOnParent();
@@ -781,9 +782,6 @@ void CTexGenMainFrame::OnSaveSurfaceMesh(wxCommandEvent& event)
 				case 3:
 					Command << "mesh.SaveToSCIRun(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
 					break;
-				case 4:
-					Command << "SurfaceMesh = CSurfaceMeshExport( mesh )" << endl;
-					Command << "SurfaceMesh.SaveSurfaceMeshToABAQUS(r'" << ConvertString(dialog.GetPath()) << "', textile)" << endl;
 				}
 				SendPythonCode(Command.str());
 			}
@@ -1025,6 +1023,44 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 		}
 	}
 }
+
+void CTexGenMainFrame::OnSaveABAQUSSurface(wxCommandEvent& event)
+{
+	string TextileName = GetTextileSelection();
+	stringstream Command;
+
+	bool bExportDomain = false, bTrimSurface = true;
+	wxDialog MeshOptions;
+	if (wxXmlResource::Get()->LoadDialog(&MeshOptions, this, wxT("SurfaceMeshOptions")))
+	{
+		XRCCTRL(MeshOptions, "TrimSurface", wxCheckBox)->SetValidator(wxGenericValidator(&bTrimSurface));
+		XRCCTRL(MeshOptions, "ExportDomain", wxCheckBox)->SetValidator(wxGenericValidator(&bExportDomain));
+
+		if (MeshOptions.ShowModal() == wxID_OK)
+		{
+			wxFileDialog dialog
+			(
+				this,
+				wxT("Save ABAQUS Surface Mesh file"),
+				wxGetCwd(),
+				wxEmptyString,
+				wxT("Abaqus input file (*.inp)|*.inp"),
+				wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
+			);
+			dialog.CentreOnParent();
+			if (dialog.ShowModal() == wxID_OK)
+			{
+				Command << "textile = GetTextile(r'" << TextileName << "')" << endl;
+				Command << "SurfaceMesh = CSurfaceMeshExport( " << bTrimSurface << ", " << bExportDomain << " )" << endl;
+				Command << "SurfaceMesh.SaveSurfaceMeshToABAQUS(r'" << ConvertString(dialog.GetPath()) << "', textile)" << endl;
+
+				SendPythonCode(Command.str());
+			}
+			
+		}
+	}
+}
+					
 
 void CTexGenMainFrame::OnPeriodicBoundaries(wxCommandEvent& event)
 {

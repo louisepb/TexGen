@@ -408,7 +408,7 @@ void CTextile::GetPointInformation(const vector<XYZ> &Points, vector<POINT_INFO>
 	}
 }
 
-void CTextile::GetPointInformation(const vector<XYZ> &Points, vector<POINT_INFO> &PointsInfo, int iYarn, double dTolerance)
+void CTextile::GetPointInformation(const vector<XYZ> &Points, vector<POINT_INFO> &PointsInfo, int iYarn, double dTolerance, bool bSurface)
 {
 	//TGLOGINDENT("Getting information for " << (int)Points.size() << " points");
 	if (Points.empty())
@@ -445,7 +445,7 @@ void CTextile::GetPointInformation(const vector<XYZ> &Points, vector<POINT_INFO>
 	for (itPoint = Points.begin(), itInfo = PointsInfo.begin(); itPoint != Points.end(); ++itPoint, ++itInfo)
 	{
 		if (m_Yarns[iYarn].PointInsideYarn(*itPoint, Translations, &Info.YarnTangent, 
-			&Info.Location, &Info.dVolumeFraction, &Info.dSurfaceDistance, dTolerance, &Info.Orientation, &Info.Up))
+			&Info.Location, &Info.dVolumeFraction, &Info.dSurfaceDistance, dTolerance, &Info.Orientation, &Info.Up, bSurface))
 		{
 			// If the point is inside several yarns, either because the yarns overlap or because
 			// the tolerance is set too high, the point is assigned the yarn which it lies deepest

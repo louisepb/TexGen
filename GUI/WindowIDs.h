@@ -44,6 +44,7 @@ enum
 	ID_ToggleOutliner,
 	ID_SaveABAQUS,
 	ID_SaveABAQUSVoxels,
+	ID_SaveABAQUSSurface,
 	ID_SaveTetgenMesh,
 
 //	ID_CreateRenderWindow,
