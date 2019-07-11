@@ -31,7 +31,7 @@ namespace TexGen
 	class CLASS_DECLSPEC CSurfaceMeshExport
 	{
 	public:
-		CSurfaceMeshExport( bool bTrimSurface = true, bool bExportDomain = false );
+		CSurfaceMeshExport( bool bWholeSurfaces, bool bTrimSurface = true, bool bExportDomain = false );
 		~CSurfaceMeshExport(void);
 		
 		/// Save surface mesh to ABAQUS input file
@@ -50,11 +50,24 @@ namespace TexGen
 		/// Generate node and element offsets for merging individual yarn nodes and elements into one ABAQUS file
 		void BuildIndexOffsets();
 
+		typedef int YarnNumber;
+		void CreateSurfaceDefinitions( int iNumYarns, const vector<XYZ> &Repeats, map<string, vector< pair<int,int> > > &SurfaceDefinitions);
+		void GetYarnSurfaces(int iYarn, const vector<XYZ> &Repeats, vector<pair<int,int> > &UpperFaces, vector<pair<int,int> > &LowerFaces );
+		void GetYarnSurface(int iYarn, vector<pair<int,int> > &Elements );
+		void CreateSurfaces(ostream &Output, map< string, vector<pair<YarnNumber,int> > > &SurfaceDefinitions);
+		int GetGlobalElementIndex(pair<YarnNumber,int> Element);
+
+		void CreateContacts(ostream &Output, const CTextile &Textile);
+		void CreateContacts(ostream &Output, const CTextileWeave &Weave);
+		void CreateContacts(ostream &Output, const CTextile3DWeave &Weave);
+		void OutputContacts( ostream &Output, set<pair<int, int> > &Contacts );
+		void CreateContact(ostream &Output, string Name1, string Name2, string InteractionName);
+		void CreateInteractions( ostream &Output );
+
 		CMesh m_SurfaceMesh;
 		vector<CMesh> m_YarnMeshes;
 		vector<POINT_INFO> m_ElementInfo;
 
-		typedef int YarnNumber;
 		map<YarnNumber, int> m_ElementIndexOffsets;
 		map<YarnNumber, int> m_NodeIndexOffsets;
 
@@ -62,6 +75,7 @@ namespace TexGen
 		bool m_bTrimSurface;
 		/// True if domain surface is to be exported
 		bool m_bExportDomain;
+		bool m_bWholeSurfaces;
 
 		/// Class for export of material properties
 		CTextileMaterials* m_Materials;
