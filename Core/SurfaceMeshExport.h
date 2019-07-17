@@ -64,6 +64,10 @@ namespace TexGen
 		void CreateContact(ostream &Output, string Name1, string Name2, string InteractionName);
 		void CreateInteractions( ostream &Output );
 
+		void CreatePeriodicBoundaries(ostream &Output, const CTextile &Textile);
+		void CreateSet(ostream &Output, string Name, const vector<pair<int, int> > &NodePairs);
+		void CreateNodeSet(ostream &Output, string Name, vector<int> &Indices, bool bUnSorted);
+
 		CMesh m_SurfaceMesh;
 		vector<CMesh> m_YarnMeshes;
 		vector<POINT_INFO> m_ElementInfo;

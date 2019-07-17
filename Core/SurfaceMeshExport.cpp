@@ -101,6 +101,8 @@ bool CSurfaceMeshExport::SaveSurfaceMeshToABAQUS(string Filename, CTextile& Text
 	TGLOG("Creating surfaces");
 	CreateSurfaces(Output, SurfaceDefinitions);
 
+	CreatePeriodicBoundaries(Output, Textile);
+
 	CreateInteractions( Output );
 	CreateContacts(Output, Textile);
 
@@ -370,4 +372,68 @@ void CSurfaceMeshExport::CreateInteractions( ostream &Output )
 	Output << "*Friction" << endl;
 	Output << "0.112," << endl;
 	Output << "*Surface Behavior, pressure-overclosure=HARD" << endl;
+}
+
+void CSurfaceMeshExport::CreatePeriodicBoundaries(ostream &Output, const CTextile &Textile)
+{
+	//PROFILE_FUNC()
+	Output << "************************************" << endl;
+	Output << "*** PERIODIC BOUNDARY CONDITIONS ***" << endl;
+	Output << "************************************" << endl;
+
+	pair<XYZ, XYZ> DomainAABB = Textile.GetDomain()->GetMesh().GetAABB();
+	vector<XYZ> DomainSize;
+	DomainSize.push_back(XYZ(DomainAABB.second.x - DomainAABB.first.x, 0,0));
+	DomainSize.push_back(XYZ(0, DomainAABB.second.y - DomainAABB.first.y, 0));
+	DomainSize.push_back(XYZ(0, 0, DomainAABB.second.z - DomainAABB.first.z));
+	
+	
+	vector<pair<int, int> > NodePairs;
+	int j;
+	
+	for ( j = 0; j < (int)DomainSize.size(); ++j )
+	{
+		NodePairs.clear();
+		m_SurfaceMesh.GetNodePairs(DomainSize[j], NodePairs);
+		if ( NodePairs.size() > 0 )
+		{
+			CreateSet(Output, "Bound" + stringify(j), NodePairs);
+		}	
+	}
+
+}
+
+void CSurfaceMeshExport::CreateSet(ostream &Output, string Name, const vector<pair<int, int> > &NodePairs)
+{
+	vector<pair<int, int> >::const_iterator itPair;
+	vector<int> GroupA;
+	vector<int> GroupB;
+	for (itPair = NodePairs.begin(); itPair != NodePairs.end(); ++itPair)
+	{
+		GroupA.push_back(itPair->first);
+		GroupB.push_back(itPair->second);
+	}
+	CreateNodeSet(Output, Name + "A", GroupA, true);
+	CreateNodeSet(Output, Name + "B", GroupB, true);
+}
+
+void CSurfaceMeshExport::CreateNodeSet(ostream &Output, string Name, vector<int> &Indices, bool bUnSorted)
+{
+	
+	Output << "*NSet, NSet=" << Name;
+		
+	if (bUnSorted)
+	{
+		Output << ", Unsorted";
+	}
+
+	Output << endl;
+
+	// Increase the indices by 1 because abaqus is 1 based
+	vector<int>::iterator itIndex;
+	for (itIndex = Indices.begin(); itIndex != Indices.end(); ++itIndex)
+	{
+		*itIndex += 1;
+	}
+	WriteValues(Output, Indices, 16);
 }
