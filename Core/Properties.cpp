@@ -39,6 +39,7 @@ CProperties::CProperties()
 , m_iFibresPerYarn(0)
 , m_CalculatedArea("m^2")
 {
+	//George - is turning off setdefaultproperties going to be a problem?
 	SetDefaultProperties();
 	//m_PoissonsRatioX = m_PoissonsRatioY = m_PoissonsRatioZ = 0.1;
 }
