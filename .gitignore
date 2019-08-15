@@ -3,6 +3,7 @@ Build/
 LinuxBuild/
 BuildVTK6/
 BuildWidgets3/
+BuildVS2015/
 Installer/OpenCascade64bit/
 Installer/OpenCascade64bit_7/
 Installer/Python_64bit/

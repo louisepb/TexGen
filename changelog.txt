@@ -5,6 +5,7 @@ v3.11.1
 GUI
 ===
 ** Added Refresh View option to Render menu
+** Added bool casting for SWIG 4 compatibility
 
 v3.11.0
 =======

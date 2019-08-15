@@ -854,7 +854,7 @@ void CModeller::AssignInterpolationToSelectedObjects()
 				StringStream << "interpolation = CInterpolationLinear(";
 				break;
 			}
-			StringStream << bPeriodic << ")" << endl;
+			StringStream << "bool(" << bPeriodic << "))" << endl;
 
 			StringStream << "textile = GetTextile('" << m_TextileName << "')" << endl;
 			for (itYarn=SelectedYarns.begin(); itYarn!=SelectedYarns.end(); ++itYarn)
