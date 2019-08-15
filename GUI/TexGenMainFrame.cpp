@@ -819,10 +819,10 @@ void CTexGenMainFrame::OnSaveIGES(wxCommandEvent& event)
 			{
 				string Command;
 				Command = "Exporter = CExporter()\n";
-				Command += "Exporter.SetFaceted(" + stringify(iYarnSurface == 1) + ")\n";
-				Command += "Exporter.SetExportDomain(" + stringify(bExportDomain) + ")\n";
-				Command += "Exporter.SetSubtractYarns(" + stringify(bSubtractYarns) + ")\n";
-				Command += "Exporter.SetJoinYarns(" + stringify(bJoinYarns) + ")\n";
+				Command += "Exporter.SetFaceted(bool(" + stringify(iYarnSurface == 1) + "))\n";
+				Command += "Exporter.SetExportDomain(bool(" + stringify(bExportDomain) + "))\n";
+				Command += "Exporter.SetSubtractYarns(bool(" + stringify(bSubtractYarns) + "))\n";
+				Command += "Exporter.SetJoinYarns(bool(" + stringify(bJoinYarns) + "))\n";
 				Command += "Exporter.OutputTextileToIGES(r\"";
 				Command += ConvertString(dialog.GetPath());
 				Command += "\", \"";
@@ -865,10 +865,10 @@ void CTexGenMainFrame::OnSaveSTEP(wxCommandEvent& event)
 			{
 				string Command;
 				Command = "Exporter = CExporter()\n";
-				Command += "Exporter.SetFaceted(" + stringify(iYarnSurface == 1) + ")\n";
-				Command += "Exporter.SetExportDomain(" + stringify(bExportDomain) + ")\n";
-				Command += "Exporter.SetSubtractYarns(" + stringify(bSubtractYarns) + ")\n";
-				Command += "Exporter.SetJoinYarns(" + stringify(bJoinYarns) + ")\n";
+				Command += "Exporter.SetFaceted( bool(" + stringify(iYarnSurface == 1) + "))\n";
+				Command += "Exporter.SetExportDomain( bool(" + stringify(bExportDomain) + "))\n";
+				Command += "Exporter.SetSubtractYarns( bool(" + stringify(bSubtractYarns) + "))\n";
+				Command += "Exporter.SetJoinYarns(bool(" + stringify(bJoinYarns) + "))\n";
 				Command += "Exporter.OutputTextileToSTEP(r\"";
 				Command += ConvertString(dialog.GetPath());
 				Command += "\", \"";
