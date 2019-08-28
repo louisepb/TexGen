@@ -25,6 +25,7 @@ namespace TexGen
 	using namespace std;
 
 	/// Class used to calculate a pattern draft from a weave pattern
+	/// Also used to set up 3D model from a weave pattern
 	class CLASS_DECLSPEC CPatternDraft 
 	{
 	public:
