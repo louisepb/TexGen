@@ -46,7 +46,7 @@ ELSE(WIN32)
 TARGET_LINK_LIBRARIES(TexGenCore Triangle Octree TinyXML CSparse tetgenlib)
 ENDIF(WIN32)
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../OctreeRefinement/Include)
+TARGET_INCLUDE_DIRECTORIES(TexGenCore PUBLIC ../OctreeRefinement/Include)
 
 INCLUDE(../Python/FindPythonSitePackages.cmake)
 IF(WIN32)
