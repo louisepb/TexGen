@@ -2188,12 +2188,7 @@ bool CMesh::SaveToABAQUS(string Filename, const vector<POINT_INFO> *pElementInfo
 		TGLOG("Saving element orientations data to " << OrientationsFilename);
 		TGLOG("Saving additional element data to " << ElementDataFilename);
 
-		Output << "********************" << endl;
-		Output << "*** ORIENTATIONS ***" << endl;
-		Output << "********************" << endl;
-		Output << "** Orientation vectors" << endl;
-		Output << "** 1st vector represents the fibre direction" << endl;
-		Output << "** 2nd vector is an arbitrary vector perpendicular to the first" << endl;
+		WriteOrientationsHeader( Output );
 		Output << "*Distribution Table, Name=TexGenOrientationVectors" << endl;
 		Output << "COORD3D,COORD3D" << endl;
 		Output << "*Distribution, Location=Element, Table=TexGenOrientationVectors, Name=TexGenOrientationVectors, Input=" << StripPath(OrientationsFilename) << endl;
@@ -2202,10 +2197,13 @@ bool CMesh::SaveToABAQUS(string Filename, const vector<POINT_INFO> *pElementInfo
 		Output << "1, 0" << endl;
 
 		// Default orientation
+		WriteOrientationsHeader( OriOutput );
 		OriOutput <<  ", 1.0, 0.0, 0.0,   0.0, 1.0, 0.0" << endl;
 
 		int i;
 		
+		WriteElementsHeader( DataOutput );
+
 		map<int, vector<int> > ElementSets;
 		vector<POINT_INFO>::const_iterator itData;
 		for (itData = pElementInfo->begin(), i=1; itData != pElementInfo->end(); ++itData, ++i)

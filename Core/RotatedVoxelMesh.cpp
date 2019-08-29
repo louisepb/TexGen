@@ -30,12 +30,12 @@ using namespace TexGen;
 CRotatedVoxelMesh::CRotatedVoxelMesh(string Type)
 :CVoxelMesh(Type)
 {
-	//m_PeriodicBoundaries = new CShearedPeriodicBoundaries;
+	
 }
 
 CRotatedVoxelMesh::~CRotatedVoxelMesh(void)
 {
-	//delete m_PeriodicBoundaries;
+	
 }
 
 bool CRotatedVoxelMesh::CalculateVoxelSizes( CTextile &Textile )

@@ -468,12 +468,7 @@ void CVoxelMesh::OutputOrientationsAndElementSets( string Filename, ostream &Out
 	TGLOG("Saving element orientations data to " << OrientationsFilename);
 	TGLOG("Saving additional element data to " << ElementDataFilename);
 
-	Output << "********************" << endl;
-	Output << "*** ORIENTATIONS ***" << endl;
-	Output << "********************" << endl;
-	Output << "** Orientation vectors" << endl;
-	Output << "** 1st vector represents the fibre direction" << endl;
-	Output << "** 2nd vector is an arbitrary vector perpendicular to the first" << endl;
+	WriteOrientationsHeader( Output );
 	Output << "*Distribution Table, Name=TexGenOrientationVectors" << endl;
 	Output << "COORD3D,COORD3D" << endl;
 	Output << "*Distribution, Location=Element, Table=TexGenOrientationVectors, Name=TexGenOrientationVectors, Input=" << StripPath(OrientationsFilename) << endl;
@@ -482,16 +477,10 @@ void CVoxelMesh::OutputOrientationsAndElementSets( string Filename, ostream &Out
 	Output << "1, 0" << endl;
 
 	// Default orientation
+	WriteOrientationsHeader( OriOutput );
 	OriOutput <<  ", 1.0, 0.0, 0.0,   0.0, 1.0, 0.0" << endl;
 
-	DataOutput << "********************" << endl;
-	DataOutput << "*** ELEMENT DATA ***" << endl;
-	DataOutput << "********************" << endl;
-	DataOutput << "** Element data stored as a depvars " << endl;
-	DataOutput << "** 1 - Yarn Index (-1 for matrix, first yarn starting at 0) " << endl;
-	DataOutput << "** 2/3 - Location (x and y cross-section coordinates of element relative to yarn centerline) " << endl;
-	DataOutput << "** 4 - Volume fraction " << endl;
-	DataOutput << "** 5 - Distance of element from the surface of the yarn (for yarn elements only, distance is negative) " << endl;
+	WriteElementsHeader( DataOutput );
 
 	int i;
 	

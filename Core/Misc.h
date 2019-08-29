@@ -126,6 +126,10 @@ namespace TexGen
 	CLASS_DECLSPEC std::string ReplaceFilenameSpaces(std::string Filename);
 	/// Strip the extension from the filename
 	CLASS_DECLSPEC std::string RemoveExtension( std::string &Filename, std::string Extension );
+	/// Write orientations header for ABAQUS .ori files
+	CLASS_DECLSPEC void WriteOrientationsHeader( std::ostream &Output );
+	/// Write elements header for ABAQUS .eld files
+	CLASS_DECLSPEC void WriteElementsHeader( std::ostream &Output );
 
 	/// Get an interpolated value
 	template<typename T>

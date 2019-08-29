@@ -444,7 +444,7 @@ string CYarnSectionSelect::GetCreateSectionCommand(string YarnSectionVariableNam
 		}
 		else if (pPage == XRCCTRL(*this, "InterpNodes", wxPanel))
 		{
-			StringStream << YarnSectionVariableName << " = CYarnSectionInterpNode(" << m_bRamped << ", " << m_bPolar << "," << m_bConstMesh <<")" << endl;
+			StringStream << YarnSectionVariableName << " = CYarnSectionInterpNode( bool(" << m_bRamped << "), bool(" << m_bPolar << "), bool(" << m_bConstMesh <<"))" << endl;
 			wxListBox* pListBox = XRCCTRL(*this, "InterpNodesListBox", wxListBox);
 			bool bRectangle = CheckRectangleSections( pListBox, "InterpNodes" );
 			int i, iCount = pListBox->GetCount();
@@ -460,7 +460,7 @@ string CYarnSectionSelect::GetCreateSectionCommand(string YarnSectionVariableNam
 		}
 		else if (pPage == XRCCTRL(*this, "InterpPosition", wxPanel))
 		{
-			StringStream << YarnSectionVariableName << " = CYarnSectionInterpPosition(" << m_bRamped << ", " << m_bPolar << "," << m_bConstMesh <<")" << endl;
+			StringStream << YarnSectionVariableName << " = CYarnSectionInterpPosition( bool(" << m_bRamped << "), bool(" << m_bPolar << "), bool(" << m_bConstMesh <<"))" << endl;
 			wxListBox* pListBox = XRCCTRL(*this, "InterpPositionListBox", wxListBox);
 			bool bRectangle = CheckRectangleSections( pListBox, "InterpPosition" );
 			int i, iCount = pListBox->GetCount();

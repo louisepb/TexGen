@@ -568,10 +568,7 @@ void CSimulationAbaqus::CreateMaterials(ostream &Output, string Filename)
 
 	Output << "*Section Controls, Name=HourglassEnhanced, Hourglass=Enhanced, SECOND ORDER ACCURACY=YES" << endl;
 	Output << "** Note: Additional element data are stored as a depvars:" << endl;
-	Output << "** 1 - Yarn Index (-1 for matrix, first yarn starting at 0)" << endl;
-	Output << "** 2/3 - Location (x and y cross-section coordinates of element relative to yarn centerline)" << endl;
-	Output << "** 4 - Volume fraction" << endl;
-	Output << "** 5 - Distance of element from the surface of the yarn (for yarn elements only, distance is negative)" << endl;
+	WriteElementsHeader( Output );
 	Output << "*Initial Conditions, Type=Solution, Input=" << StripPath(ElementDataFilename) << endl;
 }
 
@@ -630,8 +627,16 @@ void CSimulationAbaqus::CreateContacts(ostream &Output, const CTextile &Textile)
 		int i;
 		for (i=0; i<Textile.GetNumYarns(); ++i)
 		{
-			CreateContact(Output, "Yarn" + stringify(i) + "Upper", "TopPlate", "Plate");
-			CreateContact(Output, "Yarn" + stringify(i) + "Lower", "BottomPlate", "Plate");
+			if ( m_bWholeSurfaces )
+			{
+				CreateContact(Output, "YarnSurf" + stringify(i), "TopPlate", "Plate");
+				CreateContact(Output, "YarnSurf" + stringify(i), "BottomPlate", "Plate");			  
+			}
+			else
+			{
+				CreateContact(Output, "Yarn" + stringify(i) + "Upper", "TopPlate", "Plate");
+				CreateContact(Output, "Yarn" + stringify(i) + "Lower", "BottomPlate", "Plate");
+			}
 		}
 	}
 }

@@ -294,6 +294,11 @@ namespace TexGen
 
 		virtual string GetDefaultName() const;
 		/// Set up row of pattern cells for one weft pattern using one row of weave pattern data and the layers pattern for the weave
+		/**
+		\param Layers Vector defining pattern of warp layers and binder yarns
+		\param Row The warp lift pattern for one weft insertion
+		\param Weft Defines which weft insertion is being defines (numbered from bottom of pattern draft) 
+		*/
 		virtual void SetupWeftRow( vector<int>& Layers, vector<int>& Row, int NumWarps, int Weft );
 
 		virtual void ConvertToPatternDraft( int iWeftOrder = BOTTOM_TO_TOP );

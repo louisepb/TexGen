@@ -1,15 +1,14 @@
+TexGen: Geometric textile modeller
+
+Please leave a message on the TexGen forum ( http://texgen.sourceforge.net/phpBB3/index.php ) if you find TexGen to be a useful tool. We are very interested to hear about research conducted with TexGen. 
+
+If you make use of TexGen in your work and publications please could you make it known on the forum. This will both help other users and publicise your work. We would also be grateful if you could acknowledge use of TexGen where appropriate. 
+
+If you find bugs/issues with TexGen please post an issue at https://github.com/louisepb/TexGen/issues We can only fix problems if users tell us about them!
+
 Version History
 ---------------
-v3.11.1
-=======
-GUI
-===
-** Added Refresh View option to Render menu
-** Added bool casting for SWIG 4 compatibility
-
 v3.11.0
-=======
-
 =======
 General
 =======
@@ -122,10 +121,11 @@ v3.8.2
 ======
 General
 =======
+Versions built with Python27 have been included to provide compatibility if calling TexGen scripts from within Abaqus 6.14.  There seem to be some  issues on some machines with the Python27 bundled versions.
+If Python27 is required install Python from here https://www.python.org/downloads/ and then use any of the Python27 files
 ** Added missing files to uninstaller
 ** Made separate Python26 and Python27 builds for bundled version. Seems to be an issue with Python27 version not always loading
 ** Changed non-bundled installer so that always copies Pythonx.dll into the TexGen folder (addresses problem if Python sub=version TexGen is compiled with is different to the installed Python version)
-
 v3.8.1
 ======
 Core
@@ -164,7 +164,6 @@ General
 =======
 ** Added tow width and height to WeavePattern script
 ** Changed installation scripts to use Python27
-
 
 v3.8.0
 ======
@@ -241,7 +240,6 @@ GUI
 ** Added Nest Layers option
 ** Change to SectionSelect to pop event handler when destroy class
 ** Added PatternDraftDialog (Not included in release builds for v3.7.0)
-
 
 General
 =======
@@ -350,7 +348,6 @@ Exporter
 General
 -------
 ** Added scripts for extraction of material properties from Abaqus .odb file produced by running .inp file generated for voxel export
-
 
 v3.5.2
 ======
