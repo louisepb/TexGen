@@ -72,7 +72,7 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 				Point.z = m_DomainAABB.first.z + m_VoxSize[2] * z;
 				if ( bAbaqus )
 					Output << iNodeIndex << ", ";
-				Output << Point << endl;
+				Output << Point << "\n";
 
 				if ( x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels )
 				{

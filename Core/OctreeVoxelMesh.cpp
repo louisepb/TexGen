@@ -165,21 +165,21 @@ int writeTempFile(string filename, pair<XYZ, XYZ> myDomain)
 		TGERROR("Cannot create an initialisation *.inp file " << filename);
 		return -1;
 	}
-	TempFile << "*HEADING" << endl;
-	TempFile << "This is a temp input for the octree refinement" << endl;
-	TempFile << "*NODE" << endl;
-	TempFile << "1, " << myDomain.first.x<< ", " << myDomain.first.y << ", " << myDomain.first.z << endl;
-	TempFile << "2, " << myDomain.second.x<< ", " << myDomain.first.y << ", " << myDomain.first.z << endl;
-	TempFile << "3, " << myDomain.first.x<< ", " << myDomain.second.y << ", " << myDomain.first.z << endl;
-	TempFile << "4, " << myDomain.second.x<< ", " << myDomain.second.y << ", " << myDomain.first.z << endl;
+	TempFile << "*HEADING" << "\n";
+	TempFile << "This is a temp input for the octree refinement" << "\n";
+	TempFile << "*NODE" << "\n";
+	TempFile << "1, " << myDomain.first.x<< ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
+	TempFile << "2, " << myDomain.second.x<< ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
+	TempFile << "3, " << myDomain.first.x<< ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
+	TempFile << "4, " << myDomain.second.x<< ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
 
-	TempFile << "5, " << myDomain.first.x <<", " << myDomain.first.y << ", " << myDomain.second.z << endl;
-	TempFile << "6, " << myDomain.second.x<< ", " << myDomain.first.y << ", " << myDomain.second.z << endl;
-	TempFile << "7, " << myDomain.first.x<< ", " << myDomain.second.y << ", " << myDomain.second.z << endl;
-	TempFile << "8, " << myDomain.second.x<< ", " << myDomain.second.y << ", " << myDomain.second.z << endl;
+	TempFile << "5, " << myDomain.first.x <<", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
+	TempFile << "6, " << myDomain.second.x<< ", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
+	TempFile << "7, " << myDomain.first.x<< ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
+	TempFile << "8, " << myDomain.second.x<< ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
 
-	TempFile << "*ELEMENT,TYPE=C3D8R" << endl;
-	TempFile << "1, 5, 7, 3, 1, 6, 8, 4, 2" << endl;
+	TempFile << "*ELEMENT,TYPE=C3D8R" << "\n";
+	TempFile << "1, 5, 7, 3, 1, 6, 8, 4, 2" << "\n";
 	TempFile.close();
 	return 0;
 }
@@ -321,24 +321,24 @@ int COctreeVoxelMesh::storeHangingNode(int *all_lni, int *hanging_corner, int no
 
 void COctreeVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Textile, int iBoundaryConditions, bool bMatrixOnly) 
 {
-	Output << "*EQUATION" << endl;
+	Output << "*EQUATION" << "\n";
 	map<int, vector<int>>::iterator itConstraints;
 	for (itConstraints = m_NodeConstraints.begin(); itConstraints != m_NodeConstraints.end(); itConstraints++) {
 		for (int i = 0; i < 3; i++) { // Write for 3 DoFs
 			int num = (int)itConstraints->second.size();
-			Output << num + 1 << endl;
+			Output << num + 1 << "\n";
 			Output << itConstraints->first << ", " << i + 1 << ", 1, ";
 			for (int j = 0; j < num; ++j) {
 				Output << itConstraints->second[j] << ", " << i + 1 << ", " << -1.0/num;
 				if (j == 2) {
-					Output << endl;
+					Output << "\n";
 				} else {
 					if ( j < num - 1 ) {
 						Output << ", ";
 					}
 				}
 			}
-			Output << endl;
+			Output << "\n";
 		}
 	}
 
@@ -456,7 +456,7 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, boo
 				Output << ", ";
 			}
 		}
-		Output << endl;
+		Output << "\n";
 	}
 
 	timer.check("Elements written");
@@ -467,9 +467,9 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, boo
 		map<int, vector<int>>::iterator itSurfaceNodes;
 		for (itSurfaceNodes = m_SurfaceNodes.begin(); itSurfaceNodes != m_SurfaceNodes.end(); ++itSurfaceNodes) {
 			if ( itSurfaceNodes->first == -1) {
-				Output << "*NSET, NSET=SURFACE-NODES-MATRIX" << endl;
+				Output << "*NSET, NSET=SURFACE-NODES-MATRIX" << "\n";
 			} else {
-				Output << "*NSET, NSET=SURFACE-NODES-YARN" << itSurfaceNodes->first << endl;
+				Output << "*NSET, NSET=SURFACE-NODES-YARN" << itSurfaceNodes->first << "\n";
 			}
 			WriteValues(Output, itSurfaceNodes->second, 16);
 		}
@@ -477,13 +477,13 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, boo
 		map<int, vector< pair<int,int> > >::iterator itSurfaceFaces;
 		for (itSurfaceFaces = m_SurfaceElementFaces.begin(); itSurfaceFaces != m_SurfaceElementFaces.end(); ++itSurfaceFaces) {
 			if (itSurfaceFaces->first == -1) {
-				Output << "*SURFACE, NAME=SURFACE-MATRIX" << endl;
+				Output << "*SURFACE, NAME=SURFACE-MATRIX" << "\n";
 			} else {
-				Output << "*SURFACE, NAME=SURFACE-YARN" << itSurfaceFaces->first << endl;
+				Output << "*SURFACE, NAME=SURFACE-YARN" << itSurfaceFaces->first << "\n";
 			}
 			vector< pair<int, int> >::iterator itFaces;
 			for (itFaces = itSurfaceFaces->second.begin(); itFaces != itSurfaceFaces->second.end(); ++itFaces) {
-				Output << itFaces->first << ", S" << itFaces->second << endl;
+				Output << itFaces->first << ", S" << itFaces->second << "\n";
 			}
 		}
 
@@ -1219,7 +1219,7 @@ void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAba
 	TGLOG("Write the nodes");
 	map<int,XYZ>::iterator itNodes;
 	for (itNodes = AllNodes.begin(); itNodes != AllNodes.end(); ++itNodes) {
-		Output << itNodes->first << ", " << itNodes->second.x << ", " << itNodes->second.y << ", " << itNodes->second.z << endl;
+		Output << itNodes->first << ", " << itNodes->second.x << ", " << itNodes->second.y << ", " << itNodes->second.z << "\n";
 	}
 	//timer.check("Nodes written");
 	TGLOG("Nodes written");
