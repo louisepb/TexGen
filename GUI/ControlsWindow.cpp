@@ -315,6 +315,7 @@ void CControlsWindow::BuildRenderingPage()
 	pSubSizer = new wxStaticBoxSizer(wxVERTICAL, pControls, wxT("Colors"));
 	pSubSizer->Add(new wxButton(pControls, ID_ChangeBackgroundColor, wxT("Background")), SizerFlags);
 	pSubSizer->Add(new wxButton(pControls, ID_ChangeSurfaceColor, wxT("Surface")), SizerFlags);
+	pSubSizer->Add(new wxButton(pControls, ID_RefreshView, wxT("Refresh View")), SizerFlags);
 	pMainSizer->Add(pSubSizer, SizerFlags);
 	SubSizers.push_back(pSubSizer);
 
@@ -346,6 +347,7 @@ void CControlsWindow::BuildRenderingPage()
 	pMenu->AppendSeparator();
 	pMenu->Append(ID_ChangeBackgroundColor, wxT("Change Background Colour"));
 	pMenu->Append(ID_ChangeSurfaceColor, wxT("Change Surface Colour"));
+	pMenu->Append(ID_RefreshView, wxT("RefreshView"));
 	m_pMenuBar->Append(pMenu, wxT("&Rendering"));
 }
 

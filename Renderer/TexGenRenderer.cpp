@@ -669,7 +669,9 @@ void CTexGenRenderer::RenderDomain(const CDomain &Domain, COLOR Color, double dO
 	CDomain* pCopy = Domain.Copy();
 
 	// Get rid of flicker between the ends of the yarns and the domain by growing the domain a little
-	pCopy->Grow(1e-3);
+	pair<XYZ, XYZ> Limits = Domain.GetMesh().GetAABB();
+	double extend = GetLength(Limits.second - Limits.first)*1e-3;
+	pCopy->Grow(extend);
 	CMesh Mesh = pCopy->GetMesh();
 
 	delete pCopy;

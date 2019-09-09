@@ -33,8 +33,8 @@ namespace TexGen
 			string GetType() const {return "CFibreDistributionConst";}
 			void PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType) const;
 
-			double GetVolumeFraction(const vector<XY> &Section, double dFibreArea, XY Location) const;
-			double GetVolumeFraction(double dArea, double dFibreArea) const;
+			double GetVolumeFraction(const vector<XY> &Section, double dFibreArea, XY Location, int YarnIndex = -1) const;
+			double GetVolumeFraction(double dArea, double dFibreArea, int YarnIndex = -1) const;
 
 		protected:
 			double IntegrateDistribution(const vector<XY> &Section) const;

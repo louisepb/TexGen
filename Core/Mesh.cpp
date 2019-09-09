@@ -427,11 +427,13 @@ int CMesh::MergeNodes(const double TOL)
 
 	return Visitor.GetNumMerged();
 
-/*
+
 	// UNOPTIMISED VERSION (worth keeping for debuging purposes)
 
-	vector<bool> DeletedNodes;
-	DeletedNodes.resize(m_Nodes.size(), false);
+	/* //vector<bool> DeletedNodes;
+	set<int> DeletedNodes;
+	//DeletedNodes.resize(m_Nodes.size(), false);
+	
 	map<ELEMENT_TYPE, list<int> >::iterator itType;
 	vector<XYZ>::iterator itNode1;
 	vector<XYZ>::iterator itNode2;
@@ -445,7 +447,8 @@ int CMesh::MergeNodes(const double TOL)
 			{
 				++iNumMerged;
 				ChangeNodeIndices(iNode1, iNode2);
-				DeletedNodes[iNode2] = true;
+				//DeletedNodes[iNode2] = true;
+				DeletedNodes.insert(iNode2);
 			}
 		}
 	}
@@ -1198,7 +1201,7 @@ void CMesh::MeshClosedLoop(const XYZ &Normal, const vector<int> &ClosedLoopVecto
 {
 	// A more efficient algorithm is described in http://www.cs.umd.edu/~mount/754/Lects/754lects.pdf
 	// worth implementing if this function needs optimising. Although will need extending to 3d.
-	const double TOL = 1e-9;
+	const double TOL = 1e-10;
 
 	list<int> ClosedLoop(ClosedLoopVector.begin(), ClosedLoopVector.end());
 
@@ -1644,7 +1647,7 @@ int CMesh::IntersectLine(const XYZ &P1, const XYZ &P2, vector<pair<double, XYZ> 
 	XYZ T1, T2, T3;
 	XYZ Normal, Intersection;
 	double dU;
-	const double dTolerance = 1e-6;
+	const double dTolerance = 1e-9;
 /*	if (pOctree && pOctree->GetOctree())
 	{
 		list<vector<int> > Elements;
@@ -1760,7 +1763,7 @@ void CMesh::MeshConvexHull()
 	// http://www.cse.unsw.edu.au/~lambert/java/3d/hull.html
 	// http://www.cse.unsw.edu.au/~lambert/java/3d/incremental.html
 	// http://www.cse.unsw.edu.au/~lambert/java/3d/source/Incremental.java
-	const double TOL = 1e-6;
+	const double TOL = 1e-7;
 
 	list<pair<int, int> > EdgeStack;
 	list<pair<int, int> >::iterator itEdge;
@@ -2185,12 +2188,7 @@ bool CMesh::SaveToABAQUS(string Filename, const vector<POINT_INFO> *pElementInfo
 		TGLOG("Saving element orientations data to " << OrientationsFilename);
 		TGLOG("Saving additional element data to " << ElementDataFilename);
 
-		Output << "********************" << endl;
-		Output << "*** ORIENTATIONS ***" << endl;
-		Output << "********************" << endl;
-		Output << "** Orientation vectors" << endl;
-		Output << "** 1st vector represents the fibre direction" << endl;
-		Output << "** 2nd vector is an arbitrary vector perpendicular to the first" << endl;
+		WriteOrientationsHeader( Output );
 		Output << "*Distribution Table, Name=TexGenOrientationVectors" << endl;
 		Output << "COORD3D,COORD3D" << endl;
 		Output << "*Distribution, Location=Element, Table=TexGenOrientationVectors, Name=TexGenOrientationVectors, Input=" << StripPath(OrientationsFilename) << endl;
@@ -2199,10 +2197,13 @@ bool CMesh::SaveToABAQUS(string Filename, const vector<POINT_INFO> *pElementInfo
 		Output << "1, 0" << endl;
 
 		// Default orientation
+		WriteOrientationsHeader( OriOutput );
 		OriOutput <<  ", 1.0, 0.0, 0.0,   0.0, 1.0, 0.0" << endl;
 
 		int i;
 		
+		WriteElementsHeader( DataOutput );
+
 		map<int, vector<int> > ElementSets;
 		vector<POINT_INFO>::const_iterator itData;
 		for (itData = pElementInfo->begin(), i=1; itData != pElementInfo->end(); ++itData, ++i)

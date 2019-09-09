@@ -65,14 +65,23 @@ double CFibreDistribution1DQuad::IntegrateDistribution(const vector<XY> &Section
 	return Integral;
 }
 
-double CFibreDistribution1DQuad::GetVolumeFraction(const vector<XY> &Section, double dFibreArea, XY Location) const
+double CFibreDistribution1DQuad::GetVolumeFraction(const vector<XY> &Section, double dFibreArea, XY Location, int YarnIndex) const
 {
 	// compute the max x direction
 	double dMaxX = ComputeMaxX(Section);
 	double dScale = IntegrateDistribution(Section, dMaxX);
 	dScale = dFibreArea/dScale;
 	if(dScale>0.86||dScale<0)
-		TGERROR("Warning: Volume fraction is not realistic " << dScale);
+	{
+		if ( YarnIndex == -1 )
+		{
+			TGERROR("Warning: Volume fraction is not realistic " << dScale);
+		}
+		else
+		{
+			TGERROR("Warning: Volume fraction is not realistic: " << dScale << ", Yarn: " << YarnIndex);
+		}
+	}
 
 	return Distribution(dScale, m_dDropOff*dScale, Location.x, dMaxX);
 }

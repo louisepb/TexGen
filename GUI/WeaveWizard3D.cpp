@@ -683,7 +683,7 @@ string CWeaveWizard3D::GetCreateTextileCommand(string ExistingTextile)
 			{	
 				int iWarpRatio = m_pWarpRatioSpin->GetValue();
 				StringStream << "weave = CTextileOrthogonal(" << iHeight << ", " << iWidth << ", " << Warp.dSpacing << ", " 
-					<< Weft.dSpacing << ", " << Warp.dHeight << ", " << Weft.dHeight << ", " << m_pRefineBox->GetValue() << ")" << endl;	
+					<< Weft.dSpacing << ", " << Warp.dHeight << ", " << Weft.dHeight << ", bool(" << m_pRefineBox->GetValue() << "))" << endl;	
 				StringStream << "weave.SetWarpRatio( " << iWarpRatio << ")" << endl;
 				StringStream << "weave.SetBinderRatio( " << m_pBinderRatioSpin->GetValue() << ")" << endl;
 				StringStream << "weave.SetWarpYarnWidths( " << Warp.dWidth << ")" << endl;

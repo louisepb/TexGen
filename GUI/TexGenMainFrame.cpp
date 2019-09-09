@@ -69,7 +69,7 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 	EVT_AUINOTEBOOK_PAGE_CLOSE(ID_ViewerNoteBook, CTexGenMainFrame::OnViewerNotebookClose)
 
 	EVT_CHECKBOX_MENU_RANGE(ID_RenderNodes, ID_TrimtoDomain, CTexGenMainFrame::OnRendering)
-	EVT_BUTTON_MENU_RANGE(ID_ChangeBackgroundColor, ID_ChangeSurfaceColor, CTexGenMainFrame::OnRendering)
+	EVT_BUTTON_MENU_RANGE(ID_ChangeBackgroundColor, ID_RefreshView, CTexGenMainFrame::OnRendering)
 	EVT_BUTTON_MENU_RANGE(ID_CreateEmptyTextile, ID_RotateTextile, CTexGenMainFrame::OnTextiles)
 	EVT_BUTTON_MENU_RANGE(ID_CreateYarn, ID_YarnFibreVolumeFraction, CTexGenMainFrame::OnModeller)
 	EVT_RADIOBUTTON_MENU_RANGE(ID_SelectTool, ID_ScaleTool, CTexGenMainFrame::OnModeller)
@@ -819,10 +819,10 @@ void CTexGenMainFrame::OnSaveIGES(wxCommandEvent& event)
 			{
 				string Command;
 				Command = "Exporter = CExporter()\n";
-				Command += "Exporter.SetFaceted(" + stringify(iYarnSurface == 1) + ")\n";
-				Command += "Exporter.SetExportDomain(" + stringify(bExportDomain) + ")\n";
-				Command += "Exporter.SetSubtractYarns(" + stringify(bSubtractYarns) + ")\n";
-				Command += "Exporter.SetJoinYarns(" + stringify(bJoinYarns) + ")\n";
+				Command += "Exporter.SetFaceted(bool(" + stringify(iYarnSurface == 1) + "))\n";
+				Command += "Exporter.SetExportDomain(bool(" + stringify(bExportDomain) + "))\n";
+				Command += "Exporter.SetSubtractYarns(bool(" + stringify(bSubtractYarns) + "))\n";
+				Command += "Exporter.SetJoinYarns(bool(" + stringify(bJoinYarns) + "))\n";
 				Command += "Exporter.OutputTextileToIGES(r\"";
 				Command += ConvertString(dialog.GetPath());
 				Command += "\", \"";
@@ -865,10 +865,10 @@ void CTexGenMainFrame::OnSaveSTEP(wxCommandEvent& event)
 			{
 				string Command;
 				Command = "Exporter = CExporter()\n";
-				Command += "Exporter.SetFaceted(" + stringify(iYarnSurface == 1) + ")\n";
-				Command += "Exporter.SetExportDomain(" + stringify(bExportDomain) + ")\n";
-				Command += "Exporter.SetSubtractYarns(" + stringify(bSubtractYarns) + ")\n";
-				Command += "Exporter.SetJoinYarns(" + stringify(bJoinYarns) + ")\n";
+				Command += "Exporter.SetFaceted( bool(" + stringify(iYarnSurface == 1) + "))\n";
+				Command += "Exporter.SetExportDomain( bool(" + stringify(bExportDomain) + "))\n";
+				Command += "Exporter.SetSubtractYarns( bool(" + stringify(bSubtractYarns) + "))\n";
+				Command += "Exporter.SetJoinYarns(bool(" + stringify(bJoinYarns) + "))\n";
 				Command += "Exporter.OutputTextileToSTEP(r\"";
 				Command += ConvertString(dialog.GetPath());
 				Command += "\", \"";
@@ -930,7 +930,7 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 				Command << "tension.AddScale(" << ConvertString(XScale) << "," << ConvertString(YScale) << "," << ConvertString(ZScale) << ")" << endl;
 
 				Command << "deformer = CSimulationAbaqus()" << endl;
-				Command << "deformer.SetIncludePlates(" << bIncludePlates << ")" << endl;
+				Command << "deformer.SetIncludePlates( bool(" << bIncludePlates << "))" << endl;
 				Command << "deformer.AddDeformationStep(tension)" << endl;
 
 				string strContact = iContactSurfaces ? "True" : "False";
@@ -940,8 +940,8 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 
 				double Tolerance;
 				IntersectionTolerance.ToDouble( &Tolerance );
-				Command << "deformer.CreateAbaqusInputFile(textile, r\'" << ConvertString(dialog.GetPath()) << "'," << bRegenerateMesh << "," << iElementType << "," 
-															<< bAdjustIntersections << "," << Tolerance << ")" << endl;
+				Command << "deformer.CreateAbaqusInputFile(textile, r\'" << ConvertString(dialog.GetPath()) << "', bool(" << bRegenerateMesh << ")," << iElementType << ", bool(" 
+															<< bAdjustIntersections << ")," << Tolerance << ")" << endl;
 
 				SendPythonCode(Command.str());
 			}
@@ -1013,7 +1013,7 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 				else
 					Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
 				Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << "," << ConvertString(YVoxels) << "," << ConvertString(ZVoxels) 
-					<< "," << bOutputMatrix << "," << bOutputYarns << ","<< iBoundaryConditions << "," << iElementType << ")" << endl;
+					<< ", bool(" << bOutputMatrix << "), bool(" << bOutputYarns << "),"<< iBoundaryConditions << "," << iElementType << ")" << endl;
 
 				SendPythonCode(Command.str());
 			}
@@ -1058,7 +1058,7 @@ void CTexGenMainFrame::OnSaveTetgenMesh( wxCommandEvent& event )
 			if (dialog.ShowModal() == wxID_OK)
 			{
 				Command << "TetMesh = CTetgenMesh(" + ConvertString(seed) + ")" << endl;
-				Command << "TetMesh.SaveTetgenMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath())<< "', '" + ConvertString(params) + "'," << bPeriodic << + ")" << endl;
+				Command << "TetMesh.SaveTetgenMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath())<< "', '" + ConvertString(params) + "', bool(" << bPeriodic << + "))" << endl;
 
 				SendPythonCode(Command.str());
 			}
@@ -1993,6 +1993,12 @@ void CTexGenMainFrame::OnRendering(wxCommandEvent& event)
 			string Color = GetUserSelectedColor();
 			if (!Color.empty())
 				Command = "GetRenderWindow('" + TextileName + "').SetPropsColor(CTexGenRenderer.PROP_SURFACE, " + Color + ")";
+		}
+		break;
+	case ID_RefreshView:
+		{
+			RefreshTextile( TextileName );
+			Command = "GetRenderWindow('" + TextileName + "').RefreshView()\n";
 		}
 		break;
 	}

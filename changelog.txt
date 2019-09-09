@@ -1,6 +1,13 @@
 Version History
 ---------------
-v3.10.1
+v3.11.1
+=======
+GUI
+===
+** Added Refresh View option to Render menu
+** Added bool casting for SWIG 4 compatibility
+
+v3.11.0
 =======
 General
 =======
@@ -8,23 +15,36 @@ General
 ** Changed CMakelists files for VS2017
 ** Created installer for VS2017 build
 ** Upgraded to wxWidgets3.0.4
+** Added installer file for VS2017 build
+** Added CFXImportVTK.exe and chamis_model_final.for to Utilities folder in installation
 
 Core
 ====
 ** Added functions to create voxel mesh and periodic boundary conditions for rotated domains
+** Made ShapeBinderYarns function public
+** Bugfix to correct 4 quarter hybrid section constructor
+** Added functions to access inherited class pointers in CYarnSection
+** Added yarn number to volume fraction error messages
+** Added write orientation and elements header functions to misc.cpp
+** Included headers in all Abaqus .eld and .ori files
+** Changed triangle library to https://github.com/wo80/Triangle to address memory issues in Win10 build
+** Added whole surface output to dry fibre export with compression plates
 
 GUI
 ===
 ** Added rotated boundary conditions option to Voxel Mesh Export
-
-GUI
-===
-** Various bugfixes to give compatibility with wxWidgets3
-** Bugfix in print pattern draft so doesn't exit program if cancel
+** Various bugfixes for wxWidgets3 compatability
+** Bugfix in print pattern draft so doesn't exit program if cancel 
+** Added ROTATED_BC to VolumeMesh export dialog
+** Corrected size of rendered domain for textiles with very small dimensions
 
 UnitTests
 =========
 ** Added rotated voxel mesh export test
+** Added files for mesher tests
+** Added hybrid section tests
+** Added GetXYarnIndex test to Textile3DTests
+** Added rotated voxel test
 
 
 v3.10.1

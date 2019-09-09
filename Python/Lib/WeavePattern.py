@@ -33,6 +33,7 @@ def StringToIntVector( Str ):
 	return Vector
 	
 def SetupBinders( Str ):
+    # Sets up vector indicating which warp yarns are binders
 	Vector = BoolVector()
 	NumBinders = 0
 	Str = Str.replace(' ','')
@@ -58,7 +59,7 @@ def ImportWeavePattern( Filename ):
 	Pattern = CPatternDraft()
 
 	firstLine = True
-	WeftMatrix = []
+	WeftMatrix = []   # Vector of IntVectors for storing rows of weave pattern
 	WeftDensity = 0.0
 	Width = 0.0
 	TowArea = 0.0
@@ -79,12 +80,12 @@ def ImportWeavePattern( Filename ):
 		if firstLine:
 			firstLine = False
 			Layers = SpacedStringToIntVector( line )
-			NumWarps = line.count('1')
+			NumWarps = line.count('1')  # Sum of number of binders and warp stacks
 			
 			NumBinders, Binders = SetupBinders( line )
 			print NumBinders
 			
-			NumWarpLayers = int(max(line))
+			NumWarpLayers = int(max(line))  # Number of warp layers set to size of largest warp stack
 		else:  # Read in row matrix
 			parts = line.split()
 			if not parts:  # empty line
@@ -127,9 +128,18 @@ def ImportWeavePattern( Filename ):
 				BinderHeight = float(parts[1])
 				BinderHeightUnits = parts[2]
 			else:
-				Pattern.AddRow( line )
-				LineVector = StringToIntVector( line )
-				WeftMatrix.append(LineVector) 
+				allNumeric = True
+				for part in parts:
+					if not part.isdigit():
+						allNumeric = False
+						print 'Error in weave pattern line, not all numeric'
+						break
+				
+				if allNumeric == True:	
+                    # Save row as string in CPatternDraft and vector of IntVectors in WeftMatrix
+					Pattern.AddRow( line )
+					LineVector = StringToIntVector( line )
+					WeftMatrix.append(LineVector) 
 
 	file.close()
 
@@ -183,6 +193,7 @@ def ImportWeavePattern( Filename ):
 		# Need to find max no of layers
 		NumLayers = NumWarpLayers + 1  # Just have warps and one binder in stack
 		
+    # Set up cells for storing yarn configuration, all initialised to PATTERN3D_NOYARN
 	for i in range(NumLayers):  
 		Textile.AddNoYarnLayer()
 		
@@ -200,13 +211,14 @@ def ImportWeavePattern( Filename ):
 	Textile.SetWarpYarnPower(1.0)
 	Textile.SetWeftYarnPower(1.0)
 	
-
+    # Set whether or not textile will repeat in weft direction
 	Textile.SetWeftRepeat( WeftRepeat )
 
 	# Set up weave pattern in textile
 	for i in range(NumWefts-1,-1,-1):
 		Textile.SetupWeftRow( Layers, WeftMatrix[i], NumWarps, NumWefts-1-i )
 		
+    # If orthogonal textile move wefts into stacks where possible
 	if Orthogonal:
 		Textile.ConsolidateCells()
 		

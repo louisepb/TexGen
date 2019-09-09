@@ -1,5 +1,5 @@
 ; Set the current version, this should change at each release
-!define VERSION "3.10.0"
+!define VERSION "3.11.0"
 !include "LogicLib.nsh"
 !include "MUI.nsh"
 !include "x64.nsh"
@@ -129,6 +129,11 @@ Section "TexGen (required)" ;No components page, name is not important
   File ..\Data\3dweave.tg3
   File ..\Data\cotton.tg3
   File ..\Data\polyester.tg3
+  
+  SetOutPath $INSTDIR\Utilities
+  
+  File CFXImportVTK.exe
+  File chamis_model_final.for
 
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\TexGen "Install_Dir" "$INSTDIR"
@@ -234,6 +239,9 @@ Section "Uninstall"
   Delete $INSTDIR\Data\3dweave.tg3
   Delete $INSTDIR\Data\cotton.tg3
   Delete $INSTDIR\Data\polyester.tg3
+  
+  Delete $INSTDIR\Utilities\CFXImportVTK.exe
+  Delete $INSTDIR\Utilities\chamis_model_final.for
 
   Delete $INSTDIR\uninstall.exe
 
@@ -249,6 +257,7 @@ Section "Uninstall"
   RMDir "$INSTDIR\Python"
   RMDir "$INSTDIR\Scripts"
   RMDir "$INSTDIR\Data"
+  RMDir "$INSTDIR\Utilities"
   RMDir "$INSTDIR"
 
 SectionEnd
