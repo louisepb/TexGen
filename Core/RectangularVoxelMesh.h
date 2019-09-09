@@ -43,7 +43,7 @@ namespace TexGen
 
 	protected:
 
-		COctreeVoxelMesh OctMesh;
+		COctreeVoxelMesh m_OctMesh;
 
 		int OutputHexElements(ostream &Output, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true );
 

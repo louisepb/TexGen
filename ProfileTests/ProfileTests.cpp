@@ -8,7 +8,7 @@
 
 #include "TextileFactory.h"
 
-//#define SHINY_PROFILER TRUE
+#define SHINY_PROFILER TRUE
 
 using namespace TexGen;
 
@@ -17,14 +17,14 @@ using namespace TexGen;
 //int _tmain(int argc, _TCHAR* argv[])
 int main( int argc, char** argv)
 {
-	//PROFILE_SHARED_DEFINE( ProfileTest)
+    //PROFILE_SHARED_DEFINE( ProfileTest)
 	//PROFILE_FUNC();
 
 	CTextileFactory TextileFactory;
 	CTextileWeave2D Textile = TextileFactory.PlainWeave(13,13);
 	CRectangularVoxelMesh Mesh("CPeriodicBoundaries");
 	
-	Mesh.SaveVoxelMesh(Textile, "ProfileVoxels", 100,100,30,true,true,MATERIAL_CONTINUUM);
+	Mesh.SaveVoxelMesh(Textile, "ProfileVoxels", 100,100,30,true,true, true, MATERIAL_CONTINUUM);
 	TEXGEN.AddTextile(Textile);
 	CTexGenRenderer* Renderer = new CTexGenRenderer;
 	Renderer->RenderTextile(Textile);

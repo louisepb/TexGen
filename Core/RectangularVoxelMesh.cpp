@@ -41,7 +41,7 @@ void CRectangularVoxelMesh::SaveVoxelMeshg(CTextile &Textile, string OutputFilen
 {
 	//don't really know what values to put in this function for min and max refinement,
 	// the function is needed to setup OctreeMesh class data members otherwise it crashes when the destructor is invoked
-	if (OctMesh.CreateP4ESTRefinement(4, 4) == -1)
+	if (m_OctMesh.CreateP4ESTRefinement(4, 4) == -1)
 		return;
 	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, XVoxNum, YVoxNum, ZVoxNum, bOutputMatrix, bOutputYarns, surfaceOutput, iBoundaryConditions, iElementType);
 }
@@ -93,7 +93,7 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 					
 				}
 
-				Nodes.insert(make_pair(iNodeIndex, Point));
+				m_OctMesh.AllNodes.insert(make_pair(iNodeIndex, Point));
 
 				if ( x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels )
 				{
@@ -121,10 +121,10 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 					elementNodes.push_back(c8);
 
 					//this needs to happen up until the last node for x<m_xVoxels otherwise get double counting of centrepoints
-					AllElements.push_back(elementNodes);
+					m_OctMesh.m_AllElements.push_back(elementNodes);
 					for (int i=0; i<8; i++)
 					{
-						NodesEncounter[elementNodes[i]].push_back(ElementCount);
+						m_OctMesh.m_NodesEncounter[elementNodes[i]].push_back(ElementCount);
 					}
 					//NodesEncounter.push_back(iNodeIndex, elementNodes);
 					ElementCount++;
@@ -136,7 +136,7 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 		}
 		RowInfo.clear();   // Changed to do layer at a time instead of row to optimise
 		Textile.GetPointInformation( CentrePoints, RowInfo );
-		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end() );
+		m_OctMesh.m_ElementsInfo.insert(m_OctMesh.m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end() );
 		
 		CentrePoints.clear();
 	}
@@ -153,41 +153,41 @@ void CRectangularVoxelMesh::OutputInterfaceSurfaces(ostream& Output, CTextile& T
 {
 	//George - Using this function to call Octree Mesh functions and set up relevant data members, should work the same as calling OctMesh::OutputNodes
 
-	map<int, vector<int>> NodeSurf;
-	vector<int> AllSurf;
-	OctMesh.m_bSmooth=false;
-	OctMesh.m_bCohesive=true;
-	OctMesh.m_smoothCoef1=0.0;
-	OctMesh.m_smoothCoef2=0.0;
-	OctMesh.m_smoothIter=0;
+	m_OctMesh.m_bSmooth=false;
+	m_OctMesh.m_bCohesive=true;
+	m_OctMesh.m_smoothCoef1=0.0;
+	m_OctMesh.m_smoothCoef2=0.0;
+	m_OctMesh.m_smoothIter=0;
 
 
 	//OctMesh.ConvertOctreeToNodes();
 
-	OctMesh.AllNodes=Nodes;
+	//m_OctMesh.AllNodes=Nodes;
 	//George - assign rect mesh version of allelements to the octree mesh class as m_AllElements
-	OctMesh.m_AllElements = AllElements;
-	OctMesh.m_NodesEncounter = NodesEncounter;
+	//m_OctMesh.m_AllElements = AllElements;
+	//m_OctMesh.m_NodesEncounter = NodesEncounter;
 	vector<XYZ> CentrePoints;
-	Textile.GetPointInformation(CentrePoints, m_ElementsInfo);
+	Textile.GetPointInformation(CentrePoints, m_OctMesh.m_ElementsInfo);
 	//OctMesh.gTextile.GetPointInformation(CentrePoints, m_ElementsInfo);
-	OctMesh.m_ElementsInfo=m_ElementsInfo;
-	OctMesh.extractSurfaceNodeSets(NodeSurf, AllSurf);
+	m_ElementsInfo=m_OctMesh.m_ElementsInfo;
+	map<int, vector<int>>NodeSurf;
+	vector<int> AllSurf;
+	m_OctMesh.extractSurfaceNodeSets(NodeSurf, AllSurf);
 
 	//not OctMesh data members, this works for now
-	NodeSurf=NodeSurf;
-	AllSurf=AllSurf;
+	//NodeSurf=NodeSurf;
+	//AllSurf=AllSurf;
 
 	//if the nodes need to be ordered for this to work then will have to find the correct ordering for them
 	
-	OctMesh.OutputSurfaces(NodeSurf, AllSurf);
+	m_OctMesh.OutputSurfaces(NodeSurf, AllSurf);
 
 	//octree output surfaces adds the copied nodes
-	Nodes=OctMesh.AllNodes;
+	//Nodes=m_OctMesh.AllNodes;
 
 	//will use this to output all the nodes instead of in RectMesh::OutputNodes()
 	map<int,XYZ>::iterator itNodes;
-	for (itNodes = Nodes.begin(); itNodes != Nodes.end(); ++itNodes) {
+	for (itNodes = m_OctMesh.AllNodes.begin(); itNodes != m_OctMesh.AllNodes.end(); ++itNodes) {
 		Output << itNodes->first << ", " << itNodes->second.x << ", " << itNodes->second.y << ", " << itNodes->second.z << endl;
 	}
 
@@ -199,7 +199,7 @@ int CRectangularVoxelMesh::OutputHexElements(ostream &Output, CTextile &Textile,
 	int elemnum;
 	bool surfaceOutput=true;
 	if (surfaceOutput)
-		elemnum = OctMesh.OutputHexElements(Output, Textile, bOutputMatrix, bOutputYarn, bAbaqus );
+		elemnum = m_OctMesh.OutputHexElements(Output, Textile, bOutputMatrix, bOutputYarn, bAbaqus );
 	else
 		elemnum = CVoxelMesh::OutputHexElements( Output, Textile, bOutputMatrix, bOutputYarn, bAbaqus);
 	//int elemnum = CVoxelMesh::OutputHexElements(Output, bOutputMatrix, bOutputYarn, bAbaqus );
