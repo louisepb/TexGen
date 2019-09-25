@@ -253,15 +253,35 @@ set<int> GetCommonIndices(const vector<int> &SurfIndices, const vector<int> &Vol
 	vector<int>::const_iterator itSurf;
 	vector<int>::const_iterator itVol;
 	int i;
-	for (itSurf = SurfIndices.begin(); itSurf != SurfIndices.end(); ++itSurf)
+	/*for (itSurf = SurfIndices.begin(); itSurf != SurfIndices.end(); ++itSurf)
 	{
 		for (itVol = VolIndices.begin(), i=0; itVol != VolIndices.end(); ++itVol, ++i)
 		{
 			if (*itSurf == *itVol)
-			{
 				Common.insert(i);
+			{
 			}
 		}
+	}*/
+	//return Common;
+	auto maxValue = max_element(VolIndices.begin(), VolIndices.end());
+	for (itSurf = SurfIndices.begin(); itSurf != SurfIndices.end(); ++itSurf)
+	{
+		
+		vector<int>::const_iterator it = find(VolIndices.begin(), VolIndices.end(), *itSurf);
+		if (it == VolIndices.end())
+		{
+			//check whether the last element or just that find could not find *itSurf in VolIndices
+			if (*it > *maxValue)
+				continue;
+			else
+				i = distance(VolIndices.begin(), it);
+		}
+		else
+		{
+			i = distance(VolIndices.begin(), it);
+		}
+		Common.insert(i);
 	}
 	return Common;
 }
@@ -323,7 +343,7 @@ int COctreeVoxelMesh::storeHangingNode(int *all_lni, int *hanging_corner, int no
 void COctreeVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Textile, int iBoundaryConditions, bool bMatrixOnly)
 {
 	Output << "*EQUATION" << endl;
-	map<int, vector<int>>::iterator itConstraints;
+	unordered_map<int, vector<int>>::iterator itConstraints;
 	for (itConstraints = m_NodeConstraints.begin(); itConstraints != m_NodeConstraints.end(); itConstraints++) {
 		for (int i = 0; i < 3; i++) { // Write for 3 DoFs
 			int num = (int)itConstraints->second.size();
@@ -466,7 +486,7 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, CTextile &Textile, bool
 
 	if ( m_bCohesive ) {
 		timer.start("Writing surfaces");
-		map<int, vector<int>>::iterator itSurfaceNodes;
+		unordered_map<int, vector<int>>::iterator itSurfaceNodes;
 		for (itSurfaceNodes = m_SurfaceNodes.begin(); itSurfaceNodes != m_SurfaceNodes.end(); ++itSurfaceNodes) {
 			if ( itSurfaceNodes->first == -1) {
 				Output << "*NSET, NSET=SURFACE-NODES-MATRIX" << endl;
@@ -476,7 +496,7 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, CTextile &Textile, bool
 			WriteValues(Output, itSurfaceNodes->second, 16);
 		}
 
-		map<int, vector< pair<int,int> > >::iterator itSurfaceFaces;
+		unordered_map<int, vector< pair<int,int> > >::iterator itSurfaceFaces;
 		for (itSurfaceFaces = m_SurfaceElementFaces.begin(); itSurfaceFaces != m_SurfaceElementFaces.end(); ++itSurfaceFaces) {
 			if (itSurfaceFaces->first == -1) {
 				Output << "*SURFACE, NAME=SURFACE-MATRIX" << endl;
@@ -1428,7 +1448,7 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 	sort(v.begin(),v.end());
 
 	// Prepare the neighbour connections (leave only nodes which are on an interface)
-	map<int, vector<int>>::iterator itNeighbourNodes;
+	unordered_map<int, vector<int>>::iterator itNeighbourNodes;
 
 	for (itNeighbourNodes = m_NeighbourNodes.begin(); itNeighbourNodes != m_NeighbourNodes.end(); ++itNeighbourNodes) {
 		vector<int> temp;
@@ -1512,8 +1532,8 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 	vector<int> AllSurfElems;
 	vector<POINT_INFO>::iterator itData;
 	vector<int>::const_iterator itNodes;
-	map<int, vector<int>>::iterator itNodeSurf, itElemSurf, itYarnElems;
-	map<int, vector<int>> MyNodeSurf, MyElemSurf, InteriorElems;
+	unordered_map<int, vector<int>>::iterator itNodeSurf, itElemSurf, itYarnElems;
+	unordered_map<int, vector<int>> MyNodeSurf, MyElemSurf, InteriorElems;
 	vector<POINT_INFO>::iterator itInfo;
 
 	int extraNodeCount = 3000000;
@@ -1567,6 +1587,8 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 		itElemSurf->second.erase( unique(itElemSurf->second.begin(), itElemSurf->second.end()) , itElemSurf->second.end() );
 	}
 
+	CTimer Timer;
+	Timer.start("Starting loop");
 	for (itElemSurf = MyElemSurf.begin(); itElemSurf != MyElemSurf.end(); ++itElemSurf) {
 		vector<int>::iterator itElems;
 		for (itElems = itElemSurf->second.begin(); itElems != itElemSurf->second.end(); ++itElems) {
@@ -1581,6 +1603,9 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 			}
 		}
 	}
+	Timer.check("end of loop");
+	Timer.stop();
+	
 
 	MyNodeSurf.clear();
 	MyElemSurf.clear();
