@@ -334,6 +334,21 @@ CTextileWeave2D CTextileFactory::PlainWeave()
 	return Textile;
 }
 
+CTextileWeave2D CTextileFactory::PlainWeaveWithGap()
+{
+	CTextileWeave2D Textile(2, 2, 1, 0.2, true);
+
+	Textile.SetGapSize(0.01);
+	Textile.SwapPosition(0, 0);
+	Textile.SwapPosition(1, 1);
+
+	Textile.SetYarnWidths(0.8);
+
+	Textile.AssignDefaultDomain();
+
+	return Textile;
+}
+
 CTextileLayerToLayer CTextileFactory::LayerToLayerWeave()
 {
 	CTextileLayerToLayer Textile(2, 4, 1.4, 1, 0.2, 0.1, 2);
