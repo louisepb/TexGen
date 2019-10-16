@@ -760,12 +760,20 @@ void CTexGenMainFrame::OnSaveSurfaceMesh(wxCommandEvent& event)
 				stringstream Command;
 				Command << "mesh = CMesh()" << endl;
 				Command << "textile = GetTextile(r'" << TextileName << "')" << endl;
-				if (bTrimSurface)
-					Command << "textile.AddSurfaceToMesh(mesh, True)" << endl;
+				if (bTrimSurface && bExportDomain)
+				{
+					Command << "DomainMesher = CMeshDomainPlane(0.1)" << endl;
+
+				}
 				else
-					Command << "textile.AddSurfaceToMesh(mesh, False)" << endl;
-				if (bExportDomain)
-					Command << "mesh.InsertMesh(textile.GetDomain().GetMesh())" << endl;
+				{
+					if (bTrimSurface)
+						Command << "textile.AddSurfaceToMesh(mesh, True)" << endl;
+					else
+						Command << "textile.AddSurfaceToMesh(mesh, False)" << endl;
+					if (bExportDomain)
+						Command << "mesh.InsertMesh(textile.GetDomain().GetMesh())" << endl;
+				}
 				switch (dialog.GetFilterIndex())
 				{
 				case 0:

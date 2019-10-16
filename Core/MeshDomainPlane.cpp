@@ -30,9 +30,10 @@ extern "C"
 using namespace TexGen;
 using namespace std;
 
-CMeshDomainPlane::CMeshDomainPlane(double Seed)
+CMeshDomainPlane::CMeshDomainPlane(double Seed, bool bYarnHoles)
 {
 	m_Seed = Seed;
+	m_bYarnHoles = bYarnHoles;
 }
 
 CMeshDomainPlane::~CMeshDomainPlane(void)
@@ -58,7 +59,7 @@ void CMeshDomainPlane::MeshDomainPlanes( bool bPeriodic )
 		list<int>::const_iterator itQuadIndices;
 		list<int>::const_iterator itPolyIndices;
 		vector<int> NumVertices;
-
+		vector<XY> HolePoints;
 
 		CMesh TriangleMesh;
 
@@ -107,6 +108,11 @@ void CMeshDomainPlane::MeshDomainPlanes( bool bPeriodic )
 			Points2D.clear();
 			Convert3DTo2DCoordinates(Points3D, ConvertRef, Points2D);
 			ArrayPoints2D.push_back(Points2D);
+
+			// Set up point inside polygon to be seed point if hole
+			XY HolePoint = (Points2D[0] + Points2D[(int)Points2D.size()/2])/2.0;
+			HolePoints.push_back(HolePoint);
+
 			itPolyIndices++;
 			Poly++;
 		}
@@ -129,7 +135,7 @@ void CMeshDomainPlane::MeshDomainPlanes( bool bPeriodic )
 			{
 				vector<XY> SeededSides;
 				SeedSides(ArrayPoints2D[0]);
-				Triangulate(ArrayPoints2D, TriangleMesh, ConvertRef);
+				Triangulate(ArrayPoints2D, HolePoints, TriangleMesh, ConvertRef);
 			}
 			NumEdgeTris += (int)TriangleMesh.GetIndices(CMesh::TRI).size() / iNumNodes;
 			m_TriangulatedMeshes.push_back(TriangleMesh);
@@ -229,7 +235,7 @@ void CMeshDomainPlane::SeedSides(vector<XY>& Points)
 	Points.insert(Points.begin(), SeededSides.begin(), SeededSides.end());
 }
 
-bool CMeshDomainPlane::Triangulate(vector<vector<XY> > &PolygonPoints, CMesh& OutputMesh, PLANEPARAMS& ConvertRef)
+bool CMeshDomainPlane::Triangulate(vector<vector<XY> > &PolygonPoints, vector<XY> &HolePoints, CMesh& OutputMesh, PLANEPARAMS& ConvertRef)
 {
 	//	char szSwitches[128];
 	stringstream Switches;
@@ -316,6 +322,20 @@ bool CMeshDomainPlane::Triangulate(vector<vector<XY> > &PolygonPoints, CMesh& Ou
 		}
 	}
 
+	if (m_bYarnHoles)
+	{
+		// Input hole points
+		vector<XY>::iterator itHolePoints;
+		int iNumHoles = (int)HolePoints.size();
+		TriangleInput.holelist = new REAL[iNumHoles * 2];
+		TriangleInput.numberofholes = iNumHoles;
+		for (itHolePoints = HolePoints.begin(), i = 0; itHolePoints != HolePoints.end(); ++itHolePoints, ++i)
+		{
+			TriangleInput.holelist[i * 2] = itHolePoints->x;
+			TriangleInput.holelist[i * 2 + 1] = itHolePoints->y;
+		}
+	}
+
 	// Input regions
 	/*	TriangleInput.regionlist = new REAL [m_ProjectedRegions.size()*4];
 	TriangleInput.numberofregions = m_ProjectedRegions.size();
@@ -333,6 +353,8 @@ bool CMeshDomainPlane::Triangulate(vector<vector<XY> > &PolygonPoints, CMesh& Ou
 
 	delete[] TriangleInput.pointlist;
 	delete[] TriangleInput.segmentlist;
+	if (m_bYarnHoles)
+		delete[] TriangleInput.holelist;
 	//	delete [] TriangleInput.regionlist;
 
 	//	m_ProjectedMesh.Clear();

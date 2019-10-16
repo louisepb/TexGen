@@ -195,6 +195,7 @@ namespace std
 %include "../Core/ShearedPeriodicBoundaries.h"
 %include "../Core/StaggeredPeriodicBoundaries.h"
 %include "../Core/Materials.h"
+%include "../Core/SurfaceMesh.h"
 
 %include "../Core/PatternDraft.h"
 

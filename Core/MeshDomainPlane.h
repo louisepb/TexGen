@@ -41,14 +41,14 @@ namespace TexGen
 	class CLASS_DECLSPEC CMeshDomainPlane
 	{
 	public:
-		CMeshDomainPlane(double Seed);
+		CMeshDomainPlane(double Seed, bool bYarnHoles=false);
 		virtual ~CMeshDomainPlane(void);
 		
 		void MeshDomainPlanes(bool bPeriodic);
 
 	protected:
 		/// Triangulate the domain faces
-		bool Triangulate(vector< vector<XY> > &PolygonPoints, CMesh& OutputMesh, PLANEPARAMS& ConvertRef);
+		bool Triangulate(vector< vector<XY> > &PolygonPoints, vector<XY> &HolePoints, CMesh& OutputMesh, PLANEPARAMS& ConvertRef);
 
 		/// Convert points on one domain surface to local 2D points
 		bool ConvertDomainPointsTo2D(const list<int> &QuadIndices, CMesh& DomainMesh, vector<XY>& Points2D, PLANEPARAMS& ConvertRef);
@@ -69,5 +69,7 @@ namespace TexGen
 		double			m_Seed;
 		/// Number of polygon vertices on each face. Number of outer vector members = number of faces
 		vector<vector<int> > m_PolygonNumVertices;
+		/// True if yarn areas are to be removed from domain
+		bool m_bYarnHoles;
 	};
 };  // namespace TexGen

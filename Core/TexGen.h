@@ -50,6 +50,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "StaggeredVoxelMesh.h"
 #include "RotatedVoxelMesh.h"
 #include "TetgenMesh.h"
+#include "SurfaceMesh.h"
 #include "PeriodicBoundaries.h"
 #include "Textile3DWeave.h"
 #include "TextileOrthogonal.h"
