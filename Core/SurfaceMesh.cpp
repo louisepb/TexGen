@@ -24,17 +24,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace TexGen;
 using namespace std;
 
-CSurfaceMesh::CSurfaceMesh(double Seed, bool bYarnHoles, bool bBinary, bool bPeriodic ) : CMeshDomainPlane(Seed, bYarnHoles)
+CSurfaceMesh::CSurfaceMesh(double Seed, bool bYarnHoles, bool bBinary ) : CMeshDomainPlane(Seed, bYarnHoles)
 {
 	m_bBinary = bBinary;
-	m_bPeriodic = bPeriodic;
 }
 
 CSurfaceMesh::~CSurfaceMesh(void)
 {
 }
 
-void CSurfaceMesh::SaveSurfaceMesh(CTextile &Textile, string OutputFilename)
+void CSurfaceMesh::SaveSurfaceMesh(CTextile &Textile, string OutputFilename, bool bPeriodic, bool bSaveYarns)
 {
 	XYZ P;
 
@@ -45,13 +44,16 @@ void CSurfaceMesh::SaveSurfaceMesh(CTextile &Textile, string OutputFilename)
 	}
 	m_Mesh.ConvertQuadstoTriangles(true);
 
-	MeshDomainPlanes(m_bPeriodic);
+	MeshDomainPlanes(bPeriodic);
 
-	SaveToSTL(OutputFilename, Textile);
+	SaveToSTL(OutputFilename, Textile, bSaveYarns);
 }
 
-void CSurfaceMesh::SaveToSTL(string Filename, CTextile &Textile)
+void CSurfaceMesh::SaveToSTL(string Filename, CTextile &Textile, bool bSaveYarns)
 {
+	if (!bSaveYarns)
+		m_Mesh.Clear();
+
 	vector<CMesh>::iterator itTriangulatedMeshes;
 	for (itTriangulatedMeshes = m_TriangulatedMeshes.begin(); itTriangulatedMeshes != m_TriangulatedMeshes.end(); ++itTriangulatedMeshes)
 	{

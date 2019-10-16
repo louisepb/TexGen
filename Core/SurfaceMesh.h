@@ -33,7 +33,7 @@ namespace TexGen
 	class CLASS_DECLSPEC CSurfaceMesh : public CMeshDomainPlane
 	{
 	public:
-		CSurfaceMesh(double Seed, bool bYarnHoles = false, bool bBinary = false, bool bPeriodic = true );
+		CSurfaceMesh(double Seed, bool bYarnHoles = false, bool bBinary = false );
 		virtual ~CSurfaceMesh(void);
 		/// Save a textile as a surface mesh with triangulated domain faces
 		/**
@@ -41,7 +41,7 @@ namespace TexGen
 		\param Filename for surface output files
 		\param bPeriodic If set true, opposite faces of mesh will be replicated
 		*/
-		void SaveSurfaceMesh(CTextile &Textile, string OutputFilename);
+		void SaveSurfaceMesh(CTextile &Textile, string OutputFilename, bool bPeriodic, bool bSaveYarns = true);
 
 	protected:
 		///	Mesh used to store node points and elements
@@ -50,10 +50,7 @@ namespace TexGen
 		/// True if file to be saved as binary, false if ASCII
 		bool m_bBinary;
 
-		/// True if require matching meshes on opposite faces
-		bool m_bPeriodic;
-
 		/// Save surface mesh data to STL file
-		void SaveToSTL(string Filename, CTextile &Textile);
+		void SaveToSTL(string Filename, CTextile &Textile, bool bSaveYarns);
 	};
 };  // namespace TexGen
