@@ -140,7 +140,12 @@ namespace TexGen
 		mutable int m_iYYarnOffset;
 
 		mutable map<pair<int, int>, YARNDATA> m_BinderData;
+
+		/// Indicates whether textile is loaded from weave pattern
 		bool m_bWeavePattern;
+
+		/// Container to keep track of which weft yarn is located at each cell position
+		/// Used when loaded from weave pattern
 		vector<vector<int> > m_WeftYarns;
 	};
 };	// namespace TexGen

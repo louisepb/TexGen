@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Mesh.h"
 #include "tetgen.h"
+#include "MeshDomainPlane.h"
 
 namespace TexGen
 {
@@ -32,15 +33,7 @@ namespace TexGen
 
 	using namespace std;
 
-	/// Structure which contains information for transformation from 3D to 2D plane
-	struct PLANEPARAMS{
-		XYZ XAxis;
-		XYZ YAxis;
-		XYZ RefPoint;
-		XYZ Normal;
-	};
-
-	class CLASS_DECLSPEC CTetgenMesh
+	class CLASS_DECLSPEC CTetgenMesh : public CMeshDomainPlane
 	{
 	public:
 		CTetgenMesh( double Seed );
@@ -59,22 +52,7 @@ namespace TexGen
 		CMesh			m_Mesh;
 		/// Tetgen input and output structures
 		tetgenio		m_in, m_out;
-		/// Seed used for calculating boundary edge points
-		double			m_Seed;
 
-		/// Triangulate the domain faces
-		bool Triangulate( vector< vector<XY> > &PolygonPoints, CMesh& OutputMesh, PLANEPARAMS& ConvertRef );
-
-		/// Convert points on one domain surface to local 2D points
-		bool ConvertDomainPointsTo2D( const list<int> &QuadIndices, CMesh& DomainMesh, vector<XY>& Points2D, PLANEPARAMS& ConvertRef );
-		/// Convert local 2D coordinates to global 3D coordinates
-		void Convert2DTo3DCoordinates( vector<XY>& Points2D, vector<XYZ>& Points3D, PLANEPARAMS& ConvertRef );
-		/// Convert global 3D coordinates to local 2D coordinates
-		void Convert3DTo2DCoordinates( vector<XYZ>& Points3D, PLANEPARAMS& ConvertRef, vector<XY>& Points2D );
-		/// Calculates seed points along domain edge
-		void SeedSides( vector<XY>& Points );
-		/// Offsets points in mesh by given distance in direction of normal
-		void OffsetMeshPoints( CMesh& Mesh, XYZ& Normal, double dDist );
 		/// Save tetgenio data to Abaqus export file
 		void SaveToAbaqus( string Filename, CTextile &Textile );
 	};

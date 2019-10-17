@@ -459,6 +459,8 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>OK</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -468,6 +470,8 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 				</object>
@@ -560,6 +564,8 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>OK</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -569,6 +575,8 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 				</object>
@@ -640,6 +648,8 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>OK</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -649,6 +659,8 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 				</object>
@@ -1571,6 +1583,8 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>OK</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -1580,6 +1594,8 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 				</object>
@@ -1682,6 +1698,8 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>OK</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -1691,6 +1709,8 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 				</object>
@@ -1722,6 +1742,8 @@
 									<object class="wxButton" name="ConstantSection">
 										<label>Edit Section</label>
 										<default>0</default>
+										<markup>0</markup>
+										<bitmap />
 									</object>
 								</object>
 							</object>
@@ -1757,6 +1779,8 @@
 												<hidden>1</hidden>
 												<label>Insert Section</label>
 												<default>0</default>
+												<markup>0</markup>
+												<bitmap />
 											</object>
 										</object>
 										<object class="sizeritem">
@@ -1767,6 +1791,8 @@
 												<hidden>1</hidden>
 												<label>Remove Section</label>
 												<default>0</default>
+												<markup>0</markup>
+												<bitmap />
 											</object>
 										</object>
 										<object class="sizeritem">
@@ -1776,6 +1802,8 @@
 											<object class="wxButton" name="InterpNodesSection">
 												<label>Edit Section</label>
 												<default>0</default>
+												<markup>0</markup>
+												<bitmap />
 											</object>
 										</object>
 										<object class="sizeritem">
@@ -1848,6 +1876,8 @@
 													<object class="wxButton" name="InterpPositionInsert">
 														<label>Insert Section</label>
 														<default>0</default>
+														<markup>0</markup>
+														<bitmap />
 													</object>
 												</object>
 												<object class="sizeritem">
@@ -1857,6 +1887,8 @@
 													<object class="wxButton" name="InterpPositionRemove">
 														<label>Remove Section</label>
 														<default>0</default>
+														<markup>0</markup>
+														<bitmap />
 													</object>
 												</object>
 												<object class="sizeritem">
@@ -1866,6 +1898,8 @@
 													<object class="wxButton" name="InterpPositionSection">
 														<label>Edit Section</label>
 														<default>0</default>
+														<markup>0</markup>
+														<bitmap />
 													</object>
 												</object>
 												<object class="sizeritem">
@@ -1958,6 +1992,8 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>Ok</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -1967,6 +2003,8 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 				</object>
@@ -2166,6 +2204,8 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>Ok</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -2175,6 +2215,8 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 				</object>
@@ -2221,6 +2263,8 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>Ok</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -2230,6 +2274,8 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 				</object>
@@ -2271,6 +2317,8 @@
 				<object class="wxButton" name="InsertNode">
 					<label>Insert Node</label>
 					<default>0</default>
+					<markup>0</markup>
+					<bitmap />
 				</object>
 			</object>
 			<object class="sizeritem">
@@ -2280,6 +2328,8 @@
 				<object class="wxButton" name="DuplicateYarn">
 					<label>Duplicate Yarn</label>
 					<default>0</default>
+					<markup>0</markup>
+					<bitmap />
 				</object>
 			</object>
 			<object class="sizeritem">
@@ -2289,6 +2339,8 @@
 				<object class="wxButton" name="DeleteSelected">
 					<label>Delete Selected</label>
 					<default>0</default>
+					<markup>0</markup>
+					<bitmap />
 				</object>
 			</object>
 		</object>
@@ -2364,6 +2416,7 @@
 	</object>
 	<object class="wxDialog" name="SurfaceMeshOptions">
 		<style>wxDEFAULT_DIALOG_STYLE</style>
+		<size>229,205</size>
 		<title>Surface Mesh Options</title>
 		<centered>1</centered>
 		<object class="wxBoxSizer">
@@ -2372,10 +2425,20 @@
 				<option>0</option>
 				<flag>wxALL</flag>
 				<border>5</border>
+				<object class="wxCheckBox" name="ExportYarns">
+					<tooltip>Include the yarn surfaces in the exported file</tooltip>
+					<label>Export Yarns</label>
+					<checked>1</checked>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
 				<object class="wxCheckBox" name="TrimSurface">
 					<tooltip>Create a surface mesh that is confined the domain limits</tooltip>
 					<label>Trim Surface to Domain</label>
-					<checked>0</checked>
+					<checked>1</checked>
 				</object>
 			</object>
 			<object class="sizeritem">
@@ -2385,7 +2448,49 @@
 				<object class="wxCheckBox" name="ExportDomain">
 					<tooltip>Include the surface of the domain in the exported file</tooltip>
 					<label>Export Domain</label>
+					<checked>1</checked>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxCheckBox" name="FillYarnEnds">
+					<tooltip>Check to create mesh across yarn ends on domain surface.\nIf unchecked yarn end area will be empty.</tooltip>
+					<label>Mesh Yarn Ends</label>
 					<checked>0</checked>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxFlexGridSizer">
+					<rows>2</rows>
+					<cols>2</cols>
+					<vgap>0</vgap>
+					<hgap>0</hgap>
+					<growablecols></growablecols>
+					<growablerows></growablerows>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText17">
+							<label>Seed Size:</label>
+							<wrap>0</wrap>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="SeedSize">
+							<tooltip>The seed size controls the mesh density and corresponds to the approximate edge length of the elements.\nDefaults to one 20th of the domain diagonal length.</tooltip>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
 				</object>
 			</object>
 			<object class="sizeritem">
@@ -2604,6 +2709,8 @@
 									<tooltip>Selection from Textiles list will be added to Layers list</tooltip>
 									<label>Add Layer</label>
 									<default>0</default>
+									<markup>0</markup>
+									<bitmap />
 								</object>
 							</object>
 							<object class="sizeritem">
@@ -2614,6 +2721,8 @@
 									<tooltip>Removes selected item in Layers list</tooltip>
 									<label>Remove Layer</label>
 									<default>0</default>
+									<markup>0</markup>
+									<bitmap />
 								</object>
 							</object>
 							<object class="sizeritem">
@@ -2623,6 +2732,8 @@
 								<object class="wxButton" name="MoveLayerUpButton">
 									<label>Move Layer Up</label>
 									<default>0</default>
+									<markup>0</markup>
+									<bitmap />
 								</object>
 							</object>
 							<object class="sizeritem">
@@ -2632,6 +2743,8 @@
 								<object class="wxButton" name="MoveLayerDownButton">
 									<label>Move Layer Down</label>
 									<default>0</default>
+									<markup>0</markup>
+									<bitmap />
 								</object>
 							</object>
 						</object>
@@ -2660,6 +2773,8 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>Ok</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -2669,6 +2784,8 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 				</object>
@@ -2838,6 +2955,8 @@
 						<object class="wxButton" name="wxID_PRINT">
 							<label>Print</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -2847,6 +2966,8 @@
 						<object class="wxButton" name="wxID_SAVE">
 							<label>Save</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 				</object>
@@ -2875,7 +2996,7 @@
 						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
 						<border>5</border>
 						<object class="wxStaticText" name="m_staticText60">
-							<style>wxALIGN_CENTRE</style>
+							<style>wxALIGN_CENTER_HORIZONTAL</style>
 							<label>Thank you for using TexGen. In order to continue the support and development of the project, we need to know more about its users. Please could you take the time to complete a short survey?</label>
 							<wrap>380</wrap>
 						</object>
@@ -2894,6 +3015,8 @@
 								<object class="wxButton" name="NextTime">
 									<label>Next time</label>
 									<default>0</default>
+									<markup>0</markup>
+									<bitmap />
 								</object>
 							</object>
 							<object class="sizeritem">
@@ -2920,6 +3043,8 @@
 								<object class="wxButton" name="NotAgain">
 									<label>Don&apos;t ask me again</label>
 									<default>0</default>
+									<markup>0</markup>
+									<bitmap />
 								</object>
 							</object>
 						</object>
@@ -2963,6 +3088,8 @@
 						<object class="wxButton" name="wxID_OK">
 							<label>OK</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -2972,6 +3099,8 @@
 						<object class="wxButton" name="wxID_CANCEL">
 							<label>Cancel</label>
 							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
 						</object>
 					</object>
 				</object>

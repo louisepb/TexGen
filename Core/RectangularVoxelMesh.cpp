@@ -58,7 +58,7 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 	vector<POINT_INFO> RowInfo;
 
 	if ( !bAbaqus )  // if outputting in SCIRun format need to output number of voxels
-		Output << (m_XVoxels+1)*(m_YVoxels+1)*(m_ZVoxels+1) << endl;
+		Output << (m_XVoxels+1)*(m_YVoxels+1)*(m_ZVoxels+1) << "\n";
 	
 	for ( z = 0; z <= m_ZVoxels; ++z )
 	{
@@ -72,7 +72,7 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 				Point.z = m_DomainAABB.first.z + m_VoxSize[2] * z;
 				if ( bAbaqus )
 					Output << iNodeIndex << ", ";
-				Output << Point << endl;
+				Output << Point << "\n";
 
 				if ( x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels )
 				{

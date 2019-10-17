@@ -2313,7 +2313,7 @@ void CTextileOrthogonal::ConsolidateCells()
 				bRemoveCells = false;
 				continue;
 			}
-			if ( Cell1[Level2] != PATTERN3D_NOYARN )
+			if ( Cell1[Level2] != PATTERN3D_NOYARN ) // If no space in first cell at weft level, can't consolidate
 			{
 				Levels.push_back(-1);
 				bRemoveCells = false;
@@ -2332,7 +2332,7 @@ void CTextileOrthogonal::ConsolidateCells()
 				break;
 			}*/
 		}
-		if ( j == m_iNumXYarns )
+		if ( j == m_iNumXYarns )  // Only consolidate if can move cell at each warp position (ie across whole width)
 		{
 			if ( bRemoveCells )
 			{

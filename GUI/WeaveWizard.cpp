@@ -101,7 +101,7 @@ wxWizardPageSimple* CWeaveWizard::BuildFirstPage()
 
 	wxSizer *pSubSizer;
 
-	pMainSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("This wizard will create a 2d textile weave model for you.")), SizerFlags);
+	pMainSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("This wizard will create a 2D textile weave model for you.")), SizerFlags);
 
 	SizerFlags.Align(wxALIGN_CENTER_VERTICAL);
 	pSubSizer = new wxFlexGridSizer(2);
@@ -325,11 +325,11 @@ string CWeaveWizard::GetCreateTextileCommand(string ExistingTextile)
 	{
 		if ( m_bShear )
 		{
-			StringStream << "weave = CShearedTextileWeave2D(" << iWidth << ", " << iHeight << ", " << dYarnSpacing << ", " << dFabricThickness << ", " << dShearAngle*PI/180.0 << ", " << m_bRefine << "," << m_bInPlaneTangents << ")" << endl;
+			StringStream << "weave = CShearedTextileWeave2D(" << iWidth << ", " << iHeight << ", " << dYarnSpacing << ", " << dFabricThickness << ", " << dShearAngle*PI/180.0 << ", bool(" << m_bRefine << "), bool(" << m_bInPlaneTangents << "))" << endl;
 		}
 		else
 		{
-			StringStream << "weave = CTextileWeave2D(" << iWidth << ", " << iHeight << ", " << dYarnSpacing << ", " << dFabricThickness << ", " << m_bRefine << "," << m_bInPlaneTangents << ")" << endl;
+			StringStream << "weave = CTextileWeave2D(" << iWidth << ", " << iHeight << ", " << dYarnSpacing << ", " << dFabricThickness << ", bool(" << m_bRefine << "), bool(" << m_bInPlaneTangents << "))" << endl;
 		}
 		if (m_bRefine)
 		{
