@@ -41,7 +41,7 @@ namespace TexGen
 	class CLASS_DECLSPEC CMeshDomainPlane
 	{
 	public:
-		CMeshDomainPlane(double Seed, bool bYarnHoles=false);
+		CMeshDomainPlane(double Seed, bool bFillEnds=true);
 		virtual ~CMeshDomainPlane(void);
 		
 		void MeshDomainPlanes(bool bPeriodic);
@@ -70,6 +70,6 @@ namespace TexGen
 		/// Number of polygon vertices on each face. Number of outer vector members = number of faces
 		vector<vector<int> > m_PolygonNumVertices;
 		/// True if yarn areas are to be removed from domain
-		bool m_bYarnHoles;
+		bool m_bFillEnds;
 	};
 };  // namespace TexGen

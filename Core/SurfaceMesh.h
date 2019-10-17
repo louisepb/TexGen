@@ -33,24 +33,36 @@ namespace TexGen
 	class CLASS_DECLSPEC CSurfaceMesh : public CMeshDomainPlane
 	{
 	public:
-		CSurfaceMesh(double Seed, bool bYarnHoles = false, bool bBinary = false );
+		/// Constructor for surface mesh class
+		/**
+		\param Seed Seed size for meshing domain surfaces
+		\param bFillEnds True if yarn areas in domain surfaces are to be meshed
+		*/
+		CSurfaceMesh(double Seed, bool bFillEnds = true );
 		virtual ~CSurfaceMesh(void);
 		/// Save a textile as a surface mesh with triangulated domain faces
 		/**
 		\param Textile Textile to be meshed
-		\param Filename for surface output files
-		\param bPeriodic If set true, opposite faces of mesh will be replicated
+		\param bSaveYarns True if yarn surfaces to be saved
+		\param bSaveDomain True if domain surfaces to be saved
+		\param bTrimToDomain True if yarns are to be trimmed to domain surfaces
 		*/
-		void SaveSurfaceMesh(CTextile &Textile, string OutputFilename, bool bPeriodic, bool bSaveYarns = true);
+		void SaveSurfaceMesh(CTextile &Textile, bool bSaveYarns = true, bool bSaveDomain = false, bool bTrimToDomain = true);
+
+		/// Save surface mesh data to STL file
+		/**
+		\param Filename Filename to save data to
+		\param bBinary True to save as binary file, False to save as ASCII
+		*/
+		void SaveToSTL(string Filename, bool bBinary);
+		/// Save surface mesh data to VTK file
+		void SaveToVTK(string Filename);
+		/// Save surface mesh data to SCIRun format
+		void SaveToSCIRun(string Filename);
 
 	protected:
 		///	Mesh used to store node points and elements
 		CMesh			m_Mesh;
 
-		/// True if file to be saved as binary, false if ASCII
-		bool m_bBinary;
-
-		/// Save surface mesh data to STL file
-		void SaveToSTL(string Filename, CTextile &Textile, bool bSaveYarns);
 	};
 };  // namespace TexGen

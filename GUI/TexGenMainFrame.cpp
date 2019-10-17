@@ -106,6 +106,11 @@ BEGIN_EVENT_TABLE(CVolumeMeshOptions, wxDialog)
 	EVT_UPDATE_UI( XRCID("PeriodicBoundaries"), CVolumeMeshOptions::OnPeriodicBoundariesUpdate)
 END_EVENT_TABLE()
 
+BEGIN_EVENT_TABLE(CSurfaceMeshOptions, wxDialog)
+	EVT_UPDATE_UI(XRCID("FillYarnEnds"), CSurfaceMeshOptions::OnFillYarnEndsUpdate)
+	EVT_UPDATE_UI(XRCID("SeedSize"), CSurfaceMeshOptions::OnSeedSizeUpdate)
+END_EVENT_TABLE()
+
 BEGIN_EVENT_TABLE(CSurveyDialog, wxDialog)
 	EVT_BUTTON(XRCID("NextTime"), CSurveyDialog::OnClickNextTime)
 	EVT_BUTTON(XRCID("NotAgain"), CSurveyDialog::OnClickNotAgain)
@@ -733,64 +738,72 @@ void CTexGenMainFrame::OnSaveSurfaceMesh(wxCommandEvent& event)
 {
 	string TextileName = GetTextileSelection();
 
-	bool bExportDomain = false, bTrimSurface = true;
-	wxDialog MeshOptions;
-	if (wxXmlResource::Get()->LoadDialog(&MeshOptions, this, wxT("SurfaceMeshOptions")))
+	CTextile* pTextile = TEXGEN.GetTextile(TextileName);
+
+	double dSeedSize = 1;
+
+	if (pTextile)
 	{
-		XRCCTRL(MeshOptions, "TrimSurface", wxCheckBox)->SetValidator(wxGenericValidator(&bTrimSurface));
-		XRCCTRL(MeshOptions, "ExportDomain", wxCheckBox)->SetValidator(wxGenericValidator(&bExportDomain));
-
-		if (MeshOptions.ShowModal() == wxID_OK)
+		const CDomain* pDomain = pTextile->GetDomain();
+		if (pDomain)
 		{
-			wxFileDialog dialog
-			(
-				this,
-				wxT("Save Mesh file"),
-				wxGetCwd(),
-				wxEmptyString,
-				wxT("VTK unstructured grid file (*.vtu)|*.vtu|")
-				wxT("ASCII STL file (*.stl)|*.stl|")
-				wxT("Binary STL file (*.stl;*stlb)|*.stl;*stlb|")
-				wxT("SCIRun file (*.pts)|*.pts|"),
-				wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
-			);
-			dialog.CentreOnParent();
-			if (dialog.ShowModal() == wxID_OK)
-			{
-				stringstream Command;
-				Command << "mesh = CMesh()" << endl;
-				Command << "textile = GetTextile(r'" << TextileName << "')" << endl;
-				if (bTrimSurface && bExportDomain)
-				{
-					Command << "DomainMesher = CMeshDomainPlane(0.1)" << endl;
+			pair<XYZ, XYZ> DomainSize = pDomain->GetMesh().GetAABB();
+			dSeedSize = GetLength(DomainSize.first, DomainSize.second) / 20.0;
+		}
+	}
+	wxString SeedSize = wxString::Format(wxT("%.4f"), dSeedSize);
 
-				}
-				else
-				{
-					if (bTrimSurface)
-						Command << "textile.AddSurfaceToMesh(mesh, True)" << endl;
-					else
-						Command << "textile.AddSurfaceToMesh(mesh, False)" << endl;
-					if (bExportDomain)
-						Command << "mesh.InsertMesh(textile.GetDomain().GetMesh())" << endl;
-				}
-				switch (dialog.GetFilterIndex())
-				{
-				case 0:
-					Command << "mesh.SaveToVTK(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
-					break;
-				case 1:
-					Command << "mesh.SaveToSTL(r'" << ConvertString(dialog.GetPath()) << "', False)" << endl;
-					break;
-				case 2:
-					Command << "mesh.SaveToSTL(r'" << ConvertString(dialog.GetPath()) << "', True)" << endl;
-					break;
-				case 3:
-					Command << "mesh.SaveToSCIRun(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
-					break;
-				}
-				SendPythonCode(Command.str());
+	bool bExportDomain = false, bTrimSurface = true, bExportYarns = true, bFillYarnEnds = true;
+	CSurfaceMeshOptions MeshOptions(this);
+	
+	XRCCTRL(MeshOptions, "TrimSurface", wxCheckBox)->SetValidator(wxGenericValidator(&bTrimSurface));
+	XRCCTRL(MeshOptions, "ExportDomain", wxCheckBox)->SetValidator(wxGenericValidator(&bExportDomain));
+	XRCCTRL(MeshOptions, "ExportYarns", wxCheckBox)->SetValidator(wxGenericValidator(&bExportYarns));
+	XRCCTRL(MeshOptions, "FillYarnEnds", wxCheckBox)->SetValidator(wxGenericValidator(&bFillYarnEnds));
+	XRCCTRL(MeshOptions, "SeedSize", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &SeedSize));
+
+	if (MeshOptions.ShowModal() == wxID_OK)
+	{
+		wxFileDialog dialog
+		(
+			this,
+			wxT("Save Mesh file"),
+			wxGetCwd(),
+			wxEmptyString,
+			wxT("VTK unstructured grid file (*.vtu)|*.vtu|")
+			wxT("ASCII STL file (*.stl)|*.stl|")
+			wxT("Binary STL file (*.stl;*stlb)|*.stl;*stlb|")
+			wxT("SCIRun file (*.pts)|*.pts|"),
+			wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
+		);
+		dialog.CentreOnParent();
+		if (dialog.ShowModal() == wxID_OK)
+		{
+			stringstream Command;
+			if ( !SeedSize.IsEmpty())
+				Command << "surface = CSurfaceMesh( " << ConvertString(SeedSize) << ", bool(" << stringify(bFillYarnEnds) << "))" << endl;
+			else
+				Command << "surface = CSurfaceMesh( " << stringify(dSeedSize) << ", bool(" << stringify(bFillYarnEnds) << "))" << endl;
+				
+			Command << "textile = GetTextile(r'" << TextileName << "')" << endl;
+			Command << "surface.SaveSurfaceMesh( textile, bool(" << stringify(bExportYarns) << "), bool(" << stringify(bExportDomain) << "), bool(" << stringify(bTrimSurface) << "))" << endl;
+				
+			switch (dialog.GetFilterIndex())
+			{
+			case 0:
+				Command << "surface.SaveToVTK(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
+				break;
+			case 1:
+				Command << "surface.SaveToSTL(r'" << ConvertString(dialog.GetPath()) << "', False)" << endl;
+				break;
+			case 2:
+				Command << "surface.SaveToSTL(r'" << ConvertString(dialog.GetPath()) << "', True)" << endl;
+				break;
+			case 3:
+				Command << "surface.SaveToSCIRun(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
+				break;
 			}
+			SendPythonCode(Command.str());
 		}
 	}
 }
@@ -2654,6 +2667,37 @@ void CVolumeMeshOptions::OnPeriodicBoundariesUpdate(wxUpdateUIEvent& event)
 		wxRadioBox* PeriodicBoundariesCtrl = (wxRadioBox*)FindWindow(XRCID("PeriodicBoundaries"));
 		PeriodicBoundariesCtrl->Enable(STAGGERED_BC, false);
 		PeriodicBoundariesCtrl->Enable(ROTATED_BC, false);
+	}
+	else
+	{
+		event.Enable(false);
+	}
+}
+
+CSurfaceMeshOptions::CSurfaceMeshOptions(wxWindow* parent)
+{
+	wxXmlResource::Get()->LoadDialog(this, parent, wxT("SurfaceMeshOptions"));
+}
+
+void CSurfaceMeshOptions::OnFillYarnEndsUpdate(wxUpdateUIEvent& event)
+{
+	wxCheckBox* ExportDomainCtrl = (wxCheckBox*)FindWindow(XRCID("ExportDomain"));
+	if (ExportDomainCtrl->GetValue())
+	{
+		event.Enable(true);
+	}
+	else
+	{
+		event.Enable(false);
+	}
+}
+
+void CSurfaceMeshOptions::OnSeedSizeUpdate(wxUpdateUIEvent& event)
+{
+	wxCheckBox* ExportDomainCtrl = (wxCheckBox*)FindWindow(XRCID("ExportDomain"));
+	if (ExportDomainCtrl->GetValue())
+	{
+		event.Enable(true);
 	}
 	else
 	{

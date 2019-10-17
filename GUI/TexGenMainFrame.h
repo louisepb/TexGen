@@ -175,6 +175,18 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
+class CSurfaceMeshOptions : public wxDialog
+{
+public:
+	CSurfaceMeshOptions(wxWindow* parent);
+
+private:
+	void OnFillYarnEndsUpdate(wxUpdateUIEvent& event);
+	void OnSeedSizeUpdate(wxUpdateUIEvent& event);
+
+	DECLARE_EVENT_TABLE()
+};
+
 class CSurveyDialog : public wxDialog
 {
 public:

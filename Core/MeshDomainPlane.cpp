@@ -30,10 +30,10 @@ extern "C"
 using namespace TexGen;
 using namespace std;
 
-CMeshDomainPlane::CMeshDomainPlane(double Seed, bool bYarnHoles)
+CMeshDomainPlane::CMeshDomainPlane(double Seed, bool bFillEnds)
 {
 	m_Seed = Seed;
-	m_bYarnHoles = bYarnHoles;
+	m_bFillEnds = bFillEnds;
 }
 
 CMeshDomainPlane::~CMeshDomainPlane(void)
@@ -322,7 +322,7 @@ bool CMeshDomainPlane::Triangulate(vector<vector<XY> > &PolygonPoints, vector<XY
 		}
 	}
 
-	if (m_bYarnHoles)
+	if (!m_bFillEnds)
 	{
 		// Input hole points
 		vector<XY>::iterator itHolePoints;
@@ -353,7 +353,7 @@ bool CMeshDomainPlane::Triangulate(vector<vector<XY> > &PolygonPoints, vector<XY
 
 	delete[] TriangleInput.pointlist;
 	delete[] TriangleInput.segmentlist;
-	if (m_bYarnHoles)
+	if (!m_bFillEnds)
 		delete[] TriangleInput.holelist;
 	//	delete [] TriangleInput.regionlist;
 

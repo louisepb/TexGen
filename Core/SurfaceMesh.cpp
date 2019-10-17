@@ -24,41 +24,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace TexGen;
 using namespace std;
 
-CSurfaceMesh::CSurfaceMesh(double Seed, bool bYarnHoles, bool bBinary ) : CMeshDomainPlane(Seed, bYarnHoles)
+CSurfaceMesh::CSurfaceMesh(double Seed, bool bFillEnds ) : CMeshDomainPlane(Seed, bFillEnds)
 {
-	m_bBinary = bBinary;
 }
 
 CSurfaceMesh::~CSurfaceMesh(void)
 {
 }
 
-void CSurfaceMesh::SaveSurfaceMesh(CTextile &Textile, string OutputFilename, bool bPeriodic, bool bSaveYarns)
+void CSurfaceMesh::SaveSurfaceMesh(CTextile &Textile, bool bSaveYarns, bool bSaveDomain, bool bTrimToDomain)
 {
 	XYZ P;
 
-	if (!Textile.AddSurfaceToMesh(m_Mesh, m_DomainMeshes, true))
+	if (!Textile.AddSurfaceToMesh(m_Mesh, m_DomainMeshes, bTrimToDomain))
 	{
 		TGERROR("Error creating surface mesh. Cannot generate tetgen mesh");
 		return;
 	}
 	m_Mesh.ConvertQuadstoTriangles(true);
 
-	MeshDomainPlanes(bPeriodic);
-
-	SaveToSTL(OutputFilename, Textile, bSaveYarns);
-}
-
-void CSurfaceMesh::SaveToSTL(string Filename, CTextile &Textile, bool bSaveYarns)
-{
 	if (!bSaveYarns)
 		m_Mesh.Clear();
 
-	vector<CMesh>::iterator itTriangulatedMeshes;
-	for (itTriangulatedMeshes = m_TriangulatedMeshes.begin(); itTriangulatedMeshes != m_TriangulatedMeshes.end(); ++itTriangulatedMeshes)
+	if (bSaveDomain)
 	{
-		m_Mesh.InsertMesh(*itTriangulatedMeshes);
+		MeshDomainPlanes(true);
+		vector<CMesh>::iterator itTriangulatedMeshes;
+		for (itTriangulatedMeshes = m_TriangulatedMeshes.begin(); itTriangulatedMeshes != m_TriangulatedMeshes.end(); ++itTriangulatedMeshes)
+		{
+			m_Mesh.InsertMesh(*itTriangulatedMeshes);
+		}
 	}
+}
 
-	m_Mesh.SaveToSTL(Filename, m_bBinary);
+void CSurfaceMesh::SaveToSTL(string Filename, bool bBinary)
+{
+	m_Mesh.SaveToSTL( Filename, bBinary );
+}
+
+void CSurfaceMesh::SaveToVTK( string Filename )
+{
+	m_Mesh.SaveToVTK(Filename);
+}
+
+void CSurfaceMesh::SaveToSCIRun(string Filename)
+{
+	m_Mesh.SaveToSCIRun(Filename);
 }
