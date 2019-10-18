@@ -1050,14 +1050,13 @@ void CTexGenMainFrame::OnSaveABAQUSSurface(wxCommandEvent& event)
 	string TextileName = GetTextileSelection();
 	stringstream Command;
 
-	bool bExportDomain = false, bTrimSurface = true;
+	bool bTrimSurface = true;
 	int iContactSurfaces;
 
 	wxDialog MeshOptions;
 	if (wxXmlResource::Get()->LoadDialog(&MeshOptions, this, wxT("ABAQUSSurfaceMeshOptions")))
 	{
 		XRCCTRL(MeshOptions, "TrimSurface", wxCheckBox)->SetValidator(wxGenericValidator(&bTrimSurface));
-		XRCCTRL(MeshOptions, "ExportDomain", wxCheckBox)->SetValidator(wxGenericValidator(&bExportDomain));
 		XRCCTRL(MeshOptions, "ContactSurfaces", wxRadioBox)->SetValidator(wxGenericValidator(&iContactSurfaces));
 
 		if (MeshOptions.ShowModal() == wxID_OK)
@@ -1076,8 +1075,8 @@ void CTexGenMainFrame::OnSaveABAQUSSurface(wxCommandEvent& event)
 			{
 				string strContact = iContactSurfaces ? "True" : "False";
 				Command << "textile = GetTextile(r'" << TextileName << "')" << endl;
-				Command << "SurfaceMesh = CSurfaceMeshExport( " << strContact << ", " << bTrimSurface << ", " << bExportDomain << " )" << endl;
-				Command << "SurfaceMesh.SaveSurfaceMeshToABAQUS(r'" << ConvertString(dialog.GetPath()) << "', textile)" << endl;
+				Command << "SurfaceMesh = CShellElementExport( " << strContact << ", bool(" << bTrimSurface << ") )" << endl;
+				Command << "SurfaceMesh.SaveShellElementToABAQUS(r'" << ConvertString(dialog.GetPath()) << "', textile)" << endl;
 
 				SendPythonCode(Command.str());
 			}

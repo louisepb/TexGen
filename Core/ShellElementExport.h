@@ -28,11 +28,11 @@ namespace TexGen
 	using namespace std;	
 
 	/// Class for exporting surface mesh to ABAQUS
-	class CLASS_DECLSPEC CSurfaceMeshExport
+	class CLASS_DECLSPEC CShellElementExport
 	{
 	public:
-		CSurfaceMeshExport( bool bWholeSurfaces, bool bTrimSurface = true, bool bExportDomain = false );
-		~CSurfaceMeshExport(void);
+		CShellElementExport( bool bWholeSurfaces, bool bTrimSurface = true );
+		~CShellElementExport(void);
 		
 		/// Save surface mesh to ABAQUS input file
 		/**
@@ -40,7 +40,7 @@ namespace TexGen
 		\param Textile to be exported
 		\return True if export successful, False if not
 		*/
-		bool SaveSurfaceMeshToABAQUS(string Filename, CTextile& Textile );
+		bool SaveShellElementToABAQUS(string Filename, CTextile& Textile );
 
 		const CMesh &GetMesh() { return m_SurfaceMesh; }
 

@@ -2536,16 +2536,6 @@
 				<option>0</option>
 				<flag>wxALL</flag>
 				<border>5</border>
-				<object class="wxCheckBox" name="ExportDomain">
-					<tooltip>Include the surface of the domain in the exported file</tooltip>
-					<label>Export Domain</label>
-					<checked>0</checked>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxALL</flag>
-				<border>5</border>
 				<object class="wxRadioBox" name="ContactSurfaces">
 					<style>wxRA_SPECIFY_COLS</style>
 					<tooltip>For woven textiles use Upper and Lower surfaces. Choose Whole Yarn where contacts surfaces are not clearly defined eg knit</tooltip>

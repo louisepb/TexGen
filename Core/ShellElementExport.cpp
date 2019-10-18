@@ -23,18 +23,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 using namespace TexGen;
-CSurfaceMeshExport::CSurfaceMeshExport( bool bWholeSurfaces, bool bTrimSurface, bool bExportDomain )
+CShellElementExport::CShellElementExport( bool bWholeSurfaces, bool bTrimSurface )
 : m_bWholeSurfaces( bWholeSurfaces )
 , m_bTrimSurface( bTrimSurface )
-, m_bExportDomain( bExportDomain )
 {
 }
 
-CSurfaceMeshExport::~CSurfaceMeshExport(void)
+CShellElementExport::~CShellElementExport(void)
 {
 }
 
-bool CSurfaceMeshExport::SaveSurfaceMeshToABAQUS(string Filename, CTextile& Textile )
+bool CShellElementExport::SaveShellElementToABAQUS(string Filename, CTextile& Textile )
 {
 	TGLOG("Replacing spaces in filename with underscore for ABAQUS compatibility");
 	Filename = ReplaceFilenameSpaces( Filename );
@@ -124,7 +123,7 @@ bool CSurfaceMeshExport::SaveSurfaceMeshToABAQUS(string Filename, CTextile& Text
 	return true;
 }
 
-void CSurfaceMeshExport::CreateSurfaceDefinitions( int iNumYarns, const vector<XYZ> &Repeats, map<string, vector<pair<int, int>> > &SurfaceDefinitions)
+void CShellElementExport::CreateSurfaceDefinitions( int iNumYarns, const vector<XYZ> &Repeats, map<string, vector<pair<int, int>> > &SurfaceDefinitions)
 {
 	for (int i=0; i<iNumYarns; ++i)
 	{
@@ -145,7 +144,7 @@ void CSurfaceMeshExport::CreateSurfaceDefinitions( int iNumYarns, const vector<X
 	}
 }
 
-void CSurfaceMeshExport::GetYarnSurfaces(int iYarn, const vector<XYZ> &Repeats, vector<pair<int,int>> &UpperFaces, vector<pair<int,int>> &LowerFaces )
+void CShellElementExport::GetYarnSurfaces(int iYarn, const vector<XYZ> &Repeats, vector<pair<int,int>> &UpperFaces, vector<pair<int,int>> &LowerFaces )
 {
 	CMesh SurfaceMesh = m_YarnMeshes[iYarn];
 	SurfaceMesh.RemoveElementType(CMesh::POLYGON);
@@ -192,7 +191,7 @@ void CSurfaceMeshExport::GetYarnSurfaces(int iYarn, const vector<XYZ> &Repeats, 
 	
 }
 
-void CSurfaceMeshExport::GetYarnSurface(int iYarn, vector<pair<int,int>> &Elements )
+void CShellElementExport::GetYarnSurface(int iYarn, vector<pair<int,int>> &Elements )
 {
 	// Get the yarn surface
 	int ElementNum;
@@ -211,7 +210,7 @@ void CSurfaceMeshExport::GetYarnSurface(int iYarn, vector<pair<int,int>> &Elemen
 	
 }
 
-void CSurfaceMeshExport::CreateSurfaces(ostream &Output, map< string, vector<pair<YarnNumber,int>> > &SurfaceDefinitions)
+void CShellElementExport::CreateSurfaces(ostream &Output, map< string, vector<pair<YarnNumber,int>> > &SurfaceDefinitions)
 {
 	// Now output the surface definitions
 	Output << "***************************" << endl;
@@ -233,12 +232,12 @@ void CSurfaceMeshExport::CreateSurfaces(ostream &Output, map< string, vector<pai
 }
 
 
-int CSurfaceMeshExport::GetGlobalElementIndex(pair<YarnNumber,int> Element)
+int CShellElementExport::GetGlobalElementIndex(pair<YarnNumber,int> Element)
 {
 	return m_ElementIndexOffsets[Element.first] + Element.second;  // m_ElementOffsets[Yarn] + ElementIndex;
 }
 
-void CSurfaceMeshExport::GetElementInfo( CTextile& Textile )
+void CShellElementExport::GetElementInfo( CTextile& Textile )
 {	
 	TGLOG("Getting point information");
 	vector<POINT_INFO> YarnElementInfo;
@@ -253,7 +252,7 @@ void CSurfaceMeshExport::GetElementInfo( CTextile& Textile )
 	}
 }
 
-void CSurfaceMeshExport::BuildIndexOffsets()
+void CShellElementExport::BuildIndexOffsets()
 {
 	// Where yarn meshes are combined to create ABAQUS file
 	// need to create offsets for node and element numbering
@@ -277,7 +276,7 @@ void CSurfaceMeshExport::BuildIndexOffsets()
 	}
 }
 
-void CSurfaceMeshExport::CreateContacts(ostream &Output, const CTextile &Textile)
+void CShellElementExport::CreateContacts(ostream &Output, const CTextile &Textile)
 {
 	Output << "***************************" << endl;
 	Output << "*** CONTACT DEFINITIONS ***" << endl;
@@ -304,7 +303,7 @@ void CSurfaceMeshExport::CreateContacts(ostream &Output, const CTextile &Textile
 
 }
 
-void CSurfaceMeshExport::CreateContacts(ostream &Output, const CTextileWeave &Weave)
+void CShellElementExport::CreateContacts(ostream &Output, const CTextileWeave &Weave)
 {
 	set<pair<int, int> > Contacts;
 	int i, j, k;
@@ -322,7 +321,7 @@ void CSurfaceMeshExport::CreateContacts(ostream &Output, const CTextileWeave &We
 	OutputContacts( Output, Contacts );
 }
 
-void CSurfaceMeshExport::CreateContacts(ostream &Output, const CTextile3DWeave &Weave)
+void CShellElementExport::CreateContacts(ostream &Output, const CTextile3DWeave &Weave)
 {
 	set<pair<int, int> > Contacts;
 	int i, j, k;
@@ -341,7 +340,7 @@ void CSurfaceMeshExport::CreateContacts(ostream &Output, const CTextile3DWeave &
 	OutputContacts( Output, Contacts );
 }
 
-void CSurfaceMeshExport::OutputContacts( ostream &Output, set<pair<int, int> > &Contacts )
+void CShellElementExport::OutputContacts( ostream &Output, set<pair<int, int> > &Contacts )
 {
 	set<pair<int, int> >::iterator itContact;
 	for (itContact = Contacts.begin(); itContact != Contacts.end(); ++itContact)
@@ -355,13 +354,13 @@ void CSurfaceMeshExport::OutputContacts( ostream &Output, set<pair<int, int> > &
 	}
 }
 
-void CSurfaceMeshExport::CreateContact(ostream &Output, string Name1, string Name2, string InteractionName)
+void CShellElementExport::CreateContact(ostream &Output, string Name1, string Name2, string InteractionName)
 {
 	Output << "*Contact Pair, Interaction=" << InteractionName << endl;
 	Output << Name1 << ", " << Name2 << endl;
 }
 
-void CSurfaceMeshExport::CreateInteractions( ostream &Output )
+void CShellElementExport::CreateInteractions( ostream &Output )
 {
 	Output << "************" << endl;
 	Output << "*** INTERACTION PROPERTIES ***" << endl;
