@@ -7,6 +7,17 @@ GUI
 ** Added Refresh View option to Render menu
 ** Added bool casting for SWIG 4 compatibility
 ** Added Export Yarns, Mesh Yarn Ends and Seed Size options to surface mesh export
+** Added Export ABAQUS Surface Mesh File option
+
+Core
+====
+** Created CMeshDomainPlane class - moved code in CTetgenMesh which did this
+** Created CSurfaceMesh class - added functionality to create yarn and/or domain surfaces and to mesh domain ends with or without yarn end meshes
+** Created CShellElementExport class - exports surface mesh elements as S4R shell elements with surface sets and contact definitions
+
+Unit Tests
+==========
+** Added tetgen mesh export test
 
 v3.11.0
 =======
@@ -30,8 +41,6 @@ Core
 ** Included headers in all Abaqus .eld and .ori files
 ** Changed triangle library to https://github.com/wo80/Triangle to address memory issues in Win10 build
 ** Added whole surface output to dry fibre export with compression plates
-** Created CMeshDomainPlane class - moved code in CTetgenMesh which did this
-** Created CSurfaceMesh class - added functionality to create yarn and/or domain surfaces and to mesh domain ends with or without yarn end meshes
 
 GUI
 ===
