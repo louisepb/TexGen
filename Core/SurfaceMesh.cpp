@@ -38,7 +38,7 @@ void CSurfaceMesh::SaveSurfaceMesh(CTextile &Textile, bool bSaveYarns, bool bSav
 
 	if (!Textile.AddSurfaceToMesh(m_Mesh, m_DomainMeshes, bTrimToDomain))
 	{
-		TGERROR("Error creating surface mesh. Cannot generate tetgen mesh");
+		TGERROR("Error creating surface mesh.");
 		return;
 	}
 	m_Mesh.ConvertQuadstoTriangles(true);
