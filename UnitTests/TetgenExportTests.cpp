@@ -35,7 +35,7 @@ void CTetgenExportTests::TestPeriodicExport()
 {
 	CTextileWeave2D Textile = m_TextileFactory.PlainWeaveWithGap();
 	CTetgenMesh TetMesh(0.1);
-	TetMesh.SaveTetgenMesh(Textile, "TetgenTestPeriodic", "pqAY", true);
+	TetMesh.SaveTetgenMesh(Textile, "TetgenTestPeriodic", "pqAY", true, 0);
 	
 	// Compare to template file
 	CPPUNIT_ASSERT(CompareFiles("TetgenTestPeriodic.inp", "..\\..\\UnitTests\\TetgenTestPeriodic.inp"));

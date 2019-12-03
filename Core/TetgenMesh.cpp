@@ -38,7 +38,7 @@ CTetgenMesh::~CTetgenMesh(void)
 {
 }
 
-void CTetgenMesh::SaveTetgenMesh( CTextile &Textile, string OutputFilename, string Parameters, bool bPeriodic )
+void CTetgenMesh::SaveTetgenMesh( CTextile &Textile, string OutputFilename, string Parameters, bool bPeriodic, int FileType )
 {
 	tetgenio::facet *f;
 	tetgenio::polygon *p;
@@ -270,36 +270,76 @@ void CTetgenMesh::SaveTetgenMesh( CTextile &Textile, string OutputFilename, stri
 	m_out.save_faces(TetgenOutput);
 	delete [] TetgenOutput;
 
-	SaveToAbaqus( OutputFilename, Textile );
+	SaveMesh( Textile );
+	if (FileType == INP_EXPORT)
+		SaveToAbaqus(OutputFilename, Textile);
+	else
+		SaveToVTK(OutputFilename);
 }
 
-void CTetgenMesh::SaveToAbaqus( string Filename, CTextile &Textile )
+void CTetgenMesh::SaveMesh(CTextile &Textile)
 {
-	CMesh TetMesh;
-
+	m_OutputMesh.Clear();
+	
 	// Store output mesh in CMesh
-	for ( int i = 0; i < m_out.numberofpoints*3; ) // Three REALs in pointlist for each point
+	for (int i = 0; i < m_out.numberofpoints * 3; ) // Three REALs in pointlist for each point
 	{
 		XYZ Point;
 		Point.x = m_out.pointlist[i++];
 		Point.y = m_out.pointlist[i++];
 		Point.z = m_out.pointlist[i++];
-		TetMesh.AddNode( Point );
+		m_OutputMesh.AddNode(Point);
 	}
-	
+
 	CMesh::ELEMENT_TYPE ElementType = m_out.numberofcorners == 4 ? CMesh::TET : CMesh::QUADRATIC_TET;
 
-	for ( int i = 0; i < m_out.numberoftetrahedra; i++ )
+	for (int i = 0; i < m_out.numberoftetrahedra; i++)
 	{
 		vector<int> Indices;
-		for ( int j = 0; j < m_out.numberofcorners; j++ )
+		for (int j = 0; j < m_out.numberofcorners; j++)
 		{
-			Indices.push_back( m_out.tetrahedronlist[i*m_out.numberofcorners + j]-1 );  // Tetgen indices start from 1
+			Indices.push_back(m_out.tetrahedronlist[i*m_out.numberofcorners + j] - 1);  // Tetgen indices start from 1
 		}
-		TetMesh.AddElement( ElementType, Indices );
+		m_OutputMesh.AddElement(ElementType, Indices);
 	}
 
-	vector<POINT_INFO> ElementsInfo;
-	Textile.GetPointInformation( TetMesh.GetElementCenters( ElementType ), ElementsInfo );
-	TetMesh.SaveToABAQUS( Filename, &ElementsInfo, false, false );
+	Textile.GetPointInformation(m_OutputMesh.GetElementCenters(ElementType), m_ElementsInfo);
+}
+
+void CTetgenMesh::SaveToAbaqus( string Filename, CTextile &Textile )
+{
+	m_OutputMesh.SaveToABAQUS( Filename, &m_ElementsInfo, false, false );
+	
+}
+
+void CTetgenMesh::SaveToVTK(string Filename)
+{
+	CMeshData<char> YarnIndex("YarnIndex", CMeshDataBase::ELEMENT);
+	CMeshData<XYZ> YarnTangent("YarnTangent", CMeshDataBase::ELEMENT);
+	CMeshData<XY> Location("Location", CMeshDataBase::ELEMENT);
+	CMeshData<double> VolumeFraction("VolumeFraction", CMeshDataBase::ELEMENT);
+	CMeshData<double> SurfaceDistance("SurfaceDistance", CMeshDataBase::ELEMENT);
+	CMeshData<XYZ> Orientation("Orientation", CMeshDataBase::ELEMENT);
+
+	vector<POINT_INFO>::const_iterator itPointInfo;
+	for (itPointInfo = m_ElementsInfo.begin(); itPointInfo != m_ElementsInfo.end(); ++itPointInfo)
+	{
+		YarnIndex.m_Data.push_back(itPointInfo->iYarnIndex);
+		YarnTangent.m_Data.push_back(itPointInfo->YarnTangent);
+		Location.m_Data.push_back(itPointInfo->Location);
+		VolumeFraction.m_Data.push_back(itPointInfo->dVolumeFraction);
+		SurfaceDistance.m_Data.push_back(itPointInfo->dSurfaceDistance);
+		Orientation.m_Data.push_back(itPointInfo->Orientation);
+	}
+
+	vector<CMeshDataBase*> MeshData;
+
+	MeshData.push_back(&YarnIndex);
+	MeshData.push_back(&YarnTangent);
+	MeshData.push_back(&Location);
+	MeshData.push_back(&VolumeFraction);
+	MeshData.push_back(&SurfaceDistance);
+	MeshData.push_back(&Orientation);
+
+	m_OutputMesh.SaveToVTK( Filename, &MeshData );
 }

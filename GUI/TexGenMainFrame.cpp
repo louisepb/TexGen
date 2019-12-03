@@ -1106,7 +1106,8 @@ void CTexGenMainFrame::OnSaveTetgenMesh( wxCommandEvent& event )
 		wxT("Save Tetgen Mesh file"),
 		wxGetCwd(),
 		wxEmptyString,
-		wxT("Abaqus input file (*.inp)|*.inp"),
+		wxT("ABAQUS input file (*.inp)|*.inp|")
+		wxT("VTK unstructured grid file (*.vtu)|*.vtu"),
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
 	);
 	dialog.CentreOnParent();
@@ -1122,7 +1123,7 @@ void CTexGenMainFrame::OnSaveTetgenMesh( wxCommandEvent& event )
 			if (dialog.ShowModal() == wxID_OK)
 			{
 				Command << "TetMesh = CTetgenMesh(" + ConvertString(seed) + ")" << endl;
-				Command << "TetMesh.SaveTetgenMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath())<< "', '" + ConvertString(params) + "', bool(" << bPeriodic << + "))" << endl;
+				Command << "TetMesh.SaveTetgenMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath())<< "', '" + ConvertString(params) + "', bool(" << bPeriodic << "), " << dialog.GetFilterIndex() << + ")" << endl;
 
 				SendPythonCode(Command.str());
 			}

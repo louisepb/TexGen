@@ -38,6 +38,7 @@ namespace TexGen
 	public:
 		CTetgenMesh( double Seed );
 		virtual ~CTetgenMesh(void);
+
 		/// Save a textile as a tetrahedralized mesh using Tetgen
 		/**
 		\param Textile Textile to be meshed
@@ -45,15 +46,24 @@ namespace TexGen
 		\param Parameters tetgen flags to be applied during tetrahedralization
 		\param bPeriodic If set true, opposite faces of mesh will be replicated
 		*/
-		void SaveTetgenMesh(CTextile &Textile, string OutputFilename, string Parameters, bool bPeriodic );
+		void SaveTetgenMesh(CTextile &Textile, string OutputFilename, string Parameters, bool bPeriodic, int FileType );
 
 	protected:
-		///	Mesh used to store node points and elements
+		///	Mesh used to store input node points and elements
 		CMesh			m_Mesh;
 		/// Tetgen input and output structures
 		tetgenio		m_in, m_out;
+		/// Mesh used to store output nodes and elements
+		CMesh			m_OutputMesh;
+		/// Element information for output mesh
+		vector<POINT_INFO> m_ElementsInfo;
 
-		/// Save tetgenio data to Abaqus export file
+		/// Save tetgenio data to CMesh
+		void SaveMesh(CTextile &Textile);
+		/// Save output mesh to Abaqus export file
 		void SaveToAbaqus( string Filename, CTextile &Textile );
+		/// Save output mesh to VTK format
+		void SaveToVTK(string Filename);
+		
 	};
 };  // namespace TexGen
