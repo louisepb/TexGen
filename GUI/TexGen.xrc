@@ -11,8 +11,8 @@
 				<flag>wxEXPAND</flag>
 				<border>5</border>
 				<object class="wxFlexGridSizer">
-					<rows>3</rows>
-					<cols>3</cols>
+					<rows>5</rows>
+					<cols>2</cols>
 					<vgap>0</vgap>
 					<hgap>0</hgap>
 					<growablecols></growablecols>
@@ -36,12 +36,6 @@
 							<maxlength>0</maxlength>
 						</object>
 					</object>
-					<object class="spacer">
-						<option>1</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<size>0,0</size>
-					</object>
 					<object class="sizeritem">
 						<option>0</option>
 						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
@@ -61,12 +55,6 @@
 							<maxlength>0</maxlength>
 						</object>
 					</object>
-					<object class="spacer">
-						<option>1</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<size>0,0</size>
-					</object>
 					<object class="sizeritem">
 						<option>0</option>
 						<flag>wxALL</flag>
@@ -75,6 +63,47 @@
 							<tooltip>If selected opposite faces of mesh will be replicated. Deselect if textile is not periodic for selected domain\nIt is recommended to remove the &apos;Y&apos; parameter for non-periodic meshing</tooltip>
 							<label>Periodic Mesh</label>
 							<checked>1</checked>
+						</object>
+					</object>
+					<object class="spacer">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<size>0,0</size>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxCheckBox" name="SetResolution">
+							<tooltip>If selected the yarn resolution can be set. This governs the surface mesh generated which is used as input for the tetgen mesh generator</tooltip>
+							<label>Set Resolution</label>
+							<checked>1</checked>
+						</object>
+					</object>
+					<object class="spacer">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<size>0,0</size>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText21">
+							<label>Resolution</label>
+							<wrap>100</wrap>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="Resolution">
+							<tooltip>Specify resolution. This parameter speciifies the number of points around the yarn circumference. The number of slave nodes along the length of the yarn is then calculated automatically</tooltip>
+							<value></value>
+							<maxlength>0</maxlength>
 						</object>
 					</object>
 				</object>
@@ -717,7 +746,7 @@
 					<style>wxRA_SPECIFY_COLS</style>
 					<tooltip>This controls the periodic boundary conditions to be applied.\nFor a rectangular domain whether the RVE is considered as 3D or 2.5D \nSheared domain - sheared in the xy direction only\nStaggered - applies an offset in the x direction to apply reduced domain boundary conditions</tooltip>
 					<label>Periodic Boundary Conditions</label>
-					<selection>5</selection>
+					<selection>0</selection>
 					<content>
 						<item>Material Continuum</item>
 						<item>Single Layer RVE</item>

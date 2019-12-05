@@ -118,6 +118,10 @@ BEGIN_EVENT_TABLE(CSurveyDialog, wxDialog)
 	EVT_HYPERLINK(XRCID("TakeSurvey"), CSurveyDialog::OnClickTakeSurvey)
 END_EVENT_TABLE()
 
+BEGIN_EVENT_TABLE(CTetgenOptions, wxDialog)
+	EVT_UPDATE_UI(XRCID("Resolution"), CTetgenOptions::OnResolutionUpdate)
+END_EVENT_TABLE()
+
 CTexGenMainFrame::CTexGenMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 : wxFrame(NULL, wxID_ANY, title, pos, size)
 , m_pViewerNotebook(NULL)
@@ -1098,7 +1102,9 @@ void CTexGenMainFrame::OnSaveTetgenMesh( wxCommandEvent& event )
 
 	wxString params = wxT("pqAY");
 	wxString seed = wxT("0.1");
+	wxString resolution = wxT("40");
 	bool bPeriodic = true;
+	bool bSetRes = false;
 
 	wxFileDialog dialog
 	(
@@ -1112,16 +1118,24 @@ void CTexGenMainFrame::OnSaveTetgenMesh( wxCommandEvent& event )
 	);
 	dialog.CentreOnParent();
 
-	wxDialog TetgenInput;
-	if (wxXmlResource::Get()->LoadDialog(&TetgenInput, this, wxT("TetgenOptions")))
+	CTetgenOptions TetgenInput(this);
+	//wxDialog TetgenInput;
+	//if (wxXmlResource::Get()->LoadDialog(&TetgenInput, this, wxT("TetgenOptions")))
 	{
 		XRCCTRL(TetgenInput, "Param", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NONE, &params));
 		XRCCTRL(TetgenInput, "SeedSize", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &seed));
 		XRCCTRL(TetgenInput, "Periodic", wxCheckBox)->SetValidator(wxGenericValidator(&bPeriodic));
+		XRCCTRL(TetgenInput, "SetResolution", wxCheckBox)->SetValidator(wxGenericValidator(&bSetRes));
+		XRCCTRL(TetgenInput, "Resolution", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &resolution));
 		if (TetgenInput.ShowModal() == wxID_OK)
 		{
 			if (dialog.ShowModal() == wxID_OK)
 			{
+				if (bSetRes)
+				{
+					Command << "textile = GetTextile(r'" << TextileName << "')" << endl;
+					Command << "textile.SetResolution(" + ConvertString(resolution) + ")" << endl;
+				}
 				Command << "TetMesh = CTetgenMesh(" + ConvertString(seed) + ")" << endl;
 				Command << "TetMesh.SaveTetgenMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath())<< "', '" + ConvertString(params) + "', bool(" << bPeriodic << "), " << dialog.GetFilterIndex() << + ")" << endl;
 
@@ -2782,3 +2796,26 @@ void CSurveyDialog::OnClickTakeSurvey( wxHyperlinkEvent& event )
 
 	this->EndModal(wxID_CANCEL);
 }
+
+CTetgenOptions::CTetgenOptions(wxWindow* parent)
+{
+	wxXmlResource::Get()->LoadDialog(this, parent, wxT("TetgenOptions"));
+}
+
+void CTetgenOptions::OnResolutionUpdate(wxUpdateUIEvent& event)
+{
+	wxCheckBox* SetResolutionCtrl = (wxCheckBox*)FindWindow(XRCID("SetResolution"));
+	if (SetResolutionCtrl->GetValue())
+	{
+		event.Enable(true);
+		//wxTextCtrl* ResolutionCtrl = (wxTextCtrl*)FindWindow(XRCID("Resolution"));
+		//ResolutionCtrl->Enable(true);
+	}
+	else
+	{
+		event.Enable(false);
+		//wxTextCtrl* ResolutionCtrl = (wxTextCtrl*)FindWindow(XRCID("Resolution"));
+		//ResolutionCtrl->Enable(false);
+	}
+}
+

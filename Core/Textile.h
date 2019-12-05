@@ -161,6 +161,9 @@ namespace TexGen
 		/// Remove the domain
 		void RemoveDomain();
 
+		/// Set the resolution for all yarns in textile
+		bool SetResolution(int Resolution);
+
 
 
 		/// Calculate the total yarn length

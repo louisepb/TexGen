@@ -233,7 +233,10 @@ void CTetgenMesh::SaveTetgenMesh( CTextile &Textile, string OutputFilename, stri
 	
 	char* TetgenOutput = new char[size];
 	char* TetgenInput = new char[size+5];
-	strOutput = RemoveExtension( OutputFilename, ".inp" );
+	if (FileType == INP_EXPORT)
+		strOutput = RemoveExtension( OutputFilename, ".inp" );
+	else
+		strOutput = RemoveExtension(OutputFilename, ".vtu");
 	strInput = strOutput + "Input";
 	strcpy(TetgenOutput, strOutput.c_str());
 	strcpy( TetgenInput, strInput.c_str());

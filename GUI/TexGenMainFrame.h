@@ -204,6 +204,17 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
+class CTetgenOptions : public wxDialog
+{
+public:
+	CTetgenOptions(wxWindow* parent);
+
+private:
+	void OnResolutionUpdate(wxUpdateUIEvent& event);
+
+	DECLARE_EVENT_TABLE()
+};
+
 
 
 
