@@ -62,7 +62,7 @@ bool CRotatedVoxelMesh::CalculateVoxelSizes( CTextile &Textile )
 	return true;
 }
 
-void CRotatedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus )
+void CRotatedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filetype )
 {
 	int x,y,z;
 	int iNodeIndex = 1;

@@ -61,7 +61,7 @@ bool CShearedVoxelMesh::CalculateVoxelSizes( CTextile &Textile )
 	return true;
 }
 
-void CShearedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus )
+void CShearedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filetype )
 {
 	int x,y,z;
 	int iNodeIndex = 1;

@@ -42,7 +42,7 @@ namespace TexGen
 		\param iBoundaryConditions as in enum PERIODIC_BOUNDARY_CONDITIONS
 		\param iElementType 0 for C3D8R, 1 for C3D8
 		*/
-		virtual void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType = 0);
+		virtual void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType = 0, int FileType = INP_EXPORT);
 		/// Add a row of element information
 		void AddElementInfo(vector<POINT_INFO> &RowInfo);
 		/// Outputs yarn orientations and element sets to .ori and .eld files
@@ -67,20 +67,20 @@ namespace TexGen
 		/// Add hex elements
 		//void AddElements();
 		/// Save voxel mesh in VTK format without boundary conditions
-		void SaveVoxelMeshToVTK(string Filename, vector<POINT_INFO> &ElementInfo);
+		void SaveVoxelMeshToVTK(string Filename, CTextile &Textile);
 		/// Save voxel mesh in Abaqus .inp format with periodic boundary conditions
 		/// bOutputMatrix and bOutput yarn specify which of these are saved to the Abaqus file
 		void SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, int iBoundaryConditions, int iElementType );
 		/// Save voxel mesh in SCIRun .pts and .hex format without boundary conditions
 		void SaveToSCIRun( string Filename, CTextile &Textile );
 		/// Outputs nodes to .inp file and gets element information
-		virtual void OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus = true ) = 0;
+		virtual void OutputNodes(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT) = 0;
 
 		/// Output hex elements to .inp file
 		/**
 		\ return Maximum element index
 		*/
-		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true );
+		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype = INP_EXPORT );
 		/// Outputs yarn orientations and element sets to .ori and .eld files
 		void OutputOrientationsAndElementSets( string Filename, ostream &Output );
 		/// Outputs all elements when only outputting matrix

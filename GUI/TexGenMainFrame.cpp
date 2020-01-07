@@ -997,7 +997,8 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 		wxT("Save Abaqus file"),
 		wxGetCwd(),
 		wxEmptyString,
-		wxT("Abaqus input file (*.inp)|*.inp"),
+		wxT("ABAQUS input file (*.inp)|*.inp|")
+		wxT("VTK unstructured grid file (*.vtu)|*.vtu"),
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
 	);
 	dialog.CentreOnParent();
@@ -1040,7 +1041,7 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 				else
 					Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
 				Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << "," << ConvertString(YVoxels) << "," << ConvertString(ZVoxels) 
-					<< ", bool(" << bOutputMatrix << "), bool(" << bOutputYarns << "),"<< iBoundaryConditions << "," << iElementType << ")" << endl;
+					<< ", bool(" << bOutputMatrix << "), bool(" << bOutputYarns << "),"<< iBoundaryConditions << "," << iElementType << "," << dialog.GetFilterIndex() << ")" << endl;
 
 				SendPythonCode(Command.str());
 			}

@@ -45,8 +45,8 @@ CVoxelMesh::~CVoxelMesh(void)
 	delete m_PeriodicBoundaries;
 }
 
-void CVoxelMesh::SaveVoxelMesh( CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, 
-							    bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType )
+void CVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum,
+	bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType, int FileType)
 {
 	//PROFILE_SHARED_DEFINE(ProfileTest)
 	//PROFILE_FUNC()
@@ -62,19 +62,24 @@ void CVoxelMesh::SaveVoxelMesh( CTextile &Textile, string OutputFilename, int XV
 	m_YVoxels = YVoxNum;
 	m_ZVoxels = ZVoxNum;
 	TGLOG("Calculating voxel sizes");
-	if ( !CalculateVoxelSizes( Textile ) )
+	if (!CalculateVoxelSizes(Textile))
 	{
 		TGERROR("Unable to create ABAQUS input file: Error calculating voxel sizes");
 		return;
 	}
 	TGLOG("Replacing spaces in filename with underscore for ABAQUS compatibility");
-	OutputFilename = ReplaceFilenameSpaces( OutputFilename );
+	OutputFilename = ReplaceFilenameSpaces(OutputFilename);
 	//GetYarnGridIntersections(Textile);
-	CTimer timer;
-	timer.start("Timing SaveToAbaqus");
-	SaveToAbaqus( OutputFilename, Textile, bOutputMatrix, bOutputYarns, iBoundaryConditions, iElementType );
-	timer.check("End of SaveToAbaqus");
-	timer.stop();
+	if (FileType == INP_EXPORT)
+	{
+		CTimer timer;
+		timer.start("Timing SaveToAbaqus");
+		SaveToAbaqus(OutputFilename, Textile, bOutputMatrix, bOutputYarns, iBoundaryConditions, iElementType);
+		timer.check("End of SaveToAbaqus");
+		timer.stop();
+	}
+	else
+		SaveVoxelMeshToVTK(OutputFilename, Textile);
 
    // PROFILE_END();
    // PROFILER_UPDATE();
@@ -233,8 +238,15 @@ void CVoxelMesh::AddElements()
 	}
 }*/
 
-void CVoxelMesh::SaveVoxelMeshToVTK(string Filename, vector<POINT_INFO> &ElementInfo)
+void CVoxelMesh::SaveVoxelMeshToVTK(string Filename, CTextile &Textile )
 {
+	AddExtensionIfMissing(Filename, ".vtu");
+	ofstream Output(Filename.c_str());
+
+	OutputNodes(Output, Textile, VTU_EXPORT);
+
+	OutputHexElements(Output, true, true, VTU_EXPORT);
+
 	CMeshData<int> YarnIndex("YarnIndex", CMeshDataBase::ELEMENT);
 	CMeshData<XYZ> YarnTangent("YarnTangent", CMeshDataBase::ELEMENT);
 	CMeshData<XY> Location("Location", CMeshDataBase::ELEMENT);
@@ -244,7 +256,7 @@ void CVoxelMesh::SaveVoxelMeshToVTK(string Filename, vector<POINT_INFO> &Element
 
 	vector<POINT_INFO>::iterator itElementInfo;
 	
-	for (itElementInfo = ElementInfo.begin(); itElementInfo != ElementInfo.end(); ++itElementInfo)
+	for (itElementInfo = m_ElementsInfo.begin(); itElementInfo != m_ElementsInfo.end(); ++itElementInfo)
 	{
 		YarnIndex.m_Data.push_back(itElementInfo->iYarnIndex);
 		YarnTangent.m_Data.push_back(itElementInfo->YarnTangent);
@@ -353,7 +365,7 @@ void CVoxelMesh::SaveToSCIRun( string Filename, CTextile &Textile )
 
 	TGLOG("Saving voxel mesh data points to " << Filename);
 	
-	OutputNodes(NodesFile, Textile, false );
+	OutputNodes(NodesFile, Textile, SCIRUN_EXPORT );
 	
 	Filename = RemoveExtension( Filename, ".pts" );
 	Filename += ".hex";
@@ -370,7 +382,7 @@ void CVoxelMesh::SaveToSCIRun( string Filename, CTextile &Textile )
 	//Output the voxel HEX elements
 	int iNumHexElements = 0;
 	
-	iNumHexElements = OutputHexElements( OutputElements, true, true, false );
+	iNumHexElements = OutputHexElements( OutputElements, true, true, SCIRUN_EXPORT );
 	
 	TGLOG("Finished saving to SCIRun format");
 }
@@ -379,7 +391,7 @@ void CVoxelMesh::SaveToSCIRun( string Filename, CTextile &Textile )
 
 
 
-int CVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus )
+int CVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype )
 {
 	int numx = m_XVoxels + 1;
 	int numy = m_YVoxels + 1;
@@ -389,7 +401,7 @@ int CVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOut
 
 	vector<POINT_INFO> NewElementInfo;
 
-	if ( !bAbaqus )
+	if ( Filetype == SCIRUN_EXPORT )
 		Output << m_XVoxels*m_YVoxels*m_ZVoxels << "\n";
 	
 	for ( z = 0; z < m_ZVoxels; ++z )
@@ -401,7 +413,7 @@ int CVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOut
 				if ( (itElementInfo->iYarnIndex == -1 && bOutputMatrix) 
 					 || (itElementInfo->iYarnIndex >=0 && bOutputYarn) )
 				{
-					if ( bAbaqus )
+					if ( Filetype == INP_EXPORT )
 					{
 						Output << iElementNumber << ", ";
 						Output << (x+1) +y*numx + z*numx*numy + 1 << ", " << (x+1) + (y+1)*numx + z*numx*numy + 1 << ", ";
@@ -409,12 +421,25 @@ int CVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOut
 						Output << (x+1) +y*numx + (z+1)*numx*numy + 1 << ", " << (x+1) +(y+1)*numx + (z+1)*numx*numy + 1 << ", ";
 						Output << x +(y+1)*numx + (z+1)*numx*numy + 1 << ", " << x +y*numx + (z+1)*numx*numy + 1 << "\n";
 					}
-					else
+					else if ( Filetype == SCIRUN_EXPORT)
 					{
 						Output << x +y*numx + z*numx*numy + 1 << ", " << (x+1) + y*numx + z*numx*numy + 1 << ", ";
 						Output << x + y*numx + (z+1)*numx*numy + 1 << ", " << (x+1) + y*numx + (z+1)*numx*numy + 1 << ", ";
 						Output << x + (y+1)*numx + z*numx*numy + 1 << ", " << (x+1) +(y+1)*numx + z*numx*numy + 1 << ", ";
 						Output << x +(y+1)*numx + (z+1)*numx*numy + 1 << ", " << (x+1) + (y+1)*numx + (z+1)*numx*numy + 1 << "\n";
+					}
+					else  // VTU export
+					{
+						vector<int> Indices;
+						Indices.push_back(x + y*numx + z*numx*numy);
+						Indices.push_back((x + 1) + y*numx + z*numx*numy);
+						Indices.push_back((x + 1) + y*numx + (z + 1)*numx*numy);
+						Indices.push_back(x + y*numx + (z + 1)*numx*numy);
+						Indices.push_back(x + (y + 1)*numx + z*numx*numy);
+						Indices.push_back((x + 1) + (y + 1)*numx + z*numx*numy);
+						Indices.push_back((x + 1) + (y + 1)*numx + (z + 1)*numx*numy);
+						Indices.push_back(x + (y + 1)*numx + (z + 1)*numx*numy);
+						m_Mesh.AddElement(CMesh::HEX, Indices);
 					}
 					++iElementNumber;
 					if ( bOutputYarn && !bOutputMatrix ) // Just saving yarn so need to make element array with just yarn info

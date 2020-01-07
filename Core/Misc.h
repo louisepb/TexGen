@@ -112,6 +112,7 @@ namespace TexGen
 	{
 		INP_EXPORT,
 		VTU_EXPORT,
+		SCIRUN_EXPORT,
 	};
 
 	CLASS_DECLSPEC COLOR GetIndexedColor(int iIndex);

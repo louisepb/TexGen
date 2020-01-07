@@ -46,7 +46,7 @@ namespace TexGen
 		void SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, int iBoundaryConditions, int iElementType );
 		
 		/// Outputs nodes to .inp file and gets element information
-		void OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus = true );
+		void OutputNodes(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT );
 
 		
 		/// Voxel size for each axis
