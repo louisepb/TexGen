@@ -2775,11 +2775,11 @@ U,
 *** FIELD OUTPUT: Output Request Shear_xy ***
 *Node Output, nset=ConstraintsDriver3
 U,
-*** FIELD OUTPUT: Output Request Shear_yz ***
-*Node Output, nset=ConstraintsDriver5
-U,
 *** FIELD OUTPUT: Output Request Shear_zx ***
 *Node Output, nset=ConstraintsDriver4
+U,
+*** FIELD OUTPUT: Output Request Shear_yz ***
+*Node Output, nset=ConstraintsDriver5
 U,
 
 ******************

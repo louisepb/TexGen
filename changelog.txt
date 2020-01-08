@@ -17,10 +17,13 @@ Core
 ** Created CShellElementExport class - exports surface mesh elements as S4R shell elements with surface sets and contact definitions
 ** Added SetResolution function to CTextile
 ** Added SaveToVTK option to CTetgenMesh
+** Bugfix to correct extra space in ConstraintsDriver in voxel mesh equations (issue 21)
+** Bugfix to correct reversal of G13 and G23 when calculating material properties using periodic boundary conditions set up in voxel mesh export (issue 22)
 
 Unit Tests
 ==========
 ** Added tetgen mesh export test
+** Changes to inp test files for voxel mesh bug fixes
 
 v3.11.0
 =======
