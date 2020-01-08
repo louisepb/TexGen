@@ -318,6 +318,122 @@
 			</object>
 		</object>
 	</object>
+	<object class="wxDialog" name="VTUVoxelOptions">
+		<style>wxDEFAULT_DIALOG_STYLE</style>
+		<title>VTU Voxel Options</title>
+		<centered>1</centered>
+		<object class="wxBoxSizer">
+			<orient>wxVERTICAL</orient>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxFlexGridSizer">
+					<rows>7</rows>
+					<cols>2</cols>
+					<vgap>0</vgap>
+					<hgap>0</hgap>
+					<growablecols></growablecols>
+					<growablerows></growablerows>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText3">
+							<label>X Voxel Count:</label>
+							<wrap>100</wrap>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="XVoxelCount">
+							<tooltip>Number of voxels along x axis</tooltip>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText4">
+							<label>Y Voxel Count:</label>
+							<wrap>100</wrap>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="YVoxelCount">
+							<tooltip>Number of voxels along y axis</tooltip>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText5">
+							<label>Z Voxel Count:</label>
+							<wrap>100</wrap>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="ZVoxelCount">
+							<tooltip>Number of voxels along z axis</tooltip>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxEXPAND</flag>
+						<border>5</border>
+						<object class="wxRadioBox" name="DomainType">
+							<style>wxRA_SPECIFY_COLS</style>
+							<tooltip>This controls the periodic boundary conditions to be applied.\nFor a rectangular domain whether the RVE is considered as 3D or 2.5D \nSheared domain - sheared in the xy direction only\nStaggered - applies an offset in the x direction to apply reduced domain boundary conditions</tooltip>
+							<label>Domain Type</label>
+							<selection>1</selection>
+							<content>
+								<item>Box Domain</item>
+								<item>Sheared Domain</item>
+								<item>Rotated Domain</item>
+							</content>
+							<dimension>1</dimension>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALIGN_CENTER|wxALL</flag>
+				<border>5</border>
+				<object class="wxStdDialogButtonSizer">
+					<object class="button">
+						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="wxID_OK">
+							<label>&amp;OK</label>
+						</object>
+					</object>
+					<object class="button">
+						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="wxID_CANCEL">
+							<label>&amp;Cancel</label>
+						</object>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
 	<object class="wxDialog" name="BoxDomain">
 		<style>wxDEFAULT_DIALOG_STYLE</style>
 		<title>Box Domain</title>

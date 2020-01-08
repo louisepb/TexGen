@@ -64,6 +64,7 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 	EVT_MENU(ID_ToggleLogWindow, CTexGenMainFrame::OnWindow)
 	EVT_MENU(ID_ToggleOutliner, CTexGenMainFrame::OnWindow)
 	EVT_MENU(ID_SaveTetgenMesh, CTexGenMainFrame::OnSaveTetgenMesh)
+	EVT_MENU(ID_SaveVTUVoxels, CTexGenMainFrame::OnSaveVTUVoxels)
 
 	EVT_AUINOTEBOOK_PAGE_CHANGED(ID_LogNoteBook, CTexGenMainFrame::OnLogNotebook)
 	EVT_AUINOTEBOOK_PAGE_CHANGED(ID_ViewerNoteBook, CTexGenMainFrame::OnViewerNotebookPageChanged)
@@ -161,7 +162,8 @@ CTexGenMainFrame::CTexGenMainFrame(const wxString& title, const wxPoint& pos, co
 		pExportSubMenu->Append(ID_SaveTetgenMesh, wxT("&TetgenMesh..."));
 		{
 			wxMenu *pVoxelSubMenu = new wxMenu;
-			pVoxelSubMenu->Append(ID_SaveABAQUSVoxels, wxT("ABAQUS &Voxel File..."));
+			pVoxelSubMenu->Append(ID_SaveABAQUSVoxels, wxT("&ABAQUS Voxel File..."));
+			pVoxelSubMenu->Append(ID_SaveVTUVoxels, wxT("&VTU Voxel File..."));
 			pExportSubMenu->Append(wxID_ANY, wxT("Vo&xel Mesh..."), pVoxelSubMenu);
 		}
 		pExportSubMenu->Append(ID_SaveABAQUS, wxT("&ABAQUS Dry Fibre File..."));
@@ -1002,8 +1004,7 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 		wxT("Save Abaqus file"),
 		wxGetCwd(),
 		wxEmptyString,
-		wxT("ABAQUS input file (*.inp)|*.inp|")
-		wxT("VTK unstructured grid file (*.vtu)|*.vtu"),
+		wxT("ABAQUS input file (*.inp)|*.inp|"),
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
 	);
 	dialog.CentreOnParent();
@@ -1046,11 +1047,73 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 				else
 					Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
 				Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << "," << ConvertString(YVoxels) << "," << ConvertString(ZVoxels) 
-					<< ", bool(" << bOutputMatrix << "), bool(" << bOutputYarns << "),"<< iBoundaryConditions << "," << iElementType << "," << dialog.GetFilterIndex() << ")" << endl;
+					<< ", bool(" << bOutputMatrix << "), bool(" << bOutputYarns << "),"<< iBoundaryConditions << "," << iElementType << ")" << endl;
 
 				SendPythonCode(Command.str());
 			}
 			
+		}
+	}
+}
+
+void CTexGenMainFrame::OnSaveVTUVoxels(wxCommandEvent& event)
+{
+	string TextileName = GetTextileSelection();
+	stringstream Command;
+
+	wxString XVoxels = wxT("50");
+	wxString YVoxels = wxT("50");
+	wxString ZVoxels = wxT("50");
+
+	int  iDomainType = 0;
+	int	 iBoundaryConditions = 0;
+
+	wxFileDialog dialog
+	(
+		this,
+		wxT("Save Abaqus file"),
+		wxGetCwd(),
+		wxEmptyString,
+		wxT("VTK unstructured grid file (*.vtu)|*.vtu"),
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
+	);
+	dialog.CentreOnParent();
+
+	wxDialog VTUVoxelOptions;
+
+	if (wxXmlResource::Get()->LoadDialog(&VTUVoxelOptions, this, wxT("VTUVoxelOptions")))
+	{
+		XRCCTRL(VTUVoxelOptions, "XVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &XVoxels));
+		XRCCTRL(VTUVoxelOptions, "YVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &YVoxels));
+		XRCCTRL(VTUVoxelOptions, "ZVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &ZVoxels));
+		XRCCTRL(VTUVoxelOptions, "DomainType", wxRadioBox)->SetValidator(wxGenericValidator(&iDomainType));
+
+		if (VTUVoxelOptions.ShowModal() == wxID_OK)
+		{
+			if (dialog.ShowModal() == wxID_OK)
+			{
+				if (iDomainType == SHEARED_DOMAIN)
+				{
+					Command << "Vox = CShearedVoxelMesh('CShearedPeriodicBoundaries')" << endl;
+					iBoundaryConditions = SHEARED_BC;
+				}
+				else if (iDomainType == ROTATED_DOMAIN)
+				{
+					Command << "Vox = CRotatedVoxelMesh('CRotatedPeriodicBoundaries')" << endl;
+					iBoundaryConditions = ROTATED_BC;
+				}
+				else  // BOX_DOMAIN
+				{
+					Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
+					iBoundaryConditions = MATERIAL_CONTINUUM;
+				}
+
+				Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << "," << ConvertString(YVoxels) << "," << ConvertString(ZVoxels)
+					<< ", True, True," << iBoundaryConditions << ", 0, VTU_EXPORT )" << endl;
+
+				SendPythonCode(Command.str());
+			}
+
 		}
 	}
 }

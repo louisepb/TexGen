@@ -77,6 +77,7 @@ protected:
 	void OnSaveABAQUSVoxels(wxCommandEvent& event);
 	void OnSaveABAQUSSurface(wxCommandEvent& event);
 	void OnSaveTetgenMesh(wxCommandEvent& event);
+	void OnSaveVTUVoxels(wxCommandEvent& event);
 
 	void OnWindow(wxCommandEvent& event);
 	void OnChar(wxKeyEvent& event);

@@ -46,6 +46,7 @@ enum
 	ID_SaveABAQUSVoxels,
 	ID_SaveABAQUSSurface,
 	ID_SaveTetgenMesh,
+	ID_SaveVTUVoxels,
 
 //	ID_CreateRenderWindow,
 //	ID_DeleteRenderWindow,

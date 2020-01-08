@@ -9,6 +9,8 @@ GUI
 ** Added Export Yarns, Mesh Yarn Ends and Seed Size options to surface mesh export
 ** Added Export ABAQUS Surface Mesh File option
 ** Added Set Resolution option to Tetgen Export
+** Rearranged File Export menu
+** Created separate ABAQUS and VTU voxel mesh options
 
 Core
 ====
