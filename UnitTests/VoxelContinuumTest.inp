@@ -2653,7 +2653,7 @@ Edge8, 1, 1.0, Edge5, 1, -1.0, ConstraintsDriver4, 1, -1
 Edge8, 2, 1.0, Edge5, 2, -1.0, ConstraintsDriver5, 1, -1
 *Equation
 3
-Edge8, 3, 1.0, Edge5, 3, -1.0, Constraints Driver2, 1, -1
+Edge8, 3, 1.0, Edge5, 3, -1.0, ConstraintsDriver2, 1, -1
 *Equation
 3
 Edge10, 1, 1.0, Edge9, 1, -1.0, ConstraintsDriver3, 1, -1
@@ -2775,11 +2775,11 @@ U,
 *** FIELD OUTPUT: Output Request Shear_xy ***
 *Node Output, nset=ConstraintsDriver3
 U,
-*** FIELD OUTPUT: Output Request Shear_yz ***
-*Node Output, nset=ConstraintsDriver5
-U,
 *** FIELD OUTPUT: Output Request Shear_zx ***
 *Node Output, nset=ConstraintsDriver4
+U,
+*** FIELD OUTPUT: Output Request Shear_yz ***
+*Node Output, nset=ConstraintsDriver5
 U,
 
 ******************

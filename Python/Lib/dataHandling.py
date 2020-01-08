@@ -196,10 +196,10 @@ def ComputeEquivalentMaterialProperties(modelName, thermoMechSwitch):
 	frameFz = resultODB.steps[isothermalStep.name].frames[3]
 	# 4 holds the Shear_xy load-case.
 	frameShear_xy = resultODB.steps[isothermalStep.name].frames[4]
-	# 5 holds the Shear_yz load-case.
-	frameShear_yz = resultODB.steps[isothermalStep.name].frames[5]
-	# 6 holds the Shear_zx load-case.
-	frameShear_zx = resultODB.steps[isothermalStep.name].frames[6]
+	# 5 holds the Shear_zx load-case.
+	frameShear_zx = resultODB.steps[isothermalStep.name].frames[5]
+	# 6 holds the Shear_yz load-case.
+	frameShear_yz = resultODB.steps[isothermalStep.name].frames[6]
 
 	if (thermoMechSwitch==1):
 		# Index 0 holds the reference frame.
@@ -222,12 +222,14 @@ def ComputeEquivalentMaterialProperties(modelName, thermoMechSwitch):
 	
 	# Load case Shear_xy.
 	Shear_xy_gamma0_xy = frameShear_xy.fieldOutputs['U'].values[3].data[0]
-
+    
+    # Load case Shear_zx.
+	Shear_zx_gamma0_zx = frameShear_zx.fieldOutputs['U'].values[4].data[0]
+    
 	# Load case Shear_yz.
 	Shear_yz_gamma0_yz = frameShear_yz.fieldOutputs['U'].values[5].data[0]
 	
-	# Load case Shear_zx.
-	Shear_zx_gamma0_zx = frameShear_zx.fieldOutputs['U'].values[4].data[0]
+	
 
 	if (thermoMechSwitch==1):
 		# Thermomechanical expansion.
