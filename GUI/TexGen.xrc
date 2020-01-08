@@ -231,9 +231,9 @@
 						<border>5</border>
 						<object class="wxRadioBox" name="PeriodicBoundaries">
 							<style>wxRA_SPECIFY_COLS</style>
-							<tooltip>This controls the periodic boundary conditions to be applied.\nFor a rectangular domain whether the RVE is considered as 3D or 2.5D \nSheared domain - sheared in the xy direction only\nStaggered - applies an offset in the x direction to apply reduced domain boundary conditions</tooltip>
+							<tooltip>This controls the periodic boundary conditions to be applied.\nFor a rectangular domain whether the RVE is considered as 3D or 2.5D \nSheared domain - sheared in the xy direction only\nStaggered - applies an offset in the x direction to apply reduced domain boundary conditions\nRotated - applies where the a rotated textile has been created with a corresponding rotated domain</tooltip>
 							<label>Periodic Boundary Conditions</label>
-							<selection>1</selection>
+							<selection>5</selection>
 							<content>
 								<item>Material Continuum</item>
 								<item>Single Layer RVE</item>
@@ -398,9 +398,9 @@
 						<border>5</border>
 						<object class="wxRadioBox" name="DomainType">
 							<style>wxRA_SPECIFY_COLS</style>
-							<tooltip>This controls the periodic boundary conditions to be applied.\nFor a rectangular domain whether the RVE is considered as 3D or 2.5D \nSheared domain - sheared in the xy direction only\nStaggered - applies an offset in the x direction to apply reduced domain boundary conditions</tooltip>
+							<tooltip>This controls the domain to be used in the export.\nBox  - for a rectangular domain \nSheared  - sheared in the xy direction only\nRotated - applies where a rotated textile has been created with a corresponding rotated domain\n</tooltip>
 							<label>Domain Type</label>
-							<selection>1</selection>
+							<selection>2</selection>
 							<content>
 								<item>Box Domain</item>
 								<item>Sheared Domain</item>
