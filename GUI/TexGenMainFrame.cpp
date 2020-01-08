@@ -150,23 +150,28 @@ CTexGenMainFrame::CTexGenMainFrame(const wxString& title, const wxPoint& pos, co
 	}
 	{
 		wxMenu *pExportSubMenu = new wxMenu;
+		
+		{
+			wxMenu *pSurfaceSubMenu = new wxMenu;
+			pSurfaceSubMenu->Append(ID_SaveSurfaceMesh, wxT("&VTU, STL File..."));
+			pSurfaceSubMenu->Append(ID_SaveABAQUSSurface, wxT("ABAQUS File..."));
+			pExportSubMenu->Append(wxID_ANY, wxT("Sur&face Mesh..."), pSurfaceSubMenu);
+		}
+		pExportSubMenu->Append(ID_SaveVolumeMesh, wxT("&Volume Mesh..."));
+		pExportSubMenu->Append(ID_SaveTetgenMesh, wxT("&TetgenMesh..."));
+		{
+			wxMenu *pVoxelSubMenu = new wxMenu;
+			pVoxelSubMenu->Append(ID_SaveABAQUSVoxels, wxT("ABAQUS &Voxel File..."));
+			pExportSubMenu->Append(wxID_ANY, wxT("Vo&xel Mesh..."), pVoxelSubMenu);
+		}
+		pExportSubMenu->Append(ID_SaveABAQUS, wxT("&ABAQUS Dry Fibre File..."));
+		pExportSubMenu->Append(ID_SaveIGES, wxT("&IGES File..."));
+		pExportSubMenu->Append(ID_SaveSTEP, wxT("&STEP File..."));
 		{
 			wxMenu *pInHouseSubMenu = new wxMenu;
 			pInHouseSubMenu->Append(ID_SaveGrid, wxT("&Grid File..."));
 			pInHouseSubMenu->Append(ID_SaveVoxel, wxT("&Voxel File..."));
 			pExportSubMenu->Append(wxID_ANY, wxT("&In-House"), pInHouseSubMenu);
-		}
-		pExportSubMenu->Append(ID_SaveIGES, wxT("&IGES File..."));
-		pExportSubMenu->Append(ID_SaveSTEP, wxT("&STEP File..."));
-		pExportSubMenu->Append(ID_SaveSurfaceMesh, wxT("Sur&face Mesh..."));
-		pExportSubMenu->Append(ID_SaveVolumeMesh, wxT("&Volume Mesh..."));
-		pExportSubMenu->Append(ID_SaveTetgenMesh, wxT("&TetgenMesh..."));
-		{
-			wxMenu *pAbaqusSubMenu = new wxMenu;
-			pAbaqusSubMenu->Append(ID_SaveABAQUS, wxT("&ABAQUS Dry Fibre File..."));
-			pAbaqusSubMenu->Append(ID_SaveABAQUSVoxels, wxT("ABAQUS &Voxel File..."));
-			pAbaqusSubMenu->Append(ID_SaveABAQUSSurface, wxT("ABAQUS &Surface Mesh File..."));
-			pExportSubMenu->Append(wxID_ANY, wxT("&ABAQUS File"), pAbaqusSubMenu);
 		}
 		pMenuFile->Append(wxID_ANY, wxT("&Export"), pExportSubMenu);
 	}
