@@ -452,10 +452,10 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 	Output << "*Node Output, nset=ConstraintsDriver3" << endl << "U," << endl;
 	if ( bOutputTransverse )
 	{
-		Output << "*** FIELD OUTPUT: Output Request Shear_yz ***" << endl;
-		Output << "*Node Output, nset=ConstraintsDriver5" << endl << "U," << endl; 
 		Output << "*** FIELD OUTPUT: Output Request Shear_zx ***" << endl;
 		Output << "*Node Output, nset=ConstraintsDriver4" << endl << "U," << endl;
+		Output << "*** FIELD OUTPUT: Output Request Shear_yz ***" << endl;
+		Output << "*Node Output, nset=ConstraintsDriver5" << endl << "U," << endl; 
 	}
 	
 	Output << endl;
