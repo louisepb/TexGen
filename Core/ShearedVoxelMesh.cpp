@@ -84,8 +84,14 @@ void CShearedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int File
 				Point.x = StartPoint.x + m_ShearedVoxSize[0].x * x;
 				Point.y = StartPoint.y + m_ShearedVoxSize[0].y * x;
 				Point.z = StartPoint.z;
-				Output << iNodeIndex << ", ";
-				Output << Point << endl;
+
+				if (Filetype == INP_EXPORT)
+				{
+					Output << iNodeIndex << ", ";
+					Output << Point << "\n";
+				}
+				else if (Filetype == VTU_EXPORT)
+					m_Mesh.AddNode(Point);
 
 				if ( x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels )
 				{
