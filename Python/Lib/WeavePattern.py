@@ -177,12 +177,17 @@ def ImportWeavePattern( Filename ):
 			BinderHeight = ConvertUnits( BinderHeight, BinderHeightUnits, 'mm')
 			
 	# Create textile
+	print("warp spacing is " + str(WarpSpacing))
+	print(str(NumWefts))
+	print(str(NumWarps))
 	if Orthogonal:
 		Textile = CTextileOrthogonal(NumWarps, NumWefts, WarpSpacing, WeftSpacing, TowHeight, TowHeight, False, True )
 	else:
 		Textile = CTextile3DWeave( NumWarps,NumWefts, WarpSpacing, WeftSpacing, TowHeight, TowHeight )
 	if Textile == 0:
 		return ''
+	
+	
 		
 	if Orthogonal:
 		Textile.SetBinderPattern( Binders )
@@ -221,8 +226,9 @@ def ImportWeavePattern( Filename ):
     # If orthogonal textile move wefts into stacks where possible
 	if Orthogonal:
 		Textile.ConsolidateCells()
-		
-	Textile.AssignDefaultDomain()
+	
+	
+	Textile.AssignDomain(CDomainPlanes(XYZ(-5, -5, -5), XYZ(10, 30, 10)))
 	
 	if fabs(LinearDensity) > tol:
 		Textile.SetYarnLinearDensity( WARP, LinearDensity, LinearDensityUnits )

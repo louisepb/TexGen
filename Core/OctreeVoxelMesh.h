@@ -155,12 +155,12 @@ namespace TexGen
 
 		map<int,XYZ> AllNodes;
 		vector< std::vector<int> > m_AllElements;
-		unordered_map< int, vector<int> > m_NodeConstraints;
-		unordered_map< int, vector<int> > m_NodesEncounter;
-		unordered_map< int, vector<int> > m_NeighbourNodes;
+		map< int, vector<int> > m_NodeConstraints;
+		map< int, vector<int> > m_NodesEncounter;
+		map< int, vector<int> > m_NeighbourNodes;
 
-		unordered_map< int, vector<int> > m_SurfaceNodes;
-		unordered_map<int, vector< pair<int, int> > > m_SurfaceElementFaces;
+		map< int, vector<int> > m_SurfaceNodes;
+		map<int, vector< pair<int, int> > > m_SurfaceElementFaces;
 
 		//vector< vector<int> > MaterialElements;
 		vector<Point> m_boundaryPoints;

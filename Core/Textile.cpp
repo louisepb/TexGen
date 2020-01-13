@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Textile.h"
 #include "Domain.h"
 #include "TexGen.h"
+#include "omp.h"
 
 using namespace TexGen;
 
@@ -386,12 +387,16 @@ void CTextile::GetPointInformation(const vector<XYZ> &Points, vector<POINT_INFO>
 	CDomainPlanes DomainPlanes(Min, Max);
 	vector<CYarn>::iterator itYarn;
 	int iIndex;
-	for (itYarn = m_Yarns.begin(), iIndex=0; itYarn != m_Yarns.end(); ++itYarn, ++iIndex)
+	//omp_set_num_threads(2);
+	
+//#pragma omp parallel
+		//#pragma omp for
+	for (itYarn = m_Yarns.begin(), iIndex = 0; itYarn != m_Yarns.end(); ++itYarn, ++iIndex)
 	{
 		vector<XYZ> Translations = DomainPlanes.GetTranslations(*itYarn);
 		for (itPoint = Points.begin(), itInfo = PointsInfo.begin(); itPoint != Points.end(); ++itPoint, ++itInfo)
 		{
-			if (itYarn->PointInsideYarn(*itPoint, Translations, &Info.YarnTangent, 
+			if (itYarn->PointInsideYarn(*itPoint, Translations, &Info.YarnTangent,
 				&Info.Location, &Info.dVolumeFraction, &Info.dSurfaceDistance, dTolerance, &Info.Orientation, &Info.Up))
 			{
 				// If the point is inside several yarns, either because the yarns overlap or because
@@ -406,6 +411,9 @@ void CTextile::GetPointInformation(const vector<XYZ> &Points, vector<POINT_INFO>
 			}
 		}
 	}
+
+
+
 }
 
 void CTextile::GetPointInformation(const vector<XYZ> &Points, vector<POINT_INFO> &PointsInfo, int iYarn, double dTolerance)

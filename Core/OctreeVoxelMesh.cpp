@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OctreeVoxelMesh.h"
 #include "TexGen.h"
 #include "PeriodicBoundaries.h"
+#include "omp.h"
 #include <iterator>
 #include <string>
 #include <algorithm>
@@ -264,10 +265,10 @@ set<int> GetCommonIndices(const vector<int> &SurfIndices, const vector<int> &Vol
 		}
 	}*/
 	//return Common;
-	auto maxValue = max_element(VolIndices.begin(), VolIndices.end());
+	vector<int>::const_iterator maxValue = max_element(VolIndices.begin(), VolIndices.end());
 	for (itSurf = SurfIndices.begin(); itSurf != SurfIndices.end(); ++itSurf)
 	{
-		
+
 		vector<int>::const_iterator it = find(VolIndices.begin(), VolIndices.end(), *itSurf);
 		if (it == VolIndices.end())
 		{
@@ -343,7 +344,7 @@ int COctreeVoxelMesh::storeHangingNode(int *all_lni, int *hanging_corner, int no
 void COctreeVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Textile, int iBoundaryConditions, bool bMatrixOnly)
 {
 	Output << "*EQUATION" << endl;
-	unordered_map<int, vector<int>>::iterator itConstraints;
+	map<int, vector<int>>::iterator itConstraints;
 	for (itConstraints = m_NodeConstraints.begin(); itConstraints != m_NodeConstraints.end(); itConstraints++) {
 		for (int i = 0; i < 3; i++) { // Write for 3 DoFs
 			int num = (int)itConstraints->second.size();
@@ -486,7 +487,7 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, CTextile &Textile, bool
 
 	if ( m_bCohesive ) {
 		timer.start("Writing surfaces");
-		unordered_map<int, vector<int>>::iterator itSurfaceNodes;
+		map<int, vector<int>>::iterator itSurfaceNodes;
 		for (itSurfaceNodes = m_SurfaceNodes.begin(); itSurfaceNodes != m_SurfaceNodes.end(); ++itSurfaceNodes) {
 			if ( itSurfaceNodes->first == -1) {
 				Output << "*NSET, NSET=SURFACE-NODES-MATRIX" << endl;
@@ -496,7 +497,7 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, CTextile &Textile, bool
 			WriteValues(Output, itSurfaceNodes->second, 16);
 		}
 
-		unordered_map<int, vector< pair<int,int> > >::iterator itSurfaceFaces;
+		map<int, vector< pair<int,int> > >::iterator itSurfaceFaces;
 		for (itSurfaceFaces = m_SurfaceElementFaces.begin(); itSurfaceFaces != m_SurfaceElementFaces.end(); ++itSurfaceFaces) {
 			if (itSurfaceFaces->first == -1) {
 				Output << "*SURFACE, NAME=SURFACE-MATRIX" << endl;
@@ -1448,7 +1449,7 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 	sort(v.begin(),v.end());
 
 	// Prepare the neighbour connections (leave only nodes which are on an interface)
-	unordered_map<int, vector<int>>::iterator itNeighbourNodes;
+	map<int, vector<int>>::iterator itNeighbourNodes;
 
 	for (itNeighbourNodes = m_NeighbourNodes.begin(); itNeighbourNodes != m_NeighbourNodes.end(); ++itNeighbourNodes) {
 		vector<int> temp;
@@ -1532,11 +1533,13 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 	vector<int> AllSurfElems;
 	vector<POINT_INFO>::iterator itData;
 	vector<int>::const_iterator itNodes;
-	unordered_map<int, vector<int>>::iterator itNodeSurf, itElemSurf, itYarnElems;
-	unordered_map<int, vector<int>> MyNodeSurf, MyElemSurf, InteriorElems;
+	map<int, vector<int>>::iterator itNodeSurf, itElemSurf, itYarnElems;
+	
+	map<int, vector<int>> MyNodeSurf, MyElemSurf, InteriorElems;
+	vector<vector<int>> MyElemSurfVector;
 	vector<POINT_INFO>::iterator itInfo;
 
-	int extraNodeCount = 3000000;
+	int extraNodeCount = 4000000;
 
 	// Iterating through surface nodes
 	for (itNodes = AllSurf.begin(); itNodes != AllSurf.end(); ++itNodes) {
@@ -1587,26 +1590,49 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 		itElemSurf->second.erase( unique(itElemSurf->second.begin(), itElemSurf->second.end()) , itElemSurf->second.end() );
 	}
 
-	CTimer Timer;
-	Timer.start("Starting loop");
-	for (itElemSurf = MyElemSurf.begin(); itElemSurf != MyElemSurf.end(); ++itElemSurf) {
-		vector<int>::iterator itElems;
-		for (itElems = itElemSurf->second.begin(); itElems != itElemSurf->second.end(); ++itElems) {
-			set<int> CommonIndices = GetCommonIndices(MyNodeSurf[itElemSurf->first], m_AllElements[*itElems-1]);
 
-			pair<int,vector<int>> checkFaces = GetFaceIndices2(CMesh::HEX, CommonIndices, *itElems);
-			if ( checkFaces.first != -1 ) {
-				vector<int>::iterator itFace;
-				for (itFace = checkFaces.second.begin(); itFace != checkFaces.second.end(); ++itFace) {
-					m_SurfaceElementFaces[itElemSurf->first].push_back(make_pair(*itElems, *itFace + 1));
+
+	MyElemSurfVector.reserve(MyElemSurf.size());
+	for (auto elem : MyElemSurf)
+		MyElemSurfVector.push_back(elem.second);
+
+	omp_set_num_threads(2);
+	for (vector<vector<int>>::iterator itElemSurfVector = MyElemSurfVector.begin(); itElemSurfVector != MyElemSurfVector.end(); ++itElemSurfVector) {
+		vector<int>::iterator itElems;
+		vector<vector<int>>::iterator it = find(MyElemSurfVector.begin(), MyElemSurfVector.end(), *itElemSurfVector);
+		int index = distance(MyElemSurfVector.begin(), it);
+		TGLOG("index is " << index);
+		vector<pair<int, int>> surfelemfacesvec;
+		#pragma omp parallel
+		{
+			vector<pair<int, int>> privatevector;
+			#pragma omp for
+			for (itElems = (*itElemSurfVector).begin(); itElems != (*itElemSurfVector).end(); ++itElems)
+			{
+				set<int> CommonIndices = GetCommonIndices(MyNodeSurf[index - 1], m_AllElements[*itElems - 1]);
+
+				pair<int, vector<int>> checkFaces = GetFaceIndices2(CMesh::HEX, CommonIndices, *itElems);
+				if (checkFaces.first != -1)
+				{
+					vector<int>::iterator itFace;
+					for (itFace = checkFaces.second.begin(); itFace != checkFaces.second.end(); ++itFace) {
+						privatevector.push_back(make_pair(*itElems, *itFace + 1));
+						//m_SurfaceElementFaces[index - 1].push_back(make_pair(*itElems, *itFace + 1));
+					}
 				}
 			}
+			#pragma omp critical
+			{
+				surfelemfacesvec.insert(surfelemfacesvec.end(), privatevector.begin(), privatevector.end());
+				//m_SurfaceElementFaces[index - 1].push_back(surfelemfacesvec);
+			}
 		}
+		TGLOG(surfelemfacesvec.size());
+		for (auto elem = surfelemfacesvec.begin(); elem != surfelemfacesvec.end(); elem++)
+			m_SurfaceElementFaces[index - 1].push_back(*elem);
 	}
-	Timer.check("end of loop");
-	Timer.stop();
 	
-
+	TGLOG("finished loop")
 	MyNodeSurf.clear();
 	MyElemSurf.clear();
 	for (itNodes = AllSurf.begin(); itNodes != AllSurf.end(); ++itNodes) {
