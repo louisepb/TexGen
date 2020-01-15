@@ -23,13 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SectionPolygon.h"
 using namespace TexGen;
 
-/*
-extern "C"
-{
-#include "../Triangle/triangle.h"
-}
-*/
-
 CDomainPrism::CDomainPrism(const vector<XY> &Points, XYZ &start, XYZ &end)
 //	: m_PolygonPoints(Points)
 {
@@ -38,6 +31,7 @@ CDomainPrism::CDomainPrism(const vector<XY> &Points, XYZ &start, XYZ &end)
 	Node = CNode(end);
 	m_Yarn.AddNode(Node);
 	m_Yarn.AssignSection(CYarnSectionConstant(CSectionPolygon(Points)));
+	m_Yarn.SetResolution(2, 40);
 	BuildMesh();
 }
 
@@ -51,16 +45,6 @@ CDomainPrism::CDomainPrism(TiXmlElement &Element)
 	TiXmlElement* pYarn = Element.FirstChildElement("Yarn");
 	m_Yarn = CYarn(*pYarn);
 
-	/*FOR_EACH_TIXMLELEMENT(pPoint, Element, "PolygonPoint")
-	{
-		m_PolygonPoints.push_back(valueify<XY>(pPoint->Attribute("value")));
-	}
-	PLANE Plane;
-
-	m_Limits.first = valueify<double>(Element.Attribute("LimitMin"));
-	m_Limits.second = valueify<double>(Element.Attribute("LimitMax"));
-
-	//    if (m_Mesh.m_Nodes.empty())*/
 	if (m_Mesh.GetNumNodes() == 0)
 	{
 		BuildMesh();
@@ -73,17 +57,6 @@ void CDomainPrism::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE Outpu
 	TiXmlElement Yarn("Yarn");
 	m_Yarn.PopulateTiXmlElement(Yarn, OutputType);
 	Element.InsertEndChild(Yarn);
-
-	/*CSection::PopulateTiXmlElement(Element, OutputType);
-	vector<XY>::const_iterator itPoint;
-	for (itPoint = m_PolygonPoints.begin(); itPoint != m_PolygonPoints.end(); ++itPoint)
-	{
-		TiXmlElement Point("PolygonPoint");
-		Point.SetAttribute("value", stringify(*itPoint));
-		Element.InsertEndChild(Point);
-	}
-	Element.SetAttribute("LimitMin", stringify(m_Limits.first));
-	Element.SetAttribute("LimitMax", stringify(m_Limits.sectond));*/
 }
 
 void CDomainPrism::BuildMesh()

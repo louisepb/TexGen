@@ -49,8 +49,7 @@ namespace TexGen
 		/// Get a vector of repeat limits for a given yarn. The number of limit pairs is the same
 		/// as the number of infinite repeats in the yarn.
 		vector<pair<int, int> > GetRepeatLimits(const CYarn &Yarn) const;
-		/// Get the translation vectors necessary to fully fill the domain
-		vector<XYZ> GetTranslations(const CYarn &Yarn) const;
+		
 		void ClipMeshToDomain(CMesh &Mesh, bool bFillGaps = true) const;
 		bool ClipMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps = true) const;
 		string GetType() const { return "CDomainPlanes"; }
@@ -88,13 +87,6 @@ namespace TexGen
 		\return A pair of doubles representing the upper and lower limits
 		*/
 		pair<double, double> GetLimits(XYZ RepeatVector, const CMesh &Mesh) const;
-
-		/// Determine if a mesh intersects with the domain
-		/**
-		This is a very crude approximation of whether a mesh intersects the domain or not.
-		It is based soley on the axis aligned bounding boxes of the two regions.
-		*/
-		bool MeshIntersectsDomain(const CMesh &Mesh) const;
 
 		/// Populate m_PlaneIntersections and m_Mesh, note this only works for closed domains
 		void BuildMesh();

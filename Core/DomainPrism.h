@@ -90,14 +90,6 @@ namespace TexGen
 		/// Intersection of mesh and plane returned as closed loop
 		//static bool FillGaps(CMesh &Mesh, const PLANE &Plane, vector<int> &Polygon, bool bMeshGaps = true);
 
-		/// List of points that define the outline of the prism
-		//vector<XY> m_PolygonPoints;
-
-		/// Min and max limits of prism extrusion
-		//pair<double, double> m_Limits;
-		
-		// Axis of extrusion?
-
 		/// Create the domain as yarn with constant polygon section and two nodes
 		mutable CYarn m_Yarn;
 	};

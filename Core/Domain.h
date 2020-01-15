@@ -45,7 +45,8 @@ namespace TexGen
 		/// the repeat vector for the entire yarn to lie just outside out of the domain
 		virtual vector<pair<int, int> > GetRepeatLimits(const CYarn &Yarn) const = 0;
 		/// Get the translation vectors necessary to fully fill the domain
-		virtual vector<XYZ> GetTranslations(const CYarn &Yarn) const = 0;
+		vector<XYZ> GetTranslations(const CYarn &Yarn) const;
+
 		/// Clip the surface elements to the domain
 		/**
 		For surface elements (TRI and QUAD elements) the elements will be either kept, discarded
@@ -85,6 +86,13 @@ namespace TexGen
 
 	protected:
 		static vector<pair<int, int> > ConvertLimitsToInt(const vector<pair<double, double> > &RepeatLimits);
+
+		/// Determine if a mesh intersects with the domain
+		/**
+		This is a very crude approximation of whether a mesh intersects the domain or not.
+		It is based soley on the axis aligned bounding boxes of the two regions.
+		*/
+		bool MeshIntersectsDomain(const CMesh &Mesh) const;
 
 		/// A mesh representing the domain as a surface mesh
 		CMesh m_Mesh;

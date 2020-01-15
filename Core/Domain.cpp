@@ -67,3 +67,36 @@ double CDomain::GetVolume() const
 	return m_Mesh.CalculateVolume();
 }
 
+bool CDomain::MeshIntersectsDomain(const CMesh &Mesh) const
+{
+	pair<XYZ, XYZ> DomainAABB = m_Mesh.GetAABB();
+	pair<XYZ, XYZ> MeshAABB = Mesh.GetAABB();
+
+	return BoundingBoxIntersect(DomainAABB.first, DomainAABB.second, MeshAABB.first, MeshAABB.second);
+}
+
+vector<XYZ> CDomain::GetTranslations(const CYarn &Yarn) const
+{
+	vector<XYZ> AllRepeats;
+	vector<XYZ> FiniteRepeats;
+	const vector<XYZ> &YarnRepeats = Yarn.GetRepeats();
+	vector<pair<int, int> > RepeatLimits = GetRepeatLimits(Yarn);  // How many times to repeat from original yarn
+	vector<XYZ>::const_iterator itRepeat;
+	vector<pair<int, int> >::const_iterator itLimits;
+	AllRepeats.push_back(XYZ());
+	for (itRepeat = YarnRepeats.begin(), itLimits = RepeatLimits.begin(); itRepeat != YarnRepeats.end() && itLimits != RepeatLimits.end(); ++itRepeat, ++itLimits)
+	{
+		CopyToRange(AllRepeats, *itRepeat, itLimits->first, itLimits->second);
+	}
+	CMesh Mesh;	// Create an empty mesh
+	Yarn.AddAABBToMesh(Mesh); // Adds bounding box of yarn surfaces to mesh (?)
+	for (itRepeat = AllRepeats.begin(); itRepeat != AllRepeats.end(); ++itRepeat)
+	{
+		CMesh RepeatedMesh = Mesh;
+		RepeatedMesh.Translate(*itRepeat);
+		if (MeshIntersectsDomain(RepeatedMesh))
+			FiniteRepeats.push_back(*itRepeat);
+	}
+	return FiniteRepeats;
+}
+
