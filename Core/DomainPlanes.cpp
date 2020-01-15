@@ -193,46 +193,6 @@ vector<pair<int, int> > CDomainPlanes::GetRepeatLimits(const CYarn &Yarn) const
 	return ConvertLimitsToInt(AllRepeatLimits);
 }
 
-pair<double, double> CDomainPlanes::GetLimits(XYZ RepeatVector, const CMesh &Mesh) const
-{
-	pair<double, double> DomainLimits = make_pair(0.0, 0.0);
-	pair<double, double> MeshLimits = make_pair(0.0, 0.0);
-	pair<double, double> Limits = make_pair(0.0, 0.0);
-	double dPointDist;//, dFurthestPointDist = 0;
-	vector<XYZ>::const_iterator itNode;
-	const vector<XYZ> MeshNodes = m_Mesh.GetNodes();
-
-	double dRepeatLength = GetLength(RepeatVector);
-	RepeatVector /= dRepeatLength;
-	//for (itNode = m_Mesh.NodesBegin(); itNode != m_Mesh.NodesEnd(); ++itNode)
-	for (itNode = MeshNodes.begin(); itNode != MeshNodes.end(); ++itNode)
-	{
-		dPointDist = DotProduct(*itNode, RepeatVector);
-		
-		if (itNode == MeshNodes.begin())
-			DomainLimits = make_pair(dPointDist, dPointDist);
-		else if (DomainLimits.first > dPointDist)
-			DomainLimits.first = dPointDist;
-		else if (DomainLimits.second < dPointDist)
-			DomainLimits.second = dPointDist;
-	}
-
-	for (itNode = Mesh.NodesBegin(); itNode != Mesh.NodesEnd(); ++itNode)
-	{
-		dPointDist = DotProduct(*itNode, RepeatVector);
-		
-		if (itNode == Mesh.NodesBegin())
-			MeshLimits = make_pair(dPointDist, dPointDist);
-		else if (MeshLimits.first > dPointDist)
-			MeshLimits.first = dPointDist;
-		else if (MeshLimits.second < dPointDist)
-			MeshLimits.second = dPointDist;
-	}
-	Limits.first = (DomainLimits.first - MeshLimits.second)/dRepeatLength;
-	Limits.second = (DomainLimits.second - MeshLimits.first)/dRepeatLength;
-	return Limits;
-}
-
 bool CDomainPlanes::GetBoxLimits(XYZ &Min, XYZ &Max)
 {
 	if (m_Planes.size() != 6)

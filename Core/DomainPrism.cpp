@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace TexGen;
 
 CDomainPrism::CDomainPrism(const vector<XY> &Points, XYZ &start, XYZ &end)
-//	: m_PolygonPoints(Points)
 {
 	CNode Node = CNode(start);
 	m_Yarn.AddNode(Node);

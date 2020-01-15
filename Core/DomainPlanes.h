@@ -77,16 +77,7 @@ namespace TexGen
 		bool PointInDomain(const XYZ &Point) const;
 
 	protected:
-		/// Get the limits for a single given repeat vector and surface mesh
-		/**
-		The limits are the points where the whole surface mesh lies outside the domain
-		The limit is represented as the factor multiplied by the repeat vector that represents
-		the translation of the surface mesh to the limiting case.
-		\param RepeatVector The repeat vector to get limit for
-		\param Mesh The surface mesh that needs to lie behind the plane
-		\return A pair of doubles representing the upper and lower limits
-		*/
-		pair<double, double> GetLimits(XYZ RepeatVector, const CMesh &Mesh) const;
+		
 
 		/// Populate m_PlaneIntersections and m_Mesh, note this only works for closed domains
 		void BuildMesh();

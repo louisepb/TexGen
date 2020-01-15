@@ -87,6 +87,17 @@ namespace TexGen
 	protected:
 		static vector<pair<int, int> > ConvertLimitsToInt(const vector<pair<double, double> > &RepeatLimits);
 
+		/// Get the limits for a single given repeat vector and surface mesh
+		/**
+		The limits are the points where the whole surface mesh lies outside the domain
+		The limit is represented as the factor multiplied by the repeat vector that represents
+		the translation of the surface mesh to the limiting case.
+		\param RepeatVector The repeat vector to get limit for
+		\param Mesh The surface mesh that needs to lie behind the plane
+		\return A pair of doubles representing the upper and lower limits
+		*/
+		pair<double, double> GetLimits(XYZ RepeatVector, const CMesh &Mesh) const;
+
 		/// Determine if a mesh intersects with the domain
 		/**
 		This is a very crude approximation of whether a mesh intersects the domain or not.
