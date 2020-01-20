@@ -139,59 +139,7 @@ void CDomainPlanes::Deform(CLinearTransformation Transformation)
 	BuildMesh();
 }
 
-vector<pair<int, int> > CDomainPlanes::GetRepeatLimits(const CYarn &Yarn) const
-{
-	//TGLOGINDENT("Getting yarn repeat limits");
 
-	vector<pair<double, double> > AllRepeatLimitsPrevious;
-	vector<pair<double, double> > AllRepeatLimits;
-	AllRepeatLimits.resize(Yarn.GetRepeats().size(), pair<double, double>(0, 0));
-	vector<XYZ>::const_iterator itRepeat;
-	vector<PLANE>::const_iterator itPlane;
-	int i;
-	int iIterations = 0, iMaxIterations = 100;
-
-	// Check for all repeats being set to zero
-	int j = 0;
-	for (itRepeat = Yarn.GetRepeats().begin(); itRepeat != Yarn.GetRepeats().end(); ++itRepeat )
-	{
-		if ( !(*itRepeat) )
-			++j;
-	}
-	if ( j == Yarn.GetRepeats().size() )
-		return vector<pair<int, int> >();
-
-	// Use an iterative method to find the repeat limits
-	do
-	{
-		++iIterations;
-		AllRepeatLimitsPrevious = AllRepeatLimits;
-		// Loop over all the repeats
-		for (itRepeat = Yarn.GetRepeats().begin(), i=0; itRepeat != Yarn.GetRepeats().end(); ++itRepeat, ++i)
-		{
-			AllRepeatLimits[i] = pair<double, double>(0, 0);
-			CMesh Mesh;	// Create an empty mesh
-			// Get a surface mesh of the yarns with the repeats calculated so far
-			if (!Yarn.AddAABBToMesh(Mesh, ConvertLimitsToInt(AllRepeatLimits)))
-			{
-				TGERROR("Unable to calculate repeat limits");
-				assert(false);
-				return ConvertLimitsToInt(AllRepeatLimits);
-			}
-
-			AllRepeatLimits[i] = GetLimits(*itRepeat, Mesh);
-		}
-	// Keep going until the repeats from the previous iteration are the same as the repeats for the current
-	// iteration. Or until the operation fails due to too many iterations.
-	} while (AllRepeatLimitsPrevious != AllRepeatLimits && iIterations < iMaxIterations);
-	if (iIterations >= iMaxIterations)
-	{
-		TGERROR("Unable to find yarn repeat limits, stopped after " << iIterations << " iterations");
-		return vector<pair<int, int> >();
-	}
-	//TGLOG("Found yarn repeat limits after " << iIterations << " iterations");
-	return ConvertLimitsToInt(AllRepeatLimits);
-}
 
 bool CDomainPlanes::GetBoxLimits(XYZ &Min, XYZ &Max)
 {

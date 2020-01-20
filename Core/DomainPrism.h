@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 #include "Domain.h"
 #include "Yarn.h"
+#include "Plane.h"
 
 namespace TexGen
 {
@@ -64,6 +65,9 @@ namespace TexGen
 		/// Check if a point lies within the domain
 		bool PointInDomain(const XYZ &Point) const { return false; }
 
+		/// Generate a set of planes corresponding to the mesh elements
+		void GeneratePlanes();
+
 	protected:
 		/// Get the limits for a single given repeat vector and surface mesh
 		/**
@@ -86,12 +90,20 @@ namespace TexGen
 		/// Populate m_PlaneIntersections and m_Mesh, note this only works for closed domains
 		void BuildMesh();
 
+		
+		bool GetPlane(XYZ *points, PLANE &plane);
+		void RemoveDuplicatePlanes();
+		bool PlaneEqual(PLANE Plane1, PLANE Plane2);
+
 		/// Given a mesh and a plane, the holes found in the plane will be filled with triangles
 		/// Intersection of mesh and plane returned as closed loop
 		//static bool FillGaps(CMesh &Mesh, const PLANE &Plane, vector<int> &Polygon, bool bMeshGaps = true);
 
 		/// Create the domain as yarn with constant polygon section and two nodes
 		mutable CYarn m_Yarn;
+
+		/// Planes corresponding to mesh elements
+		vector<PLANE> m_ElementPlanes;
 	};
 
 };	// namespace TexGen

@@ -30,7 +30,7 @@ CDomainPrism::CDomainPrism(const vector<XY> &Points, XYZ &start, XYZ &end)
 	Node = CNode(end);
 	m_Yarn.AddNode(Node);
 	m_Yarn.AssignSection(CYarnSectionConstant(CSectionPolygon(Points)));
-	m_Yarn.SetResolution(2, 40);
+	m_Yarn.SetResolution(2, 8);
 	BuildMesh();
 }
 
@@ -62,4 +62,120 @@ void CDomainPrism::BuildMesh()
 {
 	m_Mesh.Clear();
 	m_Yarn.AddSurfaceToMesh( m_Mesh );
+	m_Mesh.MergeNodes();
+	m_Mesh.SaveToVTK("DomainMesh");
+}
+
+void CDomainPrism::GeneratePlanes()
+{
+	if (m_Mesh.GetNumNodes() == 0)
+	{
+		BuildMesh();
+	}
+
+	list<int>::iterator itInt;
+	list<int>::iterator itStart;
+	XYZ points[4];
+	m_ElementPlanes.clear();
+
+	list<int> &QuadIndices = m_Mesh.GetIndices(CMesh::QUAD);
+	for (itInt = QuadIndices.begin(); itInt != QuadIndices.end(); )
+	{
+		itStart = itInt;
+
+		points[0] = m_Mesh.GetNode(*(itInt++));
+		points[1] = m_Mesh.GetNode(*(itInt++));
+		points[2] = m_Mesh.GetNode(*(itInt++));
+		points[3] = m_Mesh.GetNode(*(itInt++));
+
+		PLANE ElementPlane;
+		if (GetPlane( points, ElementPlane))
+			m_ElementPlanes.push_back(ElementPlane);
+	}
+
+	list<int> &TriIndices = m_Mesh.GetIndices(CMesh::TRI);
+	for (itInt = TriIndices.begin(); itInt != TriIndices.end(); )
+	{
+		itStart = itInt;
+
+		points[0] = m_Mesh.GetNode(*(itInt++));
+		points[1] = m_Mesh.GetNode(*(itInt++));
+		points[2] = m_Mesh.GetNode(*(itInt++));
+
+		PLANE ElementPlane;
+		if (GetPlane(points, ElementPlane))
+			m_ElementPlanes.push_back(ElementPlane);
+	}
+
+	list<int> &Indices = m_Mesh.GetIndices(CMesh::POLYGON);
+	list<int>::iterator itIndices;
+	int StartIndex;
+	list<int>::iterator itStartIndex;
+
+	for (itIndices = Indices.begin(); itIndices != Indices.end(); )
+	{
+		StartIndex = (*(itIndices));
+		itStartIndex = itIndices;
+		vector<int> PolygonIndex;
+		XYZ p;
+
+		int i = 0, iPoints = 0;
+		
+		do {
+			if (i < 3)
+			{
+				points[i] = m_Mesh.GetNode(*(itIndices));
+			}
+			++i;
+			++itIndices;
+			if (i == 3)
+			{
+				PLANE ElementPlane;
+				if (GetPlane(points, ElementPlane))
+					m_ElementPlanes.push_back(ElementPlane);
+			}
+		} while ((*itIndices) != StartIndex);
+		++itIndices;
+	}
+	RemoveDuplicatePlanes();
+}
+
+bool CDomainPrism::GetPlane(XYZ *p, PLANE &plane)
+{
+	plane.Normal = CrossProduct(p[2] - p[0], p[1] - p[0]);
+
+	if (GetLength(plane.Normal))
+	{
+		Normalise(plane.Normal);
+		plane.d = DotProduct(plane.Normal, p[0] - XYZ(0, 0, 0));
+		return(true);
+	}
+	return(false);
+}
+
+void CDomainPrism::RemoveDuplicatePlanes()
+{
+	vector<PLANE>::iterator itPlanes1, itPlanes2;
+
+	for (itPlanes1 = m_ElementPlanes.begin(); itPlanes1 != m_ElementPlanes.end(); ++itPlanes1)
+	{
+		for (itPlanes2 = itPlanes1 + 1; itPlanes2 != m_ElementPlanes.end(); )
+		{
+			if (PlaneEqual(*itPlanes1, *itPlanes2))
+			{
+				itPlanes2 = m_ElementPlanes.erase(itPlanes2);
+			}
+			else
+				++itPlanes2;
+		}
+	}
+}
+
+bool CDomainPrism::PlaneEqual(PLANE Plane1, PLANE Plane2)
+{
+	if (fabs(GetLength(Plane1.Normal, Plane2.Normal)) > 1e-9)
+		return false;
+	if (Plane1.d != Plane2.d)
+		return false;
+	return true;
 }

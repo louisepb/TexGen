@@ -45,10 +45,6 @@ namespace TexGen
 		CDomain* Copy() const { return new CDomainPlanes(*this); }
 
 		void PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType = OUTPUT_STANDARD) const;
-
-		/// Get a vector of repeat limits for a given yarn. The number of limit pairs is the same
-		/// as the number of infinite repeats in the yarn.
-		vector<pair<int, int> > GetRepeatLimits(const CYarn &Yarn) const;
 		
 		void ClipMeshToDomain(CMesh &Mesh, bool bFillGaps = true) const;
 		bool ClipMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps = true) const;

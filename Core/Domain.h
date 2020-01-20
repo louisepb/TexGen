@@ -27,6 +27,7 @@ namespace TexGen
 	using namespace std;
 
 	class CYarn;
+	class CDomainPrism;
 
 	/// Abstract base class representing the domain in which a textile cell may lie
 	class CLASS_DECLSPEC CDomain
@@ -43,7 +44,7 @@ namespace TexGen
 
 		/// Get the limits associated with each repeat vector, that is the upper and lower bounds multiplied to
 		/// the repeat vector for the entire yarn to lie just outside out of the domain
-		virtual vector<pair<int, int> > GetRepeatLimits(const CYarn &Yarn) const = 0;
+		vector<pair<int, int> > GetRepeatLimits(const CYarn &Yarn) const;
 		/// Get the translation vectors necessary to fully fill the domain
 		vector<XYZ> GetTranslations(const CYarn &Yarn) const;
 
@@ -83,6 +84,8 @@ namespace TexGen
 
 		/// Check if a point lies inside the domain
 		virtual bool PointInDomain(const XYZ &Point) const = 0;
+
+		CDomainPrism* GetPrismDomain();
 
 	protected:
 		static vector<pair<int, int> > ConvertLimitsToInt(const vector<pair<double, double> > &RepeatLimits);
