@@ -47,7 +47,9 @@ namespace TexGen
 		vector<pair<int, int> > GetRepeatLimits(const CYarn &Yarn) const { return vector<pair<int, int> >(); }
 		/// Get the translation vectors necessary to fully fill the domain
 		vector<XYZ> GetTranslations(const CYarn &Yarn) const { return vector<XYZ>(); }
-		void ClipMeshToDomain(CMesh &Mesh, bool bFillGaps = true) const {};
+		void ClipMeshToDomain(CMesh &Mesh, bool bFillGaps = true) const;
+		void ClipIntersectMeshToDomain(CMesh &Mesh, bool bFillGaps = true) const;
+
 		bool ClipMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps = true) const { return false; }
 		string GetType() const { return "CDomainPrism"; }
 
@@ -97,7 +99,7 @@ namespace TexGen
 
 		/// Given a mesh and a plane, the holes found in the plane will be filled with triangles
 		/// Intersection of mesh and plane returned as closed loop
-		//static bool FillGaps(CMesh &Mesh, const PLANE &Plane, vector<int> &Polygon, bool bMeshGaps = true);
+		static bool FillGaps(CMesh &Mesh, const PLANE &Plane, vector<int> &Polygon, bool bMeshGaps = true);
 
 		/// Create the domain as yarn with constant polygon section and two nodes
 		mutable CYarn m_Yarn;
