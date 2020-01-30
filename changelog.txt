@@ -21,6 +21,7 @@ Core
 ** Added SaveToVTK option to CTetgenMesh
 ** Bugfix to correct extra space in ConstraintsDriver in voxel mesh equations (issue 21)
 ** Bugfix to correct reversal of G13 and G23 when calculating material properties using periodic boundary conditions set up in voxel mesh export (issue 22)
+** Added bRetainPoints variable to SectionPolygon constructor to enable shape to be forced to retain original points rather than iterate between them
 
 Unit Tests
 ==========
