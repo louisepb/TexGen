@@ -24,13 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace TexGen;
 
 CDomainPrism::CDomainPrism(const vector<XY> &Points, XYZ &start, XYZ &end)
+	:m_Points(Points)
 {
 	CNode Node = CNode(start);
 	m_Yarn.AddNode(Node);
 	Node = CNode(end);
 	m_Yarn.AddNode(Node);
-	m_Yarn.AssignSection(CYarnSectionConstant(CSectionPolygon(Points)));
-	m_Yarn.SetResolution(2, 8);  // Need better definition of resolution
+	m_Yarn.AssignSection(CYarnSectionConstant(CSectionPolygon(Points, false, true)));
+	m_Yarn.SetResolution(2, Points.size());  // Need better definition of resolution
 	BuildMesh();
 }
 
@@ -223,7 +224,8 @@ void CDomainPrism::ClipIntersectMeshToDomain(CMesh &Mesh, bool bFillGaps) const
 
 			if (d1 <= TOL && d2 <= TOL && d3 <= TOL && d4 <= TOL) // The quad lies completely on or outside the plane
 			{
-				//itInt = QuadIndices.erase(itStart, itInt); // Delete the quad
+				if ( fabs(d1) < TOL || fabs(d2) < TOL || fabs(d3) < TOL || fabs(d4) < TOL)
+					itInt = QuadIndices.erase(itStart, itInt); // Delete the quad
 			}
 			else if (d1 >= -TOL && d2 >= -TOL && d3 >= -TOL && d4 >= -TOL) // The quad lies completely inside the plane
 			{
@@ -1102,4 +1104,41 @@ bool CDomainPrism::FillGaps(CMesh &Mesh, const PLANE &Plane, vector<int> &Polygo
 
 	return true;
 
+}
+
+void CDomainPrism::GetPolygonLimits( XYZ &StartPoint, XYZ *SizeVecs )
+{
+	pair<XY, XY> XYCorners;
+	XYZ Node0, Node1;
+
+	Node0 = m_Yarn.GetNode(0)->GetPosition();
+	Node1 = m_Yarn.GetNode(1)->GetPosition();
+	GetMinMaxXY(m_Points, XYCorners.first, XYCorners.second);
+
+	XY CornerXDir(XYCorners.second.x, XYCorners.first.y);
+	XY CornerZDir(XYCorners.first.x, XYCorners.second.y);
+
+	const CNode *node = m_Yarn.GetNode(0);
+
+	const vector<CSlaveNode> &SlaveNodes = m_Yarn.GetSlaveNodes(CYarn::SURFACE);
+	
+	XYZ Up = SlaveNodes[0].GetUp();
+	XYZ Side = SlaveNodes[0].GetSide();
+	
+	// Rotate the 2d section point to the global 3d coordinate system
+	StartPoint = Side * XYCorners.first.x;
+	StartPoint += Up * XYCorners.first.y;
+	SizeVecs[0] = Side * CornerXDir.x;
+	SizeVecs[0] += Up * CornerXDir.y;
+	SizeVecs[2] = Side * CornerZDir.x;
+	SizeVecs[2] += Up * CornerZDir.y;
+	
+	// Translate the point to its global position
+	StartPoint += Node0;
+	SizeVecs[0] += Node0;
+	SizeVecs[0] -= StartPoint;
+	SizeVecs[2] += Node0;
+	SizeVecs[2] -= StartPoint;
+
+	SizeVecs[1] = Node1 - Node0;
 }

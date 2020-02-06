@@ -53,7 +53,7 @@ namespace TexGen
 		bool ClipMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps = true) const { return false; }
 		string GetType() const { return "CDomainPrism"; }
 
-
+		const vector<XY> &GetPoints() const { return m_Points; }
 		
 		/// Move all the planes by given distance along their normal
 		void Grow(double dDistance) {};
@@ -69,6 +69,8 @@ namespace TexGen
 
 		/// Generate a set of planes corresponding to the mesh elements
 		void GeneratePlanes();
+
+		void GetPolygonLimits(XYZ &StartPoint, XYZ *SizeVecs);
 
 	protected:
 		/// Get the limits for a single given repeat vector and surface mesh
@@ -106,6 +108,9 @@ namespace TexGen
 
 		/// Planes corresponding to mesh elements
 		vector<PLANE> m_ElementPlanes;
+
+		/// Prism section points
+		mutable vector<XY> m_Points;
 	};
 
 };	// namespace TexGen
