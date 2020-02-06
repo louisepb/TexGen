@@ -44,10 +44,9 @@ bool CPrismVoxelMesh::CalculateVoxelSizes(CTextile &Textile)
 	
 	CDomainPrism* Domain = Textile.GetDomain()->GetPrismDomain();
 
+	// Get the XYZ size of each axis of the domain, 
+	// taking into account that they may be rotated depending on the orientation of the domain yarn specified
 	Domain->GetPolygonLimits( m_StartPoint, m_RotatedVoxSize );
-
-	CMesh Mesh = Textile.GetDomain()->GetMesh();
-
 
 	m_RotatedVoxSize[0] /= m_XVoxels;
 	m_RotatedVoxSize[1] /= m_YVoxels;
@@ -146,42 +145,6 @@ void CPrismVoxelMesh::GetElementMap(CTextile &Textile)
 	}
 }
 
-bool CPrismVoxelMesh::PointInside(const XY &Point, const vector<XY> &Nodes) const
-{
-	// Algorithm borrowed from http://paulbourke.net/geometry/polygonmesh/
-
-	int counter = 0;
-	int i, N = (int)Nodes.size();
-	double xinters;
-	XY p1, p2;
-	p1 = Nodes[0];
-	for (i = 1;i <= N;i++)
-	{
-		p2 = Nodes[i % N];
-		if (Point.y > min(p1.y, p2.y))
-		{
-			if (Point.y <= max(p1.y, p2.y))
-			{
-				if (Point.x <= max(p1.x, p2.x))
-				{
-					if (p1.y != p2.y)
-					{
-						xinters = (Point.y - p1.y)*(p2.x - p1.x) / (p2.y - p1.y) + p1.x;
-						if (p1.x == p2.x || Point.x <= xinters)
-							counter++;
-					}
-				}
-			}
-		}
-		p1 = p2;
-	}
-
-	if (counter % 2 == 1)
-		return true;
-	else
-		return false;
-}
-
 int CPrismVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype)
 {
 	int numx = m_XVoxels + 1;
@@ -201,7 +164,7 @@ int CPrismVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool
 		{
 			for (x = 0; x < m_XVoxels; ++x)
 			{
-				if (m_ElementMap[make_pair(x, z)])
+				if (m_ElementMap[make_pair(x, z)])  // Only export elements within domain prism outline
 				{
 					if ((itElementInfo->iYarnIndex == -1 && bOutputMatrix)
 						|| (itElementInfo->iYarnIndex >= 0 && bOutputYarn))
@@ -240,7 +203,7 @@ int CPrismVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool
 							NewElementInfo.push_back(*itElementInfo);
 						}
 					}
-					++itElementInfo;
+					++itElementInfo;  // Only saved element info for elements within domain outline
 				}
 			}
 		}

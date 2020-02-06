@@ -33,15 +33,15 @@ namespace TexGen
 		CPrismVoxelMesh(string Type = "CPrismPeriodicBoundaries");
 		virtual ~CPrismVoxelMesh(void);
 
+		/// Outputs hex elements for the elements in the element map
 		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype);
 
 	protected:
 		/// Calculate voxel size based on number of voxels on each axis and domain size
 		bool CalculateVoxelSizes(CTextile &Textile);
 
+		/// Creates a map of elements which are within the prism outline
 		void GetElementMap(CTextile &Textile);
-
-		bool PointInside(const XY &Point, const vector<XY> &Nodes) const;
 
 		/// Outputs nodes to .inp file and gets element information
 		void OutputNodes(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT);
@@ -54,6 +54,7 @@ namespace TexGen
 		/// Map of x,z elements within prism polygon
 		map<pair<int,int>, bool> m_ElementMap;
 
+		/// Number of elements in x-z slice which are output
 		int m_NumElements;
 
 	};
