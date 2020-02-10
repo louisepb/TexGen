@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InterpolationBezier.h"
 #include "InterpolationCubic.h"
 #include "InterpolationAdjusted.h"
+#include "InterpolationLinear.h"
 
 using namespace TexGen;
 
@@ -71,6 +72,8 @@ CObjectContainer<CInterpolation> CInterpolation::CreateInterpolation(TiXmlElemen
 			return CInterpolationCubic(Element);
 		else if (*pType == "CInterpolationAdjusted")
 			return CInterpolationAdjusted(Element);
+		else if (*pType == "CInterpolationLinear")
+			return CInterpolationLinear(Element);
 	}
 	// If the interpolation was not recognised for some reason, revert to using bezier
 	// interpolation to avoid further problems
