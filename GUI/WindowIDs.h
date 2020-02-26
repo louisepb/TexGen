@@ -36,7 +36,6 @@ enum
 	ID_SaveSurfaceMesh,
 	ID_SaveGrid,
 	ID_SaveVoxel,
-	ID_OpenTexGenv2,
 	ID_OpenWiseTex,
 	ID_OpenWeavePattern,
 	ID_ToggleControls,

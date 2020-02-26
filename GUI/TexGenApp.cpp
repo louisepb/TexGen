@@ -95,7 +95,6 @@ CTexGenApp::CTexGenApp()
 	Py_Initialize();
 
 	CTexGen::GetInstance().SetMessages( true, CLoggerGUI() );
-	
 	CTexGen::GetInstance().SetTextileCallback(TextileCallback);
 
 	// Register the swig embedded module with python

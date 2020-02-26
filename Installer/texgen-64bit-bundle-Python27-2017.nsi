@@ -73,7 +73,6 @@ Section "TexGen (required)" ;No components page, name is not important
   File ..\Python\Lib\Completer.py
   File ..\Python\Lib\FlowTex.py
   File ..\Python\Lib\GridFile.py
-  File ..\Python\Lib\TexGenv2.py
   File ..\Python\Lib\WiseTex.py
   File ..\Python\Lib\dataHandling.py
   File ..\Python\Lib\dataHandlingInPlane.py
@@ -178,7 +177,6 @@ Section "Uninstall"
   Delete $INSTDIR\Python\libxtra\TexGen\Completer.pyc
   Delete $INSTDIR\Python\libxtra\TexGen\FlowTex.pyc
   Delete $INSTDIR\Python\libxtra\TexGen\GridFile.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\TexGenv2.pyc
   Delete $INSTDIR\Python\libxtra\TexGen\WiseTex.pyc
   Delete $INSTDIR\Python\libxtra\TexGen\Core.pyc
   Delete $INSTDIR\Python\libxtra\TexGen\Renderer.pyc

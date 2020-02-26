@@ -11,6 +11,7 @@ GUI
 ** Added Set Resolution option to Tetgen Export
 ** Rearranged File Export menu
 ** Created separate ABAQUS and VTU voxel mesh options
+** Removed Import TexGenV2 option
 
 Core
 ====

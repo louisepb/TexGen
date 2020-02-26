@@ -49,7 +49,6 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 	EVT_MENU(ID_Save, CTexGenMainFrame::OnSave)
 	EVT_MENU(ID_SaveScreenshot, CTexGenMainFrame::OnSaveScreenshot)
 	EVT_MENU(ID_OpenWiseTex, CTexGenMainFrame::OnOpenWiseTex)
-	EVT_MENU(ID_OpenTexGenv2, CTexGenMainFrame::OnOpenTexGenv2)
 	EVT_MENU(ID_OpenWeavePattern, CTexGenMainFrame::OnOpenWeavePattern)
 	EVT_MENU(ID_SaveGrid, CTexGenMainFrame::OnSaveGrid)
 	EVT_MENU(ID_SaveVoxel, CTexGenMainFrame::OnSaveVoxel)
@@ -144,7 +143,6 @@ CTexGenMainFrame::CTexGenMainFrame(const wxString& title, const wxPoint& pos, co
 	pMenuFile->AppendSeparator();
 	{
 		wxMenu *pImportSubMenu = new wxMenu;
-		pImportSubMenu->Append(ID_OpenTexGenv2, wxT("&TexGen v2 File..."));
 		pImportSubMenu->Append(ID_OpenWiseTex, wxT("&WiseTex File..."));
 		pImportSubMenu->Append(ID_OpenWeavePattern, wxT("&Weave Pattern File..."));
 		pMenuFile->Append(wxID_ANY, wxT("&Import"), pImportSubMenu);
@@ -516,29 +514,6 @@ void CTexGenMainFrame::OnOpenWiseTex(wxCommandEvent& event)
 		string Command;
 		Command = "from TexGen.WiseTex import *\n";
 		Command += "ImportWiseTex(r\"";
-		Command += ConvertString(dialog.GetPath());
-		Command += "\")";
-		SendPythonCode(Command);
-	}
-}
-
-void CTexGenMainFrame::OnOpenTexGenv2(wxCommandEvent& event)
-{
-	wxFileDialog dialog
-	(
-		this,
-		wxT("Open TexGen v2 file"),
-		wxGetCwd(),
-		wxEmptyString,
-		wxT("TexGen v2 path file (*.pth)|*.pth"),
-		wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR
-	);
-	dialog.CentreOnParent();
-	if (dialog.ShowModal() == wxID_OK)
-	{
-		string Command;
-		Command = "from TexGen.TexGenv2 import *\n";
-		Command += "ImportTexGenv2(r\"";
 		Command += ConvertString(dialog.GetPath());
 		Command += "\")";
 		SendPythonCode(Command);

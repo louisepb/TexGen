@@ -65,7 +65,6 @@ protected:
 	void OnSave(wxCommandEvent& event);
 	void OnSaveScreenshot(wxCommandEvent& event);
 	void OnOpenWiseTex(wxCommandEvent& event);
-	void OnOpenTexGenv2(wxCommandEvent& event);
 	void OnOpenWeavePattern(wxCommandEvent& event);
 	void OnSaveGrid(wxCommandEvent& event);
 	void OnSaveVoxel(wxCommandEvent& event);
