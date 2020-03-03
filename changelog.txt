@@ -29,6 +29,11 @@ Unit Tests
 ** Added tetgen mesh export test
 ** Changes to inp test files for voxel mesh bug fixes
 
+General
+=======
+** Updated 64-bit Python 27 VS2017 bundle installer to set 64-bit registry
+** Updated 64-bit Python 27 VS2017 bundle installer to add Python path to registry
+
 v3.11.0
 =======
 General
