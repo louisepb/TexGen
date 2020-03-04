@@ -36,7 +36,6 @@ enum
 	ID_SaveSurfaceMesh,
 	ID_SaveGrid,
 	ID_SaveVoxel,
-	ID_OpenTexGenv2,
 	ID_OpenWiseTex,
 	ID_OpenWeavePattern,
 	ID_ToggleControls,
@@ -44,7 +43,9 @@ enum
 	ID_ToggleOutliner,
 	ID_SaveABAQUS,
 	ID_SaveABAQUSVoxels,
+	ID_SaveABAQUSSurface,
 	ID_SaveTetgenMesh,
+	ID_SaveVTUVoxels,
 
 //	ID_CreateRenderWindow,
 //	ID_DeleteRenderWindow,

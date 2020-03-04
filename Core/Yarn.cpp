@@ -1333,7 +1333,7 @@ void CYarn::StraightenYarn(double dStraightness)
 	m_iNeedsBuilding = ALL;
 }
 
-bool CYarn::PointInsideYarn(const XYZ &Point, XYZ *pTangent, XY *pLoc, double* pVolumeFraction, double* pDistanceToSurface, double dTolerance, XYZ *pOrientation, XYZ *pUp) const
+bool CYarn::PointInsideYarn(const XYZ &Point, XYZ *pTangent, XY *pLoc, double* pVolumeFraction, double* pDistanceToSurface, double dTolerance, XYZ *pOrientation, XYZ *pUp, bool bSurface) const
 {
 	//PROFILE_FUNC()
 	if (!BuildYarnIfNeeded(SURFACE))
@@ -1397,7 +1397,13 @@ bool CYarn::PointInsideYarn(const XYZ &Point, XYZ *pTangent, XY *pLoc, double* p
 			
 			{
 				//PROFILE_BLOCK( PointInside )
-				bIsInside = PointInside( Loc, SectionPoints );
+				if (!bSurface )
+					bIsInside = PointInside( Loc, SectionPoints );
+				else
+					bIsInside = true;   // If surface assume that only exporting yarns and that been sent centre point
+										// of element which must be inside (or on surface)
+										// If this assumption changes will need to look at how PointInside function
+										// works for point on or very close to surface
 			}
 
 			if ( bIsInside )
@@ -1528,13 +1534,13 @@ bool CYarn::PointInsideYarn(const XYZ &Point, XYZ *pTangent, XY *pLoc, double* p
 	return false;
 }
 
-bool CYarn::PointInsideYarn(const XYZ &Point, const vector<XYZ> &Translations, XYZ *pTangent, XY* pLoc, double *pVolumeFraction, double* pDistanceToSurface, double dTolerance, XYZ *pOrientation, XYZ *pUp) const
+bool CYarn::PointInsideYarn(const XYZ &Point, const vector<XYZ> &Translations, XYZ *pTangent, XY* pLoc, double *pVolumeFraction, double* pDistanceToSurface, double dTolerance, XYZ *pOrientation, XYZ *pUp, bool bSurface) const
 {
 	// TODO OPTIMISE THIS
 	vector<XYZ>::const_iterator itXYZ;
 	for (itXYZ = Translations.begin(); itXYZ != Translations.end(); ++itXYZ)
 	{
-		if (PointInsideYarn(Point - *itXYZ, pTangent, pLoc, pVolumeFraction, pDistanceToSurface, dTolerance, pOrientation, pUp))
+		if (PointInsideYarn(Point - *itXYZ, pTangent, pLoc, pVolumeFraction, pDistanceToSurface, dTolerance, pOrientation, pUp, bSurface))
 			return true;
 	}
 	return false;
@@ -1962,7 +1968,7 @@ bool CYarn::PointInside( const XY &Point, const vector<XY> &Nodes ) const
 					if (p1.y != p2.y)
 					{
 						xinters = (Point.y-p1.y)*(p2.x-p1.x)/(p2.y-p1.y)+p1.x;
-						if (p1.x == p2.x || Point.x <= xinters)
+						if (p1.x == p2.x || Point.x <= xinters )
 							counter++;
 					}
 				}

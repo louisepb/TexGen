@@ -65,7 +65,6 @@ protected:
 	void OnSave(wxCommandEvent& event);
 	void OnSaveScreenshot(wxCommandEvent& event);
 	void OnOpenWiseTex(wxCommandEvent& event);
-	void OnOpenTexGenv2(wxCommandEvent& event);
 	void OnOpenWeavePattern(wxCommandEvent& event);
 	void OnSaveGrid(wxCommandEvent& event);
 	void OnSaveVoxel(wxCommandEvent& event);
@@ -75,7 +74,9 @@ protected:
 	void OnSaveSTEP(wxCommandEvent& event);
 	void OnSaveABAQUS(wxCommandEvent& event);
 	void OnSaveABAQUSVoxels(wxCommandEvent& event);
+	void OnSaveABAQUSSurface(wxCommandEvent& event);
 	void OnSaveTetgenMesh(wxCommandEvent& event);
+	void OnSaveVTUVoxels(wxCommandEvent& event);
 
 	void OnWindow(wxCommandEvent& event);
 	void OnChar(wxKeyEvent& event);
@@ -175,6 +176,18 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
+class CSurfaceMeshOptions : public wxDialog
+{
+public:
+	CSurfaceMeshOptions(wxWindow* parent);
+
+private:
+	void OnFillYarnEndsUpdate(wxUpdateUIEvent& event);
+	void OnSeedSizeUpdate(wxUpdateUIEvent& event);
+
+	DECLARE_EVENT_TABLE()
+};
+
 class CSurveyDialog : public wxDialog
 {
 public:
@@ -187,6 +200,17 @@ private:
 	void OnClickTakeSurvey( wxHyperlinkEvent& event);
 
 	string m_Filename;
+
+	DECLARE_EVENT_TABLE()
+};
+
+class CTetgenOptions : public wxDialog
+{
+public:
+	CTetgenOptions(wxWindow* parent);
+
+private:
+	void OnResolutionUpdate(wxUpdateUIEvent& event);
 
 	DECLARE_EVENT_TABLE()
 };

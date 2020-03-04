@@ -196,6 +196,8 @@ namespace std
 %include "../Core/StaggeredPeriodicBoundaries.h"
 %include "../Core/Materials.h"
 %include "../Core/OctreeVoxelMesh.h"
+%include "../Core/ShellElementExport.h"
+%include "../Core/SurfaceMesh.h"
 
 %include "../Core/PatternDraft.h"
 

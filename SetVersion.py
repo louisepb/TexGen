@@ -81,7 +81,7 @@ def main():
 				'Installer/texgen-64bit-bundle-Python27-2017.nsi']
 				
 	TestFileNames = ['UnitTests/VoxelContinuumTest.inp','UnitTests/DryFibreULSurfaceTest.inp','UnitTests/DryFibreWholeSurfaceTest.inp',
-				'UnitTests/RotatedVoxelMeshTest.inp', 'UnitTests/vmesh.inp']
+				'UnitTests/RotatedVoxelMeshTest.inp', 'UnitTests/vmesh.inp', 'UnitTests/TetgenTestPeriodic.inp']
 	NumFiles = len(FileNames)
 	print('Length filenames = ', NumFiles )
 	

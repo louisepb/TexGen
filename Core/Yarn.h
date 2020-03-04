@@ -278,7 +278,7 @@ namespace TexGen
 		of the way the it determines if a point lies within a section or not. Could be updated to work
 		with non-convex sections at the expensive of performance.
 		*/
-		bool PointInsideYarn( const XYZ &Point, XYZ *pTangent = NULL, XY *pLoc = NULL, double *pVolumeFraction = NULL, double* pDistanceToSurface = NULL, double dTolerance = 1e-9, XYZ *pOrientation = NULL, XYZ *pUp = NULL) const;
+		bool PointInsideYarn( const XYZ &Point, XYZ *pTangent = NULL, XY *pLoc = NULL, double *pVolumeFraction = NULL, double* pDistanceToSurface = NULL, double dTolerance = 1e-9, XYZ *pOrientation = NULL, XYZ *pUp = NULL, bool bSurface = false ) const;
 
 		/// Similar to the above function except that this one takes into account repeated yarns.
 		/**
@@ -290,8 +290,9 @@ namespace TexGen
 		with non-convex sections at the expensive of performance.
 		pTangent, pLoc, pVolumeFraction and pDistanceToSurface are output pointers, they can be
 		NULL where the information is not needed.
+		\param bSurface Defaults to false. Set to true where points are known to be on surface and simply want to return information without PointInside check
 		*/
-		bool PointInsideYarn(const XYZ &Point, const vector<XYZ> &Translations, XYZ *pTangent = NULL, XY* pLoc = NULL, double* pVolumeFraction = NULL, double* pDistanceToSurface = NULL, double dTolerance = 1e-9, XYZ *pOrientation = NULL, XYZ *pUp = NULL) const;
+		bool PointInsideYarn(const XYZ &Point, const vector<XYZ> &Translations, XYZ *pTangent = NULL, XY* pLoc = NULL, double* pVolumeFraction = NULL, double* pDistanceToSurface = NULL, double dTolerance = 1e-9, XYZ *pOrientation = NULL, XYZ *pUp = NULL, bool bSurface = false) const;
 
 		/// Find the plane normal to the yarn which contains a specified point
 		/**

@@ -101,7 +101,7 @@ wxWizardPageSimple* CWeaveWizard::BuildFirstPage()
 
 	wxSizer *pSubSizer;
 
-	pMainSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("This wizard will create a 2d textile weave model for you.")), SizerFlags);
+	pMainSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("This wizard will create a 2D textile weave model for you.")), SizerFlags);
 
 	SizerFlags.Align(wxALIGN_CENTER_VERTICAL);
 	pSubSizer = new wxFlexGridSizer(2);

@@ -2165,6 +2165,13 @@ bool CMesh::SaveToABAQUS(string Filename, const vector<POINT_INFO> *pElementInfo
 		iStartIndex = OutputElements(Output, QUADRATIC_TET, iStartIndex, 1);
 	}
 
+	// Shell elements
+	if (!m_Indices[QUAD].empty())
+	{
+		Output << "*Element, Type=S4R" << endl;
+		iStartIndex = OutputElements(Output, QUAD, iStartIndex, 1);
+	}
+
 	if (pElementInfo)
 	{
 		string OrientationsFilename = Filename;

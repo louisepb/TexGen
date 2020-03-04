@@ -264,7 +264,7 @@ void CPeriodicBoundaries::OutputEquations( ostream& Output, int iBoundaryConditi
 		Output << "Edge8, 2, 1.0, Edge5, 2, -1.0, ConstraintsDriver5, 1, -" << m_DomSize.z << endl;
 
 		Output << "*Equation\n3\n";
-		Output << "Edge8, 3, 1.0, Edge5, 3, -1.0, Constraints Driver2, 1, -" << m_DomSize.z << endl;
+		Output << "Edge8, 3, 1.0, Edge5, 3, -1.0, ConstraintsDriver2, 1, -" << m_DomSize.z << endl;
 	}
 
 	Output << "*Equation\n3\n";
@@ -452,10 +452,10 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 	Output << "*Node Output, nset=ConstraintsDriver3" << endl << "U," << endl;
 	if ( bOutputTransverse )
 	{
-		Output << "*** FIELD OUTPUT: Output Request Shear_yz ***" << endl;
-		Output << "*Node Output, nset=ConstraintsDriver5" << endl << "U," << endl; 
 		Output << "*** FIELD OUTPUT: Output Request Shear_zx ***" << endl;
 		Output << "*Node Output, nset=ConstraintsDriver4" << endl << "U," << endl;
+		Output << "*** FIELD OUTPUT: Output Request Shear_yz ***" << endl;
+		Output << "*Node Output, nset=ConstraintsDriver5" << endl << "U," << endl; 
 	}
 	
 	Output << endl;

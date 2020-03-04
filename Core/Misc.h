@@ -108,6 +108,20 @@ namespace TexGen
 		OUTPUT_FULL,
 	};
 
+	enum EXPORT_TYPE
+	{
+		INP_EXPORT,
+		VTU_EXPORT,
+		SCIRUN_EXPORT,
+	};
+
+	enum DOMAIN_TYPE
+	{
+		BOX_DOMAIN,
+		SHEARED_DOMAIN,
+		ROTATED_DOMAIN,
+	};
+
 	CLASS_DECLSPEC COLOR GetIndexedColor(int iIndex);
 	CLASS_DECLSPEC void CopyToRange(std::vector<XYZ> &Offsets, XYZ Vector, int iLowerLimit, int iUpperLimit);
 

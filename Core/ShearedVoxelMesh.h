@@ -38,7 +38,7 @@ namespace TexGen
 		bool CalculateVoxelSizes(CTextile &Textile);
 		
 		/// Outputs nodes to .inp file and gets element information
-		void OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus = true );
+		void OutputNodes(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT);
 
 		XY				m_ShearedVoxSize[3];
 		XYZ				m_StartPoint;

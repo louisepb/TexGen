@@ -119,7 +119,10 @@ namespace TexGen
 		void GetPointInformation(const vector<XYZ> &Points, vector<POINT_INFO> &PointsInfo, double dTolerance = 1e-9);
 
 		/// Get information when know which yarn point is in.  Saves iterating through entire textile
-		void GetPointInformation(const vector<XYZ> &Points, vector<POINT_INFO> &PointsInfo, int iYarn, double dTolerance = 1e-9);
+		/**
+		\param bSurface default is False. Set to True if getting point information for surface mesh export. Assumes Points are on yarn surface and doesn't do PointInside check
+		*/
+		void GetPointInformation(const vector<XYZ> &Points, vector<POINT_INFO> &PointsInfo, int iYarn, double dTolerance = 1e-9, bool bSurface = false);
 
 		/// Output point information to VTK
 		/**
@@ -157,6 +160,9 @@ namespace TexGen
 
 		/// Remove the domain
 		void RemoveDomain();
+
+		/// Set the resolution for all yarns in textile
+		bool SetResolution(int Resolution);
 
 
 

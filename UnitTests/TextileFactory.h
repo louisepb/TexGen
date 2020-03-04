@@ -59,6 +59,9 @@ public:
 	// Simple plain weave
 	CTextileWeave2D PlainWeave();
 
+	// Refined plain weave with gap between yarns
+	CTextileWeave2D PlainWeaveWithGap();
+
 	// Layer to layer 3D weave
 	CTextileLayerToLayer LayerToLayerWeave();
 

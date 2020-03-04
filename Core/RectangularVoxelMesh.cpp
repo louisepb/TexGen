@@ -50,15 +50,15 @@ bool CRectangularVoxelMesh::CalculateVoxelSizes(CTextile &Textile)
 	return true;
 }
 
-void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus )
+void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filetype )
 {
 	int x,y,z;
 	int iNodeIndex = 1;
 	vector<XYZ> CentrePoints;
 	vector<POINT_INFO> RowInfo;
 
-	if ( !bAbaqus )  // if outputting in SCIRun format need to output number of voxels
-		Output << (m_XVoxels+1)*(m_YVoxels+1)*(m_ZVoxels+1) << endl;
+	if ( Filetype == SCIRUN_EXPORT )  // if outputting in SCIRun format need to output number of voxels
+		Output << (m_XVoxels+1)*(m_YVoxels+1)*(m_ZVoxels+1) << "\n";
 	
 	for ( z = 0; z <= m_ZVoxels; ++z )
 	{
@@ -70,9 +70,13 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool
 				Point.x = m_DomainAABB.first.x + m_VoxSize[0] * x;
 				Point.y = m_DomainAABB.first.y + m_VoxSize[1] * y;
 				Point.z = m_DomainAABB.first.z + m_VoxSize[2] * z;
-				if ( bAbaqus )
+				if ( Filetype == INP_EXPORT )
 					Output << iNodeIndex << ", ";
-				Output << Point << "\n";
+
+				if (Filetype == VTU_EXPORT)
+					m_Mesh.AddNode(Point);
+				else
+					Output << Point << "\n";
 
 				if ( x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels )
 				{

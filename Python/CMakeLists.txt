@@ -52,7 +52,7 @@ IF(BUILD_PYTHON_INTERFACE)
 		TARGET_LINK_LIBRARIES(_Core debug ${PYTHON_DEBUG_LIBRARIES})
 	ENDIF(PYTHON_DEBUG_LIBRARIES)
 	
-	SET(PYTHON_MODULES "'Abaqus', 'Ansys', 'Completer', 'FlowTex', 'GridFile', 'TexGenv2', 'WiseTex'")
+	SET(PYTHON_MODULES "'Abaqus', 'Ansys', 'Completer', 'FlowTex', 'GridFile', 'WiseTex'")
 	IF(BUILD_RENDERER)
 		SET(PYTHON_MODULES "${PYTHON_MODULES}, 'Renderer'")
 	ENDIF(BUILD_RENDERER)

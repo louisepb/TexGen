@@ -49,7 +49,6 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 	EVT_MENU(ID_Save, CTexGenMainFrame::OnSave)
 	EVT_MENU(ID_SaveScreenshot, CTexGenMainFrame::OnSaveScreenshot)
 	EVT_MENU(ID_OpenWiseTex, CTexGenMainFrame::OnOpenWiseTex)
-	EVT_MENU(ID_OpenTexGenv2, CTexGenMainFrame::OnOpenTexGenv2)
 	EVT_MENU(ID_OpenWeavePattern, CTexGenMainFrame::OnOpenWeavePattern)
 	EVT_MENU(ID_SaveGrid, CTexGenMainFrame::OnSaveGrid)
 	EVT_MENU(ID_SaveVoxel, CTexGenMainFrame::OnSaveVoxel)
@@ -59,10 +58,12 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 	EVT_MENU(ID_SaveSTEP, CTexGenMainFrame::OnSaveSTEP)
 	EVT_MENU(ID_SaveABAQUS, CTexGenMainFrame::OnSaveABAQUS)
 	EVT_MENU(ID_SaveABAQUSVoxels, CTexGenMainFrame::OnSaveABAQUSVoxels)
+	EVT_MENU(ID_SaveABAQUSSurface, CTexGenMainFrame::OnSaveABAQUSSurface)
 	EVT_MENU(ID_ToggleControls, CTexGenMainFrame::OnWindow)
 	EVT_MENU(ID_ToggleLogWindow, CTexGenMainFrame::OnWindow)
 	EVT_MENU(ID_ToggleOutliner, CTexGenMainFrame::OnWindow)
 	EVT_MENU(ID_SaveTetgenMesh, CTexGenMainFrame::OnSaveTetgenMesh)
+	EVT_MENU(ID_SaveVTUVoxels, CTexGenMainFrame::OnSaveVTUVoxels)
 
 	EVT_AUINOTEBOOK_PAGE_CHANGED(ID_LogNoteBook, CTexGenMainFrame::OnLogNotebook)
 	EVT_AUINOTEBOOK_PAGE_CHANGED(ID_ViewerNoteBook, CTexGenMainFrame::OnViewerNotebookPageChanged)
@@ -106,10 +107,19 @@ BEGIN_EVENT_TABLE(CVolumeMeshOptions, wxDialog)
 	EVT_UPDATE_UI( XRCID("PeriodicBoundaries"), CVolumeMeshOptions::OnPeriodicBoundariesUpdate)
 END_EVENT_TABLE()
 
+BEGIN_EVENT_TABLE(CSurfaceMeshOptions, wxDialog)
+	EVT_UPDATE_UI(XRCID("FillYarnEnds"), CSurfaceMeshOptions::OnFillYarnEndsUpdate)
+	EVT_UPDATE_UI(XRCID("SeedSize"), CSurfaceMeshOptions::OnSeedSizeUpdate)
+END_EVENT_TABLE()
+
 BEGIN_EVENT_TABLE(CSurveyDialog, wxDialog)
 	EVT_BUTTON(XRCID("NextTime"), CSurveyDialog::OnClickNextTime)
 	EVT_BUTTON(XRCID("NotAgain"), CSurveyDialog::OnClickNotAgain)
 	EVT_HYPERLINK(XRCID("TakeSurvey"), CSurveyDialog::OnClickTakeSurvey)
+END_EVENT_TABLE()
+
+BEGIN_EVENT_TABLE(CTetgenOptions, wxDialog)
+	EVT_UPDATE_UI(XRCID("Resolution"), CTetgenOptions::OnResolutionUpdate)
 END_EVENT_TABLE()
 
 CTexGenMainFrame::CTexGenMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
@@ -133,29 +143,35 @@ CTexGenMainFrame::CTexGenMainFrame(const wxString& title, const wxPoint& pos, co
 	pMenuFile->AppendSeparator();
 	{
 		wxMenu *pImportSubMenu = new wxMenu;
-		pImportSubMenu->Append(ID_OpenTexGenv2, wxT("&TexGen v2 File..."));
 		pImportSubMenu->Append(ID_OpenWiseTex, wxT("&WiseTex File..."));
 		pImportSubMenu->Append(ID_OpenWeavePattern, wxT("&Weave Pattern File..."));
 		pMenuFile->Append(wxID_ANY, wxT("&Import"), pImportSubMenu);
 	}
 	{
 		wxMenu *pExportSubMenu = new wxMenu;
+		
+		{
+			wxMenu *pSurfaceSubMenu = new wxMenu;
+			pSurfaceSubMenu->Append(ID_SaveSurfaceMesh, wxT("&VTU, STL File..."));
+			pSurfaceSubMenu->Append(ID_SaveABAQUSSurface, wxT("ABAQUS File..."));
+			pExportSubMenu->Append(wxID_ANY, wxT("Sur&face Mesh..."), pSurfaceSubMenu);
+		}
+		pExportSubMenu->Append(ID_SaveVolumeMesh, wxT("&Volume Mesh..."));
+		pExportSubMenu->Append(ID_SaveTetgenMesh, wxT("&TetgenMesh..."));
+		{
+			wxMenu *pVoxelSubMenu = new wxMenu;
+			pVoxelSubMenu->Append(ID_SaveABAQUSVoxels, wxT("&ABAQUS Voxel File..."));
+			pVoxelSubMenu->Append(ID_SaveVTUVoxels, wxT("&VTU Voxel File..."));
+			pExportSubMenu->Append(wxID_ANY, wxT("Vo&xel Mesh..."), pVoxelSubMenu);
+		}
+		pExportSubMenu->Append(ID_SaveABAQUS, wxT("&ABAQUS Dry Fibre File..."));
+		pExportSubMenu->Append(ID_SaveIGES, wxT("&IGES File..."));
+		pExportSubMenu->Append(ID_SaveSTEP, wxT("&STEP File..."));
 		{
 			wxMenu *pInHouseSubMenu = new wxMenu;
 			pInHouseSubMenu->Append(ID_SaveGrid, wxT("&Grid File..."));
 			pInHouseSubMenu->Append(ID_SaveVoxel, wxT("&Voxel File..."));
 			pExportSubMenu->Append(wxID_ANY, wxT("&In-House"), pInHouseSubMenu);
-		}
-		pExportSubMenu->Append(ID_SaveIGES, wxT("&IGES File..."));
-		pExportSubMenu->Append(ID_SaveSTEP, wxT("&STEP File..."));
-		pExportSubMenu->Append(ID_SaveSurfaceMesh, wxT("Sur&face Mesh..."));
-		pExportSubMenu->Append(ID_SaveVolumeMesh, wxT("&Volume Mesh..."));
-		pExportSubMenu->Append(ID_SaveTetgenMesh, wxT("&TetgenMesh..."));
-		{
-			wxMenu *pAbaqusSubMenu = new wxMenu;
-			pAbaqusSubMenu->Append(ID_SaveABAQUS, wxT("&ABAQUS Dry Fibre File..."));
-			pAbaqusSubMenu->Append(ID_SaveABAQUSVoxels, wxT("ABAQUS &Voxel File..."));
-			pExportSubMenu->Append(wxID_ANY, wxT("&ABAQUS File"), pAbaqusSubMenu);
 		}
 		pMenuFile->Append(wxID_ANY, wxT("&Export"), pExportSubMenu);
 	}
@@ -504,29 +520,6 @@ void CTexGenMainFrame::OnOpenWiseTex(wxCommandEvent& event)
 	}
 }
 
-void CTexGenMainFrame::OnOpenTexGenv2(wxCommandEvent& event)
-{
-	wxFileDialog dialog
-	(
-		this,
-		wxT("Open TexGen v2 file"),
-		wxGetCwd(),
-		wxEmptyString,
-		wxT("TexGen v2 path file (*.pth)|*.pth"),
-		wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR
-	);
-	dialog.CentreOnParent();
-	if (dialog.ShowModal() == wxID_OK)
-	{
-		string Command;
-		Command = "from TexGen.TexGenv2 import *\n";
-		Command += "ImportTexGenv2(r\"";
-		Command += ConvertString(dialog.GetPath());
-		Command += "\")";
-		SendPythonCode(Command);
-	}
-}
-
 void CTexGenMainFrame::OnOpenWeavePattern(wxCommandEvent& event)
 {
 	wxFileDialog dialog
@@ -733,56 +726,72 @@ void CTexGenMainFrame::OnSaveSurfaceMesh(wxCommandEvent& event)
 {
 	string TextileName = GetTextileSelection();
 
-	bool bExportDomain = false, bTrimSurface = true;
-	wxDialog MeshOptions;
-	if (wxXmlResource::Get()->LoadDialog(&MeshOptions, this, wxT("SurfaceMeshOptions")))
-	{
-		XRCCTRL(MeshOptions, "TrimSurface", wxCheckBox)->SetValidator(wxGenericValidator(&bTrimSurface));
-		XRCCTRL(MeshOptions, "ExportDomain", wxCheckBox)->SetValidator(wxGenericValidator(&bExportDomain));
+	CTextile* pTextile = TEXGEN.GetTextile(TextileName);
 
-		if (MeshOptions.ShowModal() == wxID_OK)
+	double dSeedSize = 1;
+
+	if (pTextile)
+	{
+		const CDomain* pDomain = pTextile->GetDomain();
+		if (pDomain)
 		{
-			wxFileDialog dialog
-			(
-				this,
-				wxT("Save Mesh file"),
-				wxGetCwd(),
-				wxEmptyString,
-				wxT("VTK unstructured grid file (*.vtu)|*.vtu|")
-				wxT("ASCII STL file (*.stl)|*.stl|")
-				wxT("Binary STL file (*.stl;*stlb)|*.stl;*stlb|")
-				wxT("SCIRun file (*.pts)|*.pts|"),
-				wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
-			);
-			dialog.CentreOnParent();
-			if (dialog.ShowModal() == wxID_OK)
+			pair<XYZ, XYZ> DomainSize = pDomain->GetMesh().GetAABB();
+			dSeedSize = GetLength(DomainSize.first, DomainSize.second) / 20.0;
+		}
+	}
+	wxString SeedSize = wxString::Format(wxT("%.4f"), dSeedSize);
+
+	bool bExportDomain = false, bTrimSurface = true, bExportYarns = true, bFillYarnEnds = true;
+	CSurfaceMeshOptions MeshOptions(this);
+	
+	XRCCTRL(MeshOptions, "TrimSurface", wxCheckBox)->SetValidator(wxGenericValidator(&bTrimSurface));
+	XRCCTRL(MeshOptions, "ExportDomain", wxCheckBox)->SetValidator(wxGenericValidator(&bExportDomain));
+	XRCCTRL(MeshOptions, "ExportYarns", wxCheckBox)->SetValidator(wxGenericValidator(&bExportYarns));
+	XRCCTRL(MeshOptions, "FillYarnEnds", wxCheckBox)->SetValidator(wxGenericValidator(&bFillYarnEnds));
+	XRCCTRL(MeshOptions, "SeedSize", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &SeedSize));
+
+	if (MeshOptions.ShowModal() == wxID_OK)
+	{
+		wxFileDialog dialog
+		(
+			this,
+			wxT("Save Mesh file"),
+			wxGetCwd(),
+			wxEmptyString,
+			wxT("VTK unstructured grid file (*.vtu)|*.vtu|")
+			wxT("ASCII STL file (*.stl)|*.stl|")
+			wxT("Binary STL file (*.stl;*stlb)|*.stl;*stlb|")
+			wxT("SCIRun file (*.pts)|*.pts|"),
+			wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
+		);
+		dialog.CentreOnParent();
+		if (dialog.ShowModal() == wxID_OK)
+		{
+			stringstream Command;
+			if ( !SeedSize.IsEmpty())
+				Command << "surface = CSurfaceMesh( " << ConvertString(SeedSize) << ", bool(" << stringify(bFillYarnEnds) << "))" << endl;
+			else
+				Command << "surface = CSurfaceMesh( " << stringify(dSeedSize) << ", bool(" << stringify(bFillYarnEnds) << "))" << endl;
+				
+			Command << "textile = GetTextile(r'" << TextileName << "')" << endl;
+			Command << "surface.SaveSurfaceMesh( textile, bool(" << stringify(bExportYarns) << "), bool(" << stringify(bExportDomain) << "), bool(" << stringify(bTrimSurface) << "))" << endl;
+				
+			switch (dialog.GetFilterIndex())
 			{
-				stringstream Command;
-				Command << "mesh = CMesh()" << endl;
-				Command << "textile = GetTextile(r'" << TextileName << "')" << endl;
-				if (bTrimSurface)
-					Command << "textile.AddSurfaceToMesh(mesh, True)" << endl;
-				else
-					Command << "textile.AddSurfaceToMesh(mesh, False)" << endl;
-				if (bExportDomain)
-					Command << "mesh.InsertMesh(textile.GetDomain().GetMesh())" << endl;
-				switch (dialog.GetFilterIndex())
-				{
-				case 0:
-					Command << "mesh.SaveToVTK(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
-					break;
-				case 1:
-					Command << "mesh.SaveToSTL(r'" << ConvertString(dialog.GetPath()) << "', False)" << endl;
-					break;
-				case 2:
-					Command << "mesh.SaveToSTL(r'" << ConvertString(dialog.GetPath()) << "', True)" << endl;
-					break;
-				case 3:
-					Command << "mesh.SaveToSCIRun(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
-					break;
-				}
-				SendPythonCode(Command.str());
+			case 0:
+				Command << "surface.SaveToVTK(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
+				break;
+			case 1:
+				Command << "surface.SaveToSTL(r'" << ConvertString(dialog.GetPath()) << "', False)" << endl;
+				break;
+			case 2:
+				Command << "surface.SaveToSTL(r'" << ConvertString(dialog.GetPath()) << "', True)" << endl;
+				break;
+			case 3:
+				Command << "surface.SaveToSCIRun(r'" << ConvertString(dialog.GetPath()) << "')" << endl;
+				break;
 			}
+			SendPythonCode(Command.str());
 		}
 	}
 }
@@ -970,7 +979,7 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 		wxT("Save Abaqus file"),
 		wxGetCwd(),
 		wxEmptyString,
-		wxT("Abaqus input file (*.inp)|*.inp"),
+		wxT("ABAQUS input file (*.inp)|*.inp|"),
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
 	);
 	dialog.CentreOnParent();
@@ -1022,6 +1031,109 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 	}
 }
 
+void CTexGenMainFrame::OnSaveVTUVoxels(wxCommandEvent& event)
+{
+	string TextileName = GetTextileSelection();
+	stringstream Command;
+
+	wxString XVoxels = wxT("50");
+	wxString YVoxels = wxT("50");
+	wxString ZVoxels = wxT("50");
+
+	int  iDomainType = 0;
+	int	 iBoundaryConditions = 0;
+
+	wxFileDialog dialog
+	(
+		this,
+		wxT("Save Abaqus file"),
+		wxGetCwd(),
+		wxEmptyString,
+		wxT("VTK unstructured grid file (*.vtu)|*.vtu"),
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
+	);
+	dialog.CentreOnParent();
+
+	wxDialog VTUVoxelOptions;
+
+	if (wxXmlResource::Get()->LoadDialog(&VTUVoxelOptions, this, wxT("VTUVoxelOptions")))
+	{
+		XRCCTRL(VTUVoxelOptions, "XVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &XVoxels));
+		XRCCTRL(VTUVoxelOptions, "YVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &YVoxels));
+		XRCCTRL(VTUVoxelOptions, "ZVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &ZVoxels));
+		XRCCTRL(VTUVoxelOptions, "DomainType", wxRadioBox)->SetValidator(wxGenericValidator(&iDomainType));
+
+		if (VTUVoxelOptions.ShowModal() == wxID_OK)
+		{
+			if (dialog.ShowModal() == wxID_OK)
+			{
+				if (iDomainType == SHEARED_DOMAIN)
+				{
+					Command << "Vox = CShearedVoxelMesh('CShearedPeriodicBoundaries')" << endl;
+					iBoundaryConditions = SHEARED_BC;
+				}
+				else if (iDomainType == ROTATED_DOMAIN)
+				{
+					Command << "Vox = CRotatedVoxelMesh('CRotatedPeriodicBoundaries')" << endl;
+					iBoundaryConditions = ROTATED_BC;
+				}
+				else  // BOX_DOMAIN
+				{
+					Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
+					iBoundaryConditions = MATERIAL_CONTINUUM;
+				}
+
+				Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << "," << ConvertString(YVoxels) << "," << ConvertString(ZVoxels)
+					<< ", True, True," << iBoundaryConditions << ", 0, VTU_EXPORT )" << endl;
+
+				SendPythonCode(Command.str());
+			}
+
+		}
+	}
+}
+
+void CTexGenMainFrame::OnSaveABAQUSSurface(wxCommandEvent& event)
+{
+	string TextileName = GetTextileSelection();
+	stringstream Command;
+
+	bool bTrimSurface = true;
+	int iContactSurfaces;
+
+	wxDialog MeshOptions;
+	if (wxXmlResource::Get()->LoadDialog(&MeshOptions, this, wxT("ABAQUSSurfaceMeshOptions")))
+	{
+		XRCCTRL(MeshOptions, "TrimSurface", wxCheckBox)->SetValidator(wxGenericValidator(&bTrimSurface));
+		XRCCTRL(MeshOptions, "ContactSurfaces", wxRadioBox)->SetValidator(wxGenericValidator(&iContactSurfaces));
+
+		if (MeshOptions.ShowModal() == wxID_OK)
+		{
+			wxFileDialog dialog
+			(
+				this,
+				wxT("Save ABAQUS Surface Mesh file"),
+				wxGetCwd(),
+				wxEmptyString,
+				wxT("Abaqus input file (*.inp)|*.inp"),
+				wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
+			);
+			dialog.CentreOnParent();
+			if (dialog.ShowModal() == wxID_OK)
+			{
+				string strContact = iContactSurfaces ? "True" : "False";
+				Command << "textile = GetTextile(r'" << TextileName << "')" << endl;
+				Command << "SurfaceMesh = CShellElementExport( " << strContact << ", bool(" << bTrimSurface << ") )" << endl;
+				Command << "SurfaceMesh.SaveShellElementToABAQUS(r'" << ConvertString(dialog.GetPath()) << "', textile)" << endl;
+
+				SendPythonCode(Command.str());
+			}
+			
+		}
+	}
+}
+					
+
 void CTexGenMainFrame::OnPeriodicBoundaries(wxCommandEvent& event)
 {
 	int selection = event.GetSelection();
@@ -1034,7 +1146,9 @@ void CTexGenMainFrame::OnSaveTetgenMesh( wxCommandEvent& event )
 
 	wxString params = wxT("pqAY");
 	wxString seed = wxT("0.1");
+	wxString resolution = wxT("40");
 	bool bPeriodic = true;
+	bool bSetRes = false;
 
 	wxFileDialog dialog
 	(
@@ -1042,23 +1156,32 @@ void CTexGenMainFrame::OnSaveTetgenMesh( wxCommandEvent& event )
 		wxT("Save Tetgen Mesh file"),
 		wxGetCwd(),
 		wxEmptyString,
-		wxT("Abaqus input file (*.inp)|*.inp"),
+		wxT("ABAQUS input file (*.inp)|*.inp|")
+		wxT("VTK unstructured grid file (*.vtu)|*.vtu"),
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
 	);
 	dialog.CentreOnParent();
 
-	wxDialog TetgenInput;
-	if (wxXmlResource::Get()->LoadDialog(&TetgenInput, this, wxT("TetgenOptions")))
+	CTetgenOptions TetgenInput(this);
+	//wxDialog TetgenInput;
+	//if (wxXmlResource::Get()->LoadDialog(&TetgenInput, this, wxT("TetgenOptions")))
 	{
 		XRCCTRL(TetgenInput, "Param", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NONE, &params));
 		XRCCTRL(TetgenInput, "SeedSize", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &seed));
 		XRCCTRL(TetgenInput, "Periodic", wxCheckBox)->SetValidator(wxGenericValidator(&bPeriodic));
+		XRCCTRL(TetgenInput, "SetResolution", wxCheckBox)->SetValidator(wxGenericValidator(&bSetRes));
+		XRCCTRL(TetgenInput, "Resolution", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &resolution));
 		if (TetgenInput.ShowModal() == wxID_OK)
 		{
 			if (dialog.ShowModal() == wxID_OK)
 			{
+				if (bSetRes)
+				{
+					Command << "textile = GetTextile(r'" << TextileName << "')" << endl;
+					Command << "textile.SetResolution(" + ConvertString(resolution) + ")" << endl;
+				}
 				Command << "TetMesh = CTetgenMesh(" + ConvertString(seed) + ")" << endl;
-				Command << "TetMesh.SaveTetgenMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath())<< "', '" + ConvertString(params) + "', bool(" << bPeriodic << + "))" << endl;
+				Command << "TetMesh.SaveTetgenMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath())<< "', '" + ConvertString(params) + "', bool(" << bPeriodic << "), " << dialog.GetFilterIndex() << + ")" << endl;
 
 				SendPythonCode(Command.str());
 			}
@@ -2653,6 +2776,37 @@ void CVolumeMeshOptions::OnPeriodicBoundariesUpdate(wxUpdateUIEvent& event)
 	}
 }
 
+CSurfaceMeshOptions::CSurfaceMeshOptions(wxWindow* parent)
+{
+	wxXmlResource::Get()->LoadDialog(this, parent, wxT("SurfaceMeshOptions"));
+}
+
+void CSurfaceMeshOptions::OnFillYarnEndsUpdate(wxUpdateUIEvent& event)
+{
+	wxCheckBox* ExportDomainCtrl = (wxCheckBox*)FindWindow(XRCID("ExportDomain"));
+	if (ExportDomainCtrl->GetValue())
+	{
+		event.Enable(true);
+	}
+	else
+	{
+		event.Enable(false);
+	}
+}
+
+void CSurfaceMeshOptions::OnSeedSizeUpdate(wxUpdateUIEvent& event)
+{
+	wxCheckBox* ExportDomainCtrl = (wxCheckBox*)FindWindow(XRCID("ExportDomain"));
+	if (ExportDomainCtrl->GetValue())
+	{
+		event.Enable(true);
+	}
+	else
+	{
+		event.Enable(false);
+	}
+}
+
 CSurveyDialog::CSurveyDialog(wxWindow* parent)
 {
 	wxXmlResource::Get()->LoadDialog(this, parent, wxT("Survey"));
@@ -2686,3 +2840,26 @@ void CSurveyDialog::OnClickTakeSurvey( wxHyperlinkEvent& event )
 
 	this->EndModal(wxID_CANCEL);
 }
+
+CTetgenOptions::CTetgenOptions(wxWindow* parent)
+{
+	wxXmlResource::Get()->LoadDialog(this, parent, wxT("TetgenOptions"));
+}
+
+void CTetgenOptions::OnResolutionUpdate(wxUpdateUIEvent& event)
+{
+	wxCheckBox* SetResolutionCtrl = (wxCheckBox*)FindWindow(XRCID("SetResolution"));
+	if (SetResolutionCtrl->GetValue())
+	{
+		event.Enable(true);
+		//wxTextCtrl* ResolutionCtrl = (wxTextCtrl*)FindWindow(XRCID("Resolution"));
+		//ResolutionCtrl->Enable(true);
+	}
+	else
+	{
+		event.Enable(false);
+		//wxTextCtrl* ResolutionCtrl = (wxTextCtrl*)FindWindow(XRCID("Resolution"));
+		//ResolutionCtrl->Enable(false);
+	}
+}
+

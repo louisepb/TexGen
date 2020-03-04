@@ -41,7 +41,6 @@ CRotatedVoxelMesh::~CRotatedVoxelMesh(void)
 bool CRotatedVoxelMesh::CalculateVoxelSizes( CTextile &Textile )
 {
 	XYZ DomSize;
-	double Angle1, Angle2, Angle3;
 	CMesh Mesh = Textile.GetDomain()->GetMesh();
 
 	m_StartPoint = Mesh.GetNode(0);
@@ -62,7 +61,7 @@ bool CRotatedVoxelMesh::CalculateVoxelSizes( CTextile &Textile )
 	return true;
 }
 
-void CRotatedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus )
+void CRotatedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filetype )
 {
 	int x,y,z;
 	int iNodeIndex = 1;
@@ -84,8 +83,13 @@ void CRotatedVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAb
 				XYZ Point;
 				Point = YStartPoint + m_RotatedVoxSize[0] * x;
 				
-				Output << iNodeIndex << ", ";
-				Output << Point << endl;
+				if (Filetype == INP_EXPORT)
+				{
+					Output << iNodeIndex << ", ";
+					Output << Point << "\n";
+				}
+				else if (Filetype == VTU_EXPORT)
+					m_Mesh.AddNode(Point);
 
 				if ( x < m_XVoxels && y < m_YVoxels && z < m_ZVoxels )
 				{

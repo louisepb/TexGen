@@ -225,14 +225,6 @@ void CTextileMaterials::OutputMaterials(ostream &Output, int iNumYarns, bool bMa
 	}	
 }
 
-/*void CTextileMaterials::OutputMaterials( string Filename, int iNumYarns, bool bMatrixOnly )
-{
-	AddExtensionIfMissing(Filename, ".inp");
-
-	ofstream Output(Filename.c_str(), ofstream::app);
-	OutputMaterials( Output, iNumYarns, bMatrixOnly );
-}*/
-
 string CUMAT::GetAbaqusCommands( string Type )
 {
 	ostringstream Output;
