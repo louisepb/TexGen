@@ -6,5 +6,3 @@ Instructions for building TexGen from source can be found here http://texgen.sou
 
 ## Executables
 Windows executables and release tarballs can be found here https://sourceforge.net/projects/texgen/
-
-## Trying out a private repo
