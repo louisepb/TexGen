@@ -168,18 +168,39 @@ int writeTempFile(string filename, pair<XYZ, XYZ> myDomain)
 	TempFile << "*HEADING" << "\n";
 	TempFile << "This is a temp input for the octree refinement" << "\n";
 	TempFile << "*NODE" << "\n";
+	
 	TempFile << "1, " << myDomain.first.x<< ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
-	TempFile << "2, " << myDomain.second.x<< ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
-	TempFile << "3, " << myDomain.first.x<< ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
-	TempFile << "4, " << myDomain.second.x<< ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
+	TempFile << "2, " << myDomain.second.x << ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
+	TempFile << "3, " << myDomain.first.x << ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
+	TempFile << "4, " << myDomain.second.x << ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
 
 	TempFile << "5, " << myDomain.first.x <<", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
-	TempFile << "6, " << myDomain.second.x<< ", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
-	TempFile << "7, " << myDomain.first.x<< ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
-	TempFile << "8, " << myDomain.second.x<< ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
+	TempFile << "6, " << myDomain.second.x << ", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
+	TempFile << "7, " << myDomain.first.x << ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
+	TempFile << "8, " << myDomain.second.x << ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
+	
+
+	/*
+	TempFile << "1, " << myDomain.first.x << ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
+	TempFile << "2, " << ( myDomain.second.x + myDomain.first.x) / 2.0<< ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
+	TempFile << "3, " << myDomain.first.x << ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
+	TempFile << "4, " << ( myDomain.second.x + myDomain.first.x) / 2.0 << ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
+
+	TempFile << "5, " << myDomain.first.x <<", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
+	TempFile << "6, " << ( myDomain.second.x + myDomain.first.x) /2.0 << ", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
+	TempFile << "7, " << myDomain.first.x << ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
+	TempFile << "8, " << ( myDomain.second.x + myDomain.first.x) / 2.0 << ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
+
+
+	TempFile << "9, " << myDomain.second.x << ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
+	TempFile << "10, " << myDomain.second.x << ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
+	TempFile << "11, " << myDomain.second.x << ", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
+	TempFile << "12, " << myDomain.second.x << ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
+	*/
 
 	TempFile << "*ELEMENT,TYPE=C3D8R" << "\n";
 	TempFile << "1, 5, 7, 3, 1, 6, 8, 4, 2" << "\n";
+	//TempFile << "2, 6, 8, 4, 2, 11, 12, 10, 9" << "\n";
 	TempFile.close();
 	return 0;
 }
@@ -315,8 +336,29 @@ int COctreeVoxelMesh::storeHangingNode(int *all_lni, int *hanging_corner, int no
 		master_nodes.push_back(all_lni[h] + 1);
 	}
 
-	m_NodeConstraints.insert(make_pair(hanging_count, master_nodes));
-    return 0;
+	sort(master_nodes.begin(), master_nodes.end());
+	
+	/* We also keep master nodes as a string (it should be unique) and store it in 
+		a map "(string)master_nodes" -> hanging_node. This will help us to identify if 
+		hanging nodes duplicate
+	*/
+	std::stringstream ss;
+	for(size_t i = 0; i < master_nodes.size(); ++i)
+	{
+		ss << master_nodes[i];
+	}
+	std::string s = ss.str();
+
+	if ( m_NodeConstraintsReverse.find(s) != m_NodeConstraintsReverse.end() ) {
+		return m_NodeConstraintsReverse[s];
+	} else {
+		m_NodeConstraintsReverse.insert(make_pair(s, hanging_count));
+		m_NodeConstraints.insert(make_pair(hanging_count, master_nodes));
+		return 0;
+	}
+
+	//m_NodeConstraints.insert(make_pair(hanging_count, master_nodes));
+	//return 0;
 }
 
 void COctreeVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Textile, int iBoundaryConditions, bool bMatrixOnly) 
@@ -448,16 +490,40 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, boo
 	vector<vector<int>>::iterator itElements;
 	vector<int>::iterator itNodes;
 	int i, elem_count = 1;
-	for (itElements = m_AllElements.begin(); itElements != m_AllElements.end(); itElements++) {
-		Output << elem_count ++ << ", ";
-		for (itNodes = itElements->begin(), i = 1; itNodes != itElements->end(); itNodes++, i++) {
-			Output << *itNodes;
-			if (i < 8) {
-				Output << ", ";
+
+	if ( m_bTet)
+	{
+		TGLOG("START WRITING ELEMENTS " << m_TetElements.size());
+		for (auto itElem = m_TetElements.begin(); itElem != m_TetElements.end(); ++itElem) {
+			Output << elem_count ++ << ", ";
+			for (itNodes = itElem->begin(), i = 1; itNodes != itElem->end(); itNodes++, i++) {
+				Output << *itNodes;
+				if (i < 4) {
+					Output << ", ";
+				}
 			}
-		}
 		Output << "\n";
+		}
+//		return 0;
+	} 
+	else 
+	{
+	
+		TGLOG("START WRITING ELEMENTS " << m_AllElements.size());
+	
+		for (itElements = m_AllElements.begin(); itElements != m_AllElements.end(); itElements++) {
+			Output << elem_count ++ << ", ";
+			for (itNodes = itElements->begin(), i = 1; itNodes != itElements->end(); itNodes++, i++) {
+				Output << *itNodes;
+				if (i < 8) {
+					Output << ", ";
+				}
+			}
+			Output << "\n";
+		}
 	}
+
+	
 
 	timer.check("Elements written");
 	timer.stop();
@@ -1000,6 +1066,7 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
   	gTextile = Textile;
 	m_DomainAABB = Textile.GetDomain()->GetMesh().GetAABB();
 	g_DomainAABB = m_DomainAABB;
+	//m_bTet = bTet;
 	
 	if (min_level < 0 || refine_level < 0 || min_level > refine_level) {
 		TGERROR("Incorrect refinement levels specified. min_level should be lower than refine_level");
@@ -1115,6 +1182,20 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 						// The node has already appeared and therefore does not need to be written again, use it to create an element only
 						node_elements[node_i] = used;
 					} else {
+						
+						int loc_hang = storeHangingNode(all_lni, hanging_corner, node_i, hanging_count + 1);
+						if ( loc_hang != 0 ) {
+							node_elements[node_i] = loc_hang;	
+						} else {
+							AllNodes.insert(make_pair(++hanging_count, XYZ(vxyz[0], vxyz[1], vxyz[2])));
+							node_elements[node_i] = hanging_count;
+							hang_coord[7][0] = vxyz[0];
+							hang_coord[7][1] = vxyz[1];
+							hang_coord[7][2] = vxyz[2];
+							hang_nums[7] = hanging_count;
+						}
+
+						/*
 						// The node has not appeared earlier, write it, form an element, store the node for further comparisons
 						AllNodes.insert(make_pair(++hanging_count, XYZ(vxyz[0], vxyz[1], vxyz[2])));
 						node_elements[node_i] = hanging_count;
@@ -1125,6 +1206,7 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 					
 						// Write constraints for the hanging node
 						storeHangingNode(all_lni, hanging_corner, node_i, hanging_count);
+						*/
 					}
 				}
 				CurrentCentre.x += 1.0/8.0 * vxyz[0];
@@ -1174,6 +1256,432 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 
 }
 
+
+void COctreeVoxelMesh::ConvertHexToTets()
+{
+	CTimer timer;
+	map<int, vector<int>>::iterator itConstraints;
+	vector<int>::const_iterator itNodes;
+	vector<int> masterNodes; 
+	vector<int> elementsInvolved;
+	vector<int>::iterator pos;
+	int i;
+	/* This array corresponds to the numbering on nodes on six faces of an element
+		1st line - x_min face, 2nd - x_max, 
+		3rd - y_min, 4th - y_max
+		5th - z_min, 6th - z_max
+	*/
+	int faces_inds[6][4] = {
+		{0, 1, 2, 3},
+		{4, 5, 6, 7},
+		{0, 1, 4, 5},
+		{2, 3, 6, 7},
+		{1, 2, 5, 6},
+		{0, 3, 4, 7}
+	};
+
+	vector<int> local_face;
+	map<int, map<int, vector<int> >> markedElements;
+
+	// itConstraints->first - hanging node
+	// itConstraints->second[j] - master nodes
+	TGLOG("There are " << m_NodeConstraints.size() << " constrained nodes");
+	int mycount = 0;
+	timer.start("Start constraint processing");
+	for (itConstraints = m_NodeConstraints.begin(); itConstraints != m_NodeConstraints.end(); itConstraints++) {
+		//TGLOG("Node: " << itConstraints->first);
+		// Go through all nodes to which a hanging node is constrained, see what elements they belong too
+		masterNodes = itConstraints->second;
+		sort(masterNodes.begin(), masterNodes.end());
+		int num = masterNodes.size();
+		
+		elementsInvolved.clear();
+		for (int j = 0; j < num; ++j) {
+			int currentNode = itConstraints->second[j] ;
+			elementsInvolved.insert( elementsInvolved.end(), m_NodesEncounter[currentNode].begin(), m_NodesEncounter[currentNode].end() );
+		}
+
+		// Count how many times each element has been counted
+		i = 0;
+		map<int, int> elemCount;
+		for (auto iter = elementsInvolved.begin(); iter != elementsInvolved.end(); ++iter) {
+			elemCount[*iter]++;
+
+			if ( *iter == 17682 ) {
+				TGLOG("Elemen 17682 constrained " << elemCount[*iter]);
+			}
+		}
+
+
+		for (auto iter = elemCount.begin(); iter != elemCount.end(); ++iter) {
+			// The master element(s) must have the same count as the number of constraints
+			if ( iter->second == num ) {
+				// Not let's find the face to which this node needs to be added
+				int elemNum = iter->first;
+				vector<int> nodes = m_AllElements[elemNum-1];
+		
+				for (int j = 0; j < 6; j++)
+				{
+					local_face.clear();
+					local_face.push_back(nodes[faces_inds[j][0]]);
+					local_face.push_back(nodes[faces_inds[j][1]]);
+					local_face.push_back(nodes[faces_inds[j][2]]);
+					local_face.push_back(nodes[faces_inds[j][3]]);
+					sort(local_face.begin(), local_face.end());
+
+					// We now only look for two nodes (edge)
+					if (num == 2) {
+						if ( find(local_face.begin(), local_face.end(), masterNodes[0]) != local_face.end() &&
+							find(local_face.begin(), local_face.end(), masterNodes[1]) != local_face.end() ) {
+								markedElements[elemNum][j].push_back(itConstraints->first);
+								
+								if (elemNum == 17682) {
+									TGLOG("Element 17682: mark " << j << " with " << itConstraints->first)
+								}
+
+						}
+					}
+
+					// We now check if entire face is what we need
+					if (num == 4) {
+						if ( equal(masterNodes.begin(), masterNodes.end(), local_face.begin()) )
+						{
+							markedElements[elemNum][j].push_back(itConstraints->first);
+
+							if (elemNum == 17682) {
+									TGLOG("Element 17682: mark " << j << " with " << itConstraints->first)
+							}
+
+						}
+					}
+
+				}
+			} else {
+				//TGLOG("Skip this element - it is not a 'master' element");
+			}
+		}
+	}
+	timer.check("Finished");
+	timer.stop();
+
+
+	// Everything is marked, let's split every element (marked or not) into tets
+	int newNodesCount = AllNodes.size() + 1;
+	
+	// Numbering of nodes to split a hex to 12 tets
+	vector<int> existingNodes;
+	int tet_split[12][3] = {
+		{1, 2, 4},
+		{2, 3, 4},
+		{5, 8, 6},
+		{8, 7, 6},
+		{1, 6, 2},
+		{1, 5, 6},
+		{4, 3, 7},
+		{4, 7, 8},
+		{7, 3, 2},
+		{7, 2, 6},
+		{1, 4, 8},
+		{1, 8, 5}
+	};
+
+	// Numbering of nodes to split a large tet (which is based on 9-noded faces) into 8 tets
+	// 9 is the centre of the face node
+	int face_tet_split[8][3] = {
+		{1, 2, 9},
+		{2, 3, 4},
+		{4, 5, 9},
+		{5, 6, 9},
+		{6, 7, 8},
+		{8, 1, 9},
+		{9, 2, 4},
+		{9, 6, 8}
+	};
+
+	int faceLoops[6][4] = {
+		{0, 1, 2, 3},
+		{5, 4, 7, 6},
+		{0, 4, 5, 1},
+		{2, 6, 7, 3},
+		{1, 5, 6, 2},
+		{4, 0, 3, 7}
+	};
+
+	TGLOG("Start hex splitting");
+	vector<XYZ> newCentrePoints;
+	i = 1;
+	for (auto it = m_AllElements.begin(); it != m_AllElements.end(); ++it, ++i) {
+		XYZ newNode = CentrePoints[i - 1]; // Create a new node at the center point
+		int newCentreNode = newNodesCount++;
+		AllNodes.insert(make_pair(newCentreNode, newNode));
+		existingNodes = m_AllElements[i - 1];
+
+		if ( markedElements.find(i) != markedElements.end() ) {
+			// This element needs to be split taking the hanging nodes into account
+
+			if ( i == 17682 ) {
+				TGLOG("Let's split 17682");
+			}
+
+			// Loop through all faces - some of them are marked, some are not
+			for (int faces = 0; faces < 6; faces++) {
+				// Face is marked 
+				if ( markedElements[i].find(faces) != markedElements[i].end() ) {
+					vector<int> faceNodes;
+					XYZ faceCentre = XYZ(0, 0, 0); 
+					int newFaceNode = 0;
+					int faceInd = faces; 
+
+					if ( i == 17682 )
+					{
+						TGLOG("Face " << faces << " has " << markedElements[i][faces].size() << " nodes");
+					}
+
+					// If there are 5 nodes associated with this face then the central node is already present
+					if ( markedElements[i][faces].size() == 5 ) {
+						// Find the central node
+
+						if ( i == 17682 ) {
+							TGLOG("Let's split 17682, face " << faces  << ": 5 nodes");
+						}
+
+						for (auto it3 = markedElements[i][faces].begin(); it3 != markedElements[i][faces].end(); ++it3) {
+							if ( m_NodeConstraints[*it3].size() == 4 ) {
+								faceCentre = AllNodes[*it3];
+								newFaceNode = *it3;
+							}
+						} 
+
+						for (int kk = 0; kk < 4; kk++) {
+							faceNodes.push_back(existingNodes[faceLoops[faceInd][kk]]);
+						}
+
+
+					} else {
+						// Create new face node
+
+						if ( i == 17682 ) {
+							TGLOG("Let's split 17682 " << faces  << ": create node");
+						}
+
+						newFaceNode = newNodesCount++;
+						for (int kk = 0; kk < 4; kk++) {
+							faceNodes.push_back(existingNodes[faceLoops[faceInd][kk]]);
+							faceCentre += 0.25*AllNodes[faceNodes[kk]];
+						}
+						AllNodes.insert(make_pair(newFaceNode, faceCentre));
+					}
+
+					// Add all hanging nodes to the "face node loop"
+
+					if ( markedElements[i][faces].size() > 0 && markedElements[i][faces].size() != 4) {
+						// Add all the hanging nodes to the list of the face nodes
+						for (auto it3 = markedElements[i][faces].begin(); it3 != markedElements[i][faces].end(); ++it3) {
+
+							if ( i == 17682 )
+							{
+								TGLOG("Element 17682, it3 = " << *it3 << " its 0 = " << m_NodeConstraints[*it3][0] << " and 1 " << m_NodeConstraints[*it3][1]);
+								TGLOG("El 17682, it3 = " << *it3 << " num of constr " << m_NodeConstraints[*it3].size());
+								//for (auto itFa = faceNodes.begin(); itFa != faceNodes.end(); ++itFa) {
+								//	TGLOG("Face node: " << *itFa);
+								//}
+							}
+
+							auto newFaceNodeIt1 = find(faceNodes.begin(), faceNodes.end(), m_NodeConstraints[*it3][0]);
+							auto newFaceNodeIt2 = find(faceNodes.begin(), faceNodes.end(), m_NodeConstraints[*it3][1]);
+							int newPos1 = distance(faceNodes.begin(), newFaceNodeIt1);
+							int newPos2 = distance(faceNodes.begin(), newFaceNodeIt2);
+
+							if ( *it3 == 2003180 ) {
+								TGLOG("pos 1 = " << newPos1 << " , pos 2 = " << newPos2 << ", length = " << faceNodes.size());
+							}
+
+							if ( newPos1 == newPos2 - 1 ) {
+								faceNodes.insert(newFaceNodeIt1 + 1, *it3);
+							}
+
+							if ( newPos1 - 1 == newPos2 ) {
+								faceNodes.insert(newFaceNodeIt2 + 1, *it3);
+							}
+
+							if ( newPos1 == newPos2 - 3 || newPos1 - 3 == newPos2 ) {
+								faceNodes.push_back(*it3);
+							}
+
+							if ( newPos1 == newPos2 + 1 - faceNodes.size() || newPos1 + 1 - faceNodes.size() == newPos2 ) {
+								faceNodes.push_back(*it3);
+							}
+						}
+
+						// Add the first node again to "complete" the node loop
+						if ( markedElements[i][faces].size() != 5 ) //&& ( faces != 2 || faces != 4))
+						{
+
+							faceNodes.push_back(existingNodes[faceLoops[faceInd][0]]);
+						}
+						// Iterate to create elements
+
+							if ( i == 17682 )
+							{
+								TGLOG("Print all face");
+								for (auto itFa = faceNodes.begin(); itFa != faceNodes.end(); ++itFa) {
+									TGLOG("Face node: " << *itFa);
+								}
+								TGLOG("newFaceNode " << newFaceNode << " newCentreNode " << newCentreNode);
+							}
+
+						if ( markedElements[i][faces].size() == 5 ) // && (faces == 2 || faces == 4)) 
+						{
+							faceNodes.push_back(newFaceNode);
+							for (int kk = 0; kk < 8; kk++) {
+								vector<int> new_tet; 
+								new_tet.push_back(faceNodes[face_tet_split[kk][0] - 1]);
+								new_tet.push_back(faceNodes[face_tet_split[kk][1] - 1]);
+								new_tet.push_back(faceNodes[face_tet_split[kk][2] - 1]);
+								new_tet.push_back(newCentreNode);
+								// In C++11 it can be made with one line:
+								//		vector<int> new_tet ={existingNodes[tet_split[k][0]], existingNodes[tet_split[k][1]], existingNodes[tet_split[k][2]], newNodesCount};
+								m_TetElements.push_back(new_tet);
+								newCentrePoints.push_back(CentrePoints[i - 1]);
+							}
+
+						} else {
+
+							for (int kk = 0; kk < faceNodes.size() - 1; kk++) {
+								vector<int> new_tet; 
+								new_tet.push_back(faceNodes[kk]);
+								new_tet.push_back(faceNodes[kk + 1]);
+								new_tet.push_back(newFaceNode);
+								new_tet.push_back(newCentreNode);
+								m_TetElements.push_back(new_tet);
+								newCentrePoints.push_back(CentrePoints[i - 1]);
+							}
+						}
+					}
+				} else {
+
+					if ( i == 17682 ) {
+						TGLOG("Face " << faces << " is not marked");
+					}
+
+					for (int k = faces*2; k < (faces + 1) * 2; k++) {
+						vector<int> new_tet; 
+						new_tet.push_back(existingNodes[tet_split[k][0] - 1]);
+						new_tet.push_back(existingNodes[tet_split[k][1] - 1]);
+						new_tet.push_back(existingNodes[tet_split[k][2] - 1]);
+						new_tet.push_back(newCentreNode);
+						// In C++11 it can be made with one line:
+						//		vector<int> new_tet ={existingNodes[tet_split[k][0]], existingNodes[tet_split[k][1]], existingNodes[tet_split[k][2]], newNodesCount};
+						m_TetElements.push_back(new_tet);
+						newCentrePoints.push_back(CentrePoints[i - 1]);
+					}
+				}
+			}
+
+
+
+
+			/*
+			for (auto it2 = markedElements[i].begin(); it2 != markedElements[i].end(); ++it2) {
+				vector<int> faceNodes;
+				XYZ faceCentre = XYZ(0, 0, 0); 
+				int newFaceNode = 0;
+				int faceInd = it2->first; 
+
+				// If there are 5 hanging nodes then the face node is already present
+				if ( it2->second.size() == 5 ) {
+					// Find the central node
+					for (auto it3 = it2->second.begin(); it3 != it2->second.end(); ++it3) {
+						if ( m_NodeConstraints[*it3].size() == 4 ) {
+							faceCentre = AllNodes[*it3];
+							newFaceNode = *it3;
+						}
+					}
+				} else {
+					// Create new face node
+					newFaceNode = newNodesCount++;
+					for (int kk = 0; kk < 4; kk++) {
+						faceNodes.push_back(existingNodes[faceLoops[faceInd][kk]]);
+						faceCentre += 0.25*AllNodes[faceNodes[kk]];
+					}
+					AllNodes.insert(make_pair(newFaceNode, faceCentre));
+				}
+
+				// Add all hanging nodes to the "face node loop"
+
+				if ( it2->second.size() > 0 && it2->second.size() != 4) {
+					// Add all the hanging nodes to the list of the face nodes
+					for (auto it3 = it2->second.begin(); it3 != it2->second.end(); ++it3) {
+						auto newFaceNodeIt1 = find(faceNodes.begin(), faceNodes.end(), m_NodeConstraints[*it3][0]);
+						auto newFaceNodeIt2 = find(faceNodes.begin(), faceNodes.end(), m_NodeConstraints[*it3][1]);
+
+						int newPos1 = distance(faceNodes.begin(), newFaceNodeIt1);
+						int newPos2 = distance(faceNodes.begin(), newFaceNodeIt2);
+						if ( newPos1 == newPos2 - 1 ) {
+							faceNodes.insert(newFaceNodeIt1 + 1, *it3);
+						}
+
+						if ( newPos1 - 1 == newPos2 ) {
+							faceNodes.insert(newFaceNodeIt2 + 1, *it3);
+						}
+
+						if ( newPos1 == newPos2 - 3 || newPos1 - 3 == newPos2 ) {
+							faceNodes.push_back(*it3);
+						}
+					}
+
+					// Add the first node again to "complete" the node loop
+					faceNodes.push_back(existingNodes[faceLoops[faceInd][0]]);
+
+					// Iterate to create elements
+					for (int kk = 0; kk < faceNodes.size() - 1; kk++) {
+						vector<int> new_tet; 
+						new_tet.push_back(faceNodes[kk]);
+						new_tet.push_back(faceNodes[kk + 1]);
+						new_tet.push_back(newFaceNode);
+						new_tet.push_back(newCentreNode);
+						m_TetElements.push_back(new_tet);
+
+						if ( m_TetElements.size() == 150 ) {
+							TGLOG("Extra node is " << m_NodeConstraints[2000059][0] << " and " << m_NodeConstraints[2000059][1]);
+							TGLOG("Preparing element 150. Node loop is: ");
+							for (auto itt = faceNodes.begin(); itt != faceNodes.end(); ++itt) {
+								TGLOG("Node N: " << *itt);
+							}
+							
+						}
+					}
+				}
+			}
+*/
+
+
+
+		} else {
+			// Simple element - just split it
+			for (int k = 0; k < 12; k++) {
+				vector<int> new_tet; 
+				new_tet.push_back(existingNodes[tet_split[k][0] - 1]);
+				new_tet.push_back(existingNodes[tet_split[k][1] - 1]);
+				new_tet.push_back(existingNodes[tet_split[k][2] - 1]);
+				new_tet.push_back(newCentreNode);
+				// In C++11 it can be made with one line:
+				//		vector<int> new_tet ={existingNodes[tet_split[k][0]], existingNodes[tet_split[k][1]], existingNodes[tet_split[k][2]], newNodesCount};
+				m_TetElements.push_back(new_tet);
+				newCentrePoints.push_back(CentrePoints[i - 1]);
+
+			}
+		}
+
+	}
+
+	CentrePoints.clear();
+	CentrePoints = newCentrePoints;
+	TGLOG("Splitting is finished");
+	TGLOG("Nodes: " << AllNodes.size() << " Tet elements: " << m_TetElements.size());
+
+}
+
 void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filetype )
 {
 	CTimer timer;
@@ -1182,6 +1690,12 @@ void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filet
 	ConvertOctreeToNodes();
 	TGLOG("Octree converted");
 	//timer.stop();
+	/*
+	if ( m_bTet ) 
+	{
+		ConvertHexToTets();
+	}
+	*/
 	
 	//timer.start("Retrieving info on centre points");
 	TGLOG("Retrieving info on centre points");
@@ -1190,6 +1704,142 @@ void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filet
 	//timer.check("Info retrieved");
 	TGLOG("Info retrieved");
 	//timer.stop();
+
+  	// Now try to eliminate "stray" voxels (those which is surrounded mostly by other material
+	// Not allow yarn voxels to be between two matrix voxels
+	vector<XYZ>::iterator itCentres;
+	vector<XYZ>::iterator itCentres2;
+	vector<vector<int>>::iterator itElemNodes;
+	TGLOG("Remove strays");
+	int i = 0;
+	/////////////////////////////
+	if (false)
+	{
+
+			double x0 = g_DomainAABB.first.x;
+			double y0 = g_DomainAABB.first.y;
+			double z0 = g_DomainAABB.first.z;
+			double x_length = g_DomainAABB.second.x - x0;
+			double y_length = g_DomainAABB.second.y - y0;
+			double z_length = g_DomainAABB.second.z - z0;
+	
+			double dx = x_length / pow(2, max_level);
+			double dy = y_length / pow(2, max_level);
+			double dz = z_length / pow(2, max_level);
+			vector <XYZ> checkPoints;
+	
+
+				int matNum;
+				vector<int> toChange;
+
+				for (itCentres = CentrePoints.begin(), i = 0; itCentres != CentrePoints.end(); ++itCentres, ++i) 
+				{
+					vector<int> el1 = m_AllElements[i]; 
+					XYZ n1 = AllNodes[el1[0]];
+					XYZ n2 = AllNodes[el1[1]];
+					int localMats[7] = { 0, 0, 0, 0, 0, 0, 0};
+					// Check if it is the maximum refinement level
+
+
+					if ( fabs(fabs(n1.x - n2.x) - dx) < dx/100.0 || fabs(fabs(n1.y - n2.y) - dy) < dy/100.0 || fabs(fabs(n1.z - n2.z) - dz) < dz/100.0 )
+					{
+						// .. and that it is a yarn
+						if ( m_ElementsInfo[i].iYarnIndex > -1) {
+							int j = 0;
+							matNum = 0;
+							int curMat = m_ElementsInfo[i].iYarnIndex;
+
+							for ( itCentres2 = CentrePoints.begin(), j = 0; itCentres2 != CentrePoints.end(); ++itCentres2, ++j )
+							{
+
+								if (  fabs(itCentres->x + dx - itCentres2->x) < dx/10 && fabs(itCentres->y - itCentres2->y) < dy/10 && fabs(itCentres->z - itCentres2->z) < dz/10 )
+								{
+									localMats[1] = m_ElementsInfo[j].iYarnIndex;
+									matNum++;
+								}
+
+								//if ( itCentres2->x == itCentres->x - dx && itCentres2->y == itCentres->y && itCentres2->z == itCentres->z )
+								if (  fabs(itCentres->x - dx - itCentres2->x) < dx/10 && fabs(itCentres->y - itCentres2->y) < dy/10 && fabs(itCentres->z - itCentres2->z) < dz/10 )
+								{
+									localMats[2] = m_ElementsInfo[j].iYarnIndex;
+									matNum++;
+								}
+
+								//if ( itCentres2->x == itCentres->x && itCentres2->y == itCentres->y + dy && itCentres2->z == itCentres->z )
+								if (  fabs(itCentres->x - itCentres2->x) < dx/10 && fabs(itCentres->y + dy - itCentres2->y) < dy/10 && fabs(itCentres->z - itCentres2->z) < dz/10 )
+								{
+									localMats[3] = m_ElementsInfo[j].iYarnIndex;
+									matNum++;
+
+								}
+
+								//if ( itCentres2->x == itCentres->x && itCentres2->y == itCentres->y - dy && itCentres2->z == itCentres->z )
+								if (  fabs(itCentres->x - itCentres2->x) < dx/10 && fabs(itCentres->y - dy - itCentres2->y) < dy/10 && fabs(itCentres->z - itCentres2->z) < dz/10 )
+								{
+									localMats[4] = m_ElementsInfo[j].iYarnIndex;
+									matNum++;
+
+								}
+
+								//if ( itCentres2->x == itCentres->x && itCentres2->y == itCentres->y && itCentres2->z == itCentres->z + dz )
+								if (  fabs(itCentres->x - itCentres2->x) < dx/10 && fabs(itCentres->y - itCentres2->y) < dy/10 && fabs(itCentres->z + dz - itCentres2->z) < dz/10 )
+								{
+									localMats[5] = m_ElementsInfo[j].iYarnIndex;
+									matNum++;
+								}
+
+
+								//if ( itCentres2->x == itCentres->x && itCentres2->y == itCentres->y && fabs( itCentres->z - dz - itCentres2->z) < dz/10 )
+								if (  fabs(itCentres->x - itCentres2->x) < dx/10 && fabs(itCentres->y - itCentres2->y) < dy/10 && fabs(itCentres->z - dz - itCentres2->z) < dz/10 )
+								{
+									localMats[6] = m_ElementsInfo[j].iYarnIndex;
+									matNum++;
+								}
+
+								/*
+								if ( localMats[1] == -1 && localMats[2] == -1)
+								{
+									//m_ElementsInfo[i].iYarnIndex = -1;
+									toChange.push_back(i);
+									break;
+								}
+
+								if ( localMats[3] == -1 && localMats[4] == -1)
+								{
+									//m_ElementsInfo[i].iYarnIndex = -1;
+									toChange.push_back(i);
+									break;
+								}*/
+
+								if ( localMats[5] == -1 && localMats[6] == -1)
+								{
+									//m_ElementsInfo[i].iYarnIndex = -1;
+									toChange.push_back(i);
+									break;
+								}
+
+								if ( matNum == 6 )
+								{
+									break;
+								}
+							}
+						}
+					}
+
+					
+				}
+				TGLOG("Total elements: " << i);
+				vector<int>::iterator myIt;
+				for (myIt = toChange.begin(); myIt != toChange.end(); ++myIt)
+				{
+					m_ElementsInfo[*myIt].iYarnIndex = -1;
+				}
+
+	}
+	/////////////////////
+
+	TGLOG("Stray voxels removed");
+
 
 	if (m_bSmooth || m_bSurface) {
 		map<int, vector<int>> NodeSurf;

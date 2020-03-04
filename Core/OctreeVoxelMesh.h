@@ -124,6 +124,8 @@ namespace TexGen
 		void OutputPeriodicBoundaries(ostream &Output, CTextile& Textile, int iBoundaryConditions, bool bMatrixOnly);
 		/// Decode the P4EST mesh structure and store nodes/elements
 		void ConvertOctreeToNodes();
+		// Convert Hex to Tets
+		void ConvertHexToTets();
 		/// Storing hanging nodes from octree-mesh to a vector for writing the constraints
 		int storeHangingNode(int *all_lni, int *hanging_corner, int node_i, int hanging_count);
 		/// Smoothing
@@ -152,8 +154,13 @@ namespace TexGen
 		p4est_connectivity_t *conn;
 
 		map<int,XYZ> AllNodes;
+		vector< std::vector<int> > m_OddHexes;  
+		map< int, vector<int> > m_ElementMarkup;
 		vector< std::vector<int> > m_AllElements;
+		vector< vector<int> > m_TetElements;
 		map< int, vector<int> > m_NodeConstraints;
+		map< string, int> m_NodeConstraintsReverse;
+
 		map< int, vector<int> > m_NodesEncounter;
 		map< int, vector<int> > m_NeighbourNodes;
 
@@ -167,6 +174,7 @@ namespace TexGen
 		bool m_bSmooth;
 		bool m_bSurface;
 		bool m_bCohesive;
+		bool m_bTet;
 		double m_smoothCoef1, m_smoothCoef2;
 		int m_smoothIter;
 	};
