@@ -441,7 +441,7 @@ void COctreeVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Texti
 	m_PeriodicBoundaries->CreatePeriodicBoundaries( Output, (int)AllNodes.size() + 1, Textile, iBoundaryConditions, bMatrixOnly );
 }
 
-int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus ) 
+int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype ) 
 {
 	CTimer timer;
 	timer.start("Writing elements");
@@ -1174,7 +1174,7 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 
 }
 
-void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus )
+void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filetype )
 {
 	CTimer timer;
 	//timer.start("Starting octree refinement");

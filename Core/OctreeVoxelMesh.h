@@ -117,9 +117,9 @@ namespace TexGen
 		bool CalculateVoxelSizes(CTextile &Textile);
 		
 		/// Outputs nodes to .inp file and gets element information
-		void OutputNodes(ostream &Output, CTextile &Textile, bool bAbaqus = true );
+		void OutputNodes(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT );
 		/// Output elements to .inp file
-		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, bool bAbaqus = true );
+		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype = INP_EXPORT );
 		/// Store info (nodes at boundaries) for periodic BCs
 		void OutputPeriodicBoundaries(ostream &Output, CTextile& Textile, int iBoundaryConditions, bool bMatrixOnly);
 		/// Decode the P4EST mesh structure and store nodes/elements
