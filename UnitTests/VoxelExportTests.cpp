@@ -59,7 +59,7 @@ void CVoxelExportTests::TestOctreeExport()
 {
 	CTextile Textile = m_TextileFactory.GetSingleYarn(3, 20);
 
-	COctreeVoxelMesh Vox;
+	COctreeVoxelMesh Vox("CPeriodicBoundaries");
 	// Save yarns and matrix
 	Vox.SaveVoxelMesh(Textile,"OctreeVoxelMeshTest", 5, 6, true, 10, 0.3, 0.3, false, false );
 	// Compare to template file

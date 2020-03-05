@@ -290,6 +290,7 @@ set<int> GetCommonIndices(const vector<int> &SurfIndices, const vector<int> &Vol
 COctreeVoxelMesh::COctreeVoxelMesh(string Type)
 :CVoxelMesh(Type)
 {
+	m_bTet = false;
 }
 
 COctreeVoxelMesh::~COctreeVoxelMesh(void)
@@ -1084,7 +1085,7 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 	if (CreateP4ESTRefinement(min_level, refine_level) == -1)
 		return;
 	
-	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, 1, 1, 1, true, true, 1);
+	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, 1, 1, 1, true, true, SINGLE_LAYER_RVE);
 
 	timer.check("Octree refinement finished");
 	timer.stop();
