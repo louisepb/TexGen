@@ -59,6 +59,9 @@ Section "TexGen (required)" ;No components page, name is not important
   File vcruntime140.dll
   ;File ..\Docs\TexGen.chm
   File TexGenGUI.exe.manifest
+  File ..\OctreeRefinement\libmylib_sc_w64.dll
+  File ..\OctreeRefinement\libmylib_w64.dll
+  File ..\OctreeRefinement\zlib1.dll
 
   SetOutPath $INSTDIR\Python\libstd
 

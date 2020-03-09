@@ -280,7 +280,7 @@ CTexGenMainFrame::CTexGenMainFrame(const wxString& title, const wxPoint& pos, co
 
 CTexGenMainFrame::~CTexGenMainFrame(void)
 {
-	LaunchSurvey();
+	//LaunchSurvey();
 	
 	while (m_pViewerNotebook->GetPageCount() != 0)
 	{

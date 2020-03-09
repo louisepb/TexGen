@@ -226,6 +226,9 @@ Section "Uninstall"
   Delete $INSTDIR\TexGenGUI.exe.manifest
   Delete $INSTDIR\TexGen.chm
   Delete $INSTDIR\Python27.dll
+  Delete $INSTDIR\libmylib_sc_w64.dll
+  Delete $INSTDIR\libmylib_w64.dll
+  Delete $INSTDIR\zlib1.dll
 
   Delete $INSTDIR\Scripts\2dweave.py
   Delete $INSTDIR\Scripts\3dweave.py
