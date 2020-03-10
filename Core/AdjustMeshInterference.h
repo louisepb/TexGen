@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Mesh.h"
 #include "SimulationAbaqus.h"
-//#include "MeshIntersectionData.h"
 
 
 namespace TexGen
@@ -30,12 +29,6 @@ namespace TexGen
 
 	class CTextile;
 	class CMesh;
-
-	/*struct ELEMENT_INDICES
-	{
-		CMesh::ELEMENT_TYPE ElementType;
-		vector<int>			Index;
-	};*/
 
 	/// Class which holds the information related to each intersection point, used for adjusting the mesh
 	class CLASS_DECLSPEC CMeshIntersectionData
@@ -92,8 +85,9 @@ namespace TexGen
 	};
 
 	/// Class used to adjust small interferences in the fibre volume mesh
-	/// by taking the individual yarn meshes and correcting intersections based on Textile.DetectInterference()
-	
+	/** 
+	Takes the individual yarn meshes and corrects intersections based on Textile.DetectInterference()
+	*/
 	class CLASS_DECLSPEC CAdjustMeshInterference
 	{
 	public:
