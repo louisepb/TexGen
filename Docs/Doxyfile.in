@@ -530,8 +530,6 @@ RECURSIVE              = YES
 # subdirectory from a directory tree whose root is specified with the INPUT tag.
 
 EXCLUDE                = "${TexGen_SOURCE_DIR}/Core/tetgen.h" \
-				 "${TexGen_SOURCE_DIR}/Core/TetgenMesh.cpp" \
-				 "${TexGen_SOURCE_DIR}/Core/TetgenMesh.h" \
 				 "$(TexGen_SOURCE_DIR)/Core/Shiny.h \
 				 "$(TexGen_SOURCE_DIR)/Core/ShinyData.h \
 				 "$(TexGen_SOURCE_DIR)/Core/ShinyMacros.h \
