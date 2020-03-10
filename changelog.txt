@@ -29,6 +29,7 @@ Unit Tests
 ==========
 ** Added tetgen mesh export test
 ** Changes to inp test files for voxel mesh bug fixes
+** Added octree voxel tests
 
 General
 =======
