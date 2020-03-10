@@ -49,7 +49,7 @@ ENDIF(WIN32)
 TARGET_INCLUDE_DIRECTORIES(TexGenCore PUBLIC ../OctreeRefinement/include)
 
 IF(UNIX)
-TARGET_LINK_LIBRARIES(TexGenCore Triangle Triangle-api Octree TinyXML CSparse tetgenlib
+TARGET_LINK_LIBRARIES(TexGenCore triangle triangle-api Octree TinyXML CSparse tetgenlib
 ${CMAKE_CURRENT_SOURCE_DIR}/../OctreeRefinement/libp4est-2.0.so
 ${CMAKE_CURRENT_SOURCE_DIR}/../OctreeRefinement/libp4est.so
 ${CMAKE_CURRENT_SOURCE_DIR}/../OctreeRefinement/libsc-2.0.so

@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 
-//#include <inttypes.h>
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -27,8 +27,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <fstream>
 #include <math.h>
 #include <stdio.h>
-#include <BaseTsd.h>
-typedef SSIZE_T ssize_t;
+#ifdef WIN32
+#   include <BaseTsd.h>
+    typedef SSIZE_T ssize_t;
+#else
+#   include <inttypes.h>
+#endif
 
 extern "C" {
 #include <p4est_to_p8est.h>

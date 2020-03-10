@@ -248,7 +248,7 @@ void CTetgenMesh::SaveTetgenMesh( CTextile &Textile, string OutputFilename, stri
 	// Check the input mesh first
 	try
 	{
-		tetrahedralize("d", &m_in, &m_out);
+		tetrahedralize((char *)"d", &m_in, &m_out);
 	}
 	catch(...)
 	{
