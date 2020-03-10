@@ -59,8 +59,8 @@ Section "TexGen (required)" ;No components page, name is not important
   File vcruntime140.dll
   ;File ..\Docs\TexGen.chm
   File TexGenGUI.exe.manifest
-  File ..\OctreeRefinement\libmylib_sc_w64.dll
-  File ..\OctreeRefinement\libmylib_w64.dll
+  File ..\OctreeRefinement\libsc.dll
+  File ..\OctreeRefinement\libp4est.dll
   File ..\OctreeRefinement\zlib1.dll
 
   SetOutPath $INSTDIR\Python\libstd
@@ -76,7 +76,6 @@ Section "TexGen (required)" ;No components page, name is not important
   File ..\Python\Lib\Completer.py
   File ..\Python\Lib\FlowTex.py
   File ..\Python\Lib\GridFile.py
-  File ..\Python\Lib\TexGenv2.py
   File ..\Python\Lib\WiseTex.py
   File ..\Python\Lib\dataHandling.py
   File ..\Python\Lib\dataHandlingInPlane.py
@@ -197,21 +196,21 @@ Section "Uninstall"
   ;Delete $INSTDIR\Python\libstd\*.*
   RMDir /r $INSTDIR\Python\libstd
 
-
-  Delete $INSTDIR\Python\libxtra\TexGen\Abaqus.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\Ansys.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\Completer.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\FlowTex.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\GridFile.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\TexGenv2.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\WiseTex.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\Core.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\Renderer.pyc
-  Delete $INSTDIR\Python\libxtra\TexGen\Export.pyc
+  Delete $INSTDIR\Python\libxtra\TexGen\__init__.py
+  Delete $INSTDIR\Python\libxtra\TexGen\Abaqus.py
+  Delete $INSTDIR\Python\libxtra\TexGen\Ansys.py
+  Delete $INSTDIR\Python\libxtra\TexGen\Completer.py
+  Delete $INSTDIR\Python\libxtra\TexGen\FlowTex.py
+  Delete $INSTDIR\Python\libxtra\TexGen\GridFile.py
+  Delete $INSTDIR\Python\libxtra\TexGen\WiseTex.py
+  Delete $INSTDIR\Python\libxtra\TexGen\Core.py
+  Delete $INSTDIR\Python\libxtra\TexGen\Renderer.py
+  Delete $INSTDIR\Python\libxtra\TexGen\Export.py
   Delete $INSTDIR\Python\libxtra\TexGen\dataHandling.py
   Delete $INSTDIR\Python\libxtra\TexGen\dataHandlingInPlane.py
   Delete $INSTDIR\Python\libxtra\TexGen\effectiveMatPropRVE.py
   Delete $INSTDIR\Python\libxtra\TexGen\WeavePattern.py
+
         
   Delete $INSTDIR\Python\libxtra\TexGen\_Core.pyd
   Delete $INSTDIR\Python\libxtra\TexGen\_Renderer.pyd
@@ -248,7 +247,10 @@ Section "Uninstall"
   Delete $INSTDIR\TexGenGUI.exe.manifest
   ;Delete $INSTDIR\TexGen.chm
   Delete $INSTDIR\Python27.dll
-
+  Delete $INSTDIR\libsc.dll
+  Delete $INSTDIR\libp4est.dll
+  Delete $INSTDIR\zlib1.dll
+  
   Delete $INSTDIR\Scripts\2dweave.py
   Delete $INSTDIR\Scripts\3dweave.py
   Delete $INSTDIR\Scripts\cotton.py

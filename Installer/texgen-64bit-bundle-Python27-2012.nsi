@@ -59,8 +59,8 @@ Section "TexGen (required)" ;No components page, name is not important
   File msvcp110.dll
   File ..\Docs\TexGen.chm
   File TexGenGUi.exe.manifest
-  File ..\OctreeRefinement\libmylib_sc_w64.dll
-  File ..\OctreeRefinement\libmylib_w64.dll
+  File ..\OctreeRefinement\libsc.dll
+  File ..\OctreeRefinement\libp4est.dll
   File ..\OctreeRefinement\zlib1.dll
 
   SetOutPath $INSTDIR\Python\libstd
@@ -226,8 +226,8 @@ Section "Uninstall"
   Delete $INSTDIR\TexGenGUI.exe.manifest
   Delete $INSTDIR\TexGen.chm
   Delete $INSTDIR\Python27.dll
-  Delete $INSTDIR\libmylib_sc_w64.dll
-  Delete $INSTDIR\libmylib_w64.dll
+  Delete $INSTDIR\libsc.dll
+  Delete $INSTDIR\libp4est.dll
   Delete $INSTDIR\zlib1.dll
 
   Delete $INSTDIR\Scripts\2dweave.py
