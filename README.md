@@ -11,6 +11,9 @@ Windows executables and release tarballs can be found here https://sourceforge.n
 
 ## Citing TexGen
 We would appreciate it if you could acknowledge use of TexGen using the following references:
+
 A C Long and L P Brown. Composite reinforcements for optimum performance: Modelling the geometry of textile reinforcements for composites: TexGen, edited by P Boisse, Woodhead Publishing Ltd, 2011, ISBN: 978-1-84569-965-9
+
 Lin, H., Brown, L. P. & Long, A. C. 2011. Modelling and Simulating Textile Structures using TexGen. Advanced Materials Research, 331, 44-47
+
 Louise Brown, Mikhail Matveev & George Spackman. (2020, March 11). louisepb/TexGen: TexGen v3.12.0 (Version v3.12.0). Zenodo. http://doi.org/10.5281/zenodo.3706478
