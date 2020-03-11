@@ -1,5 +1,11 @@
 Version History
 ---------------
+v3.12.1
+=======
+General
+=======
+** Updated VS2017 non-bundled installer to set 64-bit registry and added p4est libraries
+
 v3.12.0
 =======
 GUI

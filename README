@@ -8,6 +8,42 @@ If you find bugs/issues with TexGen please post an issue at https://github.com/l
 
 Version History
 ---------------
+v3.12.0
+=======
+GUI
+===
+** Added Refresh View option to Render menu
+** Added bool casting for SWIG 4 compatibility
+** Added Export Yarns, Mesh Yarn Ends and Seed Size options to surface mesh export
+** Added Export ABAQUS Surface Mesh File option
+** Added Set Resolution option to Tetgen Export
+** Rearranged File Export menu
+** Created separate ABAQUS and VTU voxel mesh options
+** Removed Import TexGenV2 option
+
+Core
+====
+** Created CMeshDomainPlane class - moved code in CTetgenMesh which did this
+** Created CSurfaceMesh class - added functionality to create yarn and/or domain surfaces and to mesh domain ends with or without yarn end meshes
+** Created CShellElementExport class - exports surface mesh elements as S4R shell elements with surface sets and contact definitions
+** Added SetResolution function to CTextile
+** Added SaveToVTK option to CTetgenMesh
+** Bugfix to correct extra space in ConstraintsDriver in voxel mesh equations (issue 21)
+** Bugfix to correct reversal of G13 and G23 when calculating material properties using periodic boundary conditions set up in voxel mesh export (issue 22)
+** Bugfix to load linear interpolation from tg3 file
+** Added COctreeVoxelMesh class for octree refinement and Laplacian smoothing
+
+Unit Tests
+==========
+** Added tetgen mesh export test
+** Changes to inp test files for voxel mesh bug fixes
+** Added octree voxel tests
+
+General
+=======
+** Updated 64-bit Python 27 VS2017 bundle installer to set 64-bit registry
+** Updated 64-bit Python 27 VS2017 bundle installer to add Python path to registry
+
 v3.11.0
 =======
 General
