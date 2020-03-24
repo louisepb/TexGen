@@ -413,6 +413,7 @@ bool CTextileOrthogonal::BuildWeavePatternTextile() const
 	// y yarns are parallel to the y axis - weft yarns
 
 	//PROFILE_BEGIN(Begin);
+	vector<vector<PATTERN3D> > Pattern = GetPattern();
 	m_Yarns.clear();
 	m_YYarns.clear();
 	m_XYarns.clear();
@@ -2193,6 +2194,8 @@ void CTextileOrthogonal::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, i
 			if ( !bFound )  // If reached end of stack without setting weft yarn need to set it at bottom of cell entries
 			{
 				PrevYCellIndex = (NumLayers - *(itLayers-1))*2 +1;
+				int number = *(itLayers - 1);
+				int newnumber = *itLayers - 1;
 				bFound = true;
 			}
 		}
@@ -2240,7 +2243,7 @@ void CTextileOrthogonal::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, i
 					Cell[WeftCellIndex-1] = PATTERN3D_XYARN;
 					bFirst = false;
 				}
-				else if ( *itWarp != PATTERN3D_NOYARN )
+				else if ( *itWarp != PATTERN3D_NOYARN ) //Not a no yarn position
 				{
 					 // Warp is up and no weft yarn yet. Set x yarn cell without space allowed for weft yarn
 						WarpIndex = (NumLayers - (*itLayers)+1) *2;
@@ -2282,12 +2285,16 @@ void CTextileOrthogonal::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, i
 			}
 		}
 	}
+	vector<vector<PATTERN3D> > Pattern = GetPattern();
+	//ShapeWeftYarns();
 	m_bNeedsBuilding = true;
 }
 
 void CTextileOrthogonal::ConsolidateCells()
 {
+	//ShapeWeftYarns();
 	//bool bWeftChanged = false;
+	vector<vector<PATTERN3D> > Pattern = GetPattern();
 	vector<int> Levels;
 
 	for (int i = 0; i < m_iNumYYarns-1; ++i )
@@ -2302,12 +2309,12 @@ void CTextileOrthogonal::ConsolidateCells()
 			vector<PATTERN3D> &Cell1 = GetCell(i,j);
 			vector<PATTERN3D> &Cell2 = GetCell(i+1,j);
 
-			if ( (Cell1[0] != Cell2[0] || Cell1[Cell1.size()-1] != Cell2[Cell2.size()-1]) ) // Binder yarn changed level - can't consolidate
+			if ( (Cell1[0] != Cell2[0] || Cell1[Cell1.size()-1] != Cell2[Cell2.size()-1]) ) // Binder yarn changed level - can't consolidate - does this assume binders at top and bottom only
 			{
 				break;
 			}
 			int Level2 = FindWeftHeight( Cell2 );
-			if ( Level2 == -1 )
+			if ( Level2 == -1 ) // -1 means no weft yarn in cell
 			{
 				Levels.push_back(Level2);
 				bRemoveCells = false;
@@ -2456,6 +2463,9 @@ void CTextileOrthogonal::ConsolidateCells()
 			MoveBinderYarnPosition( Cell );
 		}
 	}
+
+	vector<vector<PATTERN3D> > PatternAfterConsolidation = GetPattern();
+	
 }
 
 void CTextileOrthogonal::MoveBinderYarnPosition( vector<PATTERN3D> &Cell )

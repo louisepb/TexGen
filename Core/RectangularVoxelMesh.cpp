@@ -60,7 +60,7 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int 
 	if ( Filetype == SCIRUN_EXPORT )  // if outputting in SCIRun format need to output number of voxels
 		Output << (m_XVoxels+1)*(m_YVoxels+1)*(m_ZVoxels+1) << "\n";
 	
-	for ( z = 0; z <= m_ZVoxels; ++z )
+for ( z = 0; z <= m_ZVoxels; ++z )
 	{
 		for ( y = 0; y <= m_YVoxels; ++y )
 		{
