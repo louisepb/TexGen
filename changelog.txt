@@ -6,6 +6,14 @@ General
 =======
 ** Updated VS2017 non-bundled installer to set 64-bit registry and added p4est libraries
 
+Core
+====
+** Updated tetgen export so that o2 option works to export quadratic tet elements
+
+UnitTests
+=========
+** Added tetgen quad export test
+
 v3.12.0
 =======
 GUI

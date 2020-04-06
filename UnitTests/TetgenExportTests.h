@@ -28,6 +28,7 @@ class CTetgenExportTests : public CppUnit::TestFixture
 {
 	CPPUNIT_TEST_SUITE(CTetgenExportTests);
 	CPPUNIT_TEST(TestPeriodicExport);
+	CPPUNIT_TEST(TestQuadExport);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -36,6 +37,7 @@ public:
 
 protected:
 	void TestPeriodicExport();
+	void TestQuadExport();
 
 	CTextileFactory m_TextileFactory;
 };
