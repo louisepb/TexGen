@@ -295,13 +295,21 @@ void CTetgenMesh::SaveMesh(CTextile &Textile)
 	}
 
 	CMesh::ELEMENT_TYPE ElementType = m_out.numberofcorners == 4 ? CMesh::TET : CMesh::QUADRATIC_TET;
+	int quad_tet_ind[10] = {0, 1, 2, 3, 6, 7, 9, 5, 8, 4};
 
 	for (int i = 0; i < m_out.numberoftetrahedra; i++)
 	{
 		vector<int> Indices;
-		for (int j = 0; j < m_out.numberofcorners; j++)
+		for ( int j = 0; j < m_out.numberofcorners; j++ )
 		{
-			Indices.push_back(m_out.tetrahedronlist[i*m_out.numberofcorners + j] - 1);  // Tetgen indices start from 1
+			if (ElementType == CMesh::TET) 
+			{
+				Indices.push_back( m_out.tetrahedronlist[i*m_out.numberofcorners + j]-1 );  // Tetgen indices start from 1
+			}
+			else
+			{
+				Indices.push_back( m_out.tetrahedronlist[i*m_out.numberofcorners + quad_tet_ind[j]] -1);
+			}
 		}
 		m_OutputMesh.AddElement(ElementType, Indices);
 	}
