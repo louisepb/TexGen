@@ -1561,10 +1561,6 @@ void COctreeVoxelMesh::ConvertHexToTets()
 					}
 				} else {
 
-					if ( i == 17682 ) {
-						TGLOG("Face " << faces << " is not marked");
-					}
-
 					for (int k = faces*2; k < (faces + 1) * 2; k++) {
 						vector<int> new_tet; 
 						new_tet.push_back(existingNodes[tet_split[k][0] - 1]);
@@ -2105,19 +2101,19 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 				XYZ laplacian(0.0, 0.0, 0.0);
 				
 				int num = m_NeighbourNodes[*itNodes].size();
-				XYZ orig = AllNodes[*itNodes];
+				XYZ orig = OldNodes[*itNodes];
 
 				for (itNeighbour = m_NeighbourNodes[*itNodes].begin(); itNeighbour != m_NeighbourNodes[*itNodes].end(); ++itNeighbour) {
 					laplacian -= coef/num*(orig - AllNodes[*itNeighbour]);
 
 					// If a point is on a boundary, it should stay there
-					if ( orig.x == m_DomainAABB.first.x || orig.x == m_DomainAABB.second.x)
+					if ( my_comparison(orig.x , m_DomainAABB.first.x) || my_comparison(orig.x , m_DomainAABB.second.x) )
 						laplacian.x = 0;
 
-					if ( orig.y == m_DomainAABB.first.y || orig.y == m_DomainAABB.second.y)
+					if ( my_comparison(orig.y , m_DomainAABB.first.y) || my_comparison(orig.y , m_DomainAABB.second.y) )
 						laplacian.y = 0;
 
-					if ( orig.z == m_DomainAABB.first.z || orig.z == m_DomainAABB.second.z)
+					if ( my_comparison(orig.z , m_DomainAABB.first.z) || my_comparison(orig.z , m_DomainAABB.second.z) )
 						laplacian.z = 0;
 				}
 
