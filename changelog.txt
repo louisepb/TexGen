@@ -9,10 +9,13 @@ General
 Core
 ====
 ** Updated tetgen export so that o2 option works to export quadratic tet elements
+** Change to octree voxel mesh so that initial number of voxels can be specified
+** Bug fix in smoothing for octree voxel mesh
 
 UnitTests
 =========
 ** Added tetgen quad export test
+** Octree voxel mesh test modified for change in SaveVoxelMesh input parameters
 
 v3.12.0
 =======

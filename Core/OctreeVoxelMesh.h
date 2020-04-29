@@ -182,9 +182,5 @@ namespace TexGen
 		bool m_bTet;
 		double m_smoothCoef1, m_smoothCoef2;
 		int m_smoothIter;
-
-		int m_XVoxels;
-		int m_YVoxels;
-		int m_ZVoxels;
 	};
 };	// namespace TexGen
