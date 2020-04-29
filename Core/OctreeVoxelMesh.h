@@ -90,7 +90,7 @@ namespace TexGen
 		\param double smooth1 is the first smoothing parameter
 		\param double smooth2 is the second smoothing parameter
 		*/
-		void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int min_level, int refine_level, bool smoothing, int smoothIter, double smooth1, double smooth2, bool surfaceOuput, bool cohesive);
+		void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, int min_level, int refine_level, bool smoothing, int smoothIter, double smooth1, double smooth2, bool surfaceOuput, bool cohesive);
 
 
 	protected:
@@ -153,6 +153,7 @@ namespace TexGen
 
 		void extractSurfaceNodeSets(std::map< int, vector<int> > &NodeSurf, std::vector<int> &AllSurf);
 		void OutputSurfaces(const std::map<int, vector<int> > &NodeSurf, const std::vector<int> &AllSurf);
+		int writeTempFile(string filename, pair<XYZ, XYZ> myDomain) ;
 		
 		p4est_t *p4est;
 		p4est_connectivity_t *conn;
@@ -181,5 +182,9 @@ namespace TexGen
 		bool m_bTet;
 		double m_smoothCoef1, m_smoothCoef2;
 		int m_smoothIter;
+
+		int m_XVoxels;
+		int m_YVoxels;
+		int m_ZVoxels;
 	};
 };	// namespace TexGen

@@ -158,7 +158,7 @@ pair<int, int> most_common(vector<int> v) {
 
 // P4EST should be initialised with initial coordinates of the unit cell vertices
 // TODO: Try to initialise P4EST with several elements to have better refinement in a certain direction
-int writeTempFile(string filename, pair<XYZ, XYZ> myDomain) 
+int COctreeVoxelMesh::writeTempFile(string filename, pair<XYZ, XYZ> myDomain) 
 {
 	ofstream TempFile(filename);
 	if (!TempFile) {
@@ -168,39 +168,74 @@ int writeTempFile(string filename, pair<XYZ, XYZ> myDomain)
 	TempFile << "*HEADING" << "\n";
 	TempFile << "This is a temp input for the octree refinement" << "\n";
 	TempFile << "*NODE" << "\n";
+
+	if ( false )
+	{
+		// Starting from a single element mesh
+		TempFile << "1, " << myDomain.first.x<< ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
+		TempFile << "2, " << myDomain.second.x << ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
+		TempFile << "3, " << myDomain.first.x << ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
+		TempFile << "4, " << myDomain.second.x << ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
+
+		TempFile << "5, " << myDomain.first.x <<", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
+		TempFile << "6, " << myDomain.second.x << ", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
+		TempFile << "7, " << myDomain.first.x << ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
+		TempFile << "8, " << myDomain.second.x << ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
+		TempFile << "*ELEMENT,TYPE=C3D8R" << "\n";
+		TempFile << "1, 5, 7, 3, 1, 6, 8, 4, 2" << "\n";
+	}
+	else
+	{
+
+		XYZ DomSize;
+		DomSize = myDomain.second - myDomain.first;	
 	
-	TempFile << "1, " << myDomain.first.x<< ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
-	TempFile << "2, " << myDomain.second.x << ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
-	TempFile << "3, " << myDomain.first.x << ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
-	TempFile << "4, " << myDomain.second.x << ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
+		double m_VoxSize[3];
+		m_VoxSize[0] = DomSize.x / m_XVoxels;
+		m_VoxSize[1] = DomSize.y / m_YVoxels;
+		m_VoxSize[2] = DomSize.z / m_ZVoxels;
 
-	TempFile << "5, " << myDomain.first.x <<", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
-	TempFile << "6, " << myDomain.second.x << ", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
-	TempFile << "7, " << myDomain.first.x << ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
-	TempFile << "8, " << myDomain.second.x << ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
-	
+		int iNodeIndex = 1;
+		int x,y,z;
 
-	/*
-	TempFile << "1, " << myDomain.first.x << ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
-	TempFile << "2, " << ( myDomain.second.x + myDomain.first.x) / 2.0<< ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
-	TempFile << "3, " << myDomain.first.x << ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
-	TempFile << "4, " << ( myDomain.second.x + myDomain.first.x) / 2.0 << ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
+		for ( z = 0; z <= m_ZVoxels; ++z )
+		{
+			for ( y = 0; y <= m_YVoxels; ++y )
+			{
+				for ( x = 0; x <=m_XVoxels; ++x )
+				{
+					XYZ Point;
+					Point.x = myDomain.first.x + m_VoxSize[0] * x;
+					Point.y = myDomain.first.y + m_VoxSize[1] * y;
+					Point.z = myDomain.first.z + m_VoxSize[2] * z;
+					TempFile << iNodeIndex << ", " << Point << "\n";
+					++iNodeIndex;
+				}
+			}
+		}
 
-	TempFile << "5, " << myDomain.first.x <<", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
-	TempFile << "6, " << ( myDomain.second.x + myDomain.first.x) /2.0 << ", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
-	TempFile << "7, " << myDomain.first.x << ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
-	TempFile << "8, " << ( myDomain.second.x + myDomain.first.x) / 2.0 << ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
+		TempFile << "*ELEMENT,TYPE=C3D8R" << "\n";
+		int iElementNumber = 1;
+		int numx = m_XVoxels + 1;
+		int numy = m_YVoxels + 1;
 
+		for ( z = 0; z < m_ZVoxels; ++z )
+		{
+			for ( y = 0; y < m_YVoxels; ++y )
+			{
+				for ( x = 0; x < m_XVoxels; ++x )
+				{
+					TempFile << iElementNumber << ", ";
+					TempFile << x +y*numx + (z+1)*numx*numy + 1 << ", " << x +(y+1)*numx + (z+1)*numx*numy + 1 << ", ";
+					TempFile << x + (y+1)*numx + z*numx*numy + 1 << ", " << x + y*numx + z*numx*numy + 1  << ", ";
+					TempFile << (x+1) +y*numx + (z+1)*numx*numy + 1 << ", " << (x+1) +(y+1)*numx + (z+1)*numx*numy + 1 << ", ";
+					TempFile << (x+1) + (y+1)*numx + z*numx*numy + 1 << ", " << (x+1) +y*numx + z*numx*numy + 1 << "\n";
+					++iElementNumber;
+				}
+			}
+		}
+	}
 
-	TempFile << "9, " << myDomain.second.x << ", " << myDomain.first.y << ", " << myDomain.first.z << "\n";
-	TempFile << "10, " << myDomain.second.x << ", " << myDomain.second.y << ", " << myDomain.first.z << "\n";
-	TempFile << "11, " << myDomain.second.x << ", " << myDomain.first.y << ", " << myDomain.second.z << "\n";
-	TempFile << "12, " << myDomain.second.x << ", " << myDomain.second.y << ", " << myDomain.second.z << "\n";
-	*/
-
-	TempFile << "*ELEMENT,TYPE=C3D8R" << "\n";
-	TempFile << "1, 5, 7, 3, 1, 6, 8, 4, 2" << "\n";
-	//TempFile << "2, 6, 8, 4, 2, 11, 12, 10, 9" << "\n";
 	TempFile.close();
 	return 0;
 }
@@ -1013,6 +1048,7 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 
 	// Create a forest from the inp file
 	conn = p4est_connectivity_read_inp ("temp_octree.inp");
+
 	if (conn == NULL) {
 		TGERROR("Failed to read a valid connectivity from temp_octree.inp");
 		return -1;
@@ -1054,8 +1090,12 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 	return 0;
 }
 
-void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int min_level, int refine_level, bool smoothing, int iter, double s1, double s2, bool surfaceOutput, bool cohesive)
+void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, int min_level, int refine_level, bool smoothing, int iter, double s1, double s2, bool surfaceOutput, bool cohesive)
 {
+	m_XVoxels = XVoxNum;
+	m_YVoxels = YVoxNum;
+	m_ZVoxels = ZVoxNum;
+
 	CTimer timer;
 	max_level = refine_level;
 	m_bSmooth = smoothing;
@@ -1861,12 +1901,16 @@ void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filet
 			//timer.stop();
 		}
 	}
+	
+	
+
 
 	//timer.start("Write the nodes");
 	TGLOG("Write the nodes");
-	map<int,XYZ>::iterator itNodes;
+	map<int,XYZ>::iterator itNodes, itNodes2;
+
 	for (itNodes = AllNodes.begin(); itNodes != AllNodes.end(); ++itNodes) {
-		Output << itNodes->first << ", " << itNodes->second.x << ", " << itNodes->second.y << ", " << itNodes->second.z << "\n";
+		Output << setprecision(12) << itNodes->first << ", " << itNodes->second.x << ", " << itNodes->second.y << ", " << itNodes->second.z << "\n";
 	}
 	//timer.check("Nodes written");
 	TGLOG("Nodes written");
@@ -1886,11 +1930,6 @@ int COctreeVoxelMesh::checkIndex(int currentElement, vector<int> nodes)
 			//elems.insert(elems.end(), NodesEncounter[*itNodes].begin(), NodesEncounter[*itNodes].end());
 	}
 
-
-	for (itNodes = elems.begin(); itNodes != elems.end(); ++itNodes) {
-		if (currentElement == 18955)
-			TGLOG(*itNodes);
-	}
 
 	elems.erase(remove(elems.begin(), elems.end(), currentElement), elems.end());
 	pair<int, int> p = most_common(elems);
