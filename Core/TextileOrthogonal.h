@@ -73,6 +73,7 @@ namespace TexGen
 		if this option has been selected.
 		*/
 		virtual bool BuildTextile() const;
+		void ShapeWeftYarns() const;
 
 		virtual void ConvertToPatternDraft( int iWeftOrder = BOTTOM_TO_TOP );
 		/// Set up row of pattern cells for one weft pattern using one row of weave pattern data and the layers pattern for the weave
@@ -133,20 +134,35 @@ namespace TexGen
 
 		int GetWeavePatternYarnIndex(int x, int y, int z) const;
 
+		int AddWeftNodes(int CurrentNode, int XNode, int i, int j) const;
+
 		vector<int> &GetYarnCell(int x, int y);
 		const vector<int> &GetYarnCell(int x, int y) const;
 		void RemoveYarnCell(int x, int y);
 		bool BuildWeavePatternTextile() const;
 		mutable int m_iYYarnOffset;
+		vector<int> &GetPreConsolidationYarnCell(int x, int y);
+		const vector<int> &GetPreConsolidationYarnCell(int x, int y) const;
+		void DeletePreConsolidationYarnCell();
+		vector< vector<int> > m_PreConsolidationWeftYarns;
+		int m_PreConsolidationiNumYYarns;
+
+		vector<PATTERN3D> &GetPreConsolidationCell(int x, int y);
+		const vector<PATTERN3D> &GetPreConsolidationCell(int x, int y) const;
+
 
 		mutable map<pair<int, int>, YARNDATA> m_BinderData;
+		mutable vector<YARNDATA> m_PreConsolidationYYarnData;
 
 		/// Indicates whether textile is loaded from weave pattern
 		bool m_bWeavePattern;
-
 		/// Container to keep track of which weft yarn is located at each cell position
 		/// Used when loaded from weave pattern
 		vector<vector<int> > m_WeftYarns;
 		vector<vector<PATTERN3D> > m_Pattern;
+		vector<vector<PATTERN3D> > m_PreConsolidationPattern;
+		//bool m_Consolidated = false;
+		int FindPreConsolidationNextYCellIndex(int Starti, int j, int k) const;
+		int FindPreConsolidationPrevYCellIndex(int Starti, int j, int k) const;
 	};
 };	// namespace TexGen

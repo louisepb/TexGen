@@ -531,7 +531,7 @@ bool CTextile3DWeave::BuildTextile() const
 		}
 	}
 
-	ShapeWeftYarns();
+	//ShapeWeftYarns();
 
 	// Add repeats and set interpolation
 	dWidth = GetWidth();
