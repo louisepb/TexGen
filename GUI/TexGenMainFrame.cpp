@@ -103,6 +103,10 @@ BEGIN_EVENT_TABLE(CAbaqusVoxelInput, wxDialog)
 	EVT_UPDATE_UI( XRCID("Offset"), CAbaqusVoxelInput::OnOffsetUpdate)
 END_EVENT_TABLE()
 
+BEGIN_EVENT_TABLE(COctreeVoxelInput, wxDialog)
+	EVT_UPDATE_UI(XRCID("Cohesive"), COctreeVoxelInput::OnCohesiveUpdate)
+END_EVENT_TABLE()
+
 BEGIN_EVENT_TABLE(CVolumeMeshOptions, wxDialog)
 	EVT_UPDATE_UI( XRCID("PeriodicBoundaries"), CVolumeMeshOptions::OnPeriodicBoundariesUpdate)
 END_EVENT_TABLE()
@@ -970,8 +974,13 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 	
 	bool bOutputMatrix = true;
 	bool bOutputYarns = true;
+	bool bOctreeRefinement = false;
 	int  iBoundaryConditions = 0;
 	int iElementType = 0;
+
+	// Parameters for octree refinement
+	bool bSurface = false;
+	bool bCohesive = false;
 
 	wxFileDialog dialog
 	(
@@ -992,20 +1001,32 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 		XRCCTRL(AbaqusVoxelInput, "ZVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &ZVoxels));
 		XRCCTRL(AbaqusVoxelInput, "OutputMatrix", wxCheckBox)->SetValidator(wxGenericValidator(&bOutputMatrix));
 		XRCCTRL(AbaqusVoxelInput, "OutputYarns", wxCheckBox)->SetValidator(wxGenericValidator(&bOutputYarns));
+		XRCCTRL(AbaqusVoxelInput, "OctreeRefinement", wxCheckBox)->SetValidator(wxGenericValidator(&bOctreeRefinement));
 		XRCCTRL(AbaqusVoxelInput, "PeriodicBoundaries", wxRadioBox)->SetValidator(wxGenericValidator(&iBoundaryConditions));
 		XRCCTRL(AbaqusVoxelInput, "ElementType", wxRadioBox)->SetValidator(wxGenericValidator(&iElementType));
 		XRCCTRL(AbaqusVoxelInput, "Offset", wxTextCtrl)->SetValidator(RangeValidator(&XOffset, 0.0, 1.0));
 
 		if (AbaqusVoxelInput.ShowModal() == wxID_OK)
 		{
+			if (!bOutputMatrix && !bOutputYarns)
+			{
+				TGERROR("No output selected");
+				return;
+			}
+
+			if (bOctreeRefinement)
+			{
+				COctreeVoxelInput OctreeVoxelInput(this);
+				{
+					if (OctreeVoxelInput.ShowModal() == wxID_OK)
+					{
+						return;
+					}
+				}
+			}
+
 			if (dialog.ShowModal() == wxID_OK)
 			{
-				if ( !bOutputMatrix && !bOutputYarns )
-				{
-					TGERROR("No output selected");
-					return;
-				}
-
 				if ( iBoundaryConditions == SHEARED_BC )
 				{
 					Command << "Vox = CShearedVoxelMesh('CShearedPeriodicBoundaries')" << endl;
@@ -2746,6 +2767,25 @@ void CAbaqusVoxelInput::OnOffsetUpdate(wxUpdateUIEvent& event)
 {
 	wxRadioBox* PeriodicBoundariesCtrl = (wxRadioBox*)FindWindow(XRCID("PeriodicBoundaries"));
 	if ( PeriodicBoundariesCtrl->GetSelection() == STAGGERED_BC )
+	{
+		event.Enable(true);
+	}
+	else
+	{
+		event.Enable(false);
+	}
+}
+
+COctreeVoxelInput::COctreeVoxelInput(wxWindow* parent)
+{
+	wxXmlResource::Get()->LoadDialog(this, parent, wxT("OctreeOptions"));
+}
+
+void COctreeVoxelInput::OnCohesiveUpdate(wxUpdateUIEvent& event)
+{
+	wxCheckBox* SurfaceCtrl = (wxCheckBox*)FindWindow(XRCID("Surfaces"));
+	
+	if ( SurfaceCtrl->GetValue())
 	{
 		event.Enable(true);
 	}

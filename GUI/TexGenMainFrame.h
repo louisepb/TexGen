@@ -165,6 +165,17 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
+class COctreeVoxelInput : public wxDialog
+{
+public:
+	COctreeVoxelInput(wxWindow* parent);
+
+private:
+	void OnCohesiveUpdate(wxUpdateUIEvent& event);
+
+	DECLARE_EVENT_TABLE()
+};
+
 class CVolumeMeshOptions : public wxDialog
 {
 public:
