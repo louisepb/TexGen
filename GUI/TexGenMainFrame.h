@@ -172,7 +172,14 @@ public:
 
 private:
 	void OnCohesiveUpdate(wxUpdateUIEvent& event);
-
+	void OnMinLevelUpdate(wxCommandEvent& event);
+	void OnRefineLevelUpdate(wxCommandEvent& event);
+	//void OnIterationUpdate(wxCommandEvent& event);
+	void OnSmoothingUpdate(wxUpdateUIEvent& event);
+	void OnCoefficient1Update(wxUpdateUIEvent& event);
+	void OnCoefficient2Update(wxUpdateUIEvent& event);
+	void OnCoefficient1Text(wxCommandEvent& event);
+	void OnCoefficient2Text(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
 };
 

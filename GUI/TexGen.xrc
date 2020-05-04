@@ -435,12 +435,33 @@
 						<option>0</option>
 						<flag>wxALL</flag>
 						<border>5</border>
-						<object class="wxSpinCtrl" name="m_spinCtrl7">
+						<object class="wxSpinCtrl" name="Iterations">
 							<style>wxSP_ARROW_KEYS</style>
-							<value>0</value>
+							<value>1</value>
 							<min>0</min>
 							<max>10</max>
 						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxRadioBox" name="Smoothing">
+							<style>wxRA_SPECIFY_COLS</style>
+							<label>Smoothing Options</label>
+							<selection>0</selection>
+							<content>
+								<item>Laplacian</item>
+								<item>Non-shrinking</item>
+							</content>
+							<dimension>1</dimension>
+						</object>
+					</object>
+					<object class="spacer">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<size>0,0</size>
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
@@ -456,6 +477,7 @@
 						<flag>wxALL</flag>
 						<border>5</border>
 						<object class="wxTextCtrl" name="Coefficient1">
+							<style>wxTE_PROCESS_ENTER</style>
 							<value>0.3</value>
 						</object>
 					</object>
@@ -473,6 +495,7 @@
 						<flag>wxALL</flag>
 						<border>5</border>
 						<object class="wxTextCtrl" name="Coefficient2">
+							<style>wxTE_PROCESS_ENTER</style>
 							<value>0.3</value>
 						</object>
 					</object>
@@ -1305,7 +1328,7 @@
 							<style>wxRA_SPECIFY_COLS</style>
 							<tooltip>Select whether to use reduced brick elements</tooltip>
 							<label>Element Type</label>
-							<selection>0</selection>
+							<selection>1</selection>
 							<content>
 								<item>C3D8R</item>
 								<item>C3D8</item>

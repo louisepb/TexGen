@@ -105,6 +105,14 @@ END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(COctreeVoxelInput, wxDialog)
 	EVT_UPDATE_UI(XRCID("Cohesive"), COctreeVoxelInput::OnCohesiveUpdate)
+	EVT_TEXT(XRCID("MinLevel"), COctreeVoxelInput::OnMinLevelUpdate)
+	EVT_TEXT(XRCID("RefineLevel"), COctreeVoxelInput::OnRefineLevelUpdate)
+	//EVT_TEXT(XRCID("Iterations"), COctreeVoxelInput::OnIterationUpdate)
+	EVT_UPDATE_UI(XRCID("Smoothing"), COctreeVoxelInput::OnSmoothingUpdate)
+	EVT_UPDATE_UI(XRCID("Coefficient1"), COctreeVoxelInput::OnCoefficient1Update)
+	EVT_UPDATE_UI(XRCID("Coefficient2"), COctreeVoxelInput::OnCoefficient2Update)
+	EVT_TEXT(XRCID("Coefficient1"), COctreeVoxelInput::OnCoefficient1Text)
+	EVT_TEXT_ENTER(XRCID("Coefficient2"), COctreeVoxelInput::OnCoefficient2Text)
 END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(CVolumeMeshOptions, wxDialog)
@@ -981,6 +989,12 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 	// Parameters for octree refinement
 	bool bSurface = false;
 	bool bCohesive = false;
+	wxString Coeff1 = wxT("0.3");
+	wxString Coeff2 = wxT("0.3");
+	int MinLevel = 1;
+	int RefineLevel = 2;
+	int Iterations;
+	int Smoothing = 0;
 
 	wxFileDialog dialog
 	(
@@ -1018,10 +1032,19 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 			{
 				COctreeVoxelInput OctreeVoxelInput(this);
 				{
+					XRCCTRL(OctreeVoxelInput, "Coefficient1", wxTextCtrl)->SetValidator(RangeValidator( &Coeff1, 0.0, 1.0));
+					XRCCTRL(OctreeVoxelInput, "Coefficient2", wxTextCtrl)->SetValidator(RangeValidator( &Coeff2, 0.0, 1.0));
+					XRCCTRL(OctreeVoxelInput, "MinLevel", wxSpinCtrl)->SetValidator(wxGenericValidator(&MinLevel));
+					XRCCTRL(OctreeVoxelInput, "RefineLevel", wxSpinCtrl)->SetValidator(wxGenericValidator(&RefineLevel));
+					XRCCTRL(OctreeVoxelInput, "Iterations", wxSpinCtrl)->SetValidator(wxGenericValidator(&Iterations));
+					XRCCTRL(OctreeVoxelInput, "Smoothing", wxRadioBox)->SetValidator(wxGenericValidator(&Smoothing));
+
 					if (OctreeVoxelInput.ShowModal() == wxID_OK)
 					{
-						return;
+
 					}
+					else
+						return;
 				}
 			}
 
@@ -2792,6 +2815,132 @@ void COctreeVoxelInput::OnCohesiveUpdate(wxUpdateUIEvent& event)
 	else
 	{
 		event.Enable(false);
+	}
+}
+
+void COctreeVoxelInput::OnMinLevelUpdate(wxCommandEvent& event)
+{
+	wxSpinCtrl* MinLevelCtrl = (wxSpinCtrl*)FindWindow(XRCID("MinLevel"));
+	wxSpinCtrl* RefineLevelCtrl = (wxSpinCtrl*)FindWindow(XRCID("RefineLevel"));
+	int MinVal = MinLevelCtrl->GetValue();
+	int RefineVal = RefineLevelCtrl->GetValue();
+	if (MinVal > RefineVal)
+		RefineLevelCtrl->SetValue(MinVal);
+}
+
+void COctreeVoxelInput::OnRefineLevelUpdate(wxCommandEvent& event)
+{
+	wxSpinCtrl* MinLevelCtrl = (wxSpinCtrl*)FindWindow(XRCID("MinLevel"));
+	wxSpinCtrl* RefineLevelCtrl = (wxSpinCtrl*)FindWindow(XRCID("RefineLevel"));
+	int MinVal = MinLevelCtrl->GetValue();
+	int RefineVal = RefineLevelCtrl->GetValue();
+	if (RefineVal < MinVal)
+		MinLevelCtrl->SetValue(RefineVal);
+}
+
+void COctreeVoxelInput::OnSmoothingUpdate(wxUpdateUIEvent& event)
+{
+	wxSpinCtrl* IterationCtrl = (wxSpinCtrl*)FindWindow(XRCID("Iterations"));
+
+	if (IterationCtrl->GetValue())
+	{
+		
+		event.Enable(true);
+	}
+	else
+	{
+		event.Enable(false);
+	}
+}
+
+void COctreeVoxelInput::OnCoefficient1Update(wxUpdateUIEvent& event)
+{
+	wxSpinCtrl* IterationCtrl = (wxSpinCtrl*)FindWindow(XRCID("Iterations"));
+	
+	if (IterationCtrl->GetValue())
+	{
+		event.Enable(true);
+	}
+	else
+	{
+		event.Enable(false);
+	}
+}
+
+void COctreeVoxelInput::OnCoefficient2Update(wxUpdateUIEvent& event)
+{
+	wxSpinCtrl* IterationCtrl = (wxSpinCtrl*)FindWindow(XRCID("Iterations"));
+	wxRadioBox* SmoothingBox = (wxRadioBox*)FindWindow(XRCID("Smoothing"));
+	/*wxTextCtrl* Coefficient1Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient1"));
+	wxTextCtrl* Coefficient2Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient2"));
+	double Coeff1;
+	wxString wxCoeff1 = Coefficient1Ctrl->GetValue();
+	wxCoeff1.ToDouble(&Coeff1);*/
+
+	if (IterationCtrl->GetValue() && SmoothingBox->GetSelection())
+	{
+		event.Enable(true);
+		/*double Coeff2;
+		wxString wxCoeff2 = Coefficient2Ctrl->GetValue();
+		wxCoeff2.ToDouble(&Coeff2);
+		if (Coeff2 > 1.0)
+			Coeff2 = 1.0;
+		else if (Coeff2 < 0.0)
+			Coeff2 = 0.1;
+		Coefficient2Ctrl->SetValue(ConvertString(stringify(Coeff2, 4, false)));*/
+	}
+	else
+	{
+		event.Enable(false);
+		//Coefficient2Ctrl->SetValue(wxCoeff1);
+	}
+}
+
+void COctreeVoxelInput::OnCoefficient1Text(wxCommandEvent& event)
+{
+	wxTextCtrl* Coefficient1Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient1"));
+	wxTextCtrl* Coefficient2Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient2"));
+	wxRadioBox* SmoothingBox = (wxRadioBox*)FindWindow(XRCID("Smoothing"));
+
+	double Coeff1;
+	wxString wxCoeff1 = Coefficient1Ctrl->GetValue();
+	wxCoeff1.ToDouble(&Coeff1);
+	if (SmoothingBox->GetSelection())
+	{
+		double Coeff2;
+		wxString wxCoeff2 = Coefficient2Ctrl->GetValue();
+		wxCoeff2.ToDouble(&Coeff2);
+		if ((Coeff1 >= Coeff2))
+		{
+			Coefficient2Ctrl->SetValue(wxString::Format(wxT("%f"), (Coeff1 + 0.01)));
+		}
+	}
+	else
+	{
+		((wxTextCtrl*)FindWindow(XRCID("Coefficient2")))->SetValue(Coefficient1Ctrl->GetValue());
+	}
+}
+
+void COctreeVoxelInput::OnCoefficient2Text(wxCommandEvent& event)
+{
+
+	wxRadioBox* SmoothingBox = (wxRadioBox*)FindWindow(XRCID("Smoothing"));
+	wxTextCtrl* Coefficient1Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient1"));
+	wxTextCtrl* Coefficient2Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient2"));
+
+	double Coeff1;
+	wxString wxCoeff1 = Coefficient1Ctrl->GetValue();
+	wxCoeff1.ToDouble(&Coeff1);
+
+	if (SmoothingBox->GetSelection())
+	{
+		double Coeff2;
+		wxString wxCoeff2 = Coefficient2Ctrl->GetValue();
+		wxCoeff2.ToDouble(&Coeff2);
+		if (!( Coeff1 < Coeff2) )
+		{
+			Coefficient1Ctrl->SetValue(wxString::Format(wxT("%f"), (Coeff2 - 0.01)));
+		}
 	}
 }
 
