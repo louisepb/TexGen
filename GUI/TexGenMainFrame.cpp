@@ -993,8 +993,10 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 	wxString Coeff2 = wxT("0.3");
 	int MinLevel = 1;
 	int RefineLevel = 2;
-	int Iterations;
+	int Iterations = 0;
 	int Smoothing = 0;
+	bool bSmoothing = true;
+	double dCoeff1 = 0.3, dCoeff2 = 0.3;
 
 	wxFileDialog dialog
 	(
@@ -1038,35 +1040,53 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 					XRCCTRL(OctreeVoxelInput, "RefineLevel", wxSpinCtrl)->SetValidator(wxGenericValidator(&RefineLevel));
 					XRCCTRL(OctreeVoxelInput, "Iterations", wxSpinCtrl)->SetValidator(wxGenericValidator(&Iterations));
 					XRCCTRL(OctreeVoxelInput, "Smoothing", wxRadioBox)->SetValidator(wxGenericValidator(&Smoothing));
+					XRCCTRL(OctreeVoxelInput, "Surfaces", wxCheckBox)->SetValidator(wxGenericValidator(&bSurface));
+					XRCCTRL(OctreeVoxelInput, "Cohesive", wxCheckBox)->SetValidator(wxGenericValidator(&bCohesive));
 
-					if (OctreeVoxelInput.ShowModal() == wxID_OK)
+					if (OctreeVoxelInput.ShowModal() != wxID_OK)
+						return;
+					bSmoothing = Iterations > 0 ? true : false;
+					Coeff1.ToDouble(&dCoeff1);
+					if (!Smoothing)
 					{
-
+						Coeff2 = Coeff1;
 					}
 					else
-						return;
+					{
+						Coeff2.ToDouble(&dCoeff2);
+						dCoeff2 = -dCoeff2;
+					}
 				}
 			}
 
 			if (dialog.ShowModal() == wxID_OK)
 			{
-				if ( iBoundaryConditions == SHEARED_BC )
+				if (bOctreeRefinement)
 				{
-					Command << "Vox = CShearedVoxelMesh('CShearedPeriodicBoundaries')" << endl;
-				}
-				else if ( iBoundaryConditions == STAGGERED_BC )
-				{
-					Command << "Vox = CStaggeredVoxelMesh('CStaggeredPeriodicBoundaries')" << endl;
-					Command << "Vox.SetOffset(" << ConvertString(XOffset) << ")" << endl;
-				}
-				else if ( iBoundaryConditions == ROTATED_BC	)
-				{
-					Command << "Vox = CRotatedVoxelMesh('CRotatedPeriodicBoundaries')" << endl;
+					Command << "Vox = COctreeVoxelMesh()" << endl;
+					Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << ", " << ConvertString(YVoxels) << ", " << ConvertString(ZVoxels)
+						<< ", " << MinLevel << " , " << RefineLevel << ", bool (" << bSmoothing << ")," << Iterations << "," << dCoeff1 << "," << dCoeff2 << ", bool(" << bSurface << "), bool(" << bCohesive << "))" << endl;
 				}
 				else
-					Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
-				Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << "," << ConvertString(YVoxels) << "," << ConvertString(ZVoxels) 
-					<< ", bool(" << bOutputMatrix << "), bool(" << bOutputYarns << "),"<< iBoundaryConditions << "," << iElementType << ")" << endl;
+				{
+					if (iBoundaryConditions == SHEARED_BC)
+					{
+						Command << "Vox = CShearedVoxelMesh('CShearedPeriodicBoundaries')" << endl;
+					}
+					else if (iBoundaryConditions == STAGGERED_BC)
+					{
+						Command << "Vox = CStaggeredVoxelMesh('CStaggeredPeriodicBoundaries')" << endl;
+						Command << "Vox.SetOffset(" << ConvertString(XOffset) << ")" << endl;
+					}
+					else if (iBoundaryConditions == ROTATED_BC)
+					{
+						Command << "Vox = CRotatedVoxelMesh('CRotatedPeriodicBoundaries')" << endl;
+					}
+					else
+						Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
+					Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << "," << ConvertString(YVoxels) << "," << ConvertString(ZVoxels)
+						<< ", bool(" << bOutputMatrix << "), bool(" << bOutputYarns << ")," << iBoundaryConditions << "," << iElementType << ")" << endl;
+				}
 
 				SendPythonCode(Command.str());
 			}
