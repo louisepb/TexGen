@@ -2652,7 +2652,7 @@ int CTextileOrthogonal::AddWeftNodes(int CurrentNode, int XNode, int i, int j) c
 	//George: Tried this to solve the XNode problem, code no longer crashes but doesn't add for weft yarn 3 (yarn index=7)
 	// (weft yarn 2 is straight so no nodes added anyway)
 	if (XNode > m_iNumYYarns)
-		return CurrentNode;
+		return -1;
 	
 	//George: Changed calls to GetCell to GetPreConsolidationCell which obtains the information before it is'destroyed' in consolidation
 	// likewise for other data members and methods "PreConsolidation" has been inserted where this occurs.
@@ -2682,7 +2682,7 @@ int CTextileOrthogonal::AddWeftNodes(int CurrentNode, int XNode, int i, int j) c
 	const vector<PATTERN3D> &PrevCell = GetPreConsolidationCell(i, PrevCellIndex);
 
 
-	int iPrevIndex = FindWeftHeight(PrevCell); //finds z-location of weft in textile - this is -1 but needs to be 1
+	int iPrevIndex = FindWeftHeight(PrevCell);
 	int iNextIndex = FindWeftHeight(NextCell);
 	int iMaxIndex = Cell.size() - 1; //max z-location of weft
 
@@ -2925,7 +2925,7 @@ void CTextileOrthogonal::ShapeWeftYarns() const
 	int iNumXYarns = m_iNumXYarns;
 	//if ( !m_bWeftRepeat )
 	//		iNumXYarns--;
-	vector<int> XNodes(iNumXYarns, 0);
+	vector<int> XNodes(iNumXYarns+1, 0);
 	for (int i = 0; i < m_PreConsolidationiNumYYarns; ++i)
 	{
 		int CurrentYNode = 0;
@@ -2934,10 +2934,10 @@ void CTextileOrthogonal::ShapeWeftYarns() const
 
 			TGLOG("CurrentYNode is " << CurrentYNode);
 			CurrentYNode = AddWeftNodes(CurrentYNode, XNodes[j], i, j);
-			if (CurrentYNode >= 0)
+			if (CurrentYNode >= 0 && XNodes[j] < iNumXYarns)
 				XNodes[j]++; //move along to next warp stack
 			//George: XNodes[j] overstepping because next warp stack has been deleted in ConsolidateCells()
-			CurrentYNode++;
+			CurrentYNode++; //update the node indexing for adding the wefts
 
 		}
 		m_bNeedsBuilding = false;
