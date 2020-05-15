@@ -227,22 +227,6 @@
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxCheckBox" name="OctreeRefinement">
-							<tooltip>Select to enable octree refinement and smoothing of voxel mesh</tooltip>
-							<label>Octree Refinement</label>
-							<checked>0</checked>
-						</object>
-					</object>
-					<object class="spacer">
-						<option>1</option>
-						<flag>wxEXPAND</flag>
-						<border>5</border>
-						<size>0,0</size>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
 						<flag>wxALL|wxEXPAND</flag>
 						<border>5</border>
 						<object class="wxRadioBox" name="PeriodicBoundaries">
@@ -336,16 +320,17 @@
 	</object>
 	<object class="wxDialog" name="OctreeOptions">
 		<style>wxDEFAULT_DIALOG_STYLE</style>
+		<size>363,628</size>
 		<title>Octree Refinement Options</title>
 		<centered>1</centered>
 		<object class="wxBoxSizer">
 			<orient>wxVERTICAL</orient>
 			<object class="sizeritem">
-				<option>1</option>
+				<option>0</option>
 				<flag>wxEXPAND</flag>
 				<border>5</border>
 				<object class="wxFlexGridSizer">
-					<rows>10</rows>
+					<rows>4</rows>
 					<cols>2</cols>
 					<vgap>0</vgap>
 					<hgap>0</hgap>
@@ -353,11 +338,105 @@
 					<growablerows></growablerows>
 					<object class="sizeritem">
 						<option>0</option>
-						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+						<flag>wxALL</flag>
 						<border>5</border>
-						<object class="wxStaticText" name="m_staticText1">
-							<label>Refinement</label>
-							<wrap>0</wrap>
+						<object class="wxStaticText" name="m_staticText85">
+							<label>X Voxel Count</label>
+							<wrap>-1</wrap>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="XVoxelCount">
+							<tooltip>Number of voxels along x axis</tooltip>
+							<value></value>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText86">
+							<label>Y Voxel Count</label>
+							<wrap>-1</wrap>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="YVoxelCount">
+							<tooltip>Number of voxels along y axis</tooltip>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText87">
+							<label>Z Voxel Count</label>
+							<wrap>-1</wrap>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="ZVoxelCount">
+							<tooltip>Number of voxels along z axis</tooltip>
+							<value></value>
+							<maxlength>0</maxlength>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxCheckBox" name="Surfaces">
+							<tooltip>Create Abaqus &apos;NSet&apos; ans &apos;Surface&apos; for each of yarn-matrix surfaces. Creates a pair of surfaces - one for yarn and one for matrix</tooltip>
+							<label>Output surfaces</label>
+							<checked>0</checked>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxCheckBox" name="Cohesive">
+							<tooltip>Create cohesive contact between created yarn and matrix surfaces</tooltip>
+							<label>Output cohesive elements</label>
+							<checked>0</checked>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxFlexGridSizer">
+					<rows>4</rows>
+					<cols>2</cols>
+					<vgap>0</vgap>
+					<hgap>0</hgap>
+					<growablecols></growablecols>
+					<growablerows></growablerows>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText77">
+							<font>
+								<style>normal</style>
+								<weight>bold</weight>
+								<underlined>0</underlined>
+							</font>
+							<label>Refinement Options</label>
+							<wrap>-1</wrap>
 						</object>
 					</object>
 					<object class="spacer">
@@ -381,7 +460,6 @@
 						<border>5</border>
 						<object class="wxSpinCtrl" name="MinLevel">
 							<style>wxSP_ARROW_KEYS</style>
-							<tooltip>Increase the magnification to increase resolution of image</tooltip>
 							<value>1</value>
 							<min>1</min>
 							<max>10</max>
@@ -402,18 +480,60 @@
 						<border>5</border>
 						<object class="wxSpinCtrl" name="RefineLevel">
 							<style>wxSP_ARROW_KEYS</style>
+							<tooltip>Maximum number of refinement applied to voxels</tooltip>
 							<value>2</value>
 							<min>1</min>
 							<max>10</max>
 						</object>
 					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxFlexGridSizer">
+					<rows>6</rows>
+					<cols>2</cols>
+					<vgap>0</vgap>
+					<hgap>0</hgap>
+					<growablecols></growablecols>
+					<growablerows></growablerows>
 					<object class="sizeritem">
 						<option>0</option>
 						<flag>wxALL</flag>
 						<border>5</border>
-						<object class="wxStaticText" name="m_staticText81">
-							<label>Smoothing</label>
+						<object class="wxStaticText" name="m_staticText78">
+							<font>
+								<style>normal</style>
+								<weight>bold</weight>
+								<underlined>0</underlined>
+							</font>
+							<label>Smoothing Options</label>
 							<wrap>-1</wrap>
+						</object>
+					</object>
+					<object class="spacer">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<size>0,0</size>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxRadioBox" name="Smoothing">
+							<style>wxRA_SPECIFY_COLS</style>
+							<tooltip>Laplacian - Apply Laplacian smoothing to nodes belonging to yarn-matrix surfaces. Each node will be moved by C1*sum(x__i) where x__i are coordinates of neighbouring nodes\nNon-shrinking - Apply two Laplacian smoothings consecutively with coefficients C1 and C1, where C1 &lt; abs(-C2)</tooltip>
+							<label>Smoothing</label>
+							<selection>1</selection>
+							<content>
+								<item>None</item>
+								<item>Laplacian</item>
+								<item>Non-shrinking</item>
+							</content>
+							<dimension>1</dimension>
 						</object>
 					</object>
 					<object class="spacer">
@@ -437,31 +557,11 @@
 						<border>5</border>
 						<object class="wxSpinCtrl" name="Iterations">
 							<style>wxSP_ARROW_KEYS</style>
+							<tooltip>Number of iterations for smoothing algorithm</tooltip>
 							<value>1</value>
-							<min>0</min>
+							<min>1</min>
 							<max>10</max>
 						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxRadioBox" name="Smoothing">
-							<style>wxRA_SPECIFY_COLS</style>
-							<label>Smoothing Options</label>
-							<selection>0</selection>
-							<content>
-								<item>Laplacian</item>
-								<item>Non-shrinking</item>
-							</content>
-							<dimension>1</dimension>
-						</object>
-					</object>
-					<object class="spacer">
-						<option>1</option>
-						<flag>wxEXPAND</flag>
-						<border>5</border>
-						<size>0,0</size>
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
@@ -497,24 +597,6 @@
 						<object class="wxTextCtrl" name="Coefficient2">
 							<style>wxTE_PROCESS_ENTER</style>
 							<value>0.3</value>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxCheckBox" name="Surfaces">
-							<label>Output surfaces</label>
-							<checked>0</checked>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxCheckBox" name="Cohesive">
-							<label>Output cohesive elements</label>
-							<checked>0</checked>
 						</object>
 					</object>
 				</object>

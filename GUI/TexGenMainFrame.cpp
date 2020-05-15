@@ -64,6 +64,7 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 	EVT_MENU(ID_ToggleOutliner, CTexGenMainFrame::OnWindow)
 	EVT_MENU(ID_SaveTetgenMesh, CTexGenMainFrame::OnSaveTetgenMesh)
 	EVT_MENU(ID_SaveVTUVoxels, CTexGenMainFrame::OnSaveVTUVoxels)
+	EVT_MENU(ID_SaveOctreeVoxels, CTexGenMainFrame::OnSaveOctreeVoxels)
 
 	EVT_AUINOTEBOOK_PAGE_CHANGED(ID_LogNoteBook, CTexGenMainFrame::OnLogNotebook)
 	EVT_AUINOTEBOOK_PAGE_CHANGED(ID_ViewerNoteBook, CTexGenMainFrame::OnViewerNotebookPageChanged)
@@ -107,12 +108,11 @@ BEGIN_EVENT_TABLE(COctreeVoxelInput, wxDialog)
 	EVT_UPDATE_UI(XRCID("Cohesive"), COctreeVoxelInput::OnCohesiveUpdate)
 	EVT_TEXT(XRCID("MinLevel"), COctreeVoxelInput::OnMinLevelUpdate)
 	EVT_TEXT(XRCID("RefineLevel"), COctreeVoxelInput::OnRefineLevelUpdate)
-	//EVT_TEXT(XRCID("Iterations"), COctreeVoxelInput::OnIterationUpdate)
-	EVT_UPDATE_UI(XRCID("Smoothing"), COctreeVoxelInput::OnSmoothingUpdate)
-	EVT_UPDATE_UI(XRCID("Coefficient1"), COctreeVoxelInput::OnCoefficient1Update)
-	EVT_UPDATE_UI(XRCID("Coefficient2"), COctreeVoxelInput::OnCoefficient2Update)
-	EVT_TEXT(XRCID("Coefficient1"), COctreeVoxelInput::OnCoefficient1Text)
-	EVT_TEXT_ENTER(XRCID("Coefficient2"), COctreeVoxelInput::OnCoefficient2Text)
+	EVT_RADIOBOX(XRCID("Smoothing"), COctreeVoxelInput::OnSmoothingUpdate)
+	EVT_UPDATE_UI(XRCID("Coefficient1"), COctreeVoxelInput::OnCoefficientUpdate)
+	EVT_UPDATE_UI(XRCID("Coefficient2"), COctreeVoxelInput::OnCoefficientUpdate)
+	EVT_TEXT(XRCID("Coefficient1"), COctreeVoxelInput::OnCoefficientText)
+	EVT_TEXT(XRCID("Coefficient2"), COctreeVoxelInput::OnCoefficientText)
 END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(CVolumeMeshOptions, wxDialog)
@@ -174,6 +174,7 @@ CTexGenMainFrame::CTexGenMainFrame(const wxString& title, const wxPoint& pos, co
 			wxMenu *pVoxelSubMenu = new wxMenu;
 			pVoxelSubMenu->Append(ID_SaveABAQUSVoxels, wxT("&ABAQUS Voxel File..."));
 			pVoxelSubMenu->Append(ID_SaveVTUVoxels, wxT("&VTU Voxel File..."));
+			pVoxelSubMenu->Append(ID_SaveOctreeVoxels, wxT("ABAQUS &Octree Voxel File..."));
 			pExportSubMenu->Append(wxID_ANY, wxT("Vo&xel Mesh..."), pVoxelSubMenu);
 		}
 		pExportSubMenu->Append(ID_SaveABAQUS, wxT("&ABAQUS Dry Fibre File..."));
@@ -982,21 +983,8 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 	
 	bool bOutputMatrix = true;
 	bool bOutputYarns = true;
-	bool bOctreeRefinement = false;
 	int  iBoundaryConditions = 0;
 	int iElementType = 0;
-
-	// Parameters for octree refinement
-	bool bSurface = false;
-	bool bCohesive = false;
-	wxString Coeff1 = wxT("0.3");
-	wxString Coeff2 = wxT("0.3");
-	int MinLevel = 1;
-	int RefineLevel = 2;
-	int Iterations = 0;
-	int Smoothing = 0;
-	bool bSmoothing = true;
-	double dCoeff1 = 0.3, dCoeff2 = 0.3;
 
 	wxFileDialog dialog
 	(
@@ -1017,7 +1005,6 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 		XRCCTRL(AbaqusVoxelInput, "ZVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &ZVoxels));
 		XRCCTRL(AbaqusVoxelInput, "OutputMatrix", wxCheckBox)->SetValidator(wxGenericValidator(&bOutputMatrix));
 		XRCCTRL(AbaqusVoxelInput, "OutputYarns", wxCheckBox)->SetValidator(wxGenericValidator(&bOutputYarns));
-		XRCCTRL(AbaqusVoxelInput, "OctreeRefinement", wxCheckBox)->SetValidator(wxGenericValidator(&bOctreeRefinement));
 		XRCCTRL(AbaqusVoxelInput, "PeriodicBoundaries", wxRadioBox)->SetValidator(wxGenericValidator(&iBoundaryConditions));
 		XRCCTRL(AbaqusVoxelInput, "ElementType", wxRadioBox)->SetValidator(wxGenericValidator(&iElementType));
 		XRCCTRL(AbaqusVoxelInput, "Offset", wxTextCtrl)->SetValidator(RangeValidator(&XOffset, 0.0, 1.0));
@@ -1030,67 +1017,28 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 				return;
 			}
 
-			if (bOctreeRefinement)
-			{
-				COctreeVoxelInput OctreeVoxelInput(this);
-				{
-					XRCCTRL(OctreeVoxelInput, "Coefficient1", wxTextCtrl)->SetValidator(RangeValidator( &Coeff1, 0.0, 1.0));
-					XRCCTRL(OctreeVoxelInput, "Coefficient2", wxTextCtrl)->SetValidator(RangeValidator( &Coeff2, 0.0, 1.0));
-					XRCCTRL(OctreeVoxelInput, "MinLevel", wxSpinCtrl)->SetValidator(wxGenericValidator(&MinLevel));
-					XRCCTRL(OctreeVoxelInput, "RefineLevel", wxSpinCtrl)->SetValidator(wxGenericValidator(&RefineLevel));
-					XRCCTRL(OctreeVoxelInput, "Iterations", wxSpinCtrl)->SetValidator(wxGenericValidator(&Iterations));
-					XRCCTRL(OctreeVoxelInput, "Smoothing", wxRadioBox)->SetValidator(wxGenericValidator(&Smoothing));
-					XRCCTRL(OctreeVoxelInput, "Surfaces", wxCheckBox)->SetValidator(wxGenericValidator(&bSurface));
-					XRCCTRL(OctreeVoxelInput, "Cohesive", wxCheckBox)->SetValidator(wxGenericValidator(&bCohesive));
-
-					if (OctreeVoxelInput.ShowModal() != wxID_OK)
-						return;
-					bSmoothing = Iterations > 0 ? true : false;
-					Coeff1.ToDouble(&dCoeff1);
-					if (!Smoothing)
-					{
-						Coeff2 = Coeff1;
-					}
-					else
-					{
-						Coeff2.ToDouble(&dCoeff2);
-						dCoeff2 = -dCoeff2;
-					}
-				}
-			}
-
 			if (dialog.ShowModal() == wxID_OK)
 			{
-				if (bOctreeRefinement)
+				if (iBoundaryConditions == SHEARED_BC)
 				{
-					Command << "Vox = COctreeVoxelMesh()" << endl;
-					Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << ", " << ConvertString(YVoxels) << ", " << ConvertString(ZVoxels)
-						<< ", " << MinLevel << " , " << RefineLevel << ", bool (" << bSmoothing << ")," << Iterations << "," << dCoeff1 << "," << dCoeff2 << ", bool(" << bSurface << "), bool(" << bCohesive << "))" << endl;
+					Command << "Vox = CShearedVoxelMesh('CShearedPeriodicBoundaries')" << endl;
+				}
+				else if (iBoundaryConditions == STAGGERED_BC)
+				{
+					Command << "Vox = CStaggeredVoxelMesh('CStaggeredPeriodicBoundaries')" << endl;
+					Command << "Vox.SetOffset(" << ConvertString(XOffset) << ")" << endl;
+				}
+				else if (iBoundaryConditions == ROTATED_BC)
+				{
+					Command << "Vox = CRotatedVoxelMesh('CRotatedPeriodicBoundaries')" << endl;
 				}
 				else
-				{
-					if (iBoundaryConditions == SHEARED_BC)
-					{
-						Command << "Vox = CShearedVoxelMesh('CShearedPeriodicBoundaries')" << endl;
-					}
-					else if (iBoundaryConditions == STAGGERED_BC)
-					{
-						Command << "Vox = CStaggeredVoxelMesh('CStaggeredPeriodicBoundaries')" << endl;
-						Command << "Vox.SetOffset(" << ConvertString(XOffset) << ")" << endl;
-					}
-					else if (iBoundaryConditions == ROTATED_BC)
-					{
-						Command << "Vox = CRotatedVoxelMesh('CRotatedPeriodicBoundaries')" << endl;
-					}
-					else
-						Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
-					Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << "," << ConvertString(YVoxels) << "," << ConvertString(ZVoxels)
-						<< ", bool(" << bOutputMatrix << "), bool(" << bOutputYarns << ")," << iBoundaryConditions << "," << iElementType << ")" << endl;
-				}
-
+					Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
+				Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << "," << ConvertString(YVoxels) << "," << ConvertString(ZVoxels)
+					<< ", bool(" << bOutputMatrix << "), bool(" << bOutputYarns << ")," << iBoundaryConditions << "," << iElementType << ")" << endl;
+				
 				SendPythonCode(Command.str());
-			}
-			
+			}	
 		}
 	}
 }
@@ -1153,6 +1101,79 @@ void CTexGenMainFrame::OnSaveVTUVoxels(wxCommandEvent& event)
 				SendPythonCode(Command.str());
 			}
 
+		}
+	}
+}
+
+void CTexGenMainFrame::OnSaveOctreeVoxels(wxCommandEvent& event)
+{
+	string TextileName = GetTextileSelection();
+	stringstream Command;
+
+	wxString XVoxels = wxT("10");
+	wxString YVoxels = wxT("10");
+	wxString ZVoxels = wxT("10");
+
+	// Parameters for octree refinement
+	bool bSurface = false;
+	bool bCohesive = false;
+	wxString Coeff1 = wxT("0.3");
+	wxString Coeff2 = wxT("0.3");
+	int MinLevel = 1;
+	int RefineLevel = 2;
+	int Iterations = 0;
+	int Smoothing = 0;
+	bool bSmoothing = true;
+	double dCoeff1 = 0.3, dCoeff2 = 0.3;
+
+	wxFileDialog dialog
+	(
+		this,
+		wxT("Save Abaqus file"),
+		wxGetCwd(),
+		wxEmptyString,
+		wxT("ABAQUS input file (*.inp)|*.inp|"),
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
+	);
+	dialog.CentreOnParent();
+			
+	COctreeVoxelInput OctreeVoxelInput(this);
+	{
+		XRCCTRL(OctreeVoxelInput, "XVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &XVoxels));
+		XRCCTRL(OctreeVoxelInput, "YVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &YVoxels));
+		XRCCTRL(OctreeVoxelInput, "ZVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &ZVoxels));
+		XRCCTRL(OctreeVoxelInput, "Coefficient1", wxTextCtrl)->SetValidator(RangeValidator(&Coeff1, 0.0, 1.0));
+		XRCCTRL(OctreeVoxelInput, "Coefficient2", wxTextCtrl)->SetValidator(RangeValidator(&Coeff2, 0.0, 1.0));
+		XRCCTRL(OctreeVoxelInput, "MinLevel", wxSpinCtrl)->SetValidator(wxGenericValidator(&MinLevel));
+		XRCCTRL(OctreeVoxelInput, "RefineLevel", wxSpinCtrl)->SetValidator(wxGenericValidator(&RefineLevel));
+		XRCCTRL(OctreeVoxelInput, "Iterations", wxSpinCtrl)->SetValidator(wxGenericValidator(&Iterations));
+		XRCCTRL(OctreeVoxelInput, "Smoothing", wxRadioBox)->SetValidator(wxGenericValidator(&Smoothing));
+		XRCCTRL(OctreeVoxelInput, "Surfaces", wxCheckBox)->SetValidator(wxGenericValidator(&bSurface));
+		XRCCTRL(OctreeVoxelInput, "Cohesive", wxCheckBox)->SetValidator(wxGenericValidator(&bCohesive));
+		XRCCTRL(OctreeVoxelInput, "Iterations", wxSpinCtrl)->Disable();
+
+		if (OctreeVoxelInput.ShowModal() == wxID_OK)
+		{
+			bSmoothing = Smoothing > 0 ? true : false;
+			Coeff1.ToDouble(&dCoeff1);
+			if (Smoothing == LAPLACIAN)
+			{
+				Coeff2 = Coeff1;
+			}
+			else if (Smoothing == NONSHRINKING)
+			{
+				Coeff2.ToDouble(&dCoeff2);
+				dCoeff2 = -dCoeff2;
+			}
+
+			if (dialog.ShowModal() == wxID_OK)
+			{
+				Command << "Vox = COctreeVoxelMesh()" << endl;
+				Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << ", " << ConvertString(YVoxels) << ", " << ConvertString(ZVoxels)
+					<< ", " << MinLevel << " , " << RefineLevel << ", bool (" << bSmoothing << ")," << Iterations << "," << dCoeff1 << "," << dCoeff2 << ", bool(" << bSurface << "), bool(" << bCohesive << "))" << endl;
+
+				SendPythonCode(Command.str());
+			}
 		}
 	}
 }
@@ -2858,92 +2879,62 @@ void COctreeVoxelInput::OnRefineLevelUpdate(wxCommandEvent& event)
 		MinLevelCtrl->SetValue(RefineVal);
 }
 
-void COctreeVoxelInput::OnSmoothingUpdate(wxUpdateUIEvent& event)
+void COctreeVoxelInput::OnSmoothingUpdate(wxCommandEvent& event)
 {
-	wxSpinCtrl* IterationCtrl = (wxSpinCtrl*)FindWindow(XRCID("Iterations"));
-
-	if (IterationCtrl->GetValue())
-	{
-		
-		event.Enable(true);
-	}
-	else
-	{
-		event.Enable(false);
-	}
-}
-
-void COctreeVoxelInput::OnCoefficient1Update(wxUpdateUIEvent& event)
-{
+	wxRadioBox* pSmoothing = dynamic_cast<wxRadioBox*>(event.GetEventObject());
+	wxTextCtrl* Coefficient1Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient1"));
+	wxTextCtrl* Coefficient2Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient2"));
 	wxSpinCtrl* IterationCtrl = (wxSpinCtrl*)FindWindow(XRCID("Iterations"));
 	
-	if (IterationCtrl->GetValue())
-	{
-		event.Enable(true);
-	}
+	int Selection = pSmoothing->GetSelection();
+	if (Selection == NONE)
+		IterationCtrl->Disable();
 	else
-	{
-		event.Enable(false);
-	}
-}
+		IterationCtrl->Enable();
 
-void COctreeVoxelInput::OnCoefficient2Update(wxUpdateUIEvent& event)
-{
-	wxSpinCtrl* IterationCtrl = (wxSpinCtrl*)FindWindow(XRCID("Iterations"));
-	wxRadioBox* SmoothingBox = (wxRadioBox*)FindWindow(XRCID("Smoothing"));
-	/*wxTextCtrl* Coefficient1Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient1"));
-	wxTextCtrl* Coefficient2Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient2"));
-	double Coeff1;
-	wxString wxCoeff1 = Coefficient1Ctrl->GetValue();
-	wxCoeff1.ToDouble(&Coeff1);*/
-
-	if (IterationCtrl->GetValue() && SmoothingBox->GetSelection())
+	if (Selection == NONSHRINKING)  // Force C2 > C1 if non-shrinking smoothing
 	{
-		event.Enable(true);
-		/*double Coeff2;
-		wxString wxCoeff2 = Coefficient2Ctrl->GetValue();
-		wxCoeff2.ToDouble(&Coeff2);
-		if (Coeff2 > 1.0)
-			Coeff2 = 1.0;
-		else if (Coeff2 < 0.0)
-			Coeff2 = 0.1;
-		Coefficient2Ctrl->SetValue(ConvertString(stringify(Coeff2, 4, false)));*/
-	}
-	else
-	{
-		event.Enable(false);
-		//Coefficient2Ctrl->SetValue(wxCoeff1);
-	}
-}
-
-void COctreeVoxelInput::OnCoefficient1Text(wxCommandEvent& event)
-{
-	wxTextCtrl* Coefficient1Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient1"));
-	wxTextCtrl* Coefficient2Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient2"));
-	wxRadioBox* SmoothingBox = (wxRadioBox*)FindWindow(XRCID("Smoothing"));
-
-	double Coeff1;
-	wxString wxCoeff1 = Coefficient1Ctrl->GetValue();
-	wxCoeff1.ToDouble(&Coeff1);
-	if (SmoothingBox->GetSelection())
-	{
-		double Coeff2;
-		wxString wxCoeff2 = Coefficient2Ctrl->GetValue();
-		wxCoeff2.ToDouble(&Coeff2);
+		double Coeff1, Coeff2;
+		Coefficient1Ctrl->GetValue().ToDouble(&Coeff1);
+		Coefficient2Ctrl->GetValue().ToDouble(&Coeff2);
 		if ((Coeff1 >= Coeff2))
 		{
-			Coefficient2Ctrl->SetValue(wxString::Format(wxT("%f"), (Coeff1 + 0.01)));
+			Coefficient2Ctrl->SetValue(wxString::Format(wxT("%f"), min((Coeff1 + 0.01), 1.0)));
 		}
-	}
-	else
-	{
-		((wxTextCtrl*)FindWindow(XRCID("Coefficient2")))->SetValue(Coefficient1Ctrl->GetValue());
 	}
 }
 
-void COctreeVoxelInput::OnCoefficient2Text(wxCommandEvent& event)
+void COctreeVoxelInput::OnCoefficientUpdate(wxUpdateUIEvent& event)
 {
+	int eventID = event.GetId();
+	wxRadioBox* SmoothingBox = (wxRadioBox*)FindWindow(XRCID("Smoothing"));
+	wxTextCtrl* Coefficient1Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient1"));
+	wxTextCtrl* Coefficient2Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient2"));
+	int Selection = SmoothingBox->GetSelection();
 
+	if (Selection == NONE)
+	{
+		event.Enable(false);
+	}
+	else if (Selection == LAPLACIAN)
+	{
+		if (eventID == XRCID("Coefficient2"))  // Force C1 = C2 if Laplacian smoothing
+		{
+			event.Enable(false);
+			Coefficient2Ctrl->ChangeValue(Coefficient1Ctrl->GetValue());
+		}
+		else
+			event.Enable(true);
+	}
+	else if (Selection == NONSHRINKING)
+	{
+		event.Enable(true);
+	}
+}
+
+void COctreeVoxelInput::OnCoefficientText(wxCommandEvent& event)
+{
+	int eventID = event.GetId();
 	wxRadioBox* SmoothingBox = (wxRadioBox*)FindWindow(XRCID("Smoothing"));
 	wxTextCtrl* Coefficient1Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient1"));
 	wxTextCtrl* Coefficient2Ctrl = (wxTextCtrl*)FindWindow(XRCID("Coefficient2"));
@@ -2951,15 +2942,38 @@ void COctreeVoxelInput::OnCoefficient2Text(wxCommandEvent& event)
 	double Coeff1;
 	wxString wxCoeff1 = Coefficient1Ctrl->GetValue();
 	wxCoeff1.ToDouble(&Coeff1);
+	int Selection = SmoothingBox->GetSelection();
 
-	if (SmoothingBox->GetSelection())
+	double Coeff2;
+	wxString wxCoeff2 = Coefficient2Ctrl->GetValue();
+	wxCoeff2.ToDouble(&Coeff2);
+
+	if (eventID == XRCID("Coefficient1"))
 	{
-		double Coeff2;
-		wxString wxCoeff2 = Coefficient2Ctrl->GetValue();
-		wxCoeff2.ToDouble(&Coeff2);
-		if (!( Coeff1 < Coeff2) )
+		if (Selection == LAPLACIAN)
 		{
-			Coefficient1Ctrl->SetValue(wxString::Format(wxT("%f"), (Coeff2 - 0.01)));
+			Coefficient2Ctrl->SetValue(wxCoeff1);
+		}
+		else // Non-shrinking smoothing. Force C2 > C1
+		{
+			if ((Coeff1 >= Coeff2))
+			{
+				Coefficient2Ctrl->SetValue(wxString::Format(wxT("%f"), min((Coeff1 + 0.01), 1.0) ));
+			}
+		}
+	}
+	else if (eventID == XRCID("Coefficient2"))
+	{
+		if (Selection == LAPLACIAN)
+		{
+			Coefficient2Ctrl->SetValue(wxCoeff1);
+		}
+		else if (Selection == NONSHRINKING) // Non-shrinking smoothing. Force C2 > C1
+		{
+			if ((Coeff1 >= Coeff2) && (Coeff2 > 0.0))
+			{
+				Coefficient1Ctrl->ChangeValue(wxString::Format(wxT("%f"), (Coeff2 - 0.01)));
+			}
 		}
 	}
 }

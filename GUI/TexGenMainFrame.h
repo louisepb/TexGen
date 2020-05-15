@@ -24,6 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PythonConsole.h"
 #include "ControlsWindow.h"
 
+enum SMOOTHING
+{
+	NONE,
+	LAPLACIAN,
+	NONSHRINKING
+};
 
 class CTexGenMainFrame : public wxFrame
 {
@@ -77,6 +83,7 @@ protected:
 	void OnSaveABAQUSSurface(wxCommandEvent& event);
 	void OnSaveTetgenMesh(wxCommandEvent& event);
 	void OnSaveVTUVoxels(wxCommandEvent& event);
+	void OnSaveOctreeVoxels(wxCommandEvent& event);
 
 	void OnWindow(wxCommandEvent& event);
 	void OnChar(wxKeyEvent& event);
@@ -174,12 +181,9 @@ private:
 	void OnCohesiveUpdate(wxUpdateUIEvent& event);
 	void OnMinLevelUpdate(wxCommandEvent& event);
 	void OnRefineLevelUpdate(wxCommandEvent& event);
-	//void OnIterationUpdate(wxCommandEvent& event);
-	void OnSmoothingUpdate(wxUpdateUIEvent& event);
-	void OnCoefficient1Update(wxUpdateUIEvent& event);
-	void OnCoefficient2Update(wxUpdateUIEvent& event);
-	void OnCoefficient1Text(wxCommandEvent& event);
-	void OnCoefficient2Text(wxCommandEvent& event);
+	void OnSmoothingUpdate(wxCommandEvent& event);
+	void OnCoefficientUpdate(wxUpdateUIEvent& event);
+	void OnCoefficientText(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
 };
 
