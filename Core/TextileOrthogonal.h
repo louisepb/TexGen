@@ -134,11 +134,30 @@ namespace TexGen
 
 		int GetWeavePatternYarnIndex(int x, int y, int z) const;
 
-		int AddWeftNodes(int CurrentNode, int XNode, int i, int j) const;
+		/// Add weft nodes around outline of adjacent warp yarns
+		/**
+		\param CurrentNode  Index of node in centre of yarn, taking into account extra nodes already inserted
+		\param i  Cell x index
+		\param j  Cell y index
+		\param WeftIndex YYarn index of weft yarn
+		*/
+		//int AddWeftNodes(int CurrentNode, int XNode, int i, int j) const;
+		int AddWeftNodes(int CurrentNode, int i, int j, int WeftIndex) const;
 
 		vector<int> &GetYarnCell(int x, int y);
 		const vector<int> &GetYarnCell(int x, int y) const;
 		void RemoveYarnCell(int x, int y);
+
+		/// Finds the y-yarn index of the nth weft yarn in a YarnCell
+		int GetWeftYarnIndex(const vector<int> &YarnCell, int n) const;
+		/// Find position of given yarn index in YarnCell
+		int FindWeftYarnHeight(const vector<PATTERN3D>& YarnCell, int WeftIndex) const;
+		/// Find yarn index from m_YYarns using single weft index
+		/**
+		Needed because can't necessarily assume that there are the same number of wefts in each stack
+		*/
+		int FindWeftYarnIndex(int WeftIndex) const;
+
 		bool BuildWeavePatternTextile() const;
 		mutable int m_iYYarnOffset;
 		vector<int> &GetPreConsolidationYarnCell(int x, int y);

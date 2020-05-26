@@ -2478,6 +2478,7 @@ void CTextile3DWeave::InsertWeftNode( CSection* YarnSection, double t, XYZ& Warp
 		m_Yarns[WeftYarnIndex].ReplaceNode( CurrentNode, NewNode );
 		TGLOG("WeftNode replaced for weft" << WeftYarnIndex);
 	
+
 }
 
 bool CTextile3DWeave::AdjustPowerEllipseSectionWidth( double &HeightReduction, double &MaxWidth, double TargetArea, CSectionPowerEllipse* YarnSection ) const
