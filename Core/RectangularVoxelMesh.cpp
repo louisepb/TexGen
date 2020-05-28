@@ -43,7 +43,8 @@ void CRectangularVoxelMesh::SaveVoxelMeshg(CTextile &Textile, string OutputFilen
 	// the function is needed to setup OctreeMesh class data members otherwise it crashes when the destructor is invoked
 	if (m_OctMesh.CreateP4ESTRefinement(4, 4) == -1)
 		return;
-	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, XVoxNum, YVoxNum, ZVoxNum, bOutputMatrix, bOutputYarns, surfaceOutput, iBoundaryConditions, iElementType);
+	//can add CVoxelMesh:: back in if this doesn't work
+	SaveVoxelMesh(Textile, OutputFilename, XVoxNum, YVoxNum, ZVoxNum, bOutputMatrix, bOutputYarns, surfaceOutput, iBoundaryConditions, iElementType);
 }
 
 bool CRectangularVoxelMesh::CalculateVoxelSizes(CTextile &Textile)
