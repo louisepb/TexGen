@@ -72,6 +72,7 @@ void CRectangularVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int 
 				Point.z = m_DomainAABB.first.z + m_VoxSize[2] * z;
 				if ( Filetype == INP_EXPORT )
 					Output << iNodeIndex << ", ";
+
 				if (Filetype == VTU_EXPORT)
 					m_Mesh.AddNode(Point);
 				else

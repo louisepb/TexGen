@@ -262,12 +262,6 @@ namespace TexGen
 		/// Get the global element index of a given face
 		int GetGlobalNodeIndex(int iYarn, int iIndex);
 
-		/// Gets a default linear elastic isotropic material with young's modulus of 1
-		CMaterial &GetDefaultMaterial();
-
-		/// Gets the material definition for a given yarn
-//		CMaterial &GetMaterialDefinition(int iYarn);
-
 		/// Get the cross-sectional area of the yarn section
 		double GetSectionArea( vector<int> &Section, CMesh &Mesh );
 

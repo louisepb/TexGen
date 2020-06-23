@@ -4,6 +4,7 @@ LinuxBuild/
 BuildVTK6/
 BuildWidgets3/
 BuildVS2015/
+BuildVS2017
 Installer/OpenCascade64bit/
 Installer/OpenCascade64bit_7/
 Installer/Python_64bit/
@@ -18,6 +19,8 @@ Docs/html/
 Python/*.py
 Python/*.zip
 Python/*_wrap.*
+GUI/*.py
+GUI/*_wrap.*
 
 # Directories #
 Binaries

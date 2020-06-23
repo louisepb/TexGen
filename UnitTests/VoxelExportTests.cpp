@@ -54,3 +54,14 @@ void CVoxelExportTests::TestRotatedExport()
 	// Compare to template file
 	CPPUNIT_ASSERT(CompareFiles("RotatedVoxelMeshTest.inp","..\\..\\UnitTests\\RotatedVoxelMeshTest.inp"));
 }
+
+void CVoxelExportTests::TestOctreeExport()
+{
+	CTextile Textile = m_TextileFactory.GetSingleYarn(3, 20);
+
+	COctreeVoxelMesh Vox("CPeriodicBoundaries");
+	// Save yarns and matrix
+	Vox.SaveVoxelMesh(Textile,"OctreeVoxelMeshTest", 1,1,1,5, 6, true, 10, 0.3, 0.3, false, false );
+	// Compare to template file
+	CPPUNIT_ASSERT(CompareFiles("OctreeVoxelMeshTest.inp","..\\..\\UnitTests\\OctreeVoxelMeshTest.inp"));
+}

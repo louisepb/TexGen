@@ -10,6 +10,7 @@ IF(BUILD_PYTHON_INTERFACE)
 
 	# Set where to find the python header files
 	INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
+	INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../OctreeRefinement/include)
 
 	# Add the swig command to the build
 	ADD_CUSTOM_COMMAND(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/Core_wrap.cxx"
@@ -51,7 +52,7 @@ IF(BUILD_PYTHON_INTERFACE)
 		TARGET_LINK_LIBRARIES(_Core debug ${PYTHON_DEBUG_LIBRARIES})
 	ENDIF(PYTHON_DEBUG_LIBRARIES)
 	
-	SET(PYTHON_MODULES "'Abaqus', 'Ansys', 'Completer', 'FlowTex', 'GridFile', 'TexGenv2', 'WiseTex'")
+	SET(PYTHON_MODULES "'Abaqus', 'Ansys', 'Completer', 'FlowTex', 'GridFile', 'WiseTex'")
 	IF(BUILD_RENDERER)
 		SET(PYTHON_MODULES "${PYTHON_MODULES}, 'Renderer'")
 	ENDIF(BUILD_RENDERER)

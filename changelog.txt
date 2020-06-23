@@ -1,6 +1,27 @@
 Version History
 ---------------
-v3.11.1
+v3.12.1
+=======
+General
+=======
+** Updated VS2017 non-bundled installer to set 64-bit registry and added p4est libraries
+
+Core
+====
+** Updated tetgen export so that o2 option works to export quadratic tet elements
+** Change to octree voxel mesh so that initial number of voxels can be specified
+** Bug fix in smoothing for octree voxel mesh
+
+GUI
+===
+** Added Export ABAQUS Octree Voxel File option. Dialog for voxel octree refinement and smoothing options
+
+UnitTests
+=========
+** Added tetgen quad export test
+** Octree voxel mesh test modified for change in SaveVoxelMesh input parameters
+
+v3.12.0
 =======
 GUI
 ===
@@ -11,6 +32,7 @@ GUI
 ** Added Set Resolution option to Tetgen Export
 ** Rearranged File Export menu
 ** Created separate ABAQUS and VTU voxel mesh options
+** Removed Import TexGenV2 option
 
 Core
 ====
@@ -22,13 +44,23 @@ Core
 ** Bugfix to correct extra space in ConstraintsDriver in voxel mesh equations (issue 21)
 ** Bugfix to correct reversal of G13 and G23 when calculating material properties using periodic boundary conditions set up in voxel mesh export (issue 22)
 ** Added bRetainPoints variable to SectionPolygon constructor to enable shape to be forced to retain original points rather than iterate between them
+** Bugfix to load linear interpolation from tg3 file
+** Added COctreeVoxelMesh class for octree refinement and Laplacian smoothing
 
 Unit Tests
 ==========
 ** Added tetgen mesh export test
 ** Changes to inp test files for voxel mesh bug fixes
+** Added octree voxel tests
+
+General
+=======
+** Updated 64-bit Python 27 VS2017 bundle installer to set 64-bit registry
+** Updated 64-bit Python 27 VS2017 bundle installer to add Python path to registry
 
 v3.11.0
+=======
+
 =======
 General
 =======
@@ -66,7 +98,6 @@ UnitTests
 ** Added hybrid section tests
 ** Added GetXYarnIndex test to Textile3DTests
 ** Added rotated voxel test
-
 
 v3.10.0
 ======

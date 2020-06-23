@@ -24,12 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace TexGen
 {
-	/** Class which generates a surface mesh with triangulated domain boundaries (This assumes that
-	the domain is specified to be a whole number of textile repeats).
-	*/
-
 	using namespace std;
 
+	/// Class which generates a surface mesh with triangulated domain boundaries 
+	/** (This assumes that
+	the domain is specified to be a whole number of textile repeats).
+	*/
 	class CLASS_DECLSPEC CSurfaceMesh : public CMeshDomainPlane
 	{
 	public:

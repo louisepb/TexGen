@@ -1,5 +1,5 @@
 ; Set the current version, this should change at each release
-!define VERSION "3.11.0"
+!define VERSION "3.12.0"
 !define PYTHONDLL python27.dll
 !define PYTHONVER "2.7"
 !include "LogicLib.nsh"
@@ -29,6 +29,8 @@ InstallDirRegKey HKLM "Software\TexGen" "Install_Dir"
 
 ; Check that the python dll is present in the system path
 Function CheckPython
+; Set to 64-bit registry view
+  SetRegView 64
   ClearErrors
   ReadRegStr $PythonDir HKLM SOFTWARE\Python\PythonCore\${PYTHONVER}\InstallPath ""
   ${If} ${Errors}
@@ -44,6 +46,8 @@ Function CheckPython
       Quit
     yes:
   ${EndIf}
+  ; Set back to previous registry view
+  SetRegView LastUsed
 FunctionEnd
 
 LangString TEXT_PYTHON_TITLE ${LANG_ENGLISH} "Python Extension Installation"
@@ -87,15 +91,15 @@ Page custom PythonPage ;Python custom page
 
 ; The stuff to install
 Section "TexGen (required)" ;No components page, name is not important
-    
-  ; Check if 64bit OS
+	
+  SectionIn RO
+
+; Check if 64bit OS
   ${If} ${RunningX64}
 	 DetailPrint "Running on x64"
   ${Else}
 	 Abort "Not x64 system - please install 32 bit version"
-  ${EndIf}	
-	
-  SectionIn RO
+  ${EndIf}
 
   SetOutPath $INSTDIR
 
@@ -107,6 +111,9 @@ Section "TexGen (required)" ;No components page, name is not important
   ;File ..\Docs\TexGen.chm
   File TexGenGUi.exe.manifest
   File Python27_64bit\Python27.dll  ; Copy dll anyway in case subversion TexGen is compiled with doesn't match version already installed
+  File ..\OctreeRefinement\libsc.dll
+  File ..\OctreeRefinement\libp4est.dll
+  File ..\OctreeRefinement\zlib1.dll
 
 !insertmacro MUI_INSTALLOPTIONS_READ $PythonDir "PythonPage.ini" "Field 2" "State"
   ;Call CopyPythonDLLIfNeeded
@@ -120,7 +127,6 @@ Section "TexGen (required)" ;No components page, name is not important
   File ..\Python\Lib\Completer.py
   File ..\Python\Lib\FlowTex.py
   File ..\Python\Lib\GridFile.py
-  File ..\Python\Lib\TexGenv2.py
   File ..\Python\Lib\WiseTex.py
   File ..\Python\Lib\dataHandling.py
   File ..\Python\Lib\dataHandlingInPlane.py
@@ -177,6 +183,8 @@ Section "TexGen (required)" ;No components page, name is not important
   File CFXImportVTK.exe
   File chamis_model_final.for
 
+; Set to 64-bit registry view
+  SetRegView 64
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\TexGen "Install_Dir" "$INSTDIR"
   WriteRegStr HKLM SOFTWARE\TexGen "Python_Dir" "$PythonDir"
@@ -187,6 +195,8 @@ Section "TexGen (required)" ;No components page, name is not important
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\TexGen" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\TexGen" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
+  ; Set back to previous registry view
+  SetRegView LastUsed
 
 SectionEnd ; end the section
 
@@ -200,13 +210,15 @@ Section "Start Menu Shortcuts"
   CreateShortCut "$SMPROGRAMS\TexGen\TexGen API Documentation.lnk" "$INSTDIR\TexGen.chm" "" "$INSTDIR\TexGen.chm" 0
 
 SectionEnd
-
+  
 ;--------------------------------
 
 ; Uninstaller
 
 Section "Uninstall"
   
+  ; Set to 64-bit registry view
+  SetRegView 64
   ; Find out where the TexGen extensions where installed
   ReadRegStr $PythonDir HKLM SOFTWARE\TexGen "Python_Dir"
   ReadRegStr $INSTDIR HKLM SOFTWARE\TexGen "Install_Dir"
@@ -214,6 +226,9 @@ Section "Uninstall"
   ; Remove registry keys
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\TexGen"
   DeleteRegKey HKLM "SOFTWARE\TexGen"
+  
+  ; Set back to previous registry view
+  SetRegView LastUsed
 
   ; Remove files and uninstaller
   Delete $INSTDIR\Python\libxtra\TexGen\__init__.py
@@ -222,7 +237,6 @@ Section "Uninstall"
   Delete $INSTDIR\Python\libxtra\TexGen\Completer.py
   Delete $INSTDIR\Python\libxtra\TexGen\FlowTex.py
   Delete $INSTDIR\Python\libxtra\TexGen\GridFile.py
-  Delete $INSTDIR\Python\libxtra\TexGen\TexGenv2.py
   Delete $INSTDIR\Python\libxtra\TexGen\WiseTex.py
   Delete $INSTDIR\Python\libxtra\TexGen\Core.py
   Delete $INSTDIR\Python\libxtra\TexGen\Renderer.py
@@ -267,6 +281,9 @@ Section "Uninstall"
   Delete $INSTDIR\TexGenGUI.exe.manifest
   ;Delete $INSTDIR\TexGen.chm
   Delete $INSTDIR\Python27.dll
+  Delete $INSTDIR\libsc.dll
+  Delete $INSTDIR\libp4est.dll
+  Delete $INSTDIR\zlib1.dll
 
   Delete $INSTDIR\Scripts\2dweave.py
   Delete $INSTDIR\Scripts\3dweave.py

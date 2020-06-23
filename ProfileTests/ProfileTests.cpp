@@ -21,10 +21,17 @@ int main( int argc, char** argv)
 	//PROFILE_FUNC();
 
 	CTextileFactory TextileFactory;
+	
+	// Test voxel output for plain weave
 	CTextileWeave2D Textile = TextileFactory.PlainWeave(13,13);
 	CRectangularVoxelMesh Mesh("CPeriodicBoundaries");
+	Mesh.SaveVoxelMesh(Textile, "ProfileVoxels", 100, 100, 30, true, true, MATERIAL_CONTINUUM);
+
+	// Test octree smoothed output for single yarn
+	//CTextile Textile = TextileFactory.GetSingleYarn(2, 20);
+	//COctreeVoxelMesh  Mesh;
+	//Mesh.SaveVoxelMesh(Textile, "Straight", 3, 5, true, 10, 0.3, 0.3, true, false);
 	
-	Mesh.SaveVoxelMesh(Textile, "ProfileVoxels", 100,100,30,true,true,MATERIAL_CONTINUUM);
 	TEXGEN.AddTextile(Textile);
 	CTexGenRenderer* Renderer = new CTexGenRenderer;
 	Renderer->RenderTextile(Textile);

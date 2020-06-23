@@ -1,5 +1,5 @@
 ; Set the current version, this should change at each release
-!define VERSION "3.11.0"
+!define VERSION "3.12.0"
 !define PYTHONDLL python27.dll
 !define PYTHONVER "2.7"
 !include "LogicLib.nsh"
@@ -109,6 +109,9 @@ Section "TexGen (required)" ;No components page, name is not important
   File ..\Docs\TexGen.chm
   File TexGenGUi.exe.manifest
   File Python27_64bit\Python27.dll  ; Copy dll anyway in case subversion TexGen is compiled with doesn't match version already installed
+  File ..\OctreeRefinement\libmylib_sc_w64.dll
+  File ..\OctreeRefinement\libmylib_w64.dll
+  File ..\OctreeRefinement\zlib1.dll
 
 !insertmacro MUI_INSTALLOPTIONS_READ $PythonDir "PythonPage.ini" "Field 2" "State"
   ;Call CopyPythonDLLIfNeeded
