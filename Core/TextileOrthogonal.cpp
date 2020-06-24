@@ -3034,14 +3034,14 @@ int CTextileOrthogonal::AddWeftNodes(int CurrentNode, int i, int j, int WeftInde
 		// Insert points around Top left quadrant of warp yarn
 		XYZ NewNode = WarpBelowNode;
 
-		if (iIndex - iPrevIndex > 2)
+		/*if (iIndex - iPrevIndex > 2)
 		{
 			SectionPoint = YarnSection->GetPoint(0.5);
 			NewNode.y = NewNode.y + SectionPoint.x - dWeftOffset - m_dGapSize;
 			NewNode.z = NewNode.z + SectionPoint.y;
 			m_Yarns[WeftYarnIndex].InsertNode(NewNode, CurrentNode);
 			CurrentNode++;
-		}
+		}*/
 
 		InsertWeftNode(YarnSection, 0.45, WarpBelowNode, CurrentNode, WeftYarnIndex, dWeftOffset + m_dGapSize);
 		InsertWeftNode(YarnSection, 0.4, WarpBelowNode, CurrentNode, WeftYarnIndex, dWeftOffset + m_dGapSize);
@@ -3065,14 +3065,14 @@ int CTextileOrthogonal::AddWeftNodes(int CurrentNode, int i, int j, int WeftInde
 		// Insert points around lower left quadrant of weft yarn
 		XYZ NewNode = WarpAboveNode;
 
-		if (iPrevIndex - iIndex > 2)
+		/*if (iPrevIndex - iIndex > 2)
 		{
 			SectionPoint = YarnSection->GetPoint(0.5);
 			NewNode.y = NewNode.y + SectionPoint.x - dWeftOffset - m_dGapSize;
 			NewNode.z = NewNode.z + SectionPoint.y;
 			m_Yarns[WeftYarnIndex].InsertNode(NewNode, CurrentNode);
 			CurrentNode++;
-		}
+		}*/
 
 		NewNode = WarpAboveNode;
 
@@ -3123,7 +3123,7 @@ int CTextileOrthogonal::AddWeftNodes(int CurrentNode, int i, int j, int WeftInde
 		InsertWeftNode(YarnSection, 0.05, WarpBelowNode, CurrentNode, WeftYarnIndex, dWeftOffset + m_dGapSize);
 		CurrentNode--;
 
-		if (iIndex - iNextIndex > 2)
+		/*if (iIndex - iNextIndex > 2)
 		{
 			SectionPoint = YarnSection->GetPoint(0);
 			NewNode = WarpBelowNode;
@@ -3131,7 +3131,7 @@ int CTextileOrthogonal::AddWeftNodes(int CurrentNode, int i, int j, int WeftInde
 			NewNode.z = NewNode.z + SectionPoint.y;
 			m_Yarns[WeftYarnIndex].InsertNode(NewNode, CurrentNode + 1);
 			CurrentNode++;
-		}
+		}*/
 
 		delete YarnSection;
 	}
@@ -3164,7 +3164,7 @@ int CTextileOrthogonal::AddWeftNodes(int CurrentNode, int i, int j, int WeftInde
 			InsertWeftNode(YarnSection, 0.95, WarpAboveNode, CurrentNode, WeftYarnIndex, -(dWeftOffset + m_dGapSize));
 			CurrentNode--;
 
-			if (iNextIndex - iIndex > 2)
+			/*if (iNextIndex - iIndex > 2)
 			{
 				SectionPoint = YarnSection->GetPoint(0);
 				NewNode = WarpAboveNode;
@@ -3172,7 +3172,7 @@ int CTextileOrthogonal::AddWeftNodes(int CurrentNode, int i, int j, int WeftInde
 				NewNode.z = NewNode.z + SectionPoint.y;
 				m_Yarns[WeftYarnIndex].InsertNode(NewNode, CurrentNode + 1);
 				CurrentNode++;
-			}
+			}*/
 		}
 
 		delete YarnSection;
