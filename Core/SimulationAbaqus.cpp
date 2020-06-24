@@ -289,7 +289,7 @@ void CSimulationAbaqus::GetYarnSurfaces(int iYarn, const vector<XYZ> &Repeats, v
 				iBoundaryNodes = 0;
 				for (i=0; i<CMesh::GetNumNodes(Type); ++i)
 				{
-					iBoundaryNodes += BoundaryNodes.count(*itIndex);
+					iBoundaryNodes += (int)BoundaryNodes.count(*itIndex);
 					ElemIndices.push_back(*itIndex);
 					++itIndex;
 				}
@@ -361,7 +361,7 @@ void CSimulationAbaqus::GetYarnSurface(int iYarn, const vector<XYZ> &Repeats, ve
 				iBoundaryNodes = 0;
 				for (i=0; i<CMesh::GetNumNodes(Type); ++i)
 				{
-					iBoundaryNodes += BoundaryNodes.count(*itIndex);
+					iBoundaryNodes += (int)BoundaryNodes.count(*itIndex);
 					ElemIndices.push_back(*itIndex);
 					++itIndex;
 				}
@@ -517,16 +517,6 @@ int CSimulationAbaqus::GetGlobalElementIndex(ELEMENT_FACE Face)
 int CSimulationAbaqus::GetGlobalNodeIndex(int iYarn, int iIndex)
 {
 	return m_NodeIndexOffsets[iYarn] + iIndex;
-}
-
-CMaterial &CSimulationAbaqus::GetDefaultMaterial()
-{
-	static CKeywordMaterial DefaultMat;
-	ostringstream Output;
-	Output << "*Elastic" << endl;
-	Output << "1.0, 0.0" << endl;
-	DefaultMat = CKeywordMaterial(Output.str());
-	return DefaultMat;
 }
 
 void CSimulationAbaqus::CreateMaterials(ostream &Output, string Filename)
@@ -969,7 +959,7 @@ double CSimulationAbaqus::GetSectionArea( vector<int> &Section, CMesh &Mesh )
 		Points.push_back( Mesh.GetNode( *itSection ) );
 	}
 
-	int iNumNodes = Points.size()-1;
+	int iNumNodes = (int)Points.size()-1;
 	Points.push_back( Points[1] );   
 
 	double an, ax, ay, az;  // abs value of normal and its coords
@@ -1142,12 +1132,4 @@ void CSimulationAbaqus::GetSectionVolumeFractions(CTextile &Textile, vector<SECT
 		VolFData.iMax = GetGlobalNodeIndex( iYarn, VolFData.iMax );
 		VolFractionData.push_back( VolFData );
 	}
-}
-
-
-
-vector <double>& CKeywordMaterial::GetConstants()
-{
-	vector<double> Constants;
-	return Constants;
 }

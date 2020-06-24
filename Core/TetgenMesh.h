@@ -25,14 +25,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace TexGen
 {
-	/** Class which tetrahedralizes a textile using Tetgen software http://tetgen.berlios.de/
-		The surface mesh and domain are used as tetgen input, the domain boundaries first being 
-		triangulated such that opposite boundaries have the same input mesh. (This assumes that
-		the domain is specified to be a whole number of textile repeats).
-	*/
-
 	using namespace std;
 
+	/// Class which tetrahedralizes a textile using Tetgen software
+	/**The surface mesh and domain are used as tetgen input, the domain boundaries first being
+	triangulated such that opposite boundaries have the same input mesh. (This assumes that
+	the domain is specified to be a whole number of textile repeats).
+	*/
 	class CLASS_DECLSPEC CTetgenMesh : public CMeshDomainPlane
 	{
 	public:

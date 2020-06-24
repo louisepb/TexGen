@@ -1,5 +1,5 @@
 ; Set the current version, this should change at each release
-!define VERSION "3.11.0"
+!define VERSION "3.12.0"
 !include "LogicLib.nsh"
 !include "MUI.nsh"
 !include "x64.nsh"
@@ -59,6 +59,9 @@ Section "TexGen (required)" ;No components page, name is not important
   File msvcp110.dll
   File ..\Docs\TexGen.chm
   File TexGenGUi.exe.manifest
+  File ..\OctreeRefinement\libsc.dll
+  File ..\OctreeRefinement\libp4est.dll
+  File ..\OctreeRefinement\zlib1.dll
 
   SetOutPath $INSTDIR\Python\libstd
 
@@ -223,6 +226,9 @@ Section "Uninstall"
   Delete $INSTDIR\TexGenGUI.exe.manifest
   Delete $INSTDIR\TexGen.chm
   Delete $INSTDIR\Python27.dll
+  Delete $INSTDIR\libsc.dll
+  Delete $INSTDIR\libp4est.dll
+  Delete $INSTDIR\zlib1.dll
 
   Delete $INSTDIR\Scripts\2dweave.py
   Delete $INSTDIR\Scripts\3dweave.py

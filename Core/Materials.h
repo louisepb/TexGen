@@ -50,20 +50,6 @@ namespace TexGen
 			vector<double> m_Constants;
 		};
 
-		/// Represents a material definition as a string of ABAQUS keywords
-		class CLASS_DECLSPEC CKeywordMaterial : public CMaterial
-		{
-		public:
-			CKeywordMaterial() {}
-			CKeywordMaterial(string AbaqusCommands):m_AbaqusCommands(AbaqusCommands){}
-			CMaterial* Copy() const { return new CKeywordMaterial(*this); }
-			string GetAbaqusCommands(string Type = "") { return m_AbaqusCommands; }
-			void SetAbaqusCommands(string AbaqusCommands) { m_AbaqusCommands = AbaqusCommands; }
-			vector<double>& GetConstants();
-		protected:
-			string m_AbaqusCommands;
-		};
-
 		class CLASS_DECLSPEC CTextileMaterials
 		{
 		public:

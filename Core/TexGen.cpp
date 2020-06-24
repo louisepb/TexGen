@@ -29,7 +29,7 @@ CTexGen::CTexGen(void)
 : m_pLogger(NULL)
 , m_pTextileCallback(NULL)
 , m_iMajorVersion(3)
-, m_iMinorVersion(11)
+, m_iMinorVersion(12)
 , m_iRevision(0)
 , m_bMessagesOn(true)
 {

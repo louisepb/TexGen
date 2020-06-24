@@ -24,6 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PythonConsole.h"
 #include "ControlsWindow.h"
 
+enum SMOOTHING
+{
+	NONE,
+	LAPLACIAN,
+	NONSHRINKING
+};
 
 class CTexGenMainFrame : public wxFrame
 {
@@ -65,7 +71,6 @@ protected:
 	void OnSave(wxCommandEvent& event);
 	void OnSaveScreenshot(wxCommandEvent& event);
 	void OnOpenWiseTex(wxCommandEvent& event);
-	void OnOpenTexGenv2(wxCommandEvent& event);
 	void OnOpenWeavePattern(wxCommandEvent& event);
 	void OnSaveGrid(wxCommandEvent& event);
 	void OnSaveVoxel(wxCommandEvent& event);
@@ -78,6 +83,7 @@ protected:
 	void OnSaveABAQUSSurface(wxCommandEvent& event);
 	void OnSaveTetgenMesh(wxCommandEvent& event);
 	void OnSaveVTUVoxels(wxCommandEvent& event);
+	void OnSaveOctreeVoxels(wxCommandEvent& event);
 
 	void OnWindow(wxCommandEvent& event);
 	void OnChar(wxKeyEvent& event);
@@ -163,6 +169,21 @@ public:
 private:
 	void OnOffsetUpdate(wxUpdateUIEvent& event);
 
+	DECLARE_EVENT_TABLE()
+};
+
+class COctreeVoxelInput : public wxDialog
+{
+public:
+	COctreeVoxelInput(wxWindow* parent);
+
+private:
+	void OnCohesiveUpdate(wxUpdateUIEvent& event);
+	void OnMinLevelUpdate(wxCommandEvent& event);
+	void OnRefineLevelUpdate(wxCommandEvent& event);
+	void OnSmoothingUpdate(wxCommandEvent& event);
+	void OnCoefficientUpdate(wxUpdateUIEvent& event);
+	void OnCoefficientText(wxCommandEvent& event);
 	DECLARE_EVENT_TABLE()
 };
 

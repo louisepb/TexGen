@@ -28,6 +28,7 @@ digraph G
 	Core -> Triangle
 	Core -> TinyXML
 	Core -> Tetgen
+	Core -> p4est
 	Renderer -> VTK
 	Interface:f0 -> Python [constraint=false]
 	GUI -> wxWidgets [constraint=false]
@@ -38,6 +39,7 @@ digraph G
 	Triangle [style=filled, fillcolor="peachpuff"]
 	TinyXML [style=filled, fillcolor="peachpuff"]
 	Tetgen [style=filled, fillcolor="peachpuff"]
+	p4est [style=filled, fillcolor="peachpuff"]
 	VTK [style=filled, fillcolor="khaki"]
 	Python [style=filled, fillcolor="ivory"]
 	wxWidgets [style=filled, fillcolor="lightblue"]
