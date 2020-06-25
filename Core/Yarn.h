@@ -501,10 +501,6 @@ namespace TexGen
 		int m_iNumSectionPoints;	///< Number of section points to create
 		bool m_bEquiSpacedSectionMesh;	///< Whether or not volume meshes of the yarn should be equispaced
 
-		/// Find whether point is inside polygon specified by Nodes
-		bool PointInside( const XY &Point, vector<XYZ> &Nodes ) const;
-		bool PointInside( const XY &Point, const vector<XY> &Nodes ) const;
-
 		/// Find closest perpendicular distance from point to polygon specified by SectionPoints
 		double FindClosestEdgeDistance( XY &Loc, const vector<XY> &SectionPoints, double dTolerance ) const;
 

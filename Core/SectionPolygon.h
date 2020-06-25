@@ -28,11 +28,14 @@ namespace TexGen
 	/**
 	Points are in local XY coordinates relative to the yarn centreline.  
 	Points start at (maxX, 0) and are ordered in an anticlockwise direction
+	\Param PolygonPoints  Vector of XY points
+	\Param bSingleQuadrant true if only giving points for one quadrant which are automatically replicated to complete section
+	\Param bRetainPoints true if want to force edge points of section to match points exactly, otherwise creates specified number of points around section
 	*/
 	class CLASS_DECLSPEC CSectionPolygon : public CSection
 	{
 	public:
-		CSectionPolygon(const vector<XY> &PolygonPoints, bool bSingleQuadrant = false);
+		CSectionPolygon(const vector<XY> &PolygonPoints, bool bSingleQuadrant = false, bool bRetainPoints = false);
 		CSectionPolygon(TiXmlElement &Element);
 		~CSectionPolygon(void);
 
@@ -55,6 +58,9 @@ namespace TexGen
 	protected:
 		/// Assign t value as proportion of distance around perimeter for each point
 		void CalcTValues();
+
+		/// Create section with edge points same as polygon points
+		void CreateSection() const;
 
 		vector<XY> m_PolygonPoints;
 		/// The proportion of the distance around the total perimeter range from 0 to 1 for each point

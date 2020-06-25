@@ -73,6 +73,8 @@ CTextile::CTextile(TiXmlElement &Element)
 		{
 			if (*pType == "CDomainPlanes")
 				m_pDomain = CDomainPlanes(*pDomain);
+			else if (*pType == "CDomainPrism")
+				m_pDomain = CDomainPrism(*pDomain);
 		}
 	}
 	m_bNeedsBuilding = valueify<bool>(Element.Attribute("NeedsBuilding"));

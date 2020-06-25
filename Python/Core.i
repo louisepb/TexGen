@@ -180,6 +180,7 @@ namespace std
 
 %include "../Core/Domain.h"
 %include "../Core/DomainPlanes.h"
+%include "../Core/DomainPrism.h"
 
 %include "../Core/FibreDistribution.h"
 %include "../Core/FibreDistributionConst.h"
@@ -190,6 +191,7 @@ namespace std
 %include "../Core/ShearedVoxelMesh.h"
 %include "../Core/StaggeredVoxelMesh.h"
 %include "../Core/RotatedVoxelMesh.h"
+%include "../core/PrismVoxelMesh.h"
 %include "../Core/TetgenMesh.h"
 %include "../Core/PeriodicBoundaries.h"
 %include "../Core/ShearedPeriodicBoundaries.h"

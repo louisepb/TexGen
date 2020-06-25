@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SectionPolygon.h"
 using namespace TexGen;
 
-CSectionPolygon::CSectionPolygon(const vector<XY> &PolygonPoints, bool bSingleQuadrant)
+CSectionPolygon::CSectionPolygon(const vector<XY> &PolygonPoints, bool bSingleQuadrant, bool bRetainPoints)
 : m_PolygonPoints(PolygonPoints)
 {
 	
@@ -54,6 +54,8 @@ CSectionPolygon::CSectionPolygon(const vector<XY> &PolygonPoints, bool bSingleQu
 	}
 
 	CalcTValues();
+	if (bRetainPoints)
+		CreateSection();
 }
 
 CSectionPolygon::~CSectionPolygon(void)
@@ -171,6 +173,13 @@ void CSectionPolygon::CalcTValues()
 	}
 }
 
+void CSectionPolygon::CreateSection() const
+{
+	m_bEquiSpaced = false;
+	m_EdgePoints.clear();
+
+	m_EdgePoints = m_PolygonPoints;
+}
 
 
 

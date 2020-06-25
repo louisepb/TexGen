@@ -1570,6 +1570,79 @@ namespace TexGen
 		
 		return ShortestDistPointLine( Position, p1, comp, dU );
 	}
+
+	inline bool PointInside(const XY &Point, const std::vector<XY> &Nodes)
+	{
+		// Algorithm borrowed from http://paulbourke.net/geometry/polygonmesh/
+
+		int counter = 0;
+		int i, N = (int)Nodes.size();
+		double xinters;
+		XY p1, p2;
+		p1 = Nodes[0];
+		for (i = 1;i <= N;i++)
+		{
+			p2 = Nodes[i % N];
+			if (Point.y > std::min(p1.y, p2.y))
+			{
+				if (Point.y <= std::max(p1.y, p2.y))
+				{
+					if (Point.x <= std::max(p1.x, p2.x))
+					{
+						if (p1.y != p2.y)
+						{
+							xinters = (Point.y - p1.y)*(p2.x - p1.x) / (p2.y - p1.y) + p1.x;
+							if (p1.x == p2.x || Point.x <= xinters)
+								counter++;
+						}
+					}
+				}
+			}
+			p1 = p2;
+		}
+
+		if (counter % 2 == 1)
+			return true;
+		else
+			return false;
+	}
+
+	inline bool PointInside(const XY &Point, std::vector<XYZ> &Nodes)
+	{
+		//	 Algorithm borrowed from http://paulbourke.net/geometry/polygonmesh/
+
+		int counter = 0;
+		int i, N = (int)Nodes.size();
+		double xinters;
+		XYZ p1, p2;
+		p1 = Nodes[0];
+		for (i = 1;i <= N;i++)
+		{
+			p2 = Nodes[i % N];
+			if (Point.y > std::min(p1.y, p2.y))
+			{
+				if (Point.y <= std::max(p1.y, p2.y))
+				{
+					if (Point.x <= std::max(p1.x, p2.x))
+					{
+						if (p1.y != p2.y)
+						{
+							xinters = (Point.y - p1.y)*(p2.x - p1.x) / (p2.y - p1.y) + p1.x;
+							if (p1.x == p2.x || Point.x <= xinters)
+								counter++;
+						}
+					}
+				}
+			}
+			p1 = p2;
+		}
+
+		if (counter % 2 == 1)
+			return true;
+		else
+			return false;
+	}
+
 };	// namespace TexGen
 
 
