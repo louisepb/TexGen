@@ -160,18 +160,9 @@ namespace TexGen
 
 		bool BuildWeavePatternTextile() const;
 		mutable int m_iYYarnOffset;
-		vector<int> &GetPreConsolidationYarnCell(int x, int y);
-		const vector<int> &GetPreConsolidationYarnCell(int x, int y) const;
-		void DeletePreConsolidationYarnCell();
-		vector< vector<int> > m_PreConsolidationWeftYarns;
-		int m_PreConsolidationiNumYYarns;
-
-		vector<PATTERN3D> &GetPreConsolidationCell(int x, int y);
-		const vector<PATTERN3D> &GetPreConsolidationCell(int x, int y) const;
 
 
 		mutable map<pair<int, int>, YARNDATA> m_BinderData;
-		mutable vector<YARNDATA> m_PreConsolidationYYarnData;
 
 		/// Indicates whether textile is loaded from weave pattern
 		bool m_bWeavePattern;
@@ -179,9 +170,6 @@ namespace TexGen
 		/// Used when loaded from weave pattern
 		vector<vector<int> > m_WeftYarns;
 		vector<vector<PATTERN3D> > m_Pattern;
-		vector<vector<PATTERN3D> > m_PreConsolidationPattern;
 		//bool m_Consolidated = false;
-		int FindPreConsolidationNextYCellIndex(int Starti, int j, int k) const;
-		int FindPreConsolidationPrevYCellIndex(int Starti, int j, int k) const;
 	};
 };	// namespace TexGen
