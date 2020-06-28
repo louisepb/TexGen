@@ -229,11 +229,6 @@ vector<PATTERN3D> &CTextile3DWeave::GetCell(int x, int y)
 	return m_Pattern[x + m_iNumYYarns*y];
 }
 
-vector<vector<PATTERN3D> > CTextile3DWeave::GetPattern() const
-{
-	return m_Pattern;
-}
-
 void CTextile3DWeave::RemoveCell(int x, int y)
 {
 	m_Pattern.erase(m_Pattern.begin()+(x + m_iNumYYarns*y));
@@ -531,7 +526,7 @@ bool CTextile3DWeave::BuildTextile() const
 		}
 	}
 
-	//ShapeWeftYarns();
+	ShapeWeftYarns();
 
 	// Add repeats and set interpolation
 	dWidth = GetWidth();
@@ -1998,7 +1993,6 @@ CSection* CTextile3DWeave::GetCrossSection( int YarnIndex, int Node ) const
 void CTextile3DWeave::ShapeWeftYarns() const
 {
 
-	vector<vector<PATTERN3D> > Pattern = GetPattern();
 	//PROFILE_FUNC();
 	int iNumXYarns = m_iNumXYarns;
 	//if ( !m_bWeftRepeat )
@@ -2009,7 +2003,6 @@ void CTextile3DWeave::ShapeWeftYarns() const
 		int CurrentYNode = 0;
 		for ( int j = 0; j < iNumXYarns; ++j )
 		{
-			TGLOG("CurrentYNode is " << CurrentYNode);
 			CurrentYNode = AddWeftNodes( CurrentYNode, XNodes[j], i, j );
 			if ( CurrentYNode >= 0 )
 				XNodes[j]++; //move along to next warp stack
@@ -2078,7 +2071,6 @@ int CTextile3DWeave::AddWeftNodes( int CurrentNode, int XNode, int i, int j ) co
 		// Change CurrentNode accordingly
 		return CurrentNode;
 	}*/
-	TGLOG("NumXYarns is " << m_iNumXYarns);
 	int	NextCellIndex = (j+1)%m_iNumXYarns;
 	int	PrevCellIndex = (j+m_iNumXYarns-1)%m_iNumXYarns;
 
@@ -2144,7 +2136,6 @@ int CTextile3DWeave::AddWeftNodes( int CurrentNode, int XNode, int i, int j ) co
 	if ( iIndex > 0 && iPrevIndex != -1 && iPrevIndex < iIndex-1 && PrevCell[iPrevIndex] == PATTERN3D_YYARN   // Check for being more than one layer apart
 		&& GetYarnIndex( i,PrevCellIndex, iPrevIndex ) == WeftYarnIndex)
 	{
-		TGLOG("First if");
 		// Get cross section of warp yarn below
 		if ( WarpBelowIndex == -1 )
 			return CurrentNode;
@@ -2183,7 +2174,6 @@ int CTextile3DWeave::AddWeftNodes( int CurrentNode, int XNode, int i, int j ) co
 	else if ( iIndex < iMaxIndex && iPrevIndex != -1 && iPrevIndex > iIndex+1 && PrevCell[iPrevIndex] == PATTERN3D_YYARN 
 		&& GetYarnIndex( i, PrevCellIndex, iPrevIndex ) == WeftYarnIndex )
 	{
-		TGLOG("First elseif");
 		if ( WarpAboveCellIndex != iIndex+1 )  // Warp not directly above so don't need to change weft
 			return CurrentNode;
 		// Get cross section of warp yarn below
@@ -2227,7 +2217,6 @@ int CTextile3DWeave::AddWeftNodes( int CurrentNode, int XNode, int i, int j ) co
 	if ( iIndex > 0 && iNextIndex != -1 && iNextIndex < iIndex-1 && NextCell[iNextIndex] == PATTERN3D_YYARN 
 		&& GetYarnIndex( i, NextCellIndex, iNextIndex ) == WeftYarnIndex )
 	{
-		TGLOG("Second if");
 		// Get cross section of weft yarn below
 		CSection* YarnSection = GetCrossSection( WarpBelowIndex );
 		if ( YarnSection == NULL )
@@ -2267,7 +2256,6 @@ int CTextile3DWeave::AddWeftNodes( int CurrentNode, int XNode, int i, int j ) co
 	else if( iIndex < iMaxIndex && iNextIndex != -1 && iNextIndex > iIndex+1 && NextCell[iNextIndex] == PATTERN3D_YYARN 
 		&& GetYarnIndex( i, NextCellIndex, iNextIndex ) == WeftYarnIndex )
 	{
-		TGLOG("Second elseif")
 		if ( WarpAboveCellIndex != iIndex+1 )  // Warp not directly above so don't need to change weft
 			return CurrentNode;
 
@@ -2472,11 +2460,9 @@ void CTextile3DWeave::InsertWeftNode( CSection* YarnSection, double t, XYZ& Warp
 	{
 		m_Yarns[WeftYarnIndex].InsertNode( NewNode, CurrentNode);
 		CurrentNode++;
-		TGLOG("WeftNode inserted for weft" << WeftYarnIndex);
 	}
 	else
 		m_Yarns[WeftYarnIndex].ReplaceNode( CurrentNode, NewNode );
-		TGLOG("WeftNode replaced for weft" << WeftYarnIndex);
 	
 
 }

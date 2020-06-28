@@ -303,7 +303,7 @@ namespace TexGen
 
 		/// Adds nodes to weft yarns to avoid intersections where they pass around warps
 		/// Only useful where Textile3DWeave base class is used. Inherited classes assume weft yarns are straight
-		virtual void ShapeWeftYarns() const;
+		void ShapeWeftYarns() const;
 
 		virtual void ConvertToPatternDraft( int iWeftOrder = BOTTOM_TO_TOP );
 		bool NoYarnCell( vector<PATTERN3D> &Cell );
@@ -335,7 +335,6 @@ namespace TexGen
 		CPatternDraft &GetPatternDraft() { return m_PatternDraft; }
 
 		void CalculateReedDesign( string Filename );
-		vector<vector<PATTERN3D> > GetPattern() const;
 
 	protected:
 		/// Check that the weave pattern contained in m_Pattern is valid
@@ -412,7 +411,7 @@ namespace TexGen
 
 		int FindWeftHeight( const vector<PATTERN3D>& Cell ) const;
 
-		virtual int AddWeftNodes( int CurrentNode, int XNode, int i, int j ) const;
+		int AddWeftNodes( int CurrentNode, int XNode, int i, int j ) const;
 
 		void InsertWeftNode( CSection* YarnSection, double t, XYZ& WarpNode, int& CurrentNode, int WeftYarnIndex, double Offset, bool bInsert = true ) const;
 
