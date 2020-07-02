@@ -91,7 +91,6 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 		TGLOG("Adjusting mesh");
 		if ( !AdjustMesh.AdjustMesh( Textile, m_YarnMeshes, Tolerance ) )
 		{
-			TGERROR("Unable to create ABAQUS input file with adjusted mesh: Intersection depths too large" );
 			return false;
 		}
 

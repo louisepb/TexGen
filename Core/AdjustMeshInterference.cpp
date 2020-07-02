@@ -62,21 +62,27 @@ bool CAdjustMeshInterference::AdjustMesh( CTextile &Textile, vector<CMesh> &Yarn
 		m_TempYarnMeshes.push_back( Mesh );
 	}
 
-	if ( !CheckInitialIntersections( Textile, YarnMeshes ) ) // Returns false if any outside tolerence so adjustement needed
+	if (!CheckInitialIntersections(Textile, YarnMeshes)) // Returns false if any outside tolerence so adjustement needed
 	{
-		if ( AdjustInitialIntersections( YarnMeshes ) )  // Returns false any of intersections larger than element intersecting with
+		if (AdjustInitialIntersections(YarnMeshes))  // Returns false any of intersections larger than element intersecting with
 		{
 #ifdef _DEBUG
-			for ( int i=0; i < (int)YarnMeshes.size(); ++i )
+			for (int i = 0; i < (int)YarnMeshes.size(); ++i)
 			{
-				YarnMeshes[i].SaveToVTK( "c:\\Program Files\\TexGen\\InitialAdjustedMesh" + stringify(i));
+				YarnMeshes[i].SaveToVTK("c:\\Program Files\\TexGen\\InitialAdjustedMesh" + stringify(i));
 			}
 #endif
-			if ( !AdjustIntersections( YarnMeshes ) )
+			if (!AdjustIntersections(YarnMeshes))
+			{
+				TGERROR("Unable to adjust mesh: Intersection depths too large");
 				return false;
+			}
 		}
 		else
+		{
+			TGERROR("Unable to adjust mesh: Intersection depths too large");
 			return false;
+		}
 	}
 	
 	/*for ( int i = 0; i < iNumYarns; ++i )
