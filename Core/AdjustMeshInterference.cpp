@@ -19,9 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "PrecompiledHeaders.h"
 #include "AdjustMeshInterference.h"
-//#include "MeshIntersectionData.h"
-//#include "Textile.h"
-//#include "Misc.h"
 #include "TexGen.h"
 #include <time.h>
 
@@ -37,6 +34,33 @@ CAdjustMeshInterference::CAdjustMeshInterference(void)
 
 CAdjustMeshInterference::~CAdjustMeshInterference(void)
 {
+}
+
+void CAdjustMeshInterference::AdjustTextileMesh(CTextile &Textile, double Tolerance)
+{
+	// Check if domain exists
+	const CDomain* pDomain = Textile.GetDomain();
+	if (!pDomain)
+	{
+		TGERROR("Unable to correct intersections: No domain specified");
+		return;
+	}
+
+	vector<CMesh> YarnMeshes;
+	Textile.AddVolumeToMesh( YarnMeshes, true);  // check correct number of yarn meshes
+	if (YarnMeshes.size() != Textile.GetNumYarns())
+	{
+		TGERROR(" Unable to continue interference correction: failed to create yarn meshes");
+		return;
+	}
+
+	TGLOG("Adjusting mesh");
+	if (!AdjustMesh(Textile, YarnMeshes, Tolerance))
+		return;
+
+	TGLOG("Regenerating mesh using adjusted points");
+	AdjustSectionMeshes(Textile, YarnMeshes);
+	Textile.AddVolumeToMesh(YarnMeshes, true);
 }
 
 bool CAdjustMeshInterference::AdjustMesh( CTextile &Textile, vector<CMesh> &YarnMeshes, double Tolerance )
@@ -85,13 +109,6 @@ bool CAdjustMeshInterference::AdjustMesh( CTextile &Textile, vector<CMesh> &Yarn
 		}
 	}
 	
-	/*for ( int i = 0; i < iNumYarns; ++i )
-	{
-		TGLOG( "Volume of adjusted yarn mesh " << i << " = " << YarnMeshes[i].CalculateVolume() << "\n" );
-	}*/
-
-//	AdjustInterpolationNodes( YarnMeshes );
-	//SetNodeDisplacements( iNumYarns, YarnMeshes ); // Displacements for if using TextileDeformer
 	return true; 
 	
 }
@@ -305,30 +322,6 @@ void CAdjustMeshInterference::AdjustInterpolationNodes( vector<CMesh> &YarnMeshe
 	{
 		itIntersections->AdjustInterpolationNode(YarnMeshes[itIntersections->GetYarn()]);
 	}
-}
-
-bool CAdjustMeshInterference::CreateVolumeMeshes( CTextile &Textile, vector<CMesh> &YarnMeshes )
-{
-	int iNumYarns = Textile.GetNumYarns();
-	YarnMeshes.clear();
-	YarnMeshes.resize(iNumYarns);
-	const CDomain* pDomain = Textile.GetDomain();
-	if (!pDomain)
-	{
-		TGERROR("Unable to set up volume meshes: No domain specified");
-		return false;
-	}
-
-	for (int i=0; i<iNumYarns; ++i)  // Create volume mesh for each yarn as MS thesis sections 2.9.1 & 2.9.2
-	{
-		CYarn* pYarn = Textile.GetYarn(i);
-		if ( !pYarn->AddVolumeToMesh(YarnMeshes[i], *pDomain))// || m_YarnMeshes[i].NodesEmpty())
-		{
-			TGERROR("Failed to create volume mesh for yarn " << i );
-			return false;
-		}
-	}
-	return true;
 }
 
 void CAdjustMeshInterference::AdjustSectionMeshes( CTextile &Textile, vector<CMesh> &YarnMeshes )
@@ -758,7 +751,7 @@ void CMeshIntersectionData::FindElements( vector<int> &IndexArray, CMesh::ELEMEN
 		itIndexArray = find( itIndexArray, IndexArray.end(), m_Index );  
 		if ( itIndexArray != IndexArray.end() )  // Found an entry 
 		{
-			int iIndex = itIndexArray - IndexArray.begin();
+			int iIndex = (int)(itIndexArray - IndexArray.begin());
 				
 			vector<int>::iterator itStartVertex = itIndexArray - (iIndex % CMesh::GetNumNodes(ElementType));
 			// Add the block of indices for the element

@@ -79,7 +79,7 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 	EVT_BUTTON_MENU_RANGE(ID_CreateDomainPlanes, ID_DeleteDomain, CTexGenMainFrame::OnDomains)
 	EVT_BUTTON_MENU_RANGE(ID_RunScript, ID_RecordMacro, CTexGenMainFrame::OnPython)
 	//EVT_CHECKBOX_MENU_RANGE( ID_OutputMessages, ID_OutputMessages, CTexGenMainFrame::OnOptions)
-	EVT_BUTTON_MENU_RANGE(ID_PatternDraft, ID_DomainVolumeFraction, CTexGenMainFrame::OnTools)
+	EVT_BUTTON_MENU_RANGE(ID_PatternDraft, ID_IntersectionCorrection, CTexGenMainFrame::OnTools)
 	EVT_BUTTON_MENU_RANGE(ID_OutputMessages, ID_OutputMessages, CTexGenMainFrame::OnOptions)
 
 	EVT_TEXT_ENTER(ID_PositionX, CTexGenMainFrame::OnPosition)
@@ -2753,6 +2753,26 @@ void CTexGenMainFrame::OnTools(wxCommandEvent& event)
 			wxMessageBox( VfMessage, wxT("Volume Fraction"), wxOK|wxCENTRE, this );
 		}
 		break;
+	case ID_IntersectionCorrection:
+		{
+			string TextileName = GetTextileSelection();
+			CTextile* pTextile = TEXGEN.GetTextile(TextileName);
+			if (!pTextile)
+			{
+				wxMessageBox(wxT("Cannot correct intersections - no textile loaded"), wxT("Intersection Correction Error"), wxOK | wxICON_ERROR, this);
+				return;
+			}
+			if (!pTextile->GetDomain())
+			{
+				wxMessageBox(wxT("Cannot correct intersections - no domain specified"), wxT("Intersection Correction Error"), wxOK | wxICON_ERROR, this);
+				return;
+			}
+			stringstream Command;
+			Command << "Textile = GetTextile( '" << TextileName << "' )" << endl;
+			Command << "Adjust = CAdjustMeshInterference()" << endl;
+			Command << "Adjust.AdjustTextileMesh( Textile )" << endl;
+			SendPythonCode(Command.str());
+		}
 	default:
 		break;
 	}

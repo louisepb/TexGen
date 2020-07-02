@@ -262,6 +262,24 @@ void CTextile::AddVolumeToMesh(CMesh &Mesh, bool bTrimToDomain)
 	}
 }
 
+void CTextile::AddVolumeToMesh(vector<CMesh> &Mesh, bool bTrimToDomain)
+{
+	if (!BuildTextileIfNeeded())
+		return;
+	Mesh.clear();
+	Mesh.resize(m_Yarns.size());
+
+	vector<CYarn>::iterator itYarn;
+	int i = 0;
+	for (itYarn = m_Yarns.begin(), i = 0; itYarn != m_Yarns.end(); ++itYarn, ++i)
+	{
+		if (bTrimToDomain && m_pDomain)
+			itYarn->AddVolumeToMesh(Mesh[i], *m_pDomain);
+		else
+			itYarn->AddVolumeToMesh(Mesh[i]);
+	}
+}
+
 void CTextile::AddCentrePlaneToMesh(CMesh &Mesh, bool bTrimToDomain)
 {
 	if (!BuildTextileIfNeeded())

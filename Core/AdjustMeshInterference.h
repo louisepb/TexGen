@@ -94,6 +94,13 @@ namespace TexGen
 		CAdjustMeshInterference(void);
 		virtual ~CAdjustMeshInterference(void);
 
+		/// Adjust mesh interference for whole textile by adjusting nodes
+		/**
+		\param Textile The textile being adjusted
+		\param Tolerance Mesh will be adjusted until intersections are within this tolerance
+		*/
+		void AdjustTextileMesh(CTextile &Textile, double Tolerance = 0.0000001);
+
 		/// Top level function to adjust nodes on all yarns
 		/**
 		\param Textile The textile being adjusted
@@ -102,9 +109,6 @@ namespace TexGen
 		*/
 		bool AdjustMesh( CTextile &Textile, vector<CMesh> &YarnMeshes, double Tolerance );
 		vector<XYZ> GetNodeDisplacements( int i ){ return m_NodeDisplacements[i]; }
-
-		/// Create a vector of volume meshes, one for each yarn
-		bool CreateVolumeMeshes( CTextile &Textile, vector<CMesh> &YarnMeshes );
 
 		/// Adjust yarns to interpolate between section meshes and change these to reflect intersection adjustments
 		void AdjustSectionMeshes(CTextile &Textile, vector<CMesh> &YarnMeshes );

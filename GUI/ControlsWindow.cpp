@@ -598,6 +598,7 @@ void CControlsWindow::BuildToolsPage()
 	pMenu->Append(ID_QuickDomainVolumeFraction, wxT("Quick Calculate Domain Volume Fraction"));
 	pMenu->Append(ID_DomainVolumeFraction, wxT("Calculate Domain Volume Fraction"));
 	pMenu->Append(ID_YarnFibreVolumeFraction, wxT("Yarn Fibre Volume Fraction"));
+	pMenu->Append(ID_IntersectionCorrection, wxT("Correct Small Intersections"));
 	m_pMenuBar->Append(pMenu, wxT("&Tools"));
 }
 

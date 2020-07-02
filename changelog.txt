@@ -11,10 +11,12 @@ Core
 ** Updated tetgen export so that o2 option works to export quadratic tet elements
 ** Change to octree voxel mesh so that initial number of voxels can be specified
 ** Bug fix in smoothing for octree voxel mesh
+** Added AdjustTextileMesh function to CAdjustMeshInterference to allow intersection correction to be called from outside the dry fibre export
 
 GUI
 ===
 ** Added Export ABAQUS Octree Voxel File option. Dialog for voxel octree refinement and smoothing options
+** Added Correct Small Intersections to Tools menu
 
 UnitTests
 =========
