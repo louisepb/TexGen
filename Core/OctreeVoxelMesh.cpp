@@ -1596,7 +1596,7 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 	for (auto elem : MyElemSurf)
 		MyElemSurfVector.push_back(elem.second);
 
-	//omp_set_num_threads(2);
+	omp_set_num_threads(2);
 	for (vector<vector<int>>::iterator itElemSurfVector = MyElemSurfVector.begin(); itElemSurfVector != MyElemSurfVector.end(); ++itElemSurfVector) {
 		vector<int>::iterator itElems;
 		vector<vector<int>>::iterator it = find(MyElemSurfVector.begin(), MyElemSurfVector.end(), *itElemSurfVector);
