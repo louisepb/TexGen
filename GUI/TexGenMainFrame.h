@@ -237,7 +237,16 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
+class CAbaqusInput : public wxDialog
+{
+public:
+	CAbaqusInput(wxWindow* parent);
 
+private:
+	void OnRegenerateUpdate(wxUpdateUIEvent& event);
+
+	DECLARE_EVENT_TABLE()
+};
 
 
 

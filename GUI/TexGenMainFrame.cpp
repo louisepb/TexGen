@@ -134,6 +134,10 @@ BEGIN_EVENT_TABLE(CTetgenOptions, wxDialog)
 	EVT_UPDATE_UI(XRCID("Resolution"), CTetgenOptions::OnResolutionUpdate)
 END_EVENT_TABLE()
 
+BEGIN_EVENT_TABLE(CAbaqusInput, wxDialog)
+	EVT_UPDATE_UI(XRCID("RegenerateMesh"), CAbaqusInput::OnRegenerateUpdate)
+END_EVENT_TABLE()
+
 CTexGenMainFrame::CTexGenMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 : wxFrame(NULL, wxID_ANY, title, pos, size)
 , m_pViewerNotebook(NULL)
@@ -931,8 +935,8 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 	);
 	dialog.CentreOnParent();
 
-	wxDialog AbaqusInput;
-	if (wxXmlResource::Get()->LoadDialog(&AbaqusInput, this, wxT("AbaqusOptions")))
+	CAbaqusInput AbaqusInput(this);
+	
 	{
 		XRCCTRL(AbaqusInput, "XScale", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &XScale));
 		XRCCTRL(AbaqusInput, "YScale", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &YScale));
@@ -3106,3 +3110,20 @@ void CTetgenOptions::OnResolutionUpdate(wxUpdateUIEvent& event)
 	}
 }
 
+CAbaqusInput::CAbaqusInput(wxWindow* parent)
+{
+	wxXmlResource::Get()->LoadDialog(this, parent, wxT("AbaqusOptions"));
+}
+
+void CAbaqusInput::OnRegenerateUpdate(wxUpdateUIEvent& event)
+{
+	wxCheckBox* AdjustIntersectionCtrl = (wxCheckBox*)FindWindow(XRCID("AdjustIntersections"));
+	if (AdjustIntersectionCtrl->GetValue())
+	{
+		event.Enable(true);
+	}
+	else
+	{
+		event.Enable(false);
+	}
+}
