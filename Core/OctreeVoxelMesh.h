@@ -131,7 +131,7 @@ namespace TexGen
 		// Convert Hex to Tets
 		void ConvertHexToTets();
 		/// Storing hanging nodes from octree-mesh to a vector for writing the constraints
-		int storeHangingNode(int *all_lni, int *hanging_corner, int node_i, int hanging_count);
+		int storeHangingNode(int *all_lni, int *hanging_corner, int node_i, int hanging_count, double v[3]);
 		/// Smoothing
 		void smoothing(const std::map< int, vector<int> > &NodeSurf, const vector<int> &AllSurf);
 		void fillMaterialInfo();
