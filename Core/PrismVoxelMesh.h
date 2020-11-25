@@ -36,7 +36,10 @@ namespace TexGen
 		/// Outputs hex elements for the elements in the element map
 		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype);
 
+		vector<XYZ> GetMeshPoints() { return m_MeshPoints; };
+
 	protected:
+
 		/// Calculate voxel size based on number of voxels on each axis and domain size
 		bool CalculateVoxelSizes(CTextile &Textile);
 
@@ -57,5 +60,7 @@ namespace TexGen
 		/// Number of elements in x-z slice which are output
 		int m_NumElements;
 
+		///Store Outputted Mesh Nodes
+		vector<XYZ> m_MeshPoints;
 	};
 };	// namespace TexGen

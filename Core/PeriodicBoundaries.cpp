@@ -84,9 +84,16 @@ void CPeriodicBoundaries::CreatePeriodicBoundaries( ostream& Output, int iDummyN
 	OutputEdgeSets( Output );
 	OutputVertexSets( Output ); 
 
-	OutputEquations( Output, iBoundaryConditions );
+	//Change to not output these if no boundary conditions
+	if (iBoundaryConditions != NO_BOUNDARY_CONDITIONS)
+	{
+		OutputEquations(Output, iBoundaryConditions);
+		OutputStep(Output, iBoundaryConditions);
+	}
 
-	OutputStep( Output, iBoundaryConditions );
+	OutputFullFaceSets(Output);
+
+	OutputTJointSets(Output, Textile);
 }
 
 void CPeriodicBoundaries::OutputSets( ostream& Output, vector<int>& Set, string SetName)
@@ -149,6 +156,131 @@ void CPeriodicBoundaries::OutputVertexSets( ostream& Output )
 	{
 		Vertex[0] = m_Vertices[i];
 		OutputSets( Output, Vertex, "MasterNode" + stringify(i+1) );
+	}
+}
+
+
+
+void CPeriodicBoundaries::OutputFullFaceSets(ostream& Output)
+{
+	//George  - Output if don't want PBC
+	Output << "*NSet, NSet= TopSurfaceNodes";
+	Output << ", Unsorted" << endl;
+	WriteValues(Output, m_FaceC.first, 16);
+	Output << ", " << endl;
+	for (int i = 6; i < 8; i++)
+	{
+		WriteValues(Output, m_Edges[i], 16);
+		Output << ", " << endl;
+	}
+
+	for (int i = 10; i < 12; i++)
+	{
+		WriteValues(Output, m_Edges[i], 16);
+		Output << ", " << endl;
+	}
+
+	for (int i = 4; i < m_NumVertices; ++i)
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
+
+	Output << "*NSet, NSet= BottomSurfaceNodes";
+	Output << ", Unsorted" << endl;
+	WriteValues(Output, m_FaceC.second, 16);
+	Output << ", " << endl;
+	for (int i = 4; i < 6; i++)
+	{
+		WriteValues(Output, m_Edges[i], 16);
+		Output << ", " << endl;
+	}
+
+	for (int i = 8; i < 10; i++)
+	{
+		WriteValues(Output, m_Edges[i], 16);
+		Output << ", " << endl;
+	}
+
+	for (int i = 0; i < m_NumVertices / 2; ++i)
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
+
+	//sort out the loop values after they're written
+	Output << "*NSet, NSet = surface1";
+	Output << ", Unsorted" << endl;
+	WriteValues(Output, m_FaceA.second, 16);
+	Output << ", " << endl;
+	for (int i = 0; i < 1; i++)
+	{
+		WriteValues(Output, m_Edges[i], 16);
+		Output << ", " << endl;
+	}
+
+	for (int i = 3; i < 5; i++)
+	{
+		WriteValues(Output, m_Edges[i], 16);
+		Output << ", " << endl;
+	}
+
+	for (int i = 7; i < 8; i++)
+	{
+		WriteValues(Output, m_Edges[i], 16);
+		Output << ", " << endl;
+	}
+
+	for (int i = 0; i < 1; ++i)
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
+
+	for (int i = 3; i < 5; ++i)
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
+
+	for (int i = 7; i < 8; ++i)
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
+
+
+	Output << "*NSet, NSet = surface2";
+	Output << ", Unsorted" << endl;
+	WriteValues(Output, m_FaceB.second, 16);
+	Output << ", " << endl;
+	for (int i = 0; i < 1; i++)
+	{
+		WriteValues(Output, m_Edges[i], 16);
+		Output << ", " << endl;
+	}
+
+	for (int i = 1; i < 2; i++)
+	{
+		WriteValues(Output, m_Edges[i], 16);
+		Output << ", " << endl;
+	}
+
+	for (int i = 8; i < 9; i++)
+	{
+		WriteValues(Output, m_Edges[i], 16);
+		Output << ", " << endl;
+	}
+
+	for (int i = 11; i < 12; i++)
+	{
+		WriteValues(Output, m_Edges[i], 16);
+		Output << ", " << endl;
+	}
+
+	for (int i = 0; i < 2; ++i)
+	{
+		Output << m_Vertices[i] << ", " << endl;
+	}
+
+	for (int i = 4; i < 6; ++i)
+	{
+		Output << m_Vertices[i] << ", " << endl;
 	}
 }
 

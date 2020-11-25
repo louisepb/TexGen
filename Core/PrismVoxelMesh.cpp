@@ -91,6 +91,7 @@ void CPrismVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filety
 				{
 					if ( m_ElementMap.at(make_pair(x, z)) )  // Only store centre points for elements within prism
 					{
+						m_MeshPoints.push_back(Point);
 						Point.x += 0.5*m_RotatedVoxSize[0].x;
 						Point.x += 0.5*m_RotatedVoxSize[1].x;
 						Point.x += 0.5*m_RotatedVoxSize[2].x;

@@ -55,6 +55,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TetgenMesh.h"
 #include "SurfaceMesh.h"
 #include "PeriodicBoundaries.h"
+#include "TJointBoundaries.h"
 #include "Textile3DWeave.h"
 #include "TextileOrthogonal.h"
 #include "TextileAngleInterlock.h"

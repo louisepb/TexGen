@@ -78,6 +78,8 @@ namespace TexGen
 		void OutputEdgeSets( ostream& Output );
 		/// Output 8 corner node sets
 		void OutputVertexSets(ostream& Output );
+		///Output all node sets on top and bottom of model
+		void OutputFullFaceSets(ostream& Output);
 		/// Output a step including field outputs
 		void OutputStep( ostream& Output, int iBoundaryConditions );
 		/// Output 6 load cases
