@@ -92,8 +92,6 @@ void CPeriodicBoundaries::CreatePeriodicBoundaries( ostream& Output, int iDummyN
 	}
 
 	OutputFullFaceSets(Output);
-
-	OutputTJointSets(Output, Textile);
 }
 
 void CPeriodicBoundaries::OutputSets( ostream& Output, vector<int>& Set, string SetName)

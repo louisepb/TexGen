@@ -268,6 +268,12 @@ namespace TexGen
 		NO_BOUNDARY_CONDITIONS
 	};
 
+	enum TJOINT_BOUNDARY_CONDITIONS
+	{
+		TJOINT_BOUNDARY_CONDITIONS,
+		NO_TJOINT_BOUNDARY_CONDITIONS
+	};
+
 	template <typename T>
 	void WriteValues(std::ostream &Output, T &Values, int iMaxPerLine)
 	{

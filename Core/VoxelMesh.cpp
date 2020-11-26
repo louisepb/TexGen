@@ -46,7 +46,7 @@ CVoxelMesh::~CVoxelMesh(void)
 }
 
 void CVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum,
-	bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType, int FileType)
+	bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iTJointConditions, int iElementType, int FileType)
 {
 	//PROFILE_SHARED_DEFINE(ProfileTest)
 	//PROFILE_FUNC()
@@ -74,7 +74,7 @@ void CVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVo
 	{
 		CTimer timer;
 		timer.start("Timing SaveToAbaqus");
-		SaveToAbaqus(OutputFilename, Textile, bOutputMatrix, bOutputYarns, iBoundaryConditions, iElementType);
+		SaveToAbaqus(OutputFilename, Textile, bOutputMatrix, bOutputYarns, iBoundaryConditions, iTJointConditions, iElementType);
 		timer.check("End of SaveToAbaqus");
 		timer.stop();
 	}
@@ -279,7 +279,7 @@ void CVoxelMesh::SaveVoxelMeshToVTK(string Filename, CTextile &Textile )
 	m_Mesh.SaveToVTK(Filename, &MeshData);
 }
 
-void CVoxelMesh::SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, int iBoundaryConditions, int iElementType )
+void CVoxelMesh::SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputMatrix, bool bOutputYarn, int iBoundaryConditions, int iTJointConditions, int iElementType )
 {
 	//PROFILE_FUNC();
 	AddExtensionIfMissing(Filename, ".inp");
@@ -346,6 +346,11 @@ void CVoxelMesh::SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputM
 		//PROFILE_BEGIN(OutputPBCs);
 		OutputPeriodicBoundaries( Output, Textile, iBoundaryConditions, bMatrixOnly );
 		//PROFILE_END();
+	}
+
+	if (iTJointConditions == TJOINT_BOUNDARY_CONDITIONS)
+	{
+		OutputTJointBoundaries(Output, Textile, iTJointConditions, bMatrixOnly);
 	}
 	TGLOG("Finished saving to Abaqus");
 }

@@ -36,7 +36,7 @@ namespace TexGen
 		/// Outputs hex elements for the elements in the element map
 		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype);
 
-		vector<XYZ> GetMeshPoints() { return m_MeshPoints; };
+		vector<XYZ> GetPrismMeshNodes() { return m_PrismMeshNodes; };
 
 	protected:
 
@@ -59,8 +59,7 @@ namespace TexGen
 
 		/// Number of elements in x-z slice which are output
 		int m_NumElements;
-
-		///Store Outputted Mesh Nodes
-		vector<XYZ> m_MeshPoints;
+		///Vector of prism mesh nodes within the 
+		vector<XYZ> m_PrismMeshNodes;
 	};
 };	// namespace TexGen
