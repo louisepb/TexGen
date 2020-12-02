@@ -227,6 +227,22 @@
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxCheckBox" name="OctreeRefinement">
+							<tooltip>Output voxels to represent matrix</tooltip>
+							<label>Octree Refinement</label>
+							<checked>1</checked>
+						</object>
+					</object>
+					<object class="spacer">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<size>0,0</size>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
 						<flag>wxALL|wxEXPAND</flag>
 						<border>5</border>
 						<object class="wxRadioBox" name="PeriodicBoundaries">
@@ -320,7 +336,7 @@
 	</object>
 	<object class="wxDialog" name="OctreeOptions">
 		<style>wxDEFAULT_DIALOG_STYLE</style>
-		<size>363,628</size>
+		<size>363,454</size>
 		<title>Octree Refinement Options</title>
 		<centered>1</centered>
 		<object class="wxBoxSizer">
@@ -336,62 +352,6 @@
 					<hgap>0</hgap>
 					<growablecols></growablecols>
 					<growablerows></growablerows>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxStaticText" name="m_staticText85">
-							<label>X Voxel Count</label>
-							<wrap>-1</wrap>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxTextCtrl" name="XVoxelCount">
-							<tooltip>Number of voxels along x axis</tooltip>
-							<value></value>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxStaticText" name="m_staticText86">
-							<label>Y Voxel Count</label>
-							<wrap>-1</wrap>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxTextCtrl" name="YVoxelCount">
-							<tooltip>Number of voxels along y axis</tooltip>
-							<value></value>
-							<maxlength>0</maxlength>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxStaticText" name="m_staticText87">
-							<label>Z Voxel Count</label>
-							<wrap>-1</wrap>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxTextCtrl" name="ZVoxelCount">
-							<tooltip>Number of voxels along z axis</tooltip>
-							<value></value>
-							<maxlength>0</maxlength>
-						</object>
-					</object>
 					<object class="sizeritem">
 						<option>0</option>
 						<flag>wxALL</flag>
@@ -425,46 +385,6 @@
 					<hgap>0</hgap>
 					<growablecols></growablecols>
 					<growablerows></growablerows>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxStaticText" name="m_staticText77">
-							<font>
-								<style>normal</style>
-								<weight>bold</weight>
-								<underlined>0</underlined>
-							</font>
-							<label>Refinement Options</label>
-							<wrap>-1</wrap>
-						</object>
-					</object>
-					<object class="spacer">
-						<option>1</option>
-						<flag>wxEXPAND</flag>
-						<border>5</border>
-						<size>0,0</size>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxStaticText" name="m_staticText79">
-							<label>Minimum level</label>
-							<wrap>-1</wrap>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxSpinCtrl" name="MinLevel">
-							<style>wxSP_ARROW_KEYS</style>
-							<value>1</value>
-							<min>1</min>
-							<max>10</max>
-						</object>
-					</object>
 					<object class="sizeritem">
 						<option>0</option>
 						<flag>wxALL</flag>
