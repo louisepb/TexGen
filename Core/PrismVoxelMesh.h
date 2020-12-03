@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma once
 #include "VoxelMesh.h"
+#include "TJointBoundaries.h"
 
 namespace TexGen
 {
@@ -34,11 +35,18 @@ namespace TexGen
 		virtual ~CPrismVoxelMesh(void);
 
 		/// Outputs hex elements for the elements in the element map
-		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype);
+		
+
+
+		//does this need to be virtual George? Check
+		void OutputTJointBoundaries(ostream & Output, CTextile & Textile, int iTJointConditions, bool bMatrixOnly);
 
 		vector<XYZ> GetPrismMeshNodes() { return m_PrismMeshNodes; };
 
 	protected:
+		void SaveToAbaqus(string Filename, CTextile & Textile, bool bOutputMatrix, bool bOutputYarn, int iBoundaryConditions, int iTJointConditions, int iElementType);
+
+		int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype);
 
 		/// Calculate voxel size based on number of voxels on each axis and domain size
 		bool CalculateVoxelSizes(CTextile &Textile);
@@ -61,5 +69,7 @@ namespace TexGen
 		int m_NumElements;
 		///Vector of prism mesh nodes within the 
 		vector<XYZ> m_PrismMeshNodes;
+
+		CTJointBoundaries* m_TJointBoundaries;
 	};
 };	// namespace TexGen

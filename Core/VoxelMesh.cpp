@@ -50,6 +50,10 @@ void CVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVo
 {
 	//PROFILE_SHARED_DEFINE(ProfileTest)
 	//PROFILE_FUNC()
+	ofstream Output(OutputFilename.c_str());
+	Output << "Save voxel mesh" << endl;
+	TGLOG("SaveVoxelMesh")
+
 
 	const CDomain* pDomain = Textile.GetDomain();
 	if (!pDomain)
@@ -285,6 +289,7 @@ void CVoxelMesh::SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputM
 	AddExtensionIfMissing(Filename, ".inp");
 
 	ofstream Output(Filename.c_str());
+	TGLOG("SaveToAbaqus :: SaveVoxelMesh")
 
 	if (!Output)
 	{
@@ -348,10 +353,6 @@ void CVoxelMesh::SaveToAbaqus( string Filename, CTextile &Textile, bool bOutputM
 		//PROFILE_END();
 	}
 
-	if (iTJointConditions == TJOINT_BOUNDARY_CONDITIONS)
-	{
-		OutputTJointBoundaries(Output, Textile, iTJointConditions, bMatrixOnly);
-	}
 	TGLOG("Finished saving to Abaqus");
 }
 
@@ -700,6 +701,8 @@ void CVoxelMesh::OutputPeriodicBoundaries(ostream &Output, CTextile& Textile, in
 	
 	m_PeriodicBoundaries->CreatePeriodicBoundaries( Output, numx*numy*numz + 1, Textile, iBoundaryConditions, bMatrixOnly );
 }
+
+
 
 void CVoxelMesh::AddElementInfo(vector<POINT_INFO> &RowInfo)
 {

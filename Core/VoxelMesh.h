@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Mesh.h"
 #include "Materials.h"
+#include "TJointBoundaries.h"
 
 namespace TexGen
 { 
@@ -28,6 +29,7 @@ namespace TexGen
 
 	class CTextile;	
 	class CPeriodicBoundaries;
+	class CTJointBoundaries;
 	class CMaterials;
 
 	/// Class used to generate voxel mesh for output to ABAQUS
@@ -70,7 +72,7 @@ namespace TexGen
 		void SaveVoxelMeshToVTK(string Filename, CTextile &Textile);
 		/// Save voxel mesh in Abaqus .inp format with periodic boundary conditions
 		/// bOutputMatrix and bOutput yarn specify which of these are saved to the Abaqus file
-		void SaveToAbaqus(string Filename, CTextile & Textile, bool bOutputMatrix, bool bOutputYarn, int iBoundaryConditions, int iTJointConditions, int iElementType);
+		virtual void SaveToAbaqus(string Filename, CTextile & Textile, bool bOutputMatrix, bool bOutputYarn, int iBoundaryConditions, int iTJointConditions, int iElementType);
 		/// Save voxel mesh in SCIRun .pts and .hex format without boundary conditions
 		void SaveToSCIRun( string Filename, CTextile &Textile );
 		/// Outputs nodes to .inp file and gets element information
@@ -92,7 +94,6 @@ namespace TexGen
 		/// Output periodic boundary conditions to .inp file
 		virtual void OutputPeriodicBoundaries(ostream &Output, CTextile& Textile, int iBoundaryConditions, bool bMatrixOnly);
 
-		virtual void OutputTJointBoundaries(ostream& Output, CTextile& Textile, int iTJointConditions, bool bMatrixOnly);
 		//void OutputSets( ostream& Output, vector<int>& GroupA, vector<int>& GroupB, int i, int iDummyNodeNum );
 		/// Find intersections of yarn surfaces with grid of lines from node points in each axis
 		//void GetYarnGridIntersections( CTextile &Textile );
@@ -119,5 +120,6 @@ namespace TexGen
 
 		//CObjectContainer<CPeriodicBoundaries> m_PeriodicBoundaries;
 		CPeriodicBoundaries* m_PeriodicBoundaries;
+
 	};
 };	// namespace TexGen

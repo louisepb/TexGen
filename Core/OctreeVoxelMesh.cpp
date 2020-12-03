@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OctreeVoxelMesh.h"
 #include "TexGen.h"
 #include "PeriodicBoundaries.h"
+#include "TJointBoundaries.h"
 #include <iterator>
 #include <string>
 #include <algorithm>
