@@ -62,6 +62,10 @@ void CPrismVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filety
 {
 	int x, y, z;
 	int iNodeIndex = 1;
+	int NumberFlangeNodes = 0;
+	int numx = m_XVoxels + 1;
+	int numy = m_YVoxels + 1;
+	int numz = m_ZVoxels + 1;
 	vector<XYZ> CentrePoints;
 	vector<POINT_INFO> RowInfo;
 	XYZ StartPoint = m_StartPoint;
@@ -93,8 +97,7 @@ void CPrismVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filety
 				{
 					if ( m_ElementMap.at(make_pair(x, z)) )  // Only store centre points for elements within prism
 					{
-
-					
+									
 						Point.x += 0.5*m_RotatedVoxSize[0].x;
 						Point.x += 0.5*m_RotatedVoxSize[1].x;
 						Point.x += 0.5*m_RotatedVoxSize[2].x;
@@ -154,9 +157,11 @@ int CPrismVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool
 
 	int numx = m_XVoxels + 1;
 	int numy = m_YVoxels + 1;
+	int numz = m_ZVoxels + 1;
 	int x, y, z;
 	vector<POINT_INFO>::iterator itElementInfo = m_ElementsInfo.begin();
 	int iElementNumber = 1;
+	int iNodeIndex = 1;
 
 	vector<POINT_INFO> NewElementInfo;
 
@@ -169,12 +174,14 @@ int CPrismVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool
 		{
 			for (x = 0; x < m_XVoxels; ++x)
 			{
+
 				if (m_ElementMap[make_pair(x, z)])  // Only export elements within domain prism outline
 				{
+
+
 					if ((itElementInfo->iYarnIndex == -1 && bOutputMatrix)
 						|| (itElementInfo->iYarnIndex >= 0 && bOutputYarn))
 					{
-
 						if (Filetype == INP_EXPORT)
 						{
 							//These are corner nodes  
@@ -204,21 +211,63 @@ int CPrismVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool
 							Indices.push_back(x + (y + 1)*numx + (z + 1)*numx*numy);
 							m_Mesh.AddElement(CMesh::HEX, Indices);
 						}
+
+
+						if (z == 0)
+						{
+
+							m_Flange_A_Nodes.push_back((x + 1) + y * numx + z * numx*numy + 1);
+							m_Flange_A_Nodes.push_back(x + (y + 1)*numx + z * numx*numy + 1);
+							m_Flange_A_Nodes.push_back((x + 1) + (y + 1)*numx + z * numx*numy + 1);
+							m_Flange_A_Nodes.push_back(x + y * numx + z * numx*numy + 1);
+
+							//remove duplicates
+							std::sort(m_Flange_A_Nodes.begin(), m_Flange_A_Nodes.end());
+							m_Flange_A_Nodes.erase(unique(m_Flange_A_Nodes.begin(), m_Flange_A_Nodes.end()), m_Flange_A_Nodes.end());
+
+						}
+						else if (z==m_ZVoxels-1)
+						{
+							m_Flange_B_Nodes.push_back(x + y * numx + (z + 1)*numx*numy + 1);
+							m_Flange_B_Nodes.push_back(x + (y + 1)*numx + (z + 1)*numx*numy + 1);
+							m_Flange_B_Nodes.push_back((x + 1) + (y + 1)*numx + (z + 1)*numx*numy + 1);
+							m_Flange_B_Nodes.push_back((x + 1) + y * numx + (z + 1)*numx*numy + 1);
+
+
+
+							std::sort(m_Flange_B_Nodes.begin(), m_Flange_B_Nodes.end());
+							m_Flange_B_Nodes.erase(unique(m_Flange_B_Nodes.begin(), m_Flange_B_Nodes.end()), m_Flange_B_Nodes.end());
+						}
+
+
+						if (x == 0)
+						{
+							m_WebNodes.push_back(x + y * numx + z * numx*numy + 1);
+							m_WebNodes.push_back(x + (y + 1)*numx + z * numx*numy + 1);
+							m_WebNodes.push_back(x + y * numx + (z + 1)*numx*numy + 1);
+							m_WebNodes.push_back(x + (y + 1)*numx + (z + 1)*numx*numy + 1);
+
+							std::sort(m_WebNodes.begin(), m_WebNodes.end());
+							m_WebNodes.erase(unique(m_WebNodes.begin(), m_WebNodes.end()), m_WebNodes.end());
+
+						}
+
+
 						++iElementNumber;
 						if (bOutputYarn && !bOutputMatrix) // Just saving yarn so need to make element array with just yarn info
 						{
 							NewElementInfo.push_back(*itElementInfo);
 						}
+
+						
+
 					}
 					++itElementInfo;  // Only saved element info for elements within domain outline
 				}
+
+
 			}
 		}
-		if (isFirst)
-		{
-			///first y and z value can generate the nodenumbers
-		}
-		isFirst = false;
 	}
 
 

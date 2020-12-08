@@ -43,6 +43,13 @@ namespace TexGen
 
 		vector<XYZ> GetPrismMeshNodes() { return m_PrismMeshNodes; };
 
+		vector<int> GetWebNodes() { return m_WebNodes; };
+
+		vector<int> GetFlangeANodes() { return m_Flange_A_Nodes; };
+
+		vector<int> GetFlangeBNodes() { return m_Flange_B_Nodes; };
+	
+
 	protected:
 		void SaveToAbaqus(string Filename, CTextile & Textile, bool bOutputMatrix, bool bOutputYarn, int iBoundaryConditions, int iTJointConditions, int iElementType);
 
@@ -71,5 +78,11 @@ namespace TexGen
 		vector<XYZ> m_PrismMeshNodes;
 
 		CTJointBoundaries* m_TJointBoundaries;
+
+		vector<int> m_WebNodes;
+
+		vector<int> m_Flange_A_Nodes;
+
+		vector<int> m_Flange_B_Nodes;
 	};
 };	// namespace TexGen
