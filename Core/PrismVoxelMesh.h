@@ -48,6 +48,8 @@ namespace TexGen
 		vector<int> GetFlangeANodes() { return m_Flange_A_Nodes; };
 
 		vector<int> GetFlangeBNodes() { return m_Flange_B_Nodes; };
+
+		int GetNumberofNodes() { return m_NumberofNodes; };
 	
 
 	protected:
@@ -84,5 +86,7 @@ namespace TexGen
 		vector<int> m_Flange_A_Nodes;
 
 		vector<int> m_Flange_B_Nodes;
+
+		int m_NumberofNodes;
 	};
 };	// namespace TexGen

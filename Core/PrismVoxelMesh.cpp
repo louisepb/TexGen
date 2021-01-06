@@ -119,6 +119,7 @@ void CPrismVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filety
 		m_ElementsInfo.insert(m_ElementsInfo.end(), RowInfo.begin(), RowInfo.end());
 		CentrePoints.clear();
 	}
+	m_NumberofNodes = iNodeIndex;
 }
 
 void CPrismVoxelMesh::GetElementMap(CTextile &Textile)
