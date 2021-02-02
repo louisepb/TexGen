@@ -205,12 +205,14 @@ int COctreeVoxelMesh::writeTempFile(string filename, pair<XYZ, XYZ> myDomain)
 			{
 				for ( x = 0; x <=m_XVoxels; ++x )
 				{
-					XYZ Point;
-					Point.x = myDomain.first.x + m_VoxSize[0] * x;
-					Point.y = myDomain.first.y + m_VoxSize[1] * y;
-					Point.z = myDomain.first.z + m_VoxSize[2] * z;
-					TempFile << iNodeIndex << ", " << Point << "\n";
-					++iNodeIndex;
+					if (m_ElementMap.at(make_pair(x, z)) == true) {
+						XYZ Point;
+						Point.x = myDomain.first.x + m_VoxSize[0] * x;
+						Point.y = myDomain.first.y + m_VoxSize[1] * y;
+						Point.z = myDomain.first.z + m_VoxSize[2] * z;
+						TempFile << iNodeIndex << ", " << Point << "\n";
+						++iNodeIndex;
+					}
 				}
 			}
 		}
@@ -226,12 +228,14 @@ int COctreeVoxelMesh::writeTempFile(string filename, pair<XYZ, XYZ> myDomain)
 			{
 				for ( x = 0; x < m_XVoxels; ++x )
 				{
-					TempFile << iElementNumber << ", ";
-					TempFile << x +y*numx + (z+1)*numx*numy + 1 << ", " << x +(y+1)*numx + (z+1)*numx*numy + 1 << ", ";
-					TempFile << x + (y+1)*numx + z*numx*numy + 1 << ", " << x + y*numx + z*numx*numy + 1  << ", ";
-					TempFile << (x+1) +y*numx + (z+1)*numx*numy + 1 << ", " << (x+1) +(y+1)*numx + (z+1)*numx*numy + 1 << ", ";
-					TempFile << (x+1) + (y+1)*numx + z*numx*numy + 1 << ", " << (x+1) +y*numx + z*numx*numy + 1 << "\n";
-					++iElementNumber;
+					if (m_ElementMap.at(make_pair(x, z)) == true) {
+						TempFile << iElementNumber << ", ";
+						TempFile << x + y * numx + (z + 1)*numx*numy + 1 << ", " << x + (y + 1)*numx + (z + 1)*numx*numy + 1 << ", ";
+						TempFile << x + (y + 1)*numx + z * numx*numy + 1 << ", " << x + y * numx + z * numx*numy + 1 << ", ";
+						TempFile << (x + 1) + y * numx + (z + 1)*numx*numy + 1 << ", " << (x + 1) + (y + 1)*numx + (z + 1)*numx*numy + 1 << ", ";
+						TempFile << (x + 1) + (y + 1)*numx + z * numx*numy + 1 << ", " << (x + 1) + y * numx + z * numx*numy + 1 << "\n";
+						++iElementNumber;
+					}
 				}
 			}
 		}
@@ -1122,6 +1126,8 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 		}
 	}
 
+	GetElementMap(Textile);
+
 	timer.start("Starting octree refinement...");
 	if (CreateP4ESTRefinement(min_level, refine_level) == -1)
 		return;
@@ -1134,10 +1140,11 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 
 bool COctreeVoxelMesh::CalculateVoxelSizes(CTextile &Textile)
 {
+
 	return true;
 }
 
-void COctreeVoxelMesh::ConvertOctreeToNodes()
+void COctreeVoxelMesh::ConvertOctreeToNodes(CTextile &Textile)
 {
 	p4est_ghost_t      *ghost;
 	p4est_lnodes_t     *lnodes;
@@ -1174,6 +1181,9 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
   
 	// The mesh is stored as a tree and all of the last 8 hanging nodes belong to one 
 	// parent element. Therefore, it is enough to store last 8 elements to eliminate duplicates
+	CDomainPrism* Domain = Textile.GetDomain()->GetPrismDomain();
+	vector<XY> PrismPoints = Domain->GetPoints();
+
 	double hang_coord[8][3];
 
 	int ElemCount = 1;
@@ -1261,9 +1271,12 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 				elemNodes.push_back(node_elements[elem_order[i]]);
 				m_NodesEncounter[node_elements[i]].push_back(ElemCount);
 			}
-			ElemCount++;
-			CentrePoints.push_back(CurrentCentre);
-			m_AllElements.push_back(elemNodes);
+
+			if (PointInside(XY(CurrentCentre.x, CurrentCentre.z), PrismPoints)) {
+				ElemCount++;
+				CentrePoints.push_back(CurrentCentre);
+				m_AllElements.push_back(elemNodes);
+			}
 
 			// Create connectivity for the nodes in the element (only if it is the final level of the refinement)
 			if ( quad->level == max_level ) {
@@ -1725,7 +1738,7 @@ void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filet
 	CTimer timer;
 	//timer.start("Starting octree refinement");
 	TGLOG("Converting octree to nodes coordinates");
-	ConvertOctreeToNodes();
+	ConvertOctreeToNodes(Textile);
 	TGLOG("Octree converted");
 	//timer.stop();
 	/*

@@ -2149,12 +2149,13 @@ void CTextileOrthogonal::ConvertToPatternDraft( int iWeftOrder )
 	}
 }
 
-void CTextileOrthogonal::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, int NumWarps, int Weft )
+void CTextileOrthogonal::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, vector<int>& BinderPattern, int NumWarps, int Weft )
 {
 	int NumLayers = *(max_element( Layers.begin(), Layers.end() ));  // Size of max warp stack
 	m_iTotalXYarns = Layers.size();
 	vector<int>::iterator itWarp;
 	vector<int>::iterator itLayers;
+	vector<int>::iterator itBinderPattern;
 
 	if ( Layers.size() != Warp.size() )
 		TGERROR("Can't add weft row, warp and layer sizes do not match");
@@ -2202,6 +2203,7 @@ void CTextileOrthogonal::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, i
 
 	}
 
+	itBinderPattern = BinderPattern.begin();
 	itWarp = Warp.begin();
 	j = NumWarps-1;
 	// Left hand side of weave pattern corresponds to maximum y value (or max j in cell array)
@@ -2212,18 +2214,26 @@ void CTextileOrthogonal::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, i
 		YarnCell.assign(Cell.size(), -1);
 		if ( IsBinderYarn( j ) )
 		{
-			if ( *itWarp == 0 )
+			//this is assuming that the binders only go over top and bottom of textile
+			// if *itWarp==0 then move the warp up in cell
+			//maybe height in cell can be calculated in script and passed in to the function
+			/*if ( *itWarp == 0 )
 				Cell[0] = PATTERN3D_XYARN;
 			else
-				Cell[Cell.size()-1] = PATTERN3D_XYARN;
+				Cell[Cell.size()-1] = PATTERN3D_XYARN;*/
+
+			Cell[*itBinderPattern] = PATTERN3D_XYARN;
+
+
 			// Need to get weft layer of next cell to set for this one
-			if ( PrevYCellIndex != -1 )  // Still a problem if binder is first warp
+			if ( PrevYCellIndex != -1 )  // Still a problem if binder is first warp (George comment: Possible but unlikely)
 			{
 				Cell[PrevYCellIndex] = PATTERN3D_YYARN;
 				YarnCell[PrevYCellIndex] = Weft;
 			}
 			++itLayers;
-			++itWarp;
+			++itWarp; //moving along to the next warp yarn cell
+			++itBinderPattern;
 		}
 		else
 		{
@@ -2305,10 +2315,11 @@ void CTextileOrthogonal::ConsolidateCells()
 			vector<PATTERN3D> &Cell1 = GetCell(i,j);
 			vector<PATTERN3D> &Cell2 = GetCell(i+1,j);
 
-			if ( (Cell1[0] != Cell2[0] || Cell1[Cell1.size()-1] != Cell2[Cell2.size()-1]) ) // Binder yarn changed level - can't consolidate - does this assume binders at top and bottom only
+			/*if ( (Cell1[0] != Cell2[0] || Cell1[Cell1.size()-1] != Cell2[Cell2.size()-1]) ) // Binder yarn changed level - can't consolidate - does this assume binders at top and bottom only
 			{
-				break;
-			}
+				continue;
+			}*/
+
 			int Level2 = FindWeftHeight( Cell2 );
 			if ( Level2 == -1 ) // -1 means no weft yarn in cell
 			{
@@ -2392,15 +2403,22 @@ void CTextileOrthogonal::ConsolidateCells()
 
 			int Weft1 = FindWeftHeight( Cell1 );
 
-			if ( ((Cell1[0] != Cell2[0] || Cell1[Cell1.size()-1] != Cell2[Cell2.size()-1])) ) // Binder yarn changed level 
-			{
-				if ( Weft1 == -1 )
+			if (IsBinderYarn(j)) {
+				int BinderHeight1 = FindBinderHeight(Cell1);
+				int BinderHeight2 = FindBinderHeight(Cell2);
+
+				//if (((Cell1[0] != Cell2[0] || Cell1[Cell1.size() - 1] != Cell2[Cell2.size() - 1]))) // Binder yarn changed level 
+				if (BinderHeight1 != BinderHeight2)
 				{
-					DeleteCell.push_back(0);
-					continue;
+
+					if (Weft1 == -1)
+					{
+						DeleteCell.push_back(0);
+						continue;
+					}
+					else
+						break;
 				}
-				else
-					break;
 			}
 			int k;
 			for ( k = 1; k < Cell2.size(); ++k )
@@ -2415,6 +2433,7 @@ void CTextileOrthogonal::ConsolidateCells()
 				break;
 			DeleteCell.push_back(1);
 		}
+
 		if ( j == m_iNumXYarns )
 		{
 			

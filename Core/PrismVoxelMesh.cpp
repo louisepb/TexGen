@@ -122,36 +122,7 @@ void CPrismVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filety
 	m_NumberofNodes = iNodeIndex;
 }
 
-void CPrismVoxelMesh::GetElementMap(CTextile &Textile)
-{
-	m_ElementMap.clear();
-	m_NumElements = 0;
-	CDomainPrism* Domain = Textile.GetDomain()->GetPrismDomain();
-	vector<XY> PrismPoints = Domain->GetPoints();
 
-	XY Point, Min, Max;
-	GetMinMaxXY( PrismPoints, Min, Max);
-	double XSize = (Max.x - Min.x) / m_XVoxels;
-	double ZSize = (Max.y - Min.y) / m_ZVoxels;  // y in 2D polygon translates to z coordinate in 3D
-
-	Point.y = Min.y + 0.5*ZSize;
-	for (int j = 0; j < m_ZVoxels; ++j)
-	{
-		Point.x = Min.x + 0.5*XSize;
-		for (int i = 0; i < m_XVoxels; ++i)
-		{
-			if (PointInside(Point, PrismPoints))
-			{
-				m_ElementMap[make_pair(i, j)] = true;
-				m_NumElements++;
-			}
-			else
-				m_ElementMap[make_pair(i, j)] = false;
-			Point.x += XSize;
-		}
-		Point.y += ZSize;
-	}
-}
 
 int CPrismVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype)
 {

@@ -77,7 +77,7 @@ namespace TexGen
 
 		virtual void ConvertToPatternDraft( int iWeftOrder = BOTTOM_TO_TOP );
 		/// Set up row of pattern cells for one weft pattern using one row of weave pattern data and the layers pattern for the weave
-		virtual void SetupWeftRow( vector<int>& Layers, vector<int>& Row, int NumWarps, int Weft );
+		virtual void SetupWeftRow( vector<int>& Layers, vector<int>& Row, vector<int>& BinderPattern, int NumWarps, int Weft );
 		void ConsolidateCells();
 
 	protected:

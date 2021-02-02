@@ -121,5 +121,14 @@ namespace TexGen
 		//CObjectContainer<CPeriodicBoundaries> m_PeriodicBoundaries;
 		CPeriodicBoundaries* m_PeriodicBoundaries;
 
+		/// Creates a map of elements which are within the prism outline
+		void GetElementMap(CTextile &Textile);
+
+		/// Map of x,z elements within prism polygon
+		map<pair<int, int>, bool> m_ElementMap;
+
+		/// Number of elements in x-z slice which are output
+		int m_NumElements;
+
 	};
 };	// namespace TexGen

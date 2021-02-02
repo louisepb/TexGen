@@ -127,7 +127,7 @@ namespace TexGen
 		/// Store info (nodes at boundaries) for periodic BCs
 		void OutputPeriodicBoundaries(ostream &Output, CTextile& Textile, int iBoundaryConditions, bool bMatrixOnly);
 		/// Decode the P4EST mesh structure and store nodes/elements
-		void ConvertOctreeToNodes();
+		void ConvertOctreeToNodes(CTextile &Textile);
 		// Convert Hex to Tets
 		void ConvertHexToTets();
 		/// Storing hanging nodes from octree-mesh to a vector for writing the constraints

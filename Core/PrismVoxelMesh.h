@@ -60,8 +60,7 @@ namespace TexGen
 		/// Calculate voxel size based on number of voxels on each axis and domain size
 		bool CalculateVoxelSizes(CTextile &Textile);
 
-		/// Creates a map of elements which are within the prism outline
-		void GetElementMap(CTextile &Textile);
+
 
 		/// Outputs nodes to .inp file and gets element information
 		void OutputNodes(ostream &Output, CTextile &Textile, int Filetype = INP_EXPORT);
@@ -71,11 +70,9 @@ namespace TexGen
 		/// Reference point for generating voxel grid (Point 0 of domain mesh)
 		XYZ				m_StartPoint;
 
-		/// Map of x,z elements within prism polygon
-		map<pair<int,int>, bool> m_ElementMap;
 
-		/// Number of elements in x-z slice which are output
-		int m_NumElements;
+
+
 		///Vector of prism mesh nodes within the 
 		vector<XYZ> m_PrismMeshNodes;
 
