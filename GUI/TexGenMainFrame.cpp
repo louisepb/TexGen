@@ -64,7 +64,6 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 	EVT_MENU(ID_ToggleOutliner, CTexGenMainFrame::OnWindow)
 	EVT_MENU(ID_SaveTetgenMesh, CTexGenMainFrame::OnSaveTetgenMesh)
 	EVT_MENU(ID_SaveVTUVoxels, CTexGenMainFrame::OnSaveVTUVoxels)
-	EVT_MENU(ID_SaveOctreeVoxels, CTexGenMainFrame::OnSaveOctreeVoxels)
 
 	EVT_AUINOTEBOOK_PAGE_CHANGED(ID_LogNoteBook, CTexGenMainFrame::OnLogNotebook)
 	EVT_AUINOTEBOOK_PAGE_CHANGED(ID_ViewerNoteBook, CTexGenMainFrame::OnViewerNotebookPageChanged)
@@ -79,7 +78,7 @@ BEGIN_EVENT_TABLE(CTexGenMainFrame, wxFrame)
 	EVT_BUTTON_MENU_RANGE(ID_CreateDomainPlanes, ID_DeleteDomain, CTexGenMainFrame::OnDomains)
 	EVT_BUTTON_MENU_RANGE(ID_RunScript, ID_RecordMacro, CTexGenMainFrame::OnPython)
 	//EVT_CHECKBOX_MENU_RANGE( ID_OutputMessages, ID_OutputMessages, CTexGenMainFrame::OnOptions)
-	EVT_BUTTON_MENU_RANGE(ID_PatternDraft, ID_DomainVolumeFraction, CTexGenMainFrame::OnTools)
+	EVT_BUTTON_MENU_RANGE(ID_PatternDraft, ID_IntersectionCorrection, CTexGenMainFrame::OnTools)
 	EVT_BUTTON_MENU_RANGE(ID_OutputMessages, ID_OutputMessages, CTexGenMainFrame::OnOptions)
 
 	EVT_TEXT_ENTER(ID_PositionX, CTexGenMainFrame::OnPosition)
@@ -102,12 +101,11 @@ END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(CAbaqusVoxelInput, wxDialog)
 	EVT_UPDATE_UI( XRCID("Offset"), CAbaqusVoxelInput::OnOffsetUpdate)
+	EVT_UPDATE_UI( XRCID("PeriodicBoundaries"), CAbaqusVoxelInput::OnPeriodicBoundariesUpdate)
 END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(COctreeVoxelInput, wxDialog)
 	EVT_UPDATE_UI(XRCID("Cohesive"), COctreeVoxelInput::OnCohesiveUpdate)
-	EVT_TEXT(XRCID("MinLevel"), COctreeVoxelInput::OnMinLevelUpdate)
-	EVT_TEXT(XRCID("RefineLevel"), COctreeVoxelInput::OnRefineLevelUpdate)
 	EVT_RADIOBOX(XRCID("Smoothing"), COctreeVoxelInput::OnSmoothingUpdate)
 	EVT_UPDATE_UI(XRCID("Coefficient1"), COctreeVoxelInput::OnCoefficientUpdate)
 	EVT_UPDATE_UI(XRCID("Coefficient2"), COctreeVoxelInput::OnCoefficientUpdate)
@@ -132,6 +130,10 @@ END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(CTetgenOptions, wxDialog)
 	EVT_UPDATE_UI(XRCID("Resolution"), CTetgenOptions::OnResolutionUpdate)
+END_EVENT_TABLE()
+
+BEGIN_EVENT_TABLE(CAbaqusInput, wxDialog)
+	EVT_UPDATE_UI(XRCID("RegenerateMesh"), CAbaqusInput::OnRegenerateUpdate)
 END_EVENT_TABLE()
 
 CTexGenMainFrame::CTexGenMainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
@@ -174,7 +176,6 @@ CTexGenMainFrame::CTexGenMainFrame(const wxString& title, const wxPoint& pos, co
 			wxMenu *pVoxelSubMenu = new wxMenu;
 			pVoxelSubMenu->Append(ID_SaveABAQUSVoxels, wxT("&ABAQUS Voxel File..."));
 			pVoxelSubMenu->Append(ID_SaveVTUVoxels, wxT("&VTU Voxel File..."));
-			pVoxelSubMenu->Append(ID_SaveOctreeVoxels, wxT("ABAQUS &Octree Voxel File..."));
 			pExportSubMenu->Append(wxID_ANY, wxT("Vo&xel Mesh..."), pVoxelSubMenu);
 		}
 		pExportSubMenu->Append(ID_SaveABAQUS, wxT("&ABAQUS Dry Fibre File..."));
@@ -931,8 +932,8 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 	);
 	dialog.CentreOnParent();
 
-	wxDialog AbaqusInput;
-	if (wxXmlResource::Get()->LoadDialog(&AbaqusInput, this, wxT("AbaqusOptions")))
+	CAbaqusInput AbaqusInput(this);
+	
 	{
 		XRCCTRL(AbaqusInput, "XScale", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &XScale));
 		XRCCTRL(AbaqusInput, "YScale", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &YScale));
@@ -983,8 +984,20 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 	
 	bool bOutputMatrix = true;
 	bool bOutputYarns = true;
+	bool bOctreeRefinement = false;
 	int  iBoundaryConditions = 0;
 	int iElementType = 0;
+
+	// Parameters for octree refinement
+	bool bSurface = false;
+	bool bCohesive = false;
+	wxString Coeff1 = wxT("0.3");
+	wxString Coeff2 = wxT("0.3");
+	int RefineLevel = 2;
+	int Iterations = 0;
+	int Smoothing = 0;
+	bool bSmoothing = true;
+	double dCoeff1 = 0.3, dCoeff2 = 0.3;
 
 	wxFileDialog dialog
 	(
@@ -1005,6 +1018,7 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 		XRCCTRL(AbaqusVoxelInput, "ZVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &ZVoxels));
 		XRCCTRL(AbaqusVoxelInput, "OutputMatrix", wxCheckBox)->SetValidator(wxGenericValidator(&bOutputMatrix));
 		XRCCTRL(AbaqusVoxelInput, "OutputYarns", wxCheckBox)->SetValidator(wxGenericValidator(&bOutputYarns));
+		XRCCTRL(AbaqusVoxelInput, "OctreeRefinement", wxCheckBox)->SetValidator(wxGenericValidator(&bOctreeRefinement));
 		XRCCTRL(AbaqusVoxelInput, "PeriodicBoundaries", wxRadioBox)->SetValidator(wxGenericValidator(&iBoundaryConditions));
 		XRCCTRL(AbaqusVoxelInput, "ElementType", wxRadioBox)->SetValidator(wxGenericValidator(&iElementType));
 		XRCCTRL(AbaqusVoxelInput, "Offset", wxTextCtrl)->SetValidator(RangeValidator(&XOffset, 0.0, 1.0));
@@ -1017,26 +1031,68 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 				return;
 			}
 
+			if (bOctreeRefinement)
+			{
+				COctreeVoxelInput OctreeVoxelInput(this);
+				{
+					XRCCTRL(OctreeVoxelInput, "Coefficient1", wxTextCtrl)->SetValidator(RangeValidator(&Coeff1, 0.0, 1.0));
+					XRCCTRL(OctreeVoxelInput, "Coefficient2", wxTextCtrl)->SetValidator(RangeValidator(&Coeff2, 0.0, 1.0));
+					XRCCTRL(OctreeVoxelInput, "RefineLevel", wxSpinCtrl)->SetValidator(wxGenericValidator(&RefineLevel));
+					XRCCTRL(OctreeVoxelInput, "Iterations", wxSpinCtrl)->SetValidator(wxGenericValidator(&Iterations));
+					XRCCTRL(OctreeVoxelInput, "Smoothing", wxRadioBox)->SetValidator(wxGenericValidator(&Smoothing));
+					XRCCTRL(OctreeVoxelInput, "Surfaces", wxCheckBox)->SetValidator(wxGenericValidator(&bSurface));
+					XRCCTRL(OctreeVoxelInput, "Cohesive", wxCheckBox)->SetValidator(wxGenericValidator(&bCohesive));
+					XRCCTRL(OctreeVoxelInput, "Iterations", wxSpinCtrl)->Disable();
+
+					if (OctreeVoxelInput.ShowModal() == wxID_OK)
+					{
+						bSmoothing = Smoothing > 0 ? true : false;
+						Coeff1.ToDouble(&dCoeff1);
+						if (Smoothing == LAPLACIAN)
+						{
+							Coeff2 = Coeff1;
+						}
+						else if (Smoothing == NONSHRINKING)
+						{
+							Coeff2.ToDouble(&dCoeff2);
+							dCoeff2 = -dCoeff2;
+						}
+					}
+					else
+					{
+						return;
+					}
+				}
+			}
+
 			if (dialog.ShowModal() == wxID_OK)
 			{
-				if (iBoundaryConditions == SHEARED_BC)
+				if (bOctreeRefinement)
 				{
-					Command << "Vox = CShearedVoxelMesh('CShearedPeriodicBoundaries')" << endl;
-				}
-				else if (iBoundaryConditions == STAGGERED_BC)
-				{
-					Command << "Vox = CStaggeredVoxelMesh('CStaggeredPeriodicBoundaries')" << endl;
-					Command << "Vox.SetOffset(" << ConvertString(XOffset) << ")" << endl;
-				}
-				else if (iBoundaryConditions == ROTATED_BC)
-				{
-					Command << "Vox = CRotatedVoxelMesh('CRotatedPeriodicBoundaries')" << endl;
+					Command << "Vox = COctreeVoxelMesh()" << endl;
+					Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << ", " << ConvertString(YVoxels) << ", " << ConvertString(ZVoxels)
+						<< ", 1, " << RefineLevel << ", bool (" << bSmoothing << ")," << Iterations << "," << dCoeff1 << "," << dCoeff2 << ", bool(" << bSurface << "), bool(" << bCohesive << "))" << endl;
 				}
 				else
-					Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
-				Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << "," << ConvertString(YVoxels) << "," << ConvertString(ZVoxels)
-					<< ", bool(" << bOutputMatrix << "), bool(" << bOutputYarns << ")," << iBoundaryConditions << "," << iElementType << ")" << endl;
-				
+				{
+					if (iBoundaryConditions == SHEARED_BC)
+					{
+						Command << "Vox = CShearedVoxelMesh('CShearedPeriodicBoundaries')" << endl;
+					}
+					else if (iBoundaryConditions == STAGGERED_BC)
+					{
+						Command << "Vox = CStaggeredVoxelMesh('CStaggeredPeriodicBoundaries')" << endl;
+						Command << "Vox.SetOffset(" << ConvertString(XOffset) << ")" << endl;
+					}
+					else if (iBoundaryConditions == ROTATED_BC)
+					{
+						Command << "Vox = CRotatedVoxelMesh('CRotatedPeriodicBoundaries')" << endl;
+					}
+					else
+						Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
+					Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << "," << ConvertString(YVoxels) << "," << ConvertString(ZVoxels)
+						<< ", bool(" << bOutputMatrix << "), bool(" << bOutputYarns << ")," << iBoundaryConditions << "," << iElementType << ")" << endl;
+				}
 				SendPythonCode(Command.str());
 			}	
 		}
@@ -1101,79 +1157,6 @@ void CTexGenMainFrame::OnSaveVTUVoxels(wxCommandEvent& event)
 				SendPythonCode(Command.str());
 			}
 
-		}
-	}
-}
-
-void CTexGenMainFrame::OnSaveOctreeVoxels(wxCommandEvent& event)
-{
-	string TextileName = GetTextileSelection();
-	stringstream Command;
-
-	wxString XVoxels = wxT("10");
-	wxString YVoxels = wxT("10");
-	wxString ZVoxels = wxT("10");
-
-	// Parameters for octree refinement
-	bool bSurface = false;
-	bool bCohesive = false;
-	wxString Coeff1 = wxT("0.3");
-	wxString Coeff2 = wxT("0.3");
-	int MinLevel = 1;
-	int RefineLevel = 2;
-	int Iterations = 0;
-	int Smoothing = 0;
-	bool bSmoothing = true;
-	double dCoeff1 = 0.3, dCoeff2 = 0.3;
-
-	wxFileDialog dialog
-	(
-		this,
-		wxT("Save Abaqus file"),
-		wxGetCwd(),
-		wxEmptyString,
-		wxT("ABAQUS input file (*.inp)|*.inp|"),
-		wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
-	);
-	dialog.CentreOnParent();
-			
-	COctreeVoxelInput OctreeVoxelInput(this);
-	{
-		XRCCTRL(OctreeVoxelInput, "XVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &XVoxels));
-		XRCCTRL(OctreeVoxelInput, "YVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &YVoxels));
-		XRCCTRL(OctreeVoxelInput, "ZVoxelCount", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &ZVoxels));
-		XRCCTRL(OctreeVoxelInput, "Coefficient1", wxTextCtrl)->SetValidator(RangeValidator(&Coeff1, 0.0, 1.0));
-		XRCCTRL(OctreeVoxelInput, "Coefficient2", wxTextCtrl)->SetValidator(RangeValidator(&Coeff2, 0.0, 1.0));
-		XRCCTRL(OctreeVoxelInput, "MinLevel", wxSpinCtrl)->SetValidator(wxGenericValidator(&MinLevel));
-		XRCCTRL(OctreeVoxelInput, "RefineLevel", wxSpinCtrl)->SetValidator(wxGenericValidator(&RefineLevel));
-		XRCCTRL(OctreeVoxelInput, "Iterations", wxSpinCtrl)->SetValidator(wxGenericValidator(&Iterations));
-		XRCCTRL(OctreeVoxelInput, "Smoothing", wxRadioBox)->SetValidator(wxGenericValidator(&Smoothing));
-		XRCCTRL(OctreeVoxelInput, "Surfaces", wxCheckBox)->SetValidator(wxGenericValidator(&bSurface));
-		XRCCTRL(OctreeVoxelInput, "Cohesive", wxCheckBox)->SetValidator(wxGenericValidator(&bCohesive));
-		XRCCTRL(OctreeVoxelInput, "Iterations", wxSpinCtrl)->Disable();
-
-		if (OctreeVoxelInput.ShowModal() == wxID_OK)
-		{
-			bSmoothing = Smoothing > 0 ? true : false;
-			Coeff1.ToDouble(&dCoeff1);
-			if (Smoothing == LAPLACIAN)
-			{
-				Coeff2 = Coeff1;
-			}
-			else if (Smoothing == NONSHRINKING)
-			{
-				Coeff2.ToDouble(&dCoeff2);
-				dCoeff2 = -dCoeff2;
-			}
-
-			if (dialog.ShowModal() == wxID_OK)
-			{
-				Command << "Vox = COctreeVoxelMesh()" << endl;
-				Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << ", " << ConvertString(YVoxels) << ", " << ConvertString(ZVoxels)
-					<< ", " << MinLevel << " , " << RefineLevel << ", bool (" << bSmoothing << ")," << Iterations << "," << dCoeff1 << "," << dCoeff2 << ", bool(" << bSurface << "), bool(" << bCohesive << "))" << endl;
-
-				SendPythonCode(Command.str());
-			}
 		}
 	}
 }
@@ -2753,6 +2736,26 @@ void CTexGenMainFrame::OnTools(wxCommandEvent& event)
 			wxMessageBox( VfMessage, wxT("Volume Fraction"), wxOK|wxCENTRE, this );
 		}
 		break;
+	case ID_IntersectionCorrection:
+		{
+			string TextileName = GetTextileSelection();
+			CTextile* pTextile = TEXGEN.GetTextile(TextileName);
+			if (!pTextile)
+			{
+				wxMessageBox(wxT("Cannot correct intersections - no textile loaded"), wxT("Intersection Correction Error"), wxOK | wxICON_ERROR, this);
+				return;
+			}
+			if (!pTextile->GetDomain())
+			{
+				wxMessageBox(wxT("Cannot correct intersections - no domain specified"), wxT("Intersection Correction Error"), wxOK | wxICON_ERROR, this);
+				return;
+			}
+			stringstream Command;
+			Command << "Textile = GetTextile( '" << TextileName << "' )" << endl;
+			Command << "Adjust = CAdjustMeshInterference()" << endl;
+			Command << "Adjust.AdjustTextileMesh( Textile )" << endl;
+			SendPythonCode(Command.str());
+		}
 	default:
 		break;
 	}
@@ -2840,6 +2843,18 @@ void CAbaqusVoxelInput::OnOffsetUpdate(wxUpdateUIEvent& event)
 	}
 }
 
+void CAbaqusVoxelInput::OnPeriodicBoundariesUpdate(wxUpdateUIEvent& event)
+{
+	wxRadioBox* PeriodicBoundariesCtrl = (wxRadioBox*)FindWindow(XRCID("PeriodicBoundaries"));
+	wxCheckBox* OctreeCtrl = (wxCheckBox*)FindWindow(XRCID("OctreeRefinement"));
+	if ( OctreeCtrl->GetValue() )
+	
+	{
+		PeriodicBoundariesCtrl->SetSelection(SINGLE_LAYER_RVE);
+	}
+	
+}
+
 COctreeVoxelInput::COctreeVoxelInput(wxWindow* parent)
 {
 	wxXmlResource::Get()->LoadDialog(this, parent, wxT("OctreeOptions"));
@@ -2857,26 +2872,6 @@ void COctreeVoxelInput::OnCohesiveUpdate(wxUpdateUIEvent& event)
 	{
 		event.Enable(false);
 	}
-}
-
-void COctreeVoxelInput::OnMinLevelUpdate(wxCommandEvent& event)
-{
-	wxSpinCtrl* MinLevelCtrl = (wxSpinCtrl*)FindWindow(XRCID("MinLevel"));
-	wxSpinCtrl* RefineLevelCtrl = (wxSpinCtrl*)FindWindow(XRCID("RefineLevel"));
-	int MinVal = MinLevelCtrl->GetValue();
-	int RefineVal = RefineLevelCtrl->GetValue();
-	if (MinVal > RefineVal)
-		RefineLevelCtrl->SetValue(MinVal);
-}
-
-void COctreeVoxelInput::OnRefineLevelUpdate(wxCommandEvent& event)
-{
-	wxSpinCtrl* MinLevelCtrl = (wxSpinCtrl*)FindWindow(XRCID("MinLevel"));
-	wxSpinCtrl* RefineLevelCtrl = (wxSpinCtrl*)FindWindow(XRCID("RefineLevel"));
-	int MinVal = MinLevelCtrl->GetValue();
-	int RefineVal = RefineLevelCtrl->GetValue();
-	if (RefineVal < MinVal)
-		MinLevelCtrl->SetValue(RefineVal);
 }
 
 void COctreeVoxelInput::OnSmoothingUpdate(wxCommandEvent& event)
@@ -3086,3 +3081,20 @@ void CTetgenOptions::OnResolutionUpdate(wxUpdateUIEvent& event)
 	}
 }
 
+CAbaqusInput::CAbaqusInput(wxWindow* parent)
+{
+	wxXmlResource::Get()->LoadDialog(this, parent, wxT("AbaqusOptions"));
+}
+
+void CAbaqusInput::OnRegenerateUpdate(wxUpdateUIEvent& event)
+{
+	wxCheckBox* AdjustIntersectionCtrl = (wxCheckBox*)FindWindow(XRCID("AdjustIntersections"));
+	if (AdjustIntersectionCtrl->GetValue())
+	{
+		event.Enable(true);
+	}
+	else
+	{
+		event.Enable(false);
+	}
+}

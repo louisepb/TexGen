@@ -89,7 +89,15 @@ namespace TexGen
 		*/
 		bool AddSurfaceToMesh(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bTrimToDomain = false);
 
+		/// Create volume mesh for each yarn in this textile and add to a vector of meshes
+		/**
+		\param YarnMeshes Vector of meshes, one for each yarn, to add elements to
+		\param bTrimToDomain Mesh inserted will be clipped to the domain size
+		*/
+		void AddVolumeToMesh(vector<CMesh> &YarnMeshes, bool bTrimToDomain = false);
+
 		/// Create volume mesh for this textile and add it to the mesh object
+		
 		/**
 		\param Mesh Mesh to add elements to
 		\param bTrimToDomain Mesh inserted will be clipped to the domain size

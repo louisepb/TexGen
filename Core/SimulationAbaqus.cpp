@@ -57,19 +57,11 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 		return false;
 	}
 
-	m_YarnMeshes.clear();
-	int i;
-	m_YarnMeshes.resize(iNumYarns);
-
-	
-	for (i=0; i<iNumYarns; ++i)  // Create volume mesh for each yarn as MS thesis sections 2.9.1 & 2.9.2
+	Textile.AddVolumeToMesh(m_YarnMeshes, true);
+	if (m_YarnMeshes.size() != iNumYarns)
 	{
-		CYarn* pYarn = Textile.GetYarn(i);
-		if ( !pYarn->AddVolumeToMesh(m_YarnMeshes[i], *pDomain))// || m_YarnMeshes[i].NodesEmpty())
-		{
-			TGERROR("Unable to create ABAQUS input file: Failed to create volume mesh for yarn " << i );
-			return false;
-		}
+		TGERROR("Unable to create ABAQUS input file: Failed to create volume mesh for yarns ");
+		return false;
 	}
 
 	const vector<XYZ> &Repeats = Textile.GetYarn(0)->GetRepeats();
@@ -91,7 +83,6 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 		TGLOG("Adjusting mesh");
 		if ( !AdjustMesh.AdjustMesh( Textile, m_YarnMeshes, Tolerance ) )
 		{
-			TGERROR("Unable to create ABAQUS input file with adjusted mesh: Intersection depths too large" );
 			return false;
 		}
 
@@ -100,16 +91,11 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 			TGLOG("Regenerating mesh using adjusted points");
 			AdjustMesh.AdjustSectionMeshes( Textile, m_YarnMeshes );
 
-			m_YarnMeshes.clear();
-			m_YarnMeshes.resize(iNumYarns);
-			for (i=0; i<iNumYarns; ++i)  // Create volume mesh for each yarn as MS thesis sections 2.9.1 & 2.9.2
+			Textile.AddVolumeToMesh(m_YarnMeshes, true);
+			if (m_YarnMeshes.size() != iNumYarns)
 			{
-				CYarn* pYarn = Textile.GetYarn(i);
-				if ( !pYarn->AddVolumeToMesh(m_YarnMeshes[i], *pDomain))// || m_YarnMeshes[i].NodesEmpty())
-				{
-					TGERROR("Unable to create ABAQUS input file: Failed to create volume mesh for yarn " << i );
-					return false;
-				}
+				TGERROR("Unable to create ABAQUS input file: Failed to create volume mesh for yarns ");
+				return false;
 			}
 
 			SurfaceDefinitions.clear();
@@ -119,6 +105,7 @@ bool CSimulationAbaqus::CreateAbaqusInputFile(CTextile &Textile, string Filename
 	
 	//BuildIndexOffsets();
 	m_TextileMesh.Clear();
+	int i;
 	vector<POINT_INFO> ElementsInfo;
 	TGLOG("Getting point information");
 	{
