@@ -851,6 +851,7 @@ void CVoxelMesh::CalculateIntersections( CMesh &Mesh, vector<pair<XYZ,XYZ> > &Li
 
 void CVoxelMesh::GetElementMap(CTextile &Textile)
 {
+	//Promoted from PrismVoxelMesh as useful for Octree mesh
 	m_ElementMap.clear();
 	m_NumElements = 0;
 	CDomainPrism* Domain = Textile.GetDomain()->GetPrismDomain();
