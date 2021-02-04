@@ -1160,7 +1160,7 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 		}
 	}
 
-	//GetElementMap(Textile); - George 
+	GetElementMap(Textile); //- George 
 
 	timer.start("Starting octree refinement...");
 	if (CreateP4ESTRefinement(min_level, refine_level) == -1)
@@ -1178,12 +1178,8 @@ bool COctreeVoxelMesh::CalculateVoxelSizes(CTextile &Textile)
 	return true;
 }
 
-<<<<<<< HEAD
-void COctreeVoxelMesh::ConvertOctreeToNodes(CTextile &Textile)
-=======
 
-void COctreeVoxelMesh::ConvertOctreeToNodes()
->>>>>>> master
+void COctreeVoxelMesh::ConvertOctreeToNodes(CTextile &Textile)
 {
 	p4est_ghost_t      *ghost;
 	p4est_lnodes_t     *lnodes;
@@ -1222,8 +1218,8 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 	// parent element. Therefore, it is enough to store last 8 elements to eliminate duplicates
 	
 	
-	//CDomainPrism* Domain = Textile.GetDomain()->GetPrismDomain(); - George
-	//vector<XY> PrismPoints = Domain->GetPoints();
+	CDomainPrism* Domain = Textile.GetDomain()->GetPrismDomain(); //- George
+	vector<XY> PrismPoints = Domain->GetPoints();
 
 	double hang_coord[8][3];
 
@@ -1319,11 +1315,11 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 				m_NodesEncounter[node_elements[i]].push_back(ElemCount);
 			}
 
-			//if (PointInside(XY(CurrentCentre.x, CurrentCentre.z), PrismPoints)) { - George
+			if (PointInside(XY(CurrentCentre.x, CurrentCentre.z), PrismPoints)) { //- George
 				ElemCount++;
 				CentrePoints.push_back(CurrentCentre);
 				m_AllElements.push_back(elemNodes);
-			//}
+			}
 
 			// Create connectivity for the nodes in the element (only if it is the final level of the refinement)
 			if ( quad->level == max_level ) {
@@ -1939,7 +1935,7 @@ void COctreeVoxelMesh::OutputNodes(ostream &Output, CTextile &Textile, int Filet
 	CTimer timer;
 	//timer.start("Starting octree refinement");
 	TGLOG("Converting octree to nodes coordinates");
-	ConvertOctreeToNodes(Textile);
+	ConvertOctreeToNodes( Textile );
 	TGLOG("Octree converted");
 	//timer.stop();
 	/*
