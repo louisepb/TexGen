@@ -780,7 +780,7 @@
                                 <property name="style"></property>
                                 <property name="subclass"></property>
                                 <property name="toolbar_pane">0</property>
-                                <property name="tooltip">Number of voxels along x axis</property>
+                                <property name="tooltip">Number of voxels along x axis&#x0A;Octree refinement will split each element into up to 2^N smaller elements. This can increase the meshing time significantly. (N is refinement level selected in following dialog)</property>
                                 <property name="validator_data_type"></property>
                                 <property name="validator_style">wxFILTER_NONE</property>
                                 <property name="validator_type">wxDefaultValidator</property>
@@ -905,7 +905,7 @@
                                 <property name="style"></property>
                                 <property name="subclass"></property>
                                 <property name="toolbar_pane">0</property>
-                                <property name="tooltip">Number of voxels along y axis</property>
+                                <property name="tooltip">Number of voxels along y axis&#x0A;Octree refinement will split each element into up to 2^N smaller elements. This can increase the meshing time significantly. (N is refinement level selected in following dialog)</property>
                                 <property name="validator_data_type"></property>
                                 <property name="validator_style">wxFILTER_NONE</property>
                                 <property name="validator_type">wxDefaultValidator</property>
@@ -1030,7 +1030,7 @@
                                 <property name="style"></property>
                                 <property name="subclass"></property>
                                 <property name="toolbar_pane">0</property>
-                                <property name="tooltip">Number of voxels along z axis</property>
+                                <property name="tooltip">Number of voxels along z axis&#x0A;Octree refinement will split each element into up to 2^N smaller elements. This can increase the meshing time significantly. (N is refinement level selected in following dialog)</property>
                                 <property name="validator_data_type"></property>
                                 <property name="validator_style">wxFILTER_NONE</property>
                                 <property name="validator_type">wxDefaultValidator</property>

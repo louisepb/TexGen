@@ -162,7 +162,7 @@
 						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
 						<border>5</border>
 						<object class="wxTextCtrl" name="XVoxelCount">
-							<tooltip>Number of voxels along x axis</tooltip>
+							<tooltip>Number of voxels along x axis\nOctree refinement will split each element into up to 2^N smaller elements. This can increase the meshing time significantly. (N is refinement level selected in following dialog)</tooltip>
 							<value></value>
 							<maxlength>0</maxlength>
 						</object>
@@ -181,7 +181,7 @@
 						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
 						<border>5</border>
 						<object class="wxTextCtrl" name="YVoxelCount">
-							<tooltip>Number of voxels along y axis</tooltip>
+							<tooltip>Number of voxels along y axis\nOctree refinement will split each element into up to 2^N smaller elements. This can increase the meshing time significantly. (N is refinement level selected in following dialog)</tooltip>
 							<value></value>
 							<maxlength>0</maxlength>
 						</object>
@@ -200,7 +200,7 @@
 						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
 						<border>5</border>
 						<object class="wxTextCtrl" name="ZVoxelCount">
-							<tooltip>Number of voxels along z axis</tooltip>
+							<tooltip>Number of voxels along z axis\nOctree refinement will split each element into up to 2^N smaller elements. This can increase the meshing time significantly. (N is refinement level selected in following dialog)</tooltip>
 							<value></value>
 							<maxlength>0</maxlength>
 						</object>
