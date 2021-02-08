@@ -397,8 +397,9 @@ bool CTextileOrthogonal::BuildTextile() const
 		}
 	}
 
+	//ShapeWeftYarns(); //Do the same for weft yarns
 	ShapeBinderYarns();  // Add nodes to binder yarns to follow profile of top & bottom weft yarns
-
+	 
 	
 
 	//PROFILE_END();
@@ -431,7 +432,7 @@ bool CTextileOrthogonal::BuildWeavePatternTextile() const
 
 	vector<int> Yarns;
 
-	double x, y, z;
+	double x, y, z, y1;
 
 	// Add x yarns (yarns parallel to the x axis)
 	int i, j, k, iYarn;
@@ -557,9 +558,9 @@ bool CTextileOrthogonal::BuildWeavePatternTextile() const
 	for (j=0; j<m_iNumYYarns; ++j)
 	{
 		y = 0;
+		y1 = 0;
 		Yarns.clear();
 		x += m_YYarnData[j].dSpacing/2.0;
-
 		// For each stack of y yarns add a node at the crossover with each x yarn
 		// Continue until j == m_iNumXYarns so that get start and end nodes the same
 		//for (i=0; i<=m_iNumXYarns; ++i)
@@ -584,8 +585,8 @@ bool CTextileOrthogonal::BuildWeavePatternTextile() const
 				{
 					double dHalfHeight = m_YYarnData[j].dHeight / 2.0;
 					z += dHalfHeight;
-					//m_Yarns[Yarns[iYarn]].AddNode(CNode(XYZ(x, y, z), XYZ(0, 1, 0)));
-					m_Yarns[YarnCell[k]+m_iYYarnOffset].AddNode(CNode(XYZ(x, y, z), XYZ(0, 1, 0)));
+					m_Yarns[YarnCell[k] + m_iYYarnOffset].AddNode(CNode(XYZ(x, y, z), XYZ(0, 1, 0)));
+					//TGLOG("m_WarpSpacing is " << m_WarpSpacing;)//George - extra node added between y yarn nodes
 					//++iYarn;
 					z += dHalfHeight + m_dGapSize;
 				}
@@ -620,13 +621,14 @@ bool CTextileOrthogonal::BuildWeavePatternTextile() const
 						}
 						//else
 						//{
-							// Does this ever happen!
+							// Does this ever happen! 
 						//}
 					}
 				}
 			}
 			if (i<m_iNumXYarns)
 				y += m_XYarnData[i].dSpacing/2.0;
+				//y1 += m_XYarnData[i].dSpacing / 4.0;
 		}
 		x += m_YYarnData[j].dSpacing/2.0;
 	}
@@ -719,6 +721,8 @@ bool CTextileOrthogonal::BuildWeavePatternTextile() const
 	}*/
 
 	ShapeBinderYarns();  // Add nodes to binder yarns to follow profile of top & bottom weft yarns
+	
+
 
 	
 

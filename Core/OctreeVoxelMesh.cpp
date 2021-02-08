@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TexGen.h"
 #include "PeriodicBoundaries.h"
 #include "TJointBoundaries.h"
+#include "omp.h"
 #include <iterator>
 #include <string>
 #include <algorithm>
@@ -341,7 +342,7 @@ COctreeVoxelMesh::~COctreeVoxelMesh(void)
 	TGLOG("P4est object destroyed");
 	p4est_connectivity_destroy (conn);
 	TGLOG("Connectivity destoyed");
-	m_ElementsInfo.clear();
+	m_ElementsInfo.clear(); //George - this was commented out
 	//Centre
 }
 
@@ -761,7 +762,7 @@ int COctreeVoxelMesh::refine_fn(p4est_t * p4est, p4est_topidx_t which_tree, p4es
 	if (quadrant->level <2) {
 		return 1;
 	}
-	
+
 	for (int node_i=0; node_i < 8; node_i++) {
 		p4est_quadrant_corner_node(quadrant, node_i, &node_quadrant);
 		p4est_qcoord_to_vertex (p4est->connectivity, which_tree, node_quadrant.x, node_quadrant.y, node_quadrant.z, vxyz);
@@ -831,7 +832,6 @@ int COctreeVoxelMesh::refine_fn_post(p4est_t * p4est, p4est_topidx_t which_tree,
 		return 0;
 	}
 
-	
 	//int trig = 0;
 	for (int i = 0; i < 8; i++) {
 		p4est_quadrant_corner_node(quadrant, i, &node_quadrant);
@@ -978,7 +978,6 @@ int COctreeVoxelMesh::getPointsInfo(vector<XYZ> myPoints, int refineLevel)
 
 		i++;
 	}
-	
 	return 0;
 }
 
@@ -1297,7 +1296,7 @@ void COctreeVoxelMesh::ConvertOctreeToNodes(CTextile &Textile)
 						hang_coord[7][0] = vxyz[0];
 						hang_coord[7][1] = vxyz[1];
 						hang_coord[7][2] = vxyz[2];
-						hang_nums[7] = hanging_count;
+						hang_nums[7] = hanging_count; 
 					
 						// Write constraints for the hanging node
 						storeHangingNode(all_lni, hanging_corner, node_i, hanging_count);
@@ -2148,7 +2147,6 @@ int COctreeVoxelMesh::checkIndex(int currentElement, vector<int> nodes)
 		if ( m_ElementsInfo[currentElement - 1].iYarnIndex == m_ElementsInfo[p.first - 1].iYarnIndex )
 			return -1;
 	}
-	
 	return 0;
 }
 
@@ -2309,12 +2307,10 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 {
 	vector<POINT_INFO>::iterator itData;
 	map<int, vector<int>>::const_iterator itNodeSurf;
-		
 	double coef = 0.63;
 	map<int,XYZ> AllLapl;
 	map<int,XYZ> PrevNodes;
 	map<int,XYZ> OldNodes = AllNodes;
-	
 	vector<int> v = AllSurf;
 	sort(v.begin(),v.end());
 
@@ -2373,7 +2369,6 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 				}
 			}
 		}
-		
 		map<int, XYZ>::iterator itNodes;
 		for (itNodes = AllNodes.begin(); itNodes != AllNodes.end(); ++itNodes) {
 			if ( AllLapl.find(itNodes->first) != AllLapl.end() ) {
@@ -2405,10 +2400,12 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 	vector<POINT_INFO>::iterator itData;
 	vector<int>::const_iterator itNodes;
 	map<int, vector<int>>::iterator itNodeSurf, itElemSurf, itYarnElems;
-	map<int, vector<int>> MyNodeSurf, MyElemSurf, InteriorElems;
-	vector<POINT_INFO>::iterator itInfo;
 	
-	int extraNodeCount = 3000000;
+	map<int, vector<int>> MyNodeSurf, MyElemSurf, InteriorElems;
+	vector<vector<int>> MyElemSurfVector;
+	vector<POINT_INFO>::iterator itInfo;
+
+	int extraNodeCount = 4000000;
 
 	// Iterating through surface nodes
 	for (itNodes = AllSurf.begin(); itNodes != AllSurf.end(); ++itNodes) {
@@ -2458,21 +2455,49 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 		itElemSurf->second.erase( unique(itElemSurf->second.begin(), itElemSurf->second.end()) , itElemSurf->second.end() );
 	}
 
-	for (itElemSurf = MyElemSurf.begin(); itElemSurf != MyElemSurf.end(); ++itElemSurf) {
-		vector<int>::iterator itElems;
-		for (itElems = itElemSurf->second.begin(); itElems != itElemSurf->second.end(); ++itElems) {
-			set<int> CommonIndices = GetCommonIndices(MyNodeSurf[itElemSurf->first], m_AllElements[*itElems-1]);
 
-			pair<int,vector<int>> checkFaces = GetFaceIndices2(CMesh::HEX, CommonIndices, *itElems);
-			if ( checkFaces.first != -1 ) {
-				vector<int>::iterator itFace;
-				for (itFace = checkFaces.second.begin(); itFace != checkFaces.second.end(); ++itFace) {
-					m_SurfaceElementFaces[itElemSurf->first].push_back(make_pair(*itElems, *itFace + 1));
+
+	MyElemSurfVector.reserve(MyElemSurf.size());
+	for (auto elem : MyElemSurf)
+		MyElemSurfVector.push_back(elem.second);
+
+	omp_set_num_threads(2);
+	for (vector<vector<int>>::iterator itElemSurfVector = MyElemSurfVector.begin(); itElemSurfVector != MyElemSurfVector.end(); ++itElemSurfVector) {
+		vector<int>::iterator itElems;
+		vector<vector<int>>::iterator it = find(MyElemSurfVector.begin(), MyElemSurfVector.end(), *itElemSurfVector);
+		int index = distance(MyElemSurfVector.begin(), it);
+		TGLOG("index is " << index);
+		vector<pair<int, int>> surfelemfacesvec;
+		#pragma omp parallel
+		{
+			vector<pair<int, int>> privatevector;
+			#pragma omp for
+			for (itElems = (*itElemSurfVector).begin(); itElems != (*itElemSurfVector).end(); ++itElems)
+			{
+				set<int> CommonIndices = GetCommonIndices(MyNodeSurf[index - 1], m_AllElements[*itElems - 1]);
+
+				pair<int, vector<int>> checkFaces = GetFaceIndices2(CMesh::HEX, CommonIndices, *itElems);
+				if (checkFaces.first != -1)
+				{
+					vector<int>::iterator itFace;
+					for (itFace = checkFaces.second.begin(); itFace != checkFaces.second.end(); ++itFace) {
+						privatevector.push_back(make_pair(*itElems, *itFace + 1));
+						//m_SurfaceElementFaces[index - 1].push_back(make_pair(*itElems, *itFace + 1));
+					}
 				}
 			}
+			#pragma omp critical
+			{
+				surfelemfacesvec.insert(surfelemfacesvec.end(), privatevector.begin(), privatevector.end());
+				//m_SurfaceElementFaces[index - 1].push_back(surfelemfacesvec);
+			}
 		}
+		TGLOG(surfelemfacesvec.size());
+		for (auto elem = surfelemfacesvec.begin(); elem != surfelemfacesvec.end(); elem++)
+			m_SurfaceElementFaces[index - 1].push_back(*elem);
 	}
-
+	
+	TGLOG("finished loop")
 	MyNodeSurf.clear();
 	MyElemSurf.clear();
 	for (itNodes = AllSurf.begin(); itNodes != AllSurf.end(); ++itNodes) {
@@ -2516,7 +2541,6 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 					AllNodes.insert(make_pair(extraNodeCount, AllNodes[*itNodes]));
 					MyNodeSurf[m_ElementsInfo[*itEncounter-1].iYarnIndex].push_back(extraNodeCount);
 					replace(m_AllElements[*itEncounter-1].begin(), m_AllElements[*itEncounter-1].end(), *itNodes, extraNodeCount);
-					
 					// Save info about the copied node
 					usedMaterial.push_back(m_ElementsInfo[*itEncounter - 1].iYarnIndex);
 					usedNodes.push_back(extraNodeCount);
@@ -2533,5 +2557,4 @@ void COctreeVoxelMesh::OutputSurfaces(const map<int, vector<int> > &NodeSurf, co
 	}
 
 	m_SurfaceNodes = MyNodeSurf;
-	
 }

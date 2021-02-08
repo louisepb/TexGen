@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <fstream>
 #include <math.h>
 #include <stdio.h>
+#include<unordered_map>
 #ifdef WIN32
 #   include <BaseTsd.h>
     typedef SSIZE_T ssize_t;

@@ -1,6 +1,9 @@
 FILE(GLOB PROFILE_SOURCE_FILES *.cpp)
 FILE(GLOB PROFILE_HEADER_FILES *.h)
 
+IF(COMMAND cmake_policy)
+   cmake_policy(SET CMP0003 NEW)
+ENDIF(COMMAND cmake_policy)
 
 ADD_EXECUTABLE(TexGenProfile ${PROFILE_SOURCE_FILES} ${PROFILE_HEADER_FILES})
 
@@ -23,16 +26,8 @@ IF(WIN32)
 	TexGenRenderer
 	opengl32 
 	glu32
-	#${VTK_LIBRARY_DIRS}/vtkGraphics
-	#${VTK_LIBRARY_DIRS}/vtkFiltering
-	#${VTK_LIBRARY_DIRS}/vtkCommon
-	#${VTK_LIBRARY_DIRS}/vtkRendering
-	#${VTK_LIBRARY_DIRS}/vtkWidgets
-	#${VTK_LIBRARY_DIRS}/vtkftgl
-	#${VTK_LIBRARY_DIRS}/vtksys
-	#${VTK_LIBRARY_DIRS}/vtkexpat
-	#${VTK_LIBRARY_DIRS}/vtknetcdf
 	${VTK_LIBRARIES}
 	${wxWidgets_LIBRARIES}
 	)
+	INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../OctreeRefinement/Include)
 ENDIF(WIN32)
