@@ -230,7 +230,7 @@
 						<flag>wxALL</flag>
 						<border>5</border>
 						<object class="wxCheckBox" name="OctreeRefinement">
-							<tooltip>Output voxels to represent matrix</tooltip>
+							<tooltip>Use octree refinement and smoothing</tooltip>
 							<label>Octree Refinement</label>
 							<checked>1</checked>
 						</object>
