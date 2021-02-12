@@ -83,12 +83,20 @@ namespace TexGen
 		static vector<char> materialInfo; 
 
 		/** Save Octree-refined mesh with an option of surface smoothing
-		\param int min_level
+		Select voxel numbers to give approximately cubic voxels at start of refinement.
+		\param CTextile Textile - textile to be exported as refined voxel mesh
+		\param string OutputFilename - filename to save to
+		\param int XVoxNum - number of voxels in x direction
+		\param int YVoxNum - number of voxels in y direction
+		\param int ZVoxNum - number of voxels in z direction
+		\param int min_level - minimum refinement level
 		\param int refine_level - maximum refinement level
 		\param bool smoothing True to enable surface smoothing
 		\param int smoothIter to control number of smoothing iterations
 		\param double smooth1 is the first smoothing parameter
 		\param double smooth2 is the second smoothing parameter
+		\param bool surfaceOutput Output yarn surfaces
+		\param bool cohesive Define cohesive surface between yarn and matrix
 		*/
 		void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, int min_level, int refine_level, bool smoothing, int smoothIter, double smooth1, double smooth2, bool surfaceOuput, bool cohesive);
 
