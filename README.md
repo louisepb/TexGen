@@ -1,4 +1,8 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3706478.svg)](https://doi.org/10.5281/zenodo.3706478)
+
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4537855.svg)](https://doi.org/10.5281/zenodo.4537855)
+
+
 
 # TexGen
 TexGen is a geometric textile modelling software package to be used for obtaining engineering properties of woven textiles and textile composites. More information about the project can be found here http://texgen.sourceforge.net
