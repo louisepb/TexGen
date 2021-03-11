@@ -1,5 +1,11 @@
 Version History
 ---------------
+v3.12.2
+=======
+Core
+====
+** Bugfix to octree refinement when starting with number of voxels other than 1x1x1
+
 v3.12.1
 =======
 General
