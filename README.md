@@ -1,7 +1,6 @@
 
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4537855.svg)](https://doi.org/10.5281/zenodo.4537855)
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4598477.svg)](https://doi.org/10.5281/zenodo.4598477)
 
 
 # TexGen
