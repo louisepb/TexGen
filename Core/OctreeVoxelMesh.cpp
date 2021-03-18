@@ -583,7 +583,7 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, boo
 	timer.check("Elements written");
 	timer.stop();
 
-	if ( m_bCohesive ) {
+	if ( m_bSurface ) {
 		timer.start("Writing surfaces");
 		map<int, vector<int>>::iterator itSurfaceNodes;
 		for (itSurfaceNodes = m_SurfaceNodes.begin(); itSurfaceNodes != m_SurfaceNodes.end(); ++itSurfaceNodes) {
@@ -1122,7 +1122,7 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 	return 0;
 }
 
-void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, int min_level, int refine_level, bool smoothing, int iter, double s1, double s2, bool surfaceOutput, bool cohesive)
+void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, int min_level, int refine_level, bool smoothing, int iter, double s1, double s2, bool surfaceOutput)
 {
 	m_XVoxels = XVoxNum;
 	m_YVoxels = YVoxNum;
@@ -1140,7 +1140,7 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 	m_smoothCoef1 = s1;
 	m_smoothCoef2 = s2;
 	m_bSurface = surfaceOutput;
-	m_bCohesive = cohesive;
+
   	gTextile = Textile;
 	m_DomainAABB = Textile.GetDomain()->GetMesh().GetAABB();
 	g_DomainAABB = m_DomainAABB;

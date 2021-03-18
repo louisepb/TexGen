@@ -178,7 +178,6 @@ public:
 	COctreeVoxelInput(wxWindow* parent);
 
 private:
-	void OnCohesiveUpdate(wxUpdateUIEvent& event);
 	void OnSmoothingUpdate(wxCommandEvent& event);
 	void OnCoefficientUpdate(wxUpdateUIEvent& event);
 	void OnCoefficientText(wxCommandEvent& event);

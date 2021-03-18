@@ -1,5 +1,19 @@
 Version History
 ---------------
+
+v3.12.3
+=======
+Core
+====
+** Changed COctreeVoxelMesh::SaveVoxelMesh to take bSurface parameter rather than both bSurface and bCohesive. bSurface option outputs both surfaces and cohesive elements
+GUI
+===
+** Changed octree voxel mesh export to have one check box for output of surface nodes and cohesive elements
+
+UnitTests
+=========
+** Changed number of parameters to SaveVoxelMesh in octree voxel mesh test
+
 v3.12.2
 =======
 Core

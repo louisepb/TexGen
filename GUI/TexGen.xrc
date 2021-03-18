@@ -358,17 +358,7 @@
 						<border>5</border>
 						<object class="wxCheckBox" name="Surfaces">
 							<tooltip>Create Abaqus &apos;NSet&apos; ans &apos;Surface&apos; for each of yarn-matrix surfaces. Creates a pair of surfaces - one for yarn and one for matrix</tooltip>
-							<label>Output surfaces</label>
-							<checked>0</checked>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxCheckBox" name="Cohesive">
-							<tooltip>Create cohesive contact between created yarn and matrix surfaces</tooltip>
-							<label>Output cohesive elements</label>
+							<label>Output surfaces and cohesive elements</label>
 							<checked>0</checked>
 						</object>
 					</object>
