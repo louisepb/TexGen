@@ -14188,7 +14188,7 @@
                 </object>
             </object>
         </object>
-        <object class="Dialog" expanded="0">
+        <object class="Dialog" expanded="1">
             <property name="aui_managed">0</property>
             <property name="aui_manager_style">wxAUI_MGR_DEFAULT</property>
             <property name="bg"></property>
@@ -14327,7 +14327,7 @@
                 </object>
             </object>
         </object>
-        <object class="Dialog" expanded="0">
+        <object class="Dialog" expanded="1">
             <property name="aui_managed">0</property>
             <property name="aui_manager_style">wxAUI_MGR_DEFAULT</property>
             <property name="bg"></property>
@@ -14342,11 +14342,11 @@
             <property name="hidden"></property>
             <property name="id">wxID_ANY</property>
             <property name="maximum_size"></property>
-            <property name="minimum_size"></property>
+            <property name="minimum_size">-1,380</property>
             <property name="name">Properties</property>
             <property name="pos"></property>
-            <property name="size">413,250</property>
-            <property name="style">wxDEFAULT_DIALOG_STYLE</property>
+            <property name="size">503,381</property>
+            <property name="style">wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</property>
             <property name="subclass"></property>
             <property name="title">Properties</property>
             <property name="tooltip"></property>
@@ -14398,7 +14398,7 @@
                         <property name="docking">Left</property>
                         <property name="drag_col_move">0</property>
                         <property name="drag_col_size">1</property>
-                        <property name="drag_grid_size">0</property>
+                        <property name="drag_grid_size">1</property>
                         <property name="drag_row_size">1</property>
                         <property name="editing">1</property>
                         <property name="enabled">1</property>
@@ -14418,9 +14418,9 @@
                         <property name="max_size"></property>
                         <property name="maximize_button">0</property>
                         <property name="maximum_size"></property>
-                        <property name="min_size"></property>
+                        <property name="min_size">-1,380</property>
                         <property name="minimize_button">0</property>
-                        <property name="minimum_size"></property>
+                        <property name="minimum_size">-1,380</property>
                         <property name="moveable">1</property>
                         <property name="name">PropertiesGrid</property>
                         <property name="pane_border">1</property>

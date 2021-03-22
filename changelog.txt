@@ -9,6 +9,7 @@ Core
 GUI
 ===
 ** Changed octree voxel mesh export to have one check box for output of surface nodes and cohesive elements
+** Added drag resize to properties dialog
 
 UnitTests
 =========
