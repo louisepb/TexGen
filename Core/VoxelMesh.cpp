@@ -81,6 +81,8 @@ void CVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVo
 	else
 		SaveVoxelMeshToVTK(OutputFilename, Textile);
 
+	m_ElementsInfo.clear(); // Clear point_info data as otherwise retains memory space until create another voxel mesh or exit program
+
    // PROFILE_END();
    // PROFILER_UPDATE();
    // PROFILER_OUTPUT("ProfileOutput.txt");
