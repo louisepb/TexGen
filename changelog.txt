@@ -7,6 +7,7 @@ Core
 ====
 ** Changed COctreeVoxelMesh::SaveVoxelMesh to take bSurface parameter rather than both bSurface and bCohesive. bSurface option outputs both surfaces and cohesive elements
 ** Clear element information from voxel mesh export before quitting
+** Fixed bug in sheared refinement with negative shear angles
 
 GUI
 ===

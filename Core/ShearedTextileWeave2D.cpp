@@ -512,15 +512,25 @@ double CShearedTextileWeave2D::CalcSinAngle( double R, double Width, double Heig
 	double denom;
 	double WidthHeight = (Width/Height);
 	WidthHeight *= WidthHeight;
-	if ( R <= 0.25 )
-		denom = (1 - 4*R - 0.2*sin(m_ShearAngle));
+	if (R <= 0.25)
+	{
+		if ( m_ShearAngle >= 0.0 )
+			denom = (1 - 4 * R - 0.2*sin(m_ShearAngle));
+		else
+			denom = (1 - 4 * R + 0.2*sin(m_ShearAngle));
+	}
 	else
-		denom = (1 - 4*R + 0.2*sin(m_ShearAngle));
+	{
+		if ( m_ShearAngle >= 0.0 )
+			denom = (1 - 4*R + 0.2*sin(m_ShearAngle));
+		else
+			denom = (1 - 4 * R - 0.2*sin(m_ShearAngle));
+	}
 	denom *= denom;
 	denom = 1/denom - 1;
 	denom = 1 + WidthHeight*denom;
 	denom = sqrt(denom);
-
+	
 	return sin(m_ShearAngle)/denom;
 }
 
