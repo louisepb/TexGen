@@ -20,7 +20,8 @@ namespace TexGen
 		void CreateTJointBoundaries(CPrismVoxelMesh* PrismMesh, ostream &Output, CTextile &Textile, bool bMatrixOnly);
 		void CreateTJointBoundaries(COctreeVoxelMesh* OctMesh, ostream &Output, CTextile &Textile, bool bMatrixOnly);
 	protected:
-		void OutputTJointSets(ostream & Output, CTextile & Textile);
+		void OutputTJointSets(ostream & Output, CPrismVoxelMesh* PrismMesh, CTextile & Textile);
+		void OutputTJointSets(ostream & Output, COctreeVoxelMesh* OctMesh, CTextile & Textile);
 		void OutputLoadCase(ostream & Output);
 	};
 };	// namespace TexGen

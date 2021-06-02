@@ -20,11 +20,11 @@ CTextileDecoupled::~CTextileDecoupled()
 {
 }
 
-void CTextileDecoupled::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType)
+/*void CTextileDecoupled::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType)
 {
 	CTextile3DWeave::PopulateTiXmlElement(Element, OutputType);
 	Element.SetAttribute("BinderLayers", m_iNumBinderLayers);
-}
+}*/
 
 void CTextileDecoupled::SetBinderPosition(int x, int y, vector<int> zOffsets)
 {

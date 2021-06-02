@@ -853,6 +853,11 @@ CTextileLayerToLayer* CTextile::GetLayerToLayerWeave()
 	return dynamic_cast<CTextileLayerToLayer*>(this);
 }
 
+CTextileDecoupled* CTextile::GetDecoupledWeave()
+{
+	return dynamic_cast<CTextileDecoupled*>(this);
+}
+
 CTextileAngleInterlock* CTextile::GetAngleInterlockWeave()
 {
 	return dynamic_cast<CTextileAngleInterlock*>(this);

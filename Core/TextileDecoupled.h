@@ -31,7 +31,7 @@ namespace TexGen
 
 		virtual CTextile* Copy() const { return new CTextileDecoupled(*this); }
 		virtual string GetType() const { return "CTextileDecoupled"; }
-		virtual void PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType);
+		//virtual void PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType);
 
 		/// Sets the vertical positions of the binder yarns.  
 		/**\param zOffset The number of binder positions offset from the top of the textile
