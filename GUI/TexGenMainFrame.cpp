@@ -105,7 +105,6 @@ BEGIN_EVENT_TABLE(CAbaqusVoxelInput, wxDialog)
 END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(COctreeVoxelInput, wxDialog)
-	EVT_UPDATE_UI(XRCID("Cohesive"), COctreeVoxelInput::OnCohesiveUpdate)
 	EVT_RADIOBOX(XRCID("Smoothing"), COctreeVoxelInput::OnSmoothingUpdate)
 	EVT_UPDATE_UI(XRCID("Coefficient1"), COctreeVoxelInput::OnCoefficientUpdate)
 	EVT_UPDATE_UI(XRCID("Coefficient2"), COctreeVoxelInput::OnCoefficientUpdate)
@@ -990,7 +989,6 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 
 	// Parameters for octree refinement
 	bool bSurface = false;
-	bool bCohesive = false;
 	wxString Coeff1 = wxT("0.3");
 	wxString Coeff2 = wxT("0.3");
 	int RefineLevel = 2;
@@ -1041,7 +1039,6 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 					XRCCTRL(OctreeVoxelInput, "Iterations", wxSpinCtrl)->SetValidator(wxGenericValidator(&Iterations));
 					XRCCTRL(OctreeVoxelInput, "Smoothing", wxRadioBox)->SetValidator(wxGenericValidator(&Smoothing));
 					XRCCTRL(OctreeVoxelInput, "Surfaces", wxCheckBox)->SetValidator(wxGenericValidator(&bSurface));
-					XRCCTRL(OctreeVoxelInput, "Cohesive", wxCheckBox)->SetValidator(wxGenericValidator(&bCohesive));
 					XRCCTRL(OctreeVoxelInput, "Iterations", wxSpinCtrl)->Disable();
 
 					if (OctreeVoxelInput.ShowModal() == wxID_OK)
@@ -1071,7 +1068,7 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 				{
 					Command << "Vox = COctreeVoxelMesh()" << endl;
 					Command << "Vox.SaveVoxelMesh(GetTextile('" + TextileName + "'), r\'" << ConvertString(dialog.GetPath()) << "', " << ConvertString(XVoxels) << ", " << ConvertString(YVoxels) << ", " << ConvertString(ZVoxels)
-						<< ", 1, " << RefineLevel << ", bool (" << bSmoothing << ")," << Iterations << "," << dCoeff1 << "," << dCoeff2 << ", bool(" << bSurface << "), bool(" << bCohesive << "))" << endl;
+						<< ", 1, " << RefineLevel << ", bool (" << bSmoothing << ")," << Iterations << "," << dCoeff1 << "," << dCoeff2 << ", bool(" << bSurface << ") )" << endl;
 				}
 				else
 				{
@@ -2858,20 +2855,6 @@ void CAbaqusVoxelInput::OnPeriodicBoundariesUpdate(wxUpdateUIEvent& event)
 COctreeVoxelInput::COctreeVoxelInput(wxWindow* parent)
 {
 	wxXmlResource::Get()->LoadDialog(this, parent, wxT("OctreeOptions"));
-}
-
-void COctreeVoxelInput::OnCohesiveUpdate(wxUpdateUIEvent& event)
-{
-	wxCheckBox* SurfaceCtrl = (wxCheckBox*)FindWindow(XRCID("Surfaces"));
-	
-	if ( SurfaceCtrl->GetValue())
-	{
-		event.Enable(true);
-	}
-	else
-	{
-		event.Enable(false);
-	}
 }
 
 void COctreeVoxelInput::OnSmoothingUpdate(wxCommandEvent& event)

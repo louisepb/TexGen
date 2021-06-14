@@ -395,8 +395,8 @@ int COctreeVoxelMesh::storeHangingNode(int *all_lni, int *hanging_corner, int no
 			return m_NodeConstraintsReverse[s];
 		else
 		{
-			//TGLOG("Hanging constr are the same but coords not!");
-			//TGLOG("s = " << s << " for " << m_NodeConstraintsReverse[s]);
+			TGLOG("Hanging constr are the same but coords not!");
+			TGLOG("s = " << s << " for " << m_NodeConstraintsReverse[s]);
 			for (auto it=m_NodeConstraints.begin(); it != m_NodeConstraints.end(); ++it) 
 			{
 				XYZ node_coord  = AllNodes[it->first];
@@ -583,7 +583,7 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, boo
 	timer.check("Elements written");
 	timer.stop();
 
-	if ( m_bCohesive ) {
+	if ( m_bSurface ) {
 		timer.start("Writing surfaces");
 		map<int, vector<int>>::iterator itSurfaceNodes;
 		for (itSurfaceNodes = m_SurfaceNodes.begin(); itSurfaceNodes != m_SurfaceNodes.end(); ++itSurfaceNodes) {
@@ -1012,12 +1012,12 @@ void COctreeVoxelMesh::storePointInfo(int refineLevel)
 	vector<POINT_INFO>::const_iterator itInfo;
 
 	materialInfo.clear();
-	//TGLOG("Infos " << myPoints.size());
+	TGLOG("Infos " << myPoints.size());
 
 	for (itInfo = temp.begin(); itInfo != temp.end(); ++itInfo)
 		materialInfo.push_back(itInfo->iYarnIndex);
 	
-	//TGLOG("Info stored. Elements = " << materialInfo.size());
+	TGLOG("Info stored. Elements = " << materialInfo.size());
 	temp.clear();
 }
 
@@ -1075,6 +1075,8 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 	}
 
 	storePointInfo(max_level);
+	
+	TGLOG("Stored");
 
 	// Create a forest from the inp file
 	conn = p4est_connectivity_read_inp ("temp_octree.inp");
@@ -1103,6 +1105,7 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 	// P4EST_CONNECT_FULL is used for 2:1 balancing across all faces, edges and corners
 	p4est_balance (p4est, P4EST_CONNECT_FULL, NULL);
 	p4est_partition (p4est, 0, NULL);
+	TGLOG("Post-refinement now");
 
 	// Post refinement is needed to have the boundaries of the inclusions to be represented by the smallest refinement only
 	
@@ -1119,7 +1122,7 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 	return 0;
 }
 
-void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, int min_level, int refine_level, bool smoothing, int iter, double s1, double s2, bool surfaceOutput, bool cohesive)
+void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, int min_level, int refine_level, bool smoothing, int iter, double s1, double s2, bool surfaceOutput)
 {
 	m_XVoxels = XVoxNum;
 	m_YVoxels = YVoxNum;
@@ -1137,7 +1140,7 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 	m_smoothCoef1 = s1;
 	m_smoothCoef2 = s2;
 	m_bSurface = surfaceOutput;
-	m_bCohesive = cohesive;
+
   	gTextile = Textile;
 	m_DomainAABB = Textile.GetDomain()->GetMesh().GetAABB();
 	g_DomainAABB = m_DomainAABB;
@@ -1159,7 +1162,7 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 	if (CreateP4ESTRefinement(min_level, refine_level) == -1)
 		return;
 	
-	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, 1, 1, 1, true, true, SINGLE_LAYER_RVE);
+	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, m_XVoxels, m_YVoxels, m_ZVoxels, true, true, SINGLE_LAYER_RVE);
 
 	timer.check("Octree refinement finished");
 	timer.stop();

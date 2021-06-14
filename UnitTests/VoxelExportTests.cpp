@@ -61,7 +61,7 @@ void CVoxelExportTests::TestOctreeExport()
 
 	COctreeVoxelMesh Vox("CPeriodicBoundaries");
 	// Save yarns and matrix
-	Vox.SaveVoxelMesh(Textile,"OctreeVoxelMeshTest", 1,1,1,5, 6, true, 10, 0.3, 0.3, false, false );
+	Vox.SaveVoxelMesh(Textile,"OctreeVoxelMeshTest", 1,1,1,5, 6, true, 10, 0.3, 0.3, false );
 	// Compare to template file
 	CPPUNIT_ASSERT(CompareFiles("OctreeVoxelMeshTest.inp","..\\..\\UnitTests\\OctreeVoxelMeshTest.inp"));
 }

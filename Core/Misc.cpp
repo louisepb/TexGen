@@ -170,10 +170,11 @@ namespace TexGen
 		Output << "*** ELEMENT DATA ***" << std::endl;
 		Output << "********************" << std::endl;
 		Output << "** Element data stored as a depvars " << std::endl;
-		Output << "** 1 - Yarn Index (-1 for matrix, first yarn starting at 0) " << std::endl;
-		Output << "** 2/3 - Location (x and y cross-section coordinates of element relative to yarn centerline) " << std::endl;
-		Output << "** 4 - Volume fraction " << std::endl;
-		Output << "** 5 - Distance of element from the surface of the yarn (for yarn elements only, distance is negative) " << std::endl;
+		Output << "** 1 - Element index" << std::endl;
+		Output << "** 2 - Yarn Index (-1 for matrix, first yarn starting at 0) " << std::endl;
+		Output << "** 3/4 - Location (x and y cross-section coordinates of element relative to yarn centerline) " << std::endl;
+		Output << "** 5 - Volume fraction " << std::endl;
+		Output << "** 6 - Distance of element from the surface of the yarn (for yarn elements only, distance is negative) " << std::endl;
 	}
 }
 

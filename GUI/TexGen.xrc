@@ -162,7 +162,7 @@
 						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
 						<border>5</border>
 						<object class="wxTextCtrl" name="XVoxelCount">
-							<tooltip>Number of voxels along x axis</tooltip>
+							<tooltip>Number of voxels along x axis\nOctree refinement will split each element into up to 2^N smaller elements. This can increase the meshing time significantly. (N is refinement level selected in following dialog)</tooltip>
 							<value></value>
 							<maxlength>0</maxlength>
 						</object>
@@ -181,7 +181,7 @@
 						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
 						<border>5</border>
 						<object class="wxTextCtrl" name="YVoxelCount">
-							<tooltip>Number of voxels along y axis</tooltip>
+							<tooltip>Number of voxels along y axis\nOctree refinement will split each element into up to 2^N smaller elements. This can increase the meshing time significantly. (N is refinement level selected in following dialog)</tooltip>
 							<value></value>
 							<maxlength>0</maxlength>
 						</object>
@@ -200,7 +200,7 @@
 						<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
 						<border>5</border>
 						<object class="wxTextCtrl" name="ZVoxelCount">
-							<tooltip>Number of voxels along z axis</tooltip>
+							<tooltip>Number of voxels along z axis\nOctree refinement will split each element into up to 2^N smaller elements. This can increase the meshing time significantly. (N is refinement level selected in following dialog)</tooltip>
 							<value></value>
 							<maxlength>0</maxlength>
 						</object>
@@ -230,7 +230,7 @@
 						<flag>wxALL</flag>
 						<border>5</border>
 						<object class="wxCheckBox" name="OctreeRefinement">
-							<tooltip>Output voxels to represent matrix</tooltip>
+							<tooltip>Use octree refinement and smoothing</tooltip>
 							<label>Octree Refinement</label>
 							<checked>1</checked>
 						</object>
@@ -358,17 +358,7 @@
 						<border>5</border>
 						<object class="wxCheckBox" name="Surfaces">
 							<tooltip>Create Abaqus &apos;NSet&apos; ans &apos;Surface&apos; for each of yarn-matrix surfaces. Creates a pair of surfaces - one for yarn and one for matrix</tooltip>
-							<label>Output surfaces</label>
-							<checked>0</checked>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxALL</flag>
-						<border>5</border>
-						<object class="wxCheckBox" name="Cohesive">
-							<tooltip>Create cohesive contact between created yarn and matrix surfaces</tooltip>
-							<label>Output cohesive elements</label>
+							<label>Output surfaces for cohesive contacts</label>
 							<checked>0</checked>
 						</object>
 					</object>
@@ -2751,8 +2741,8 @@
 		</object>
 	</object>
 	<object class="wxDialog" name="Properties">
-		<style>wxDEFAULT_DIALOG_STYLE</style>
-		<size>413,250</size>
+		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<size>503,381</size>
 		<title>Properties</title>
 		<object class="wxBoxSizer">
 			<orient>wxVERTICAL</orient>
