@@ -739,7 +739,7 @@ int CTextileLayerToLayer::FindBinderHeight( const vector<PATTERN3D>& Cell, int H
 	while( i > 0 )
 	{
 		if ( Cell[i] == PATTERN3D_XYARN )
-			return i - Height*2;
+			return i - Height*2; //George - This correctly assumes the binders are next to each other for L2L weaves
 		--i;
 	}
 	return i;

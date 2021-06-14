@@ -37,5 +37,17 @@ namespace TexGen
 		/**\param zOffset The number of binder positions offset from the top of the textile
 		*/
 		void SetBinderPosition(int x, int y, vector<int> zOffsets);
+		void ShapeBinderYarns() const;
+
+		int FindBinderHeight(const vector<PATTERN3D>& Cell, int Height) const;
+
+		int AddBinderNodes(int CurrentNode, int i, int j, int Height) const;
+
+		bool BuildTextile() const;
+	
+	protected:
+
+		vector<int> m_BinderPositions;
+		vector<vector<int>> m_BinderPositionsVector;
 	};
 };	// namespace TexGen
