@@ -29,6 +29,7 @@ CTextileDecoupled::~CTextileDecoupled()
 void CTextileDecoupled::SetBinderPosition(int x, int y, vector<int> zOffsets)
 {
 	vector<PATTERN3D> &Cell = GetCell(x, y);
+	//vector<int> BinderPositions;
 	int size = Cell.size();
 	vector<int>::iterator itzOffsets;
 	int BinderPos;
@@ -67,18 +68,19 @@ void CTextileDecoupled::SetBinderPosition(int x, int y, vector<int> zOffsets)
 	}
 
 	m_BinderPositionsVector.push_back(m_BinderPositions);
+	
+	m_BinderPositions.clear();
 }
 
 void CTextileDecoupled::ShapeBinderYarns() const
 {
-	vector<vector<int>>::iterator itVector;
-	
-
-	for (int j = 0; j < m_iNumXYarns; ++j)
+	//for some reason explicitly declaring the iterator type - vector<vector<int>> :: iterator itVector = m_BinderPositionsVector; was causing these operands don't match errors
+	int j = 0;
+	for(auto & itVector : m_BinderPositionsVector )
 	{
 		if (IsBinderYarn(j))
 		{
-			for (auto & itHeight : m_BinderPositions ) //need a different way of finding binder heights for this type of textile here or in FindBinderHeight()
+			for (auto & itHeight : itVector ) //need a different way of finding binder heights for this type of textile here or in FindBinderHeight()
 			{
 				int CurrentNode = 0;
 				for (int i = 0; i < m_iNumYYarns; ++i)
@@ -88,7 +90,7 @@ void CTextileDecoupled::ShapeBinderYarns() const
 				}
 				CheckUpVectors(j);
 			}
-			++itVector;
+			++j;
 		}
 	}
 }
