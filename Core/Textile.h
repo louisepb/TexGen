@@ -28,6 +28,7 @@ namespace TexGen
 	class CTextileLayered;
 	class CTextileOrthogonal;
 	class CTextileLayerToLayer;
+	class CTextileDecoupled;
 	class CTextileAngleInterlock;
 	class CTextileWeave2D;
 
@@ -274,6 +275,7 @@ namespace TexGen
 		CTextileOrthogonal* GetOrthogonalWeave();
 		CTextileLayered* GetLayeredTextile();
 		CTextileLayerToLayer* GetLayerToLayerWeave();
+		CTextileDecoupled * GetDecoupledWeave();
 		CTextileAngleInterlock* GetAngleInterlockWeave();
 
 		// Accessor methods
