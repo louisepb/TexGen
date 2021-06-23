@@ -6,8 +6,7 @@ using namespace TexGen;
 CTextileDecoupled::CTextileDecoupled(int iNumXYarns, int iNumYYarns, double dXSpacing, double dYSpacing, double dXHeight, double dYHeight, int iNumBinderLayers, bool bShapeBinders)
 	: CTextileLayerToLayer(iNumXYarns, iNumYYarns, dXSpacing, dYSpacing, dXHeight, dYHeight, iNumBinderLayers, bShapeBinders)
 {
-	m_iNumBinderLayers = iNumBinderLayers;
-	m_bShapeBinders = bShapeBinders;
+	
 }
 
 CTextileDecoupled::CTextileDecoupled(TiXmlElement &Element)
@@ -29,37 +28,27 @@ CTextileDecoupled::~CTextileDecoupled()
 void CTextileDecoupled::SetBinderPosition(int x, int y, vector<int> zOffsets)
 {
 	vector<PATTERN3D> &Cell = GetCell(x, y);
-	//vector<int> BinderPositions;
+	
+	vector<int> BinderPositions;
 	int size = Cell.size();
 	vector<int>::iterator itzOffsets;
 	int BinderPos;
 	
-
+	// Convert offsets into cell indices (cells numbered from bottom)
 	for (itzOffsets = zOffsets.begin(); itzOffsets != zOffsets.end(); itzOffsets++)
 	{
 		BinderPos = (size - 1) - *itzOffsets * 2;
-		m_BinderPositions.push_back(BinderPos);
+		BinderPositions.push_back(BinderPos);
 	}
 
-	/*int MaxBinderPos = (size - 1) - (zOffsets * 2);   // *2 because each offset shifts by two cell positions
-	int MinBinderPos = (size - 1) - (zOffsets + m_iNumBinderLayers - 1) * 2;
-	if (MinBinderPos < 0)
+	// Set cells to binder yarn to correspond to offsets
+	int BinderNum = 0;
+	for (int j = size-1; j >= 0; j -= 2)
 	{
-		TGERROR("Unable to set binder positions, lowest binder position too low for number of weft yarns");
-		return;
-	}
-	if (MaxBinderPos > size - 1)
-	{
-		TGERROR("Unable to set binder positions, upper binder position too high for number of weft yarns");
-		return;
-	}*/
-
-	// Set x yarn in each of positions between Max and Min binder pos
-	for (int j = 0; j < size; j += 2)
-	{
-		if (count(m_BinderPositions.begin(), m_BinderPositions.end(), j ))
+		if (BinderNum < m_iNumBinderLayers && BinderPositions[BinderNum] == j)
 		{
 			Cell[j] = PATTERN3D_XYARN;
+			BinderNum++;
 		}
 		else
 		{
@@ -67,49 +56,70 @@ void CTextileDecoupled::SetBinderPosition(int x, int y, vector<int> zOffsets)
 		}
 	}
 
-	m_BinderPositionsVector.push_back(m_BinderPositions);
+	/*m_BinderPositionsVector.push_back(m_BinderPositions);
 	
-	m_BinderPositions.clear();
+	m_BinderPositions.clear();*/
 }
 
 void CTextileDecoupled::ShapeBinderYarns() const
 {
-	//for some reason explicitly declaring the iterator type - vector<vector<int>> :: iterator itVector = m_BinderPositionsVector; was causing these operands don't match errors
-	int j = 0;
-	for(auto & itVector : m_BinderPositionsVector )
+	for (int j = 0; j < m_iNumXYarns; ++j)
 	{
 		if (IsBinderYarn(j))
 		{
-			for (auto & itHeight : itVector ) //need a different way of finding binder heights for this type of textile here or in FindBinderHeight()
+			for (int Height = 0; Height < m_iNumBinderLayers; ++Height)
 			{
 				int CurrentNode = 0;
 				for (int i = 0; i < m_iNumYYarns; ++i)
 				{
-					CurrentNode = AddBinderNodes(CurrentNode, i, j, itHeight);
+					CurrentNode = AddBinderNodes(CurrentNode, i, j, Height);
 					CurrentNode++;
 				}
 				CheckUpVectors(j);
 			}
-			++j;
 		}
 	}
+	//for some reason explicitly declaring the iterator type - vector<vector<int>> :: iterator itVector = m_BinderPositionsVector; was causing these operands don't match errors
+	//int j = 0;
+	//for(auto & itVector : m_BinderPositionsVector )
+	//{
+	//	if (IsBinderYarn(j))
+	//	{
+	//		for (auto & itHeight : itVector ) //need a different way of finding binder heights for this type of textile here or in FindBinderHeight()
+	//		{
+	//			int CurrentNode = 0;
+	//			for (int i = 0; i < m_iNumYYarns; ++i)
+	//			{
+	//				CurrentNode = AddBinderNodes(CurrentNode, i, j, itHeight);
+	//				CurrentNode++;
+	//			}
+	//			CheckUpVectors(j);
+	//		}
+	//		++j;
+	//	}
+	//}
 }
 
 
 int CTextileDecoupled::FindBinderHeight(const vector<PATTERN3D>& Cell, int Height) const
 {
 	int i = Cell.size() - 1;
-	/*while (i > 0)
+	int CurrentHeight = 0;
+	while (i > 0)
 	{
 		//finds top binder
 		if (Cell[i] == PATTERN3D_XYARN)
-			return i - Height * 2; //George - This correctly assumes the binders are next to each other for L2L weaves
+		{
+			if ( CurrentHeight == Height )
+				return i - Height * 2; //George - This correctly assumes the binders are next to each other for L2L weaves
+			CurrentHeight++;
+		}
 		--i;
 	}
 	return i;
-	*/
+	
 
-	return i - Height * 2;
+	//return i - Height * 2;
 }
 
 int CTextileDecoupled::AddBinderNodes(int CurrentNode, int i, int j, int Height) const
