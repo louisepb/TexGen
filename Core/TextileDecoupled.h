@@ -38,6 +38,7 @@ namespace TexGen
 		*/
 		void SetBinderPosition(int x, int y, vector<int> zOffsets);
 		void ShapeBinderYarns() const;
+		void CheckUpVectors() const;
 
 		int FindBinderHeight(const vector<PATTERN3D>& Cell, int Height) const;
 

@@ -61,6 +61,32 @@ void CTextileDecoupled::SetBinderPosition(int x, int y, vector<int> zOffsets)
 	m_BinderPositions.clear();*/
 }
 
+void CTextileDecoupled::CheckUpVectors() const
+{
+	vector<int> BinderIndices;
+	vector<int>::iterator itBinder;
+	int BinderIndex;
+
+	for (int j = 0; j < m_iNumXYarns; ++j)
+	{
+		if (IsBinderYarn(j))
+		{
+			for (int Height = 0; Height < m_iNumBinderLayers; ++Height)
+			{
+				const vector<PATTERN3D> &Cell = GetCell(0, j);
+				int iIndex = FindBinderHeight(Cell, Height);
+				BinderIndex = GetYarnIndex(0, j, iIndex);
+				BinderIndices.push_back(BinderIndex);
+			}
+		}
+	}
+
+	for (itBinder = BinderIndices.begin(); itBinder != BinderIndices.end(); itBinder++)
+	{
+		CTextileLayerToLayer::CheckUpVectors(*itBinder, true, true);
+	}
+}
+
 void CTextileDecoupled::ShapeBinderYarns() const
 {
 	for (int j = 0; j < m_iNumXYarns; ++j)
@@ -75,29 +101,10 @@ void CTextileDecoupled::ShapeBinderYarns() const
 					CurrentNode = AddBinderNodes(CurrentNode, i, j, Height);
 					CurrentNode++;
 				}
-				CheckUpVectors(j);
+				
 			}
 		}
-	}
-	//for some reason explicitly declaring the iterator type - vector<vector<int>> :: iterator itVector = m_BinderPositionsVector; was causing these operands don't match errors
-	//int j = 0;
-	//for(auto & itVector : m_BinderPositionsVector )
-	//{
-	//	if (IsBinderYarn(j))
-	//	{
-	//		for (auto & itHeight : itVector ) //need a different way of finding binder heights for this type of textile here or in FindBinderHeight()
-	//		{
-	//			int CurrentNode = 0;
-	//			for (int i = 0; i < m_iNumYYarns; ++i)
-	//			{
-	//				CurrentNode = AddBinderNodes(CurrentNode, i, j, itHeight);
-	//				CurrentNode++;
-	//			}
-	//			CheckUpVectors(j);
-	//		}
-	//		++j;
-	//	}
-	//}
+	}	
 }
 
 
@@ -110,8 +117,8 @@ int CTextileDecoupled::FindBinderHeight(const vector<PATTERN3D>& Cell, int Heigh
 		//finds top binder
 		if (Cell[i] == PATTERN3D_XYARN)
 		{
-			if ( CurrentHeight == Height )
-				return i - Height * 2; //George - This correctly assumes the binders are next to each other for L2L weaves
+			if (CurrentHeight == Height)
+				return i; 
 			CurrentHeight++;
 		}
 		--i;
@@ -452,6 +459,7 @@ bool CTextileDecoupled::BuildTextile() const
 	}
 
 	TGLOGINDENT("Building textile weave \"" << GetName() << "\"");
+	m_bNeedsBuilding = false;  // Set here to avoid recursive call when check up vectors
 
 	vector<int> Yarns;
 
@@ -668,6 +676,8 @@ bool CTextileDecoupled::BuildTextile() const
 
 	if (m_bShapeBinders)
 		ShapeBinderYarns();
+
+	CheckUpVectors();
 
 	// Add repeats and set interpolation
 	dWidth = GetWidth();
