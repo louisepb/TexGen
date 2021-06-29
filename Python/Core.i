@@ -138,7 +138,7 @@ namespace std
 %include "../Core/TextileOrthogonal.h"
 %include "../Core/TextileAngleInterlock.h"
 %include "../Core/TextileLayerToLayer.h"
-%include "../Core/TextileDecoupled.h"
+%include "../Core/TextileDecoupledLToL.h"
 %include "../Core/TextileOffsetAngleInterlock.h"
 %include "../Core/ShearedTextileWeave2D.h"
 %include "../Core/TextileLayered.h"

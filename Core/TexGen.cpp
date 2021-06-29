@@ -197,8 +197,8 @@ bool CTexGen::LoadTiXmlElement(TiXmlElement &Element)
 				AddTextile(Name, CTextileOffsetAngleInterlock(*pTextile), bOverwrite);
 			else if (*pType == "CTextileLayerToLayer")
 				AddTextile(Name, CTextileLayerToLayer(*pTextile), bOverwrite);
-			else if (*pType == "CTextileDecoupled")
-				AddTextile(Name, CTextileDecoupled(*pTextile), bOverwrite);
+			else if (*pType == "CTextileDecoupledLToL")
+				AddTextile(Name, CTextileDecoupledLToL(*pTextile), bOverwrite);
 			else if (*pType == "CTextile3DWeave")
 				AddTextile(Name, CTextile3DWeave(*pTextile), bOverwrite);
 			else if (*pType == "CShearedTextileWeave2D")
