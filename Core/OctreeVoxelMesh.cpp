@@ -631,8 +631,7 @@ void COctreeVoxelMesh::FindLocMinMax( int& XMin, int& XMax, int& YMin, int& YMax
 	YMax = (int)ceil((Max.y - g_DomainAABB.first.y) / y_dist);
 }
 
-// TODO: Ensure that the mesh is periodic in X-Y-Z directions
-// Refinement only if at least two dissimilar materials are within an element
+// Refine all boundary elememnts to the maximum
 int COctreeVoxelMesh::refine_fn_periodic(p4est_t * p4est, p4est_topidx_t which_tree, p4est_quadrant_t * quadrant) 
 {
 	vector<XYZ> CornerPoints;
@@ -641,9 +640,14 @@ int COctreeVoxelMesh::refine_fn_periodic(p4est_t * p4est, p4est_topidx_t which_t
 	int refine = 0;
 	p4est_quadrant_t node_quadrant;
 	XYZ Min, Max;
-	///double x_min, x_max, y_min, y_max, z_min, z_max;
 	double vxyz[3];
 
+	// Don't refine more than needed
+	if (quadrant->level > max_level - 1) {
+		return 0;
+	}
+
+	// Find the min and max x,y,z coordinates
 	for (int node_i=0; node_i < 8; node_i++) {
 		p4est_quadrant_corner_node(quadrant, node_i, &node_quadrant);
 		p4est_qcoord_to_vertex (p4est->connectivity, which_tree, node_quadrant.x, node_quadrant.y, node_quadrant.z, vxyz);
@@ -660,78 +664,35 @@ int COctreeVoxelMesh::refine_fn_periodic(p4est_t * p4est, p4est_topidx_t which_t
 				Min.x = Point.x;
 			if (Point.x > Max.x)
 				Max.x = Point.x;	
+
 			if (Point.y < Min.y)
 				Min.y = Point.y;
 			if (Point.y > Max.y)
 				Max.y = Point.y;
-			if (Point.z < Max.z)
-				Max.z = Point.z;
+
+			if (Point.z < Min.z)
+				Min.z = Point.z;
 			if (Point.z > Max.z)
 				Max.z = Point.z;
 		}
 	}
 
-	int XMin, XMax, YMin, YMax;
-	FindLocMinMax( XMin, XMax, YMin, YMax, Min, Max );
-
-	if (my_comparison(Min.z, g_DomainAABB.first.z) && refine == 1) {
-		//TGLOG("MIN: z_min " << z_min << ", "<<x_max <<", " << y_min);
-		//TGLOG("Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
-		//TGLOG("ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = XMin; i < XMax; i++) {
-			for (int j = YMin; j < YMax; j++) {
-				//TGLOG("Refinement +1");
-				FaceZ_min[i][j] += 1;
-				//TGLOG(".");
-			}
-		}
+	// X boundaries
+	if (my_comparison(Min.x, g_DomainAABB.first.x) || my_comparison(Max.x, g_DomainAABB.second.x) ) {
+		return 1;
+	}
+	
+	// Y boundaries
+	if ( my_comparison(Min.y, g_DomainAABB.first.y) || my_comparison(Max.y, g_DomainAABB.second.y) ) {
+		return 1;
 	}
 
-	if (my_comparison(Max.z, g_DomainAABB.second.z) && refine == 1) {
-
-		//TGLOG("MAX: z_min " << z_max << ", "<<x_max <<", " << y_min);
-		//TGLOG("MAX: Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
-		//TGLOG("MAX: ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = XMin; i < XMax; i++) {
-			for (int j = YMin; j < YMax; j++) {
-				FaceZ_max[i][j] += 1;
-			}
-		}
+	// Z boundaries
+	if ( my_comparison(Min.z, g_DomainAABB.first.z) || my_comparison(Max.z, g_DomainAABB.second.z) ) {
+		return 1;
 	}
 
-	if (my_comparison(Max.z, g_DomainAABB.second.z)) {
-
-		//TGLOG("MAX: z_min " << z_max << ", "<<x_max <<", " << y_min);
-		//TGLOG("MAX: Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
-		//TGLOG("MAX: ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = XMin; i < XMax; i++) {
-			for (int j = YMin; j < YMax; j++) {
-				if (FaceZ_max[i][j] < FaceZ_min[i][j]) {
-					//TGLOG("Periodic refinement enacted!");
-					refine = 1;
-					FaceZ_max[i][j] += 1;
-				}
-			}
-		}
-	}
-
-	if (my_comparison(Min.z, g_DomainAABB.first.z)) {
-
-		//TGLOG("MIN: z_min " << z_min << ", "<<x_max <<", " << y_min);
-		//TGLOG("MAX: Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
-		//TGLOG("MAX: ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = XMin; i < XMax; i++) {
-			for (int j = YMin; j < YMax; j++) {
-				if (FaceZ_max[i][j] > FaceZ_min[i][j]) {
-					//TGLOG("Periodic refinement enacted!");
-					refine = 1;
-					FaceZ_min[i][j] += 1;
-				}
-			}
-		}
-	}
-
-	return refine;
+	return 0;
 }
 
 // Refinement only if at least two dissimilar materials are within an element
@@ -1099,6 +1060,9 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 	// Refine elements which have multiple materials within them
 	for (int level = min_level; level < refine_level; ++level) {
 		p4est_refine (p4est,1, refine_fn, NULL);
+		p4est_partition (p4est, 0, NULL);
+		
+		p4est_refine (p4est, 0, refine_fn_periodic, NULL);
 		p4est_partition (p4est, 0, NULL);
 	}
   
