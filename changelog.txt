@@ -8,6 +8,8 @@ Core
 ** Changed COctreeVoxelMesh::SaveVoxelMesh to take bSurface parameter rather than both bSurface and bCohesive. bSurface option outputs both surfaces and cohesive elements
 ** Clear element information from voxel mesh export before quitting
 ** Fixed bug in sheared refinement with negative shear angles
+** Changed octree voxel mesh to enforce periodic meshing at boundaries
+** Added CTextileDecoupledLToL class to create layer to layer textile where binder yarns in the same warp position are not tied together
 
 GUI
 ===
@@ -17,6 +19,8 @@ GUI
 UnitTests
 =========
 ** Changed number of parameters to SaveVoxelMesh in octree voxel mesh test
+** Updated octree voxel mesh test file for change to periodic boundaries
+** Updated dry fibre test files to account for change in element data description
 
 v3.12.2
 =======

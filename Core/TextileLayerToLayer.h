@@ -26,6 +26,7 @@ namespace TexGen
 
 	
 	/// Represents a 3D layer to layer woven textile
+	/// There may be multiple binder yarns in any stack and these are constrained to follow parallel paths through the textile
 	class CLASS_DECLSPEC CTextileLayerToLayer : public CTextile3DWeave
 	{
 	public:
@@ -58,6 +59,8 @@ namespace TexGen
 		virtual void SetupLayers( int iNumWarpLayers, int iNumWeftLayers, int iNumBinderLayers = 1 );
 		/// Build the textile
 		virtual bool BuildTextile() const;
+		bool BuildLayerToLayerTextile() const;
+
 		/// Sets the vertical positions of the binder yarns.  
 		/**\param zOffset The number of binder positions offset from the top of the textile
 		*/
@@ -84,7 +87,7 @@ namespace TexGen
 		/// Add extra nodes to binder yarns to match shape of adjacent weft yarns
 		int AddBinderNodes( int CurrentNode, int i, int j, int Height ) const;
 
-		int FindBinderHeight( const vector<PATTERN3D>& Cell, int Height ) const;
+		virtual int FindBinderHeight( const vector<PATTERN3D>& Cell, int Height ) const;
 		
 		int m_iNumBinderLayers;
 		bool m_bShapeBinders;

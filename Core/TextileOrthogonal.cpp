@@ -127,6 +127,7 @@ bool CTextileOrthogonal::BuildTextile() const
 	bool bSuccess = true;
 
 	TGLOGINDENT("Building textile weave \"" << GetName() << "\"");
+	m_bNeedsBuilding = false;
 
 	vector<int> Yarns;
 
