@@ -31,7 +31,7 @@ CTextileDecoupledLToL::CTextileDecoupledLToL(int iNumXYarns, int iNumYYarns, dou
 CTextileDecoupledLToL::CTextileDecoupledLToL(TiXmlElement &Element)
 	: CTextileLayerToLayer(Element)
 {
-	Element.Attribute("BinderLayers", &m_iNumBinderLayers);
+	//Element.Attribute("BinderLayers", &m_iNumBinderLayers);
 }
 
 CTextileDecoupledLToL::~CTextileDecoupledLToL()
@@ -40,6 +40,7 @@ CTextileDecoupledLToL::~CTextileDecoupledLToL()
 
 void CTextileDecoupledLToL::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType)
 {
+	CTextileLayerToLayer::PopulateTiXmlElement(Element, OutputType);
 }
 
 void CTextileDecoupledLToL::SetBinderPosition(int x, int y, vector<int> zOffsets)

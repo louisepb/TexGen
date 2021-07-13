@@ -12,6 +12,8 @@ Installer/Python27Lib/
 Installer/*.exe
 !Installer/CFXImportVTK.exe
 Installer/*.dll
+!msvcp140.dll
+!vcruntime140.dll
 Installer/*.pyd
 Installer/*.manifest
 Docs/TexGen.chm
@@ -26,4 +28,3 @@ GUI/*_wrap.*
 Binaries
 CMakeFiles
 .vs
-Scripts
