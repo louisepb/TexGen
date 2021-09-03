@@ -1,7 +1,7 @@
 import pysvn, os.path
 
 def ConvertLineEndings(fileName):
-    print "Converting line endings for file:", fileName
+    print("Converting line endings for file:", fileName)
     file = open(fileName)
     lines = file.readlines()
     file.close()
@@ -29,14 +29,14 @@ for f in changes:
             if key in prop_list and prop_list[key] == 'native':
                 pass    # Property already set
             else:
-                print "Setting 'svn:eol-style' property to 'native' for:", f.path
+                print("Setting 'svn:eol-style' property to 'native' for:", f.path)
                 try:
                     client.propset('svn:eol-style', 'native', f.path)
-                except pysvn.ClientError, e:
+                except pysvn.ClientError as e:
                     if 'inconsistent newlines' in str(e):
                         ConvertLineEndings(f.path)
                         client.propset('svn:eol-style', 'native', f.path)
                     else:
                         raise
         else:
-            print 'No end of line conversion for:', f.path
+            print('No end of line conversion for:', f.path)
