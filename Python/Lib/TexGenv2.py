@@ -121,13 +121,13 @@ def ImportTexGenv2(filename):
     # each chain contains the vectors within it
     Chains = {}
     for Vector in Vectors:
-        if not Chains.has_key(Vector['Chain']):
+        if Vector['Chain'] not in Chains:
             Chains[Vector['Chain']] = []
         Chains[Vector['Chain']].append(Vector)
 
     # Create polygon sections out of the list of points
     Sections = {}
-    for Key, Section in SectionPoints.items():
+    for Key, Section in list(SectionPoints.items()):
         Sections[Key] = CSectionPolygon(Section)
 
     # All necessary information has been read and re-organised
@@ -137,7 +137,7 @@ def ImportTexGenv2(filename):
     Textile = CTextile()
 
     # For each of the chains
-    for Chain in Chains.values():
+    for Chain in list(Chains.values()):
         # Create a yarn
         Yarn = CYarn()
         # Add the master nodes
