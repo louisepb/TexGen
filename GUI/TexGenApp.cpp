@@ -83,7 +83,16 @@ void RendererCallback()
 	}	
 }
 
-extern "C" void init_Embedded(void);
+
+/*PyMODINIT_FUNC
+PyInit_Embedded(void)
+{
+	return PyModule_Create(&_Embedded);
+}
+
+
+/**/
+extern "c" void init_Embedded(void);
 
 CTexGenApp::CTexGenApp()
 : m_pMainFrame(NULL)
@@ -98,6 +107,7 @@ CTexGenApp::CTexGenApp()
 	CTexGen::GetInstance().SetTextileCallback(TextileCallback);
 
 	// Register the swig embedded module with python
+	//PyImport_ImportModule("_Embedded");
 	init_Embedded();
 
 	// Hook into the standard output of Python
