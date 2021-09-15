@@ -51,13 +51,16 @@ static PyObject* ReceivePythonOutput(PyObject *self, PyObject *args)
 
 	return Py_None;
 }
+*/
 
-static PyMethodDef EmbMethods[] =
+
+
+/*static PyMethodDef EmbMethods[] =
 {
     {"SendOutput", ReceivePythonOutput, METH_VARARGS, "Send output to C++ function."},
     {NULL, NULL, 0, NULL}
-};
-*/
+};*/
+
 
 void TextileCallback(string TextileName, bool bAdded)
 {
@@ -83,16 +86,21 @@ void RendererCallback()
 	}	
 }
 
+static struct PyModuleDef Embeddedmodule = {
+	PyModuleDef_HEAD_INIT,
+	"Embedded",
+	NULL,
+	-1,
+	//EmbMethods
+};
 
-/*PyMODINIT_FUNC
+PyMODINIT_FUNC
 PyInit_Embedded(void)
 {
-	return PyModule_Create(&_Embedded);
+	return PyModule_Create(&Embeddedmodule);
 }
 
-
-/**/
-extern "c" void init_Embedded(void);
+//extern "c" void init_Embedded(void);
 
 CTexGenApp::CTexGenApp()
 : m_pMainFrame(NULL)
@@ -101,14 +109,17 @@ CTexGenApp::CTexGenApp()
 //	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 //#endif
 
+	/* Add a built-in module, before Py_Initialize */
+	PyImport_AppendInittab("Embedded", PyInit_Embedded);
+
 	Py_Initialize();
 
 	CTexGen::GetInstance().SetMessages( true, CLoggerGUI() );
 	CTexGen::GetInstance().SetTextileCallback(TextileCallback);
 
 	// Register the swig embedded module with python
-	//PyImport_ImportModule("_Embedded");
-	init_Embedded();
+	PyImport_ImportModule("Embedded");
+	//init_Embedded();
 
 	// Hook into the standard output of Python
 //	Py_InitModule("emb", EmbMethods);
