@@ -148,10 +148,10 @@ CTexGenApp::CTexGenApp()
 CTexGenApp::~CTexGenApp()
 {
 	// Restore output to original state
-	//PyRun_SimpleString("sys.stdout = sys.__stdout__");
-	//PyRun_SimpleString("sys.stderr = sys.__stderr__");
+	PyRun_SimpleString("sys.stdout = sys.__stdout__");
+	PyRun_SimpleString("sys.stderr = sys.__stderr__");
 
-	//Py_Finalize();
+	Py_Finalize();
 }
 
 bool CTexGenApp::OnInit()
