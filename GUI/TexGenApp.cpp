@@ -86,7 +86,7 @@ void RendererCallback()
 	}	
 }
 
-static struct PyModuleDef Embeddedmodule = {
+/*static struct PyModuleDef Embeddedmodule = {
 	PyModuleDef_HEAD_INIT,
 	"Embedded",
 	NULL,
@@ -98,9 +98,10 @@ PyMODINIT_FUNC
 PyInit_Embedded(void)
 {
 	return PyModule_Create(&Embeddedmodule);
-}
+}*/
 
 //extern "c" void init_Embedded(void);
+extern "C" PyObject * PyInit__Embedded(void);
 
 CTexGenApp::CTexGenApp()
 : m_pMainFrame(NULL)
@@ -109,16 +110,20 @@ CTexGenApp::CTexGenApp()
 //	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 //#endif
 
+
+	
+
 	/* Add a built-in module, before Py_Initialize */
-	PyImport_AppendInittab("Embedded", PyInit_Embedded);
+	PyImport_AppendInittab("_Embedded", PyInit__Embedded);
 
 	Py_Initialize();
 
+	//Py_Finalize();
 	CTexGen::GetInstance().SetMessages( true, CLoggerGUI() );
 	CTexGen::GetInstance().SetTextileCallback(TextileCallback);
 
 	// Register the swig embedded module with python
-	PyImport_ImportModule("Embedded");
+	//PyImport_ImportModule("Embedded");
 	//init_Embedded();
 
 	// Hook into the standard output of Python
@@ -137,15 +142,16 @@ CTexGenApp::CTexGenApp()
 	PyRun_SimpleString("sys.stderr = OutputCatcher('script_stderr')");
 //	wxString SetPath = "sys.path.append('" + wxGetCwd() + "')";
 //	PyRun_SimpleString(SetPath.c_str());
+
 }
 
 CTexGenApp::~CTexGenApp()
 {
 	// Restore output to original state
-	PyRun_SimpleString("sys.stdout = sys.__stdout__");
-	PyRun_SimpleString("sys.stderr = sys.__stderr__");
+	//PyRun_SimpleString("sys.stdout = sys.__stdout__");
+	//PyRun_SimpleString("sys.stderr = sys.__stderr__");
 
-	Py_Finalize();
+	//Py_Finalize();
 }
 
 bool CTexGenApp::OnInit()
