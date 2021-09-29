@@ -2218,9 +2218,15 @@ void CTexGenMainFrame::OnPython(wxCommandEvent& event)
 			if (dialog.ShowModal() == wxID_OK)
 			{
 				string Command;
-				Command = "execfile(r\"";
+
+				Command = "with open(";
 				Command += ConvertString(dialog.GetPath());
-				Command += "\")";
+				Command += ") as file:\n\t";
+				Command += "exec(file.read())";
+
+				//Command = "execfile(r\"";
+				//Command += ConvertString(dialog.GetPath());
+				//Command += "\")";
 				SendPythonCode(Command);
 			}
 		}
@@ -2516,9 +2522,16 @@ void CTexGenMainFrame::ProcessFiles(const wxArrayString& filenames)
 		else if (Filename.AfterLast('.') == wxT("py"))
 		{
 			string Command;
-			Command = "execfile(r\"";
+
+
+			Command = "with open(r\"";
 			Command += ConvertString(Filename);
-			Command += "\")";
+			Command += ") as file:\n\t";
+			Command += "exec(file.read())";
+
+			//Command = "execfile(r\"";
+			//Command += ConvertString(Filename);
+			//Command += "\")";
 			SendPythonCode(Command);
 		}
 	}
