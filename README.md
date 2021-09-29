@@ -12,6 +12,10 @@ Instructions for building TexGen from source can be found here http://texgen.sou
 ## Executables
 Windows executables and release tarballs can be found here https://sourceforge.net/projects/texgen/
 
+## Python
+
+Note this version of TexGen uses Python 3.
+
 ## Citing TexGen
 We would appreciate it if you could acknowledge use of TexGen using the following references:
 
