@@ -470,6 +470,7 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 
 		if ( iBoundaryConditions == BENDING_BC )
 		{
+			/*
 			Output << "*Load case, Name=Load" << i << endl;
 			Output << "*BOUNDARY" << endl;
 			for (int j = 0; j < 6; j++)
@@ -480,6 +481,27 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 					Output << "ConstraintsDriver" << j << ", 1, 1, " << 1.0 / (m_DomSize.x * m_DomSize.y) << endl;
 			}
 			Output << "*End load case" << endl;
+			Output << endl;
+			*/
+			if ( i )
+			{ 
+				Output << "*Step" << endl;
+				Output << "*Static" << endl;
+			}
+			
+			Output << "*BOUNDARY" << endl;
+			for (int j = 0; j < 6; j++)
+			{
+				if ( i != j )
+					Output << "ConstraintsDriver" << j << ", 1, 1, 0" << endl;
+				else
+					Output << "ConstraintsDriver" << j << ", 1, 1, " << 1.0 / (m_DomSize.x * m_DomSize.y) << endl;
+			}
+
+			if ( i != 5 )
+			{
+				Output << "*End step" << endl;
+			}
 			Output << endl;
 		}	
 	}
