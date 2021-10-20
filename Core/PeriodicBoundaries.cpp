@@ -465,7 +465,7 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 	Output << "******************" << endl;
 	for ( int i = 0; i < 6; ++i )
 	{
-		if ( iBoundaryConditions != BENDING_BC && (bOutputTransverse || !i || i == 1 || i==3 ) )
+		if ( bOutputTransverse || !i || i == 1 || i==3 )
 			OutputLoadCase( Output, i );
 		
 		if ( iBoundaryConditions == BENDING_BC )
@@ -504,9 +504,6 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 			}
 			Output << endl;
 		}		
-
-	}
-		
 	}
 	
 	Output << endl;

@@ -31,7 +31,7 @@ CTextileDecoupledLToL::CTextileDecoupledLToL(int iNumXYarns, int iNumYYarns, dou
 CTextileDecoupledLToL::CTextileDecoupledLToL(TiXmlElement &Element)
 	: CTextileLayerToLayer(Element)
 {
-	Element.Attribute("BinderLayers", &m_iNumBinderLayers);
+	//Element.Attribute("BinderLayers", &m_iNumBinderLayers);
 }
 
 CTextileDecoupledLToL::~CTextileDecoupledLToL()
@@ -40,6 +40,7 @@ CTextileDecoupledLToL::~CTextileDecoupledLToL()
 
 void CTextileDecoupledLToL::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType)
 {
+	CTextileLayerToLayer::PopulateTiXmlElement(Element, OutputType);
 }
 
 void CTextileDecoupledLToL::SetBinderPosition(int x, int y, vector<int> zOffsets)
@@ -50,12 +51,19 @@ void CTextileDecoupledLToL::SetBinderPosition(int x, int y, vector<int> zOffsets
 	int size = Cell.size();
 	vector<int>::iterator itzOffsets;
 	int BinderPos;
+	int LastPos = size;
 	
 	// Convert offsets into cell indices (cells numbered from bottom)
 	for (itzOffsets = zOffsets.begin(); itzOffsets != zOffsets.end(); itzOffsets++)
 	{
 		BinderPos = (size - 1) - *itzOffsets * 2;
+		if (BinderPos >= LastPos)
+		{
+			TGERROR("Binder offsets incorrectly ordered at position " << x <<", " << y << ", binder yarns positions not set");
+			return;
+		}	
 		BinderPositions.push_back(BinderPos);
+		LastPos = BinderPos;
 	}
 
 	// Set cells to binder yarn to correspond to offsets
