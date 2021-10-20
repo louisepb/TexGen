@@ -414,7 +414,6 @@ bool CTextileOrthogonal::BuildWeavePatternTextile() const
 	// y yarns are parallel to the y axis - weft yarns
 
 	//PROFILE_BEGIN(Begin);
-	vector<vector<PATTERN3D> > Pattern = GetPattern();
 	m_Yarns.clear();
 	m_YYarns.clear();
 	m_XYarns.clear();
@@ -2195,8 +2194,6 @@ void CTextileOrthogonal::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, i
 			if ( !bFound )  // If reached end of stack without setting weft yarn need to set it at bottom of cell entries
 			{
 				PrevYCellIndex = (NumLayers - *(itLayers-1))*2 +1;
-				int number = *(itLayers - 1);
-				int newnumber = *itLayers - 1;
 				bFound = true;
 			}
 		}
@@ -2286,16 +2283,12 @@ void CTextileOrthogonal::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, i
 			}
 		}
 	}
-	vector<vector<PATTERN3D> > Pattern = GetPattern();
-	//ShapeWeftYarns();
 	m_bNeedsBuilding = true;
 }
 
 void CTextileOrthogonal::ConsolidateCells()
 {
-	//ShapeWeftYarns();
 	//bool bWeftChanged = false;
-	vector<vector<PATTERN3D> > Pattern = GetPattern();
 	vector<int> Levels;
 
 	for (int i = 0; i < m_iNumYYarns-1; ++i )
@@ -2465,7 +2458,6 @@ void CTextileOrthogonal::ConsolidateCells()
 		}
 	}
 
-	vector<vector<PATTERN3D> > PatternAfterConsolidation = GetPattern();
 	
 }
 

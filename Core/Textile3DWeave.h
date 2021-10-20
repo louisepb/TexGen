@@ -335,7 +335,6 @@ namespace TexGen
 		CPatternDraft &GetPatternDraft() { return m_PatternDraft; }
 
 		void CalculateReedDesign( string Filename );
-		vector<vector<PATTERN3D> > GetPattern() const;
 
 	protected:
 		/// Check that the weave pattern contained in m_Pattern is valid

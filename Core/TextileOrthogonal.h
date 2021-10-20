@@ -147,6 +147,5 @@ namespace TexGen
 		/// Container to keep track of which weft yarn is located at each cell position
 		/// Used when loaded from weave pattern
 		vector<vector<int> > m_WeftYarns;
-		vector<vector<PATTERN3D> > m_Pattern;
 	};
 };	// namespace TexGen
