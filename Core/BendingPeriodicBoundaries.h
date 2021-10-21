@@ -23,7 +23,7 @@ namespace TexGen
 {
 	using namespace std;
 
-	/// Class used to generate Abaqus input file for periodic boundary conditions for a textile with rotated domain. 
+	/// Class used to generate Abaqus input file for periodic boundary conditions for a unit cell in tension and bending. 
 	class CLASS_DECLSPEC CBendingPeriodicBoundaries : public CPeriodicBoundaries
 	{
 	public:
@@ -34,7 +34,7 @@ namespace TexGen
 		//void SetDomainSize( const CMesh& Mesh );
 
 	private:
-		/// Output equations for rotated domain boundary conditions
+		/// Output equations for bending boundary conditions
 		void OutputEquations( ostream& Output, int iBoundaryConditions );
 		void OutputStep(  ostream& Output, int iBoundaryConditions );
 		/// Displacement vectors for the three axes
