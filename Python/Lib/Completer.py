@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import __builtin__
+import builtins
 import __main__
 
 class Completer:
@@ -35,7 +35,7 @@ class Completer:
         """
 
         if namespace and not isinstance(namespace, dict):
-            raise TypeError,'namespace must be a dictionary'
+            raise TypeError('namespace must be a dictionary')
 
         # Don't bind to namespace quite yet, but flag whether the user wants a
         # specific namespace or to use __main__.__dict__. This will allow us
@@ -87,7 +87,7 @@ class Completer:
         matches = []
         n = len(text)
         for list in [keyword.kwlist,
-                     __builtin__.__dict__,
+                     builtins.__dict__,
                      self.namespace]:
             for word in list:
                 if word[:n] == text and word != "__builtins__":

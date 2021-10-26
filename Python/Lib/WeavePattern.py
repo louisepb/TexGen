@@ -83,14 +83,14 @@ def ImportWeavePattern( Filename ):
 			NumWarps = line.count('1')  # Sum of number of binders and warp stacks
 			
 			NumBinders, Binders = SetupBinders( line )
-			print NumBinders
+			print(NumBinders)
 			
 			NumWarpLayers = int(max(line))  # Number of warp layers set to size of largest warp stack
 		else:  # Read in row matrix
 			parts = line.split()
 			if not parts:  # empty line
 				continue
-			print parts
+			print(parts)
 			if parts[0] == 'FIBRE_COUNT':
 				FibreCount = int(parts[1])
 			elif parts[0] == 'LINEAR_DENSITY':  
@@ -132,7 +132,7 @@ def ImportWeavePattern( Filename ):
 				for part in parts:
 					if not part.isdigit():
 						allNumeric = False
-						print 'Error in weave pattern line, not all numeric'
+						print('Error in weave pattern line, not all numeric')
 						break
 				
 				if allNumeric == True:	
@@ -150,17 +150,17 @@ def ImportWeavePattern( Filename ):
 		return ''
 	
 	if ( (fabs(Width) < tol) or (fabs(WeftDensity) < tol) or ((fabs(TowArea) < tol) and ((fabs(TowWidth) < tol) or (fabs(TowHeight) < tol))) ):
-		print 'Width, weft density or tow area missing in input file.  Using default values'
+		print('Width, weft density or tow area missing in input file.  Using default values')
 		WarpSpacing = 1.0
 		WeftSpacing = 1.0
 		TowWidth = 0.8
 		TowHeight = 0.2
 	else:
 		WarpSpacing = ConvertUnits( Width, WidthUnits, 'mm' )/NumWarps
-		print str(WarpSpacing)
+		print(str(WarpSpacing))
 	
 		WeftSpacing = 1/ConvertUnits( WeftDensity, WeftDensityUnits, '/mm' )
-		print str(WeftSpacing)
+		print(str(WeftSpacing))
 		
 		if ( (fabs(TowWidth) > tol) and (fabs(TowHeight) > tol) ):
 			TowWidth = ConvertUnits( TowWidth, TowWidthUnits, 'mm')
@@ -172,7 +172,7 @@ def ImportWeavePattern( Filename ):
 			TowWidth = 6 * TowHeight
 			
 		if ( (fabs(BinderWidth) > tol) and (fabs(BinderHeight) > tol) ):
-			print 'Convert binder'
+			print('Convert binder')
 			BinderWidth = ConvertUnits( BinderWidth, BinderWidthUnits, 'mm')
 			BinderHeight = ConvertUnits( BinderHeight, BinderHeightUnits, 'mm')
 			
@@ -201,7 +201,7 @@ def ImportWeavePattern( Filename ):
 	Textile.SetYYarnWidths( TowWidth )
 	
 	if ( (fabs(BinderWidth) > tol) and (fabs(BinderHeight) > tol) ):
-		print 'Setting binder widths'
+		print('Setting binder widths')
 		Textile.SetBinderYarnWidths( BinderWidth )
 		Textile.SetBinderYarnHeights( BinderHeight )
 		Textile.SetBinderYarnPower( 0.2 )

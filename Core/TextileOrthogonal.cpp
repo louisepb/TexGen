@@ -2241,7 +2241,7 @@ void CTextileOrthogonal::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, i
 					Cell[WeftCellIndex-1] = PATTERN3D_XYARN;
 					bFirst = false;
 				}
-				else if ( *itWarp != PATTERN3D_NOYARN )
+				else if ( *itWarp != PATTERN3D_NOYARN ) //Not a no yarn position
 				{
 					 // Warp is up and no weft yarn yet. Set x yarn cell without space allowed for weft yarn
 						WarpIndex = (NumLayers - (*itLayers)+1) *2;
@@ -2303,12 +2303,12 @@ void CTextileOrthogonal::ConsolidateCells()
 			vector<PATTERN3D> &Cell1 = GetCell(i,j);
 			vector<PATTERN3D> &Cell2 = GetCell(i+1,j);
 
-			if ( (Cell1[0] != Cell2[0] || Cell1[Cell1.size()-1] != Cell2[Cell2.size()-1]) ) // Binder yarn changed level - can't consolidate
+			if ( (Cell1[0] != Cell2[0] || Cell1[Cell1.size()-1] != Cell2[Cell2.size()-1]) ) // Binder yarn changed level - can't consolidate - does this assume binders at top and bottom only
 			{
 				break;
 			}
 			int Level2 = FindWeftHeight( Cell2 );
-			if ( Level2 == -1 )
+			if ( Level2 == -1 ) // -1 means no weft yarn in cell
 			{
 				Levels.push_back(Level2);
 				bRemoveCells = false;
@@ -2457,6 +2457,8 @@ void CTextileOrthogonal::ConsolidateCells()
 			MoveBinderYarnPosition( Cell );
 		}
 	}
+
+	
 }
 
 void CTextileOrthogonal::MoveBinderYarnPosition( vector<PATTERN3D> &Cell )
