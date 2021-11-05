@@ -2219,10 +2219,10 @@ void CTexGenMainFrame::OnPython(wxCommandEvent& event)
 			{
 				string Command;
 
-				Command = "with open(";
+				Command = "import runpy\n";
+				Command += "exec_file = runpy.run_path(";
 				Command += ConvertString(dialog.GetPath());
-				Command += ") as file:\n\t";
-				Command += "exec(file.read())";
+				Command += ")\n";
 
 				//Command = "execfile(r\"";
 				//Command += ConvertString(dialog.GetPath());
@@ -2524,10 +2524,10 @@ void CTexGenMainFrame::ProcessFiles(const wxArrayString& filenames)
 			string Command;
 
 
-			Command = "with open(r\"";
+			Command = "import runpy\n";
+			Command += "exec_file = runpy.run_path(";
 			Command += ConvertString(Filename);
-			Command += ") as file:\n\t";
-			Command += "exec(file.read())";
+			Command += ")\n";
 
 			//Command = "execfile(r\"";
 			//Command += ConvertString(Filename);
