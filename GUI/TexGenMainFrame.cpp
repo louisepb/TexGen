@@ -2220,14 +2220,10 @@ void CTexGenMainFrame::OnPython(wxCommandEvent& event)
 			{
 				string Command;
 
-				
 				Command = "runpy.run_path(r\"";
 				Command += ConvertString(dialog.GetPath());
 				Command += "\")";
 
-				//Command = "execfile(r\"";
-				//Command += ConvertString(dialog.GetPath());
-				//Command += "\")";
 				SendPythonCode(Command);
 			}
 		}
@@ -2524,14 +2520,10 @@ void CTexGenMainFrame::ProcessFiles(const wxArrayString& filenames)
 		{
 			string Command;
 
-
 			Command = "runpy.run_path(r\"";
 			Command += ConvertString(Filename);
 			Command += "\")";
 
-			//Command = "execfile(r\"";
-			//Command += ConvertString(Filename);
-			//Command += "\")";
 			SendPythonCode(Command);
 		}
 	}
