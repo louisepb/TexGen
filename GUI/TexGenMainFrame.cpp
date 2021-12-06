@@ -325,6 +325,7 @@ void CTexGenMainFrame::OnInit()
 	SendPythonCode("from TexGen.WiseTex import *");
 	SendPythonCode("from TexGen.FlowTex import *");
 	SendPythonCode("import math");
+	SendPythonCode("import runpy");
 	m_pPythonConsole->SetFocus();
 }
 
@@ -2219,14 +2220,10 @@ void CTexGenMainFrame::OnPython(wxCommandEvent& event)
 			{
 				string Command;
 
-				Command = "with open(";
+				Command = "runpy.run_path(r\"";
 				Command += ConvertString(dialog.GetPath());
-				Command += ") as file:\n\t";
-				Command += "exec(file.read())";
+				Command += "\")";
 
-				//Command = "execfile(r\"";
-				//Command += ConvertString(dialog.GetPath());
-				//Command += "\")";
 				SendPythonCode(Command);
 			}
 		}
@@ -2523,15 +2520,10 @@ void CTexGenMainFrame::ProcessFiles(const wxArrayString& filenames)
 		{
 			string Command;
 
-
-			Command = "with open(r\"";
+			Command = "runpy.run_path(r\"";
 			Command += ConvertString(Filename);
-			Command += ") as file:\n\t";
-			Command += "exec(file.read())";
+			Command += "\")";
 
-			//Command = "execfile(r\"";
-			//Command += ConvertString(Filename);
-			//Command += "\")";
 			SendPythonCode(Command);
 		}
 	}
