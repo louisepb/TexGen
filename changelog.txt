@@ -3,6 +3,12 @@ Version History
 
 v3.12.3
 =======
+General
+=======
+** Updated to Python3
+** Added installer files for Python3 installation
+** Updated sample scripts to import Core library. Needed for Run Script option which uses runpy library with Python3
+
 Core
 ====
 ** Changed COctreeVoxelMesh::SaveVoxelMesh to take bSurface parameter rather than both bSurface and bCohesive. bSurface option outputs both surfaces and cohesive elements
