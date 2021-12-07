@@ -1,3 +1,6 @@
+# Python 3 version used runpy module to execute scripts from TexGen GUI which requires import of library
+from TexGen.Core import *
+
 #####################
 # GEOMETRY CREATION #
 #####################
