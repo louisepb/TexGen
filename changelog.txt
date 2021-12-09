@@ -16,6 +16,7 @@ Core
 ** Fixed bug in sheared refinement with negative shear angles
 ** Changed octree voxel mesh to enforce periodic meshing at boundaries
 ** Added CTextileDecoupledLToL class to create layer to layer textile where binder yarns in the same warp position are not tied together
+** Added CBendingPeriodicBoundaries class to output boundary conditions for a unit cell in tension and bending
 
 GUI
 ===
@@ -27,6 +28,7 @@ UnitTests
 ** Changed number of parameters to SaveVoxelMesh in octree voxel mesh test
 ** Updated octree voxel mesh test file for change to periodic boundaries
 ** Updated dry fibre test files to account for change in element data description
+** Updated voxel export test files to UTF-8
 
 v3.12.2
 =======

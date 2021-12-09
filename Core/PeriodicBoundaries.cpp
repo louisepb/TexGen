@@ -416,7 +416,7 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 	Output << "*******************" << endl;
 
 	Output << "*** PREDEFINED FIELDS ***" << endl;
-	Output << "*** Name: Initial temperature 0ºC all cells   Type: Temperature ***" << endl;
+	Output << "*** Name: Initial temperature 0ÂºC all cells   Type: Temperature ***" << endl;
 	Output << "*Initial Conditions, type=TEMPERATURE" << endl;
 	Output << "AllNodes, 0." << endl;
 	Output << endl;
@@ -465,8 +465,45 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 	Output << "******************" << endl;
 	for ( int i = 0; i < 6; ++i )
 	{
-		if ( bOutputTransverse || !i || i == 1 || i==3 )
+		if ( iBoundaryConditions != BENDING_BC && (bOutputTransverse || !i || i == 1 || i==3 ) )
 			OutputLoadCase( Output, i );
+
+		if ( iBoundaryConditions == BENDING_BC )
+		{
+			/*
+			Output << "*Load case, Name=Load" << i << endl;
+			Output << "*BOUNDARY" << endl;
+			for (int j = 0; j < 6; j++)
+			{
+				if ( i != j )
+					Output << "ConstraintsDriver" << j << ", 1, 1, 0" << endl;
+				else
+					Output << "ConstraintsDriver" << j << ", 1, 1, " << 1.0 / (m_DomSize.x * m_DomSize.y) << endl;
+			}
+			Output << "*End load case" << endl;
+			Output << endl;
+			*/
+			if ( i )
+			{ 
+				Output << "*Step" << endl;
+				Output << "*Static" << endl;
+			}
+			
+			Output << "*BOUNDARY" << endl;
+			for (int j = 0; j < 6; j++)
+			{
+				if ( i != j )
+					Output << "ConstraintsDriver" << j << ", 1, 1, 0" << endl;
+				else
+					Output << "ConstraintsDriver" << j << ", 1, 1, " << 1.0 / (m_DomSize.x * m_DomSize.y) << endl;
+			}
+
+			if ( i != 5 )
+			{
+				Output << "*End step" << endl;
+			}
+			Output << endl;
+		}	
 	}
 	
 	Output << endl;
@@ -480,7 +517,7 @@ void CPeriodicBoundaries::OutputStep( ostream& Output, int iBoundaryConditions )
 	Output << "*Static" << endl;
 	 
 	Output << "*** PREDEFINED FIELDS ***" << endl;
-	Output << "*** Name: Temperature steady 1ºC all cells   Type: Temperature ***" << endl;
+	Output << "*** Name: Temperature steady 1ÂºC all cells   Type: Temperature ***" << endl;
 	Output << "*Temperature" << endl;
 	Output << "AllNodes, 1." << endl;   // Make sure no blank line after this line or analysis fails
 	Output << "***********************" << endl;
