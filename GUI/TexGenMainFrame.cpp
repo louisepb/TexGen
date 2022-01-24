@@ -2641,14 +2641,16 @@ void CTexGenMainFrame::OnTools(wxCommandEvent& event)
 			stringstream Command;
 			
 			// Get appropriate weave type
-			if ( Type == "CTextileWeave2D" )
+			if (Type == "CTextileWeave2D")
 				Command << "Weave = GetTextile( '" << TextileName << "' ).GetWeave()" << endl;
-			else if ( Type == "CTextile3DWeave" )
+			else if (Type == "CTextile3DWeave")
 				Command << "Weave = GetTextile( '" << TextileName << "' ).Get3DWeave()" << endl;
-			else if ( Type == "CTextileOrthogonal" )
+			else if (Type == "CTextileOrthogonal")
 				Command << "Weave = GetTextile( '" << TextileName << "' ).GetOrthogonalWeave()" << endl;
-			else if ( Type == "CTextileLayerToLayer" )
+			else if (Type == "CTextileLayerToLayer")
 				Command << "Weave = GetTextile( '" << TextileName << "' ).GetLayerToLayerWeave()" << endl;
+			else if (Type == "CTextileDecoupledLToL")
+				Command << "Weave = GetTextile( '" << TextileName << "' ).GetDecoupledLToLWeave()" << endl;
 			else
 			{
 				wxMessageBox(wxT("Cannot create pattern draft - incorrect weave type"), wxT("Pattern Draft Error"), wxOK | wxICON_ERROR, this);
@@ -2656,7 +2658,7 @@ void CTexGenMainFrame::OnTools(wxCommandEvent& event)
 			}
 
 			int iWeftOrder = 0;
-			if ( Type == "CTextileOrthogonal" || Type == "CTextileLayerToLayer" )
+			if ( Type == "CTextileOrthogonal" || Type == "CTextileLayerToLayer" || Type == "CTextileDecoupledLToL" )
 			{
 				wxDialog WeftStackOrder;
 				if (wxXmlResource::Get()->LoadDialog(&WeftStackOrder, this, wxT("WeftStackOrder")))		
@@ -2678,12 +2680,8 @@ void CTexGenMainFrame::OnTools(wxCommandEvent& event)
 			CPatternDraftDialog Dialog;
 			if ( Type == "CTextileWeave2D" )
 				Dialog.SetPatternDraft( ((CTextileWeave2D*)pTextile)->GetPatternDraft());
-			else if ( Type == "CTextile3DWeave" )
-				Dialog.SetPatternDraft( ((CTextile3DWeave*)pTextile)->GetPatternDraft());
-			else if ( Type == "CTextileOrthogonal" )
-				Dialog.SetPatternDraft( ((CTextileOrthogonal*)pTextile)->GetPatternDraft());
-			else 
-				Dialog.SetPatternDraft( ((CTextileLayerToLayer*)pTextile)->GetPatternDraft());
+			else
+				Dialog.SetPatternDraft(((CTextile3DWeave*)pTextile)->GetPatternDraft());
 			
 			if (Dialog.ShowModal() == wxID_OK)
 			{
