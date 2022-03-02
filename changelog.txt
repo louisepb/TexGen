@@ -1,5 +1,35 @@
 Version History
 ---------------
+
+v3.12.3
+=======
+Core
+====
+** Changed COctreeVoxelMesh::SaveVoxelMesh to take bSurface parameter rather than both bSurface and bCohesive. bSurface option outputs both surfaces and cohesive elements
+** Clear element information from voxel mesh export before quitting
+** Fixed bug in sheared refinement with negative shear angles
+** Changed octree voxel mesh to enforce periodic meshing at boundaries
+** Added CTextileDecoupledLToL class to create layer to layer textile where binder yarns in the same warp position are not tied together
+** Added CBendingPeriodicBoundaries class to output boundary conditions for a unit cell in tension and bending
+
+GUI
+===
+** Changed octree voxel mesh export to have one check box for output of surface nodes and cohesive elements
+** Added drag resize to properties dialog
+
+UnitTests
+=========
+** Changed number of parameters to SaveVoxelMesh in octree voxel mesh test
+** Updated octree voxel mesh test file for change to periodic boundaries
+** Updated dry fibre test files to account for change in element data description
+** Updated voxel export test files to UTF-8
+
+v3.12.2
+=======
+Core
+====
+** Bugfix to octree refinement when starting with number of voxels other than 1x1x1
+
 v3.12.1
 =======
 General
@@ -8,13 +38,16 @@ General
 
 Core
 ====
+** Bugfix to octree refinement when starting with number of voxels other than 1x1x1
 ** Updated tetgen export so that o2 option works to export quadratic tet elements
 ** Change to octree voxel mesh so that initial number of voxels can be specified
 ** Bug fix in smoothing for octree voxel mesh
+** Added AdjustTextileMesh function to CAdjustMeshInterference to allow intersection correction to be called from outside the dry fibre export
 
 GUI
 ===
-** Added Export ABAQUS Octree Voxel File option. Dialog for voxel octree refinement and smoothing options
+** Added octree refinement option to Export ABAQUS Voxel File option. Dialog for voxel octree refinement and smoothing options as secondary dialog
+** Added Correct Small Intersections to Tools menu
 
 UnitTests
 =========

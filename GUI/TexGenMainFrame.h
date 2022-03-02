@@ -83,7 +83,6 @@ protected:
 	void OnSaveABAQUSSurface(wxCommandEvent& event);
 	void OnSaveTetgenMesh(wxCommandEvent& event);
 	void OnSaveVTUVoxels(wxCommandEvent& event);
-	void OnSaveOctreeVoxels(wxCommandEvent& event);
 
 	void OnWindow(wxCommandEvent& event);
 	void OnChar(wxKeyEvent& event);
@@ -168,6 +167,7 @@ public:
 
 private:
 	void OnOffsetUpdate(wxUpdateUIEvent& event);
+	void OnPeriodicBoundariesUpdate(wxUpdateUIEvent& event);
 
 	DECLARE_EVENT_TABLE()
 };
@@ -178,9 +178,6 @@ public:
 	COctreeVoxelInput(wxWindow* parent);
 
 private:
-	void OnCohesiveUpdate(wxUpdateUIEvent& event);
-	void OnMinLevelUpdate(wxCommandEvent& event);
-	void OnRefineLevelUpdate(wxCommandEvent& event);
 	void OnSmoothingUpdate(wxCommandEvent& event);
 	void OnCoefficientUpdate(wxUpdateUIEvent& event);
 	void OnCoefficientText(wxCommandEvent& event);
@@ -237,7 +234,16 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
+class CAbaqusInput : public wxDialog
+{
+public:
+	CAbaqusInput(wxWindow* parent);
 
+private:
+	void OnRegenerateUpdate(wxUpdateUIEvent& event);
+
+	DECLARE_EVENT_TABLE()
+};
 
 
 

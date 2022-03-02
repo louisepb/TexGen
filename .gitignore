@@ -5,13 +5,18 @@ BuildVTK6/
 BuildWidgets3/
 BuildVS2015/
 BuildVS2017
+BuildPython3/
 Installer/OpenCascade64bit/
 Installer/OpenCascade64bit_7/
 Installer/Python_64bit/
 Installer/Python27Lib/
+Installer/Python39/
+Installer/Python39Lib/
 Installer/*.exe
 !Installer/CFXImportVTK.exe
 Installer/*.dll
+!msvcp140.dll
+!vcruntime140.dll
 Installer/*.pyd
 Installer/*.manifest
 Docs/TexGen.chm
@@ -26,4 +31,3 @@ GUI/*_wrap.*
 Binaries
 CMakeFiles
 .vs
-Scripts

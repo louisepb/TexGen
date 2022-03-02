@@ -302,6 +302,7 @@ bool CTextile3DWeave::BuildTextile() const
 		return false;*/
 
 	TGLOGINDENT("Building textile weave \"" << GetName() << "\"");
+	m_bNeedsBuilding = false;
 
 	bool bBinderYarns = BinderYarns();
 	vector<int> Yarns;
@@ -2308,7 +2309,7 @@ int CTextile3DWeave::AddWeftNodes( int CurrentNode, int XNode, int i, int j ) co
 
 void CTextile3DWeave::CheckUpVectors( int Index, bool bYarn, bool bYarnsIndex ) const
 {
-	BuildTextileIfNeeded();
+	BuildTextileIfNeeded();  
 	int YarnIndex = 0;
 	if ( bYarnsIndex )
 	{

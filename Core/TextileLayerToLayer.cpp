@@ -146,7 +146,7 @@ void CTextileLayerToLayer::SetupLayers( int iNumWarpLayers, int iNumWeftLayers, 
 	AddBinderLayer();
 }
 
-bool CTextileLayerToLayer::BuildTextile() const
+bool CTextileLayerToLayer::BuildLayerToLayerTextile() const
 {
 	m_Yarns.clear();
 	m_YYarns.clear();
@@ -165,6 +165,7 @@ bool CTextileLayerToLayer::BuildTextile() const
 	}
 
 	TGLOGINDENT("Building textile weave \"" << GetName() << "\"");
+	m_bNeedsBuilding = false;
 
 	vector<int> Yarns;
 
@@ -173,20 +174,20 @@ bool CTextileLayerToLayer::BuildTextile() const
 	// Add x yarns (yarns parallel to the x axis)
 	int i, j, k, iYarn;
 	y = 0;
-	for (i=0; i<m_iNumXYarns; ++i)
+	for (i = 0; i < m_iNumXYarns; ++i)
 	{
-		y += m_XYarnData[i].dSpacing/2.0;
+		y += m_XYarnData[i].dSpacing / 2.0;
 		x = 0;
 		Yarns.clear();
-		for (j=0; j<=m_iNumYYarns; ++j)
+		for (j = 0; j <= m_iNumYYarns; ++j)
 		{
 			const vector<PATTERN3D> &Cell = GetCell(j%m_iNumYYarns, i);
 			int NextCellIndex;
 			NextCellIndex = FindNextCellIndex(i);
-			const vector<PATTERN3D> &NextCell = GetCell(j%m_iNumYYarns, NextCellIndex%m_iNumXYarns );
-			if (j==0)
+			const vector<PATTERN3D> &NextCell = GetCell(j%m_iNumYYarns, NextCellIndex%m_iNumXYarns);
+			if (j == 0)
 			{
-				for (k=0; k<(int)Cell.size(); ++k)
+				for (k = 0; k < (int)Cell.size(); ++k)
 				{
 					if (Cell[k] == PATTERN3D_XYARN)
 					{
@@ -197,29 +198,29 @@ bool CTextileLayerToLayer::BuildTextile() const
 			m_XYarns[i] = Yarns;
 			iYarn = 0;
 
-			x += m_YYarnData[j%m_iNumYYarns].dSpacing/2.0;
-			
+			x += m_YYarnData[j%m_iNumYYarns].dSpacing / 2.0;
+
 			z = 0.0;
-			for (k=0; k<(int)Cell.size(); ++k)
+			for (k = 0; k < (int)Cell.size(); ++k)
 			{
 				if (Cell[k] == PATTERN3D_XYARN)
 				{
 					double dHalfHeight = m_XYarnData[i].dHeight / 2.0;
-					if ( IsBinderYarn(i) )
+					if (IsBinderYarn(i))
 					{
-						if ( k == 0 )
+						if (k == 0)
 						{
 							z -= dHalfHeight + m_dGapSize;
-							if ( (z - dHalfHeight) < m_dMinZ )
+							if ((z - dHalfHeight) < m_dMinZ)
 								m_dMinZ = z - dHalfHeight;
 						}
 						else
 						{
-							if ( NextCell[k] == PATTERN3D_XYARN )
+							if (NextCell[k] == PATTERN3D_XYARN)
 							{
 								dHalfHeight = m_XYarnData[NextCellIndex].dHeight / 2.0;
 							}
-							else if ( NextCell[k] == PATTERN3D_YYARN )
+							else if (NextCell[k] == PATTERN3D_YYARN)
 							{
 								dHalfHeight = m_YYarnData[j%m_iNumYYarns].dHeight / 2.0;
 							}
@@ -237,20 +238,20 @@ bool CTextileLayerToLayer::BuildTextile() const
 					m_Yarns[Yarns[iYarn]].AddNode(CNode(XYZ(x, y, z), XYZ(1, 0, 0)));
 					++iYarn;
 					z += dHalfHeight + m_dGapSize;
-					if ( z > m_dMaxZ )
+					if (z > m_dMaxZ)
 						m_dMaxZ = z;
 				}
-				else if ( Cell[k] == PATTERN3D_YYARN )
+				else if (Cell[k] == PATTERN3D_YYARN)
 				{
 					z += m_YYarnData[j%m_iNumYYarns].dHeight + m_dGapSize;
 				}
-				else if ( k > 0 )// PATTERN3D_NOYARN and not on bottom binder layer
+				else if (k > 0)// PATTERN3D_NOYARN and not on bottom binder layer
 				{
-					if ( NextCell[k] == PATTERN3D_XYARN )
+					if (NextCell[k] == PATTERN3D_XYARN)
 					{
 						z += m_XYarnData[NextCellIndex].dHeight + m_dGapSize;
 					}
-					else if ( NextCell[k] == PATTERN3D_YYARN )
+					else if (NextCell[k] == PATTERN3D_YYARN)
 					{
 						z += m_YYarnData[j%m_iNumYYarns].dHeight + m_dGapSize;
 					}
@@ -261,28 +262,28 @@ bool CTextileLayerToLayer::BuildTextile() const
 					}
 				}
 			}
-			if (j<m_iNumYYarns)
-				x += m_YYarnData[j].dSpacing/2.0;
+			if (j < m_iNumYYarns)
+				x += m_YYarnData[j].dSpacing / 2.0;
 		}
-		y += m_XYarnData[i].dSpacing/2.0;
+		y += m_XYarnData[i].dSpacing / 2.0;
 	}
 
 	// Add y yarns (yarns parallel to the y axis)
 	x = 0;
-	for (j=0; j<m_iNumYYarns; ++j)
+	for (j = 0; j < m_iNumYYarns; ++j)
 	{
 		y = 0;
 		Yarns.clear();
-		x += m_YYarnData[j].dSpacing/2.0;
-		for (i=0; i<=m_iNumXYarns; ++i)
+		x += m_YYarnData[j].dSpacing / 2.0;
+		for (i = 0; i <= m_iNumXYarns; ++i)
 		{
 			const vector<PATTERN3D> &Cell = GetCell(j, i%m_iNumXYarns);
-			
+
 			int NextCellIndex = FindNextCellIndex(i);
 			const vector<PATTERN3D> &NextCell = GetCell(j%m_iNumYYarns, NextCellIndex%m_iNumXYarns);
-			if (i==0)
+			if (i == 0)
 			{
-				for (k=0; k<(int)Cell.size(); ++k)
+				for (k = 0; k < (int)Cell.size(); ++k)
 				{
 					if (Cell[k] == PATTERN3D_YYARN)
 					{
@@ -292,10 +293,10 @@ bool CTextileLayerToLayer::BuildTextile() const
 			}
 			m_YYarns[j] = Yarns;
 			iYarn = 0;
-			y += m_XYarnData[i%m_iNumXYarns].dSpacing/2.0;
+			y += m_XYarnData[i%m_iNumXYarns].dSpacing / 2.0;
 			z = 0.0;
-			
-			for (k=0; k<(int)Cell.size(); ++k)
+
+			for (k = 0; k < (int)Cell.size(); ++k)
 			{
 				if (Cell[k] == PATTERN3D_YYARN)
 				{
@@ -305,20 +306,20 @@ bool CTextileLayerToLayer::BuildTextile() const
 					++iYarn;
 					z += dHalfHeight + m_dGapSize;
 				}
-				else if ( Cell[k] == PATTERN3D_XYARN && k > 0 ) // Don't adjust z if it's the bottom binder yarn
+				else if (Cell[k] == PATTERN3D_XYARN && k > 0) // Don't adjust z if it's the bottom binder yarn
 				{
-					if ( IsBinderYarn(i%m_iNumXYarns) )
+					if (IsBinderYarn(i%m_iNumXYarns))
 					{
-						if ( NextCell[k] == PATTERN3D_XYARN )
+						if (NextCell[k] == PATTERN3D_XYARN)
 						{
 							z += m_XYarnData[NextCellIndex%m_iNumXYarns].dHeight + m_dGapSize;
 						}
-						else if ( NextCell[k] == PATTERN3D_YYARN )
+						else if (NextCell[k] == PATTERN3D_YYARN)
 						{
 							z += m_YYarnData[j%m_iNumYYarns].dHeight + m_dGapSize;
 						}
 						else // PATTERN3D_NOYARN
-						{	 
+						{
 							// Does this ever happen?
 						}
 					}
@@ -327,13 +328,13 @@ bool CTextileLayerToLayer::BuildTextile() const
 						z += m_XYarnData[i%m_iNumXYarns].dHeight + m_dGapSize;
 					}
 				}
-				else if ( k > 0 ) // PATTERN3D_NOYARN and not on bottom binder layer
+				else if (k > 0) // PATTERN3D_NOYARN and not on bottom binder layer
 				{
-					if ( NextCell[k] == PATTERN3D_XYARN )
+					if (NextCell[k] == PATTERN3D_XYARN)
 					{
 						z += m_XYarnData[NextCellIndex%m_iNumXYarns].dHeight + m_dGapSize;
 					}
-					else if ( NextCell[k] == PATTERN3D_YYARN )
+					else if (NextCell[k] == PATTERN3D_YYARN)
 					{
 						z += m_YYarnData[j%m_iNumYYarns].dHeight + m_dGapSize;
 					}
@@ -344,17 +345,17 @@ bool CTextileLayerToLayer::BuildTextile() const
 					}
 				}
 			}
-			if (i<m_iNumXYarns)
-				y += m_XYarnData[i].dSpacing/2.0;
+			if (i < m_iNumXYarns)
+				y += m_XYarnData[i].dSpacing / 2.0;
 		}
-		x += m_YYarnData[j].dSpacing/2.0;
+		x += m_YYarnData[j].dSpacing / 2.0;
 	}
 
 
 	// Assign sections to the yarns
 	vector<int>::iterator itpYarn;
 	double dWidth, dHeight;
-	for (i=0; i<m_iNumXYarns; ++i)
+	for (i = 0; i < m_iNumXYarns; ++i)
 	{
 		dWidth = m_XYarnData[i].dWidth;
 		dHeight = m_XYarnData[i].dHeight;
@@ -366,7 +367,7 @@ bool CTextileLayerToLayer::BuildTextile() const
 			m_Yarns[*itpYarn].AssignSection(CYarnSectionConstant(Section));
 		}
 	}
-	for (i=0; i<m_iNumYYarns; ++i)
+	for (i = 0; i < m_iNumYYarns; ++i)
 	{
 		dWidth = m_YYarnData[i].dWidth;
 		dHeight = m_YYarnData[i].dHeight;
@@ -379,8 +380,7 @@ bool CTextileLayerToLayer::BuildTextile() const
 		}
 	}
 
-	if ( m_bShapeBinders )
-		ShapeBinderYarns();
+
 
 	// Add repeats and set interpolation
 	dWidth = GetWidth();
@@ -393,7 +393,16 @@ bool CTextileLayerToLayer::BuildTextile() const
 		itYarn->AddRepeat(XYZ(dWidth, 0, 0));
 		itYarn->AddRepeat(XYZ(0, dHeight, 0));
 	}
+	return true;
+}
 
+bool CTextileLayerToLayer::BuildTextile() const
+{
+	if (!BuildLayerToLayerTextile())
+		return false;
+
+	if (m_bShapeBinders)
+		ShapeBinderYarns();
 	return true;
 }
 

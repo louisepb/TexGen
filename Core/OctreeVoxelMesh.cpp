@@ -81,6 +81,8 @@ CTextile COctreeVoxelMesh::gTextile;
 pair<XYZ, XYZ>	COctreeVoxelMesh::g_DomainAABB;
 vector<char> COctreeVoxelMesh::materialInfo; 
 
+int g_XVoxels, g_YVoxels, g_ZVoxels;
+
 // Tolerance is quarter of the max refinement
 int my_comparison(double x, double y) 
 {
@@ -124,7 +126,7 @@ int duplicatedHangingNode(double vxyz[3], double hang_coord[8][3], int hang_nums
 	int i = 0;
 
 	for (i = 0; i < 8; i++) {
-		if ( hang_coord[i][0] == vxyz[0] && hang_coord[i][1] == vxyz[1] && hang_coord[i][2] == vxyz[2]) {
+		if ( my_comparison(hang_coord[i][0], vxyz[0]) && my_comparison(hang_coord[i][1], vxyz[1]) && my_comparison(hang_coord[i][2], vxyz[2])) {
 			return hang_nums[i];
 		}
 	}
@@ -360,7 +362,7 @@ int COctreeVoxelMesh::isBoundary(double point[3])
 
 // This node is hanging and DOES NOT have a proper number, the master nodes should be stored
 // Number of node which is hanging is hanging_corner[i]
-int COctreeVoxelMesh::storeHangingNode(int *all_lni, int *hanging_corner, int node_i, int hanging_count) 
+int COctreeVoxelMesh::storeHangingNode(int *all_lni, int *hanging_corner, int node_i, int hanging_count, double vxyz[3]) 
 {
 	int c = hanging_corner[node_i];      /* Child id of quadrant. */
 	int ncontrib = corner_num_hanging[node_i ^ c];
@@ -385,13 +387,30 @@ int COctreeVoxelMesh::storeHangingNode(int *all_lni, int *hanging_corner, int no
 	}
 	std::string s = ss.str();
 
-	if ( m_NodeConstraintsReverse.find(s) != m_NodeConstraintsReverse.end() ) {
-		return m_NodeConstraintsReverse[s];
-	} else {
+
+	if ( m_NodeConstraintsReverse.find(s) != m_NodeConstraintsReverse.end() ) 
+	{
+		XYZ node_coord  = AllNodes[m_NodeConstraintsReverse[s]];
+		if ( my_comparison( node_coord.x, vxyz[0]) && my_comparison(node_coord.y, vxyz[1]) && my_comparison( node_coord.z, vxyz[2]) )
+			return m_NodeConstraintsReverse[s];
+		else
+		{
+			TGLOG("Hanging constr are the same but coords not!");
+			TGLOG("s = " << s << " for " << m_NodeConstraintsReverse[s]);
+			for (auto it=m_NodeConstraints.begin(); it != m_NodeConstraints.end(); ++it) 
+			{
+				XYZ node_coord  = AllNodes[it->first];
+				if ( my_comparison( node_coord.x, vxyz[0]) && my_comparison(node_coord.y, vxyz[1]) && my_comparison( node_coord.z, vxyz[2]) )
+					return  AllNodes[it->first];
+			}
+		}
+	}
+	
+	//else {
 		m_NodeConstraintsReverse.insert(make_pair(s, hanging_count));
 		m_NodeConstraints.insert(make_pair(hanging_count, master_nodes));
 		return 0;
-	}
+	//}
 
 	//m_NodeConstraints.insert(make_pair(hanging_count, master_nodes));
 	//return 0;
@@ -564,7 +583,7 @@ int COctreeVoxelMesh::OutputHexElements(ostream &Output, bool bOutputMatrix, boo
 	timer.check("Elements written");
 	timer.stop();
 
-	if ( m_bCohesive ) {
+	if ( m_bSurface ) {
 		timer.start("Writing surfaces");
 		map<int, vector<int>>::iterator itSurfaceNodes;
 		for (itSurfaceNodes = m_SurfaceNodes.begin(); itSurfaceNodes != m_SurfaceNodes.end(); ++itSurfaceNodes) {
@@ -612,8 +631,7 @@ void COctreeVoxelMesh::FindLocMinMax( int& XMin, int& XMax, int& YMin, int& YMax
 	YMax = (int)ceil((Max.y - g_DomainAABB.first.y) / y_dist);
 }
 
-// TODO: Ensure that the mesh is periodic in X-Y-Z directions
-// Refinement only if at least two dissimilar materials are within an element
+// Refine all boundary elememnts to the maximum
 int COctreeVoxelMesh::refine_fn_periodic(p4est_t * p4est, p4est_topidx_t which_tree, p4est_quadrant_t * quadrant) 
 {
 	vector<XYZ> CornerPoints;
@@ -622,9 +640,14 @@ int COctreeVoxelMesh::refine_fn_periodic(p4est_t * p4est, p4est_topidx_t which_t
 	int refine = 0;
 	p4est_quadrant_t node_quadrant;
 	XYZ Min, Max;
-	///double x_min, x_max, y_min, y_max, z_min, z_max;
 	double vxyz[3];
 
+	// Don't refine more than needed
+	if (quadrant->level > max_level - 1) {
+		return 0;
+	}
+
+	// Find the min and max x,y,z coordinates
 	for (int node_i=0; node_i < 8; node_i++) {
 		p4est_quadrant_corner_node(quadrant, node_i, &node_quadrant);
 		p4est_qcoord_to_vertex (p4est->connectivity, which_tree, node_quadrant.x, node_quadrant.y, node_quadrant.z, vxyz);
@@ -641,78 +664,35 @@ int COctreeVoxelMesh::refine_fn_periodic(p4est_t * p4est, p4est_topidx_t which_t
 				Min.x = Point.x;
 			if (Point.x > Max.x)
 				Max.x = Point.x;	
+
 			if (Point.y < Min.y)
 				Min.y = Point.y;
 			if (Point.y > Max.y)
 				Max.y = Point.y;
-			if (Point.z < Max.z)
-				Max.z = Point.z;
+
+			if (Point.z < Min.z)
+				Min.z = Point.z;
 			if (Point.z > Max.z)
 				Max.z = Point.z;
 		}
 	}
 
-	int XMin, XMax, YMin, YMax;
-	FindLocMinMax( XMin, XMax, YMin, YMax, Min, Max );
-
-	if (my_comparison(Min.z, g_DomainAABB.first.z) && refine == 1) {
-		//TGLOG("MIN: z_min " << z_min << ", "<<x_max <<", " << y_min);
-		//TGLOG("Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
-		//TGLOG("ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = XMin; i < XMax; i++) {
-			for (int j = YMin; j < YMax; j++) {
-				//TGLOG("Refinement +1");
-				FaceZ_min[i][j] += 1;
-				//TGLOG(".");
-			}
-		}
+	// X boundaries
+	if (my_comparison(Min.x, g_DomainAABB.first.x) || my_comparison(Max.x, g_DomainAABB.second.x) ) {
+		return 1;
+	}
+	
+	// Y boundaries
+	if ( my_comparison(Min.y, g_DomainAABB.first.y) || my_comparison(Max.y, g_DomainAABB.second.y) ) {
+		return 1;
 	}
 
-	if (my_comparison(Max.z, g_DomainAABB.second.z) && refine == 1) {
-
-		//TGLOG("MAX: z_min " << z_max << ", "<<x_max <<", " << y_min);
-		//TGLOG("MAX: Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
-		//TGLOG("MAX: ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = XMin; i < XMax; i++) {
-			for (int j = YMin; j < YMax; j++) {
-				FaceZ_max[i][j] += 1;
-			}
-		}
+	// Z boundaries
+	if ( my_comparison(Min.z, g_DomainAABB.first.z) || my_comparison(Max.z, g_DomainAABB.second.z) ) {
+		return 1;
 	}
 
-	if (my_comparison(Max.z, g_DomainAABB.second.z)) {
-
-		//TGLOG("MAX: z_min " << z_max << ", "<<x_max <<", " << y_min);
-		//TGLOG("MAX: Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
-		//TGLOG("MAX: ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = XMin; i < XMax; i++) {
-			for (int j = YMin; j < YMax; j++) {
-				if (FaceZ_max[i][j] < FaceZ_min[i][j]) {
-					//TGLOG("Periodic refinement enacted!");
-					refine = 1;
-					FaceZ_max[i][j] += 1;
-				}
-			}
-		}
-	}
-
-	if (my_comparison(Min.z, g_DomainAABB.first.z)) {
-
-		//TGLOG("MIN: z_min " << z_min << ", "<<x_max <<", " << y_min);
-		//TGLOG("MAX: Xmin, Xmax = " << loc_x_min << ", " << loc_x_max);
-		//TGLOG("MAX: ymin, ymax = " << loc_y_min << ", " << loc_y_max);
-		for (int i = XMin; i < XMax; i++) {
-			for (int j = YMin; j < YMax; j++) {
-				if (FaceZ_max[i][j] > FaceZ_min[i][j]) {
-					//TGLOG("Periodic refinement enacted!");
-					refine = 1;
-					FaceZ_min[i][j] += 1;
-				}
-			}
-		}
-	}
-
-	return refine;
+	return 0;
 }
 
 // Refinement only if at least two dissimilar materials are within an element
@@ -890,14 +870,18 @@ int COctreeVoxelMesh::getPointsInfo(vector<XYZ> myPoints, int refineLevel)
 	double y_length = g_DomainAABB.second.y - y0;
 	double z_length = g_DomainAABB.second.z - z0;
 	
-	double dx = x_length / pow(2, refineLevel);
-	double dy = y_length / pow(2, refineLevel);
-	double dz = z_length / pow(2, refineLevel);
+	double dx = x_length / pow(2, refineLevel) / g_XVoxels;
+	double dy = y_length / pow(2, refineLevel) / g_YVoxels;
+	double dz = z_length / pow(2, refineLevel) / g_ZVoxels;
 
 	int num = pow(2, refineLevel) + 1;
 
+	/* Works for 1x1x1
 	int row_len = num;
 	int layer_len = num * num;
+	*/
+	int row_len = num * g_XVoxels;
+	int layer_len = row_len * num * g_YVoxels;
 
 	vector<XYZ>::const_iterator itPoint;
 	int previousMaterial;
@@ -931,12 +915,14 @@ int COctreeVoxelMesh::getPointsInfo(vector<XYZ> myPoints, int refineLevel)
 		int index_j = ( (y - y0)/ dy - floor((y - y0) / dy) >= 0.5 ) ? ceil((y - y0) / dy) : floor((y - y0) / dy);
 		int index_k = ( (z - z0)/ dz - floor((z - z0) / dz) >= 0.5 ) ? ceil((z - z0) / dz) : floor((z - z0) / dz);
 
+		/* Maybe this is still needed for 1x1x1
 		if ( index_i + row_len * index_j + layer_len * index_k > num * num * num || index_i + row_len * index_j + layer_len * index_k < 0)
 		{
 			TGERROR("Something is not right - index is outside of stored info");
 			TGERROR("X, Y, Z: " << x << ", " << y << ", " << z);
 			return 0;
 		}
+		*/
 
 		//TGLOG("X: " << x << "(" << index_i << "), Y: " << y << "(" << index_j << "), Z: " << z << "(" << index_k << ")");
 
@@ -963,17 +949,24 @@ void COctreeVoxelMesh::storePointInfo(int refineLevel)
 	double y_length = g_DomainAABB.second.y - y0;
 	double z_length = g_DomainAABB.second.z - z0;
 	
-	double dx = x_length / pow(2, refineLevel);
-	double dy = y_length / pow(2, refineLevel);
-	double dz = z_length / pow(2, refineLevel);
+	double dx = x_length / pow(2, refineLevel) / m_XVoxels;
+	double dy = y_length / pow(2, refineLevel) / m_YVoxels;
+	double dz = z_length / pow(2, refineLevel) / m_ZVoxels;
 
 	int num = pow(2, refineLevel) + 1;
 
+	/* Works for 1x1x1 voxels
 	for (int k = 0; k < num; k++)
 		for (int j = 0; j < num; j++)
 			for (int i = 0; i < num; i++)
 				myPoints.push_back(XYZ(x0 + dx*i, y0 + dy*j, z0 + dz*k));
-	
+	*/
+	for (int k = 0; k < num * m_ZVoxels; k++)
+		for (int j = 0; j < num * m_YVoxels; j++)
+			for (int i = 0; i < num * m_XVoxels; i++)
+				myPoints.push_back(XYZ(x0 + dx*i, y0 + dy*j, z0 + dz*k));
+
+	//TGLOG("Number of points : "<< k*j*i);
 	temp.clear();
 	gTextile.GetPointInformation(myPoints,temp);
 
@@ -1068,6 +1061,9 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 	for (int level = min_level; level < refine_level; ++level) {
 		p4est_refine (p4est,1, refine_fn, NULL);
 		p4est_partition (p4est, 0, NULL);
+		
+		p4est_refine (p4est, 0, refine_fn_periodic, NULL);
+		p4est_partition (p4est, 0, NULL);
 	}
   
 	// P4EST_CONNECT_FULL is used for 2:1 balancing across all faces, edges and corners
@@ -1090,11 +1086,16 @@ int COctreeVoxelMesh::CreateP4ESTRefinement(int min_level, int refine_level)
 	return 0;
 }
 
-void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, int min_level, int refine_level, bool smoothing, int iter, double s1, double s2, bool surfaceOutput, bool cohesive)
+void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, int min_level, int refine_level, bool smoothing, int iter, double s1, double s2, bool surfaceOutput)
 {
 	m_XVoxels = XVoxNum;
 	m_YVoxels = YVoxNum;
 	m_ZVoxels = ZVoxNum;
+
+	g_XVoxels = XVoxNum;
+	g_YVoxels = YVoxNum;
+	g_ZVoxels = ZVoxNum;
+
 
 	CTimer timer;
 	max_level = refine_level;
@@ -1103,7 +1104,7 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 	m_smoothCoef1 = s1;
 	m_smoothCoef2 = s2;
 	m_bSurface = surfaceOutput;
-	m_bCohesive = cohesive;
+
   	gTextile = Textile;
 	m_DomainAABB = Textile.GetDomain()->GetMesh().GetAABB();
 	g_DomainAABB = m_DomainAABB;
@@ -1125,7 +1126,7 @@ void COctreeVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, i
 	if (CreateP4ESTRefinement(min_level, refine_level) == -1)
 		return;
 	
-	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, 1, 1, 1, true, true, SINGLE_LAYER_RVE);
+	CVoxelMesh::SaveVoxelMesh(Textile, OutputFilename, m_XVoxels, m_YVoxels, m_ZVoxels, true, true, SINGLE_LAYER_RVE);
 
 	timer.check("Octree refinement finished");
 	timer.stop();
@@ -1135,6 +1136,7 @@ bool COctreeVoxelMesh::CalculateVoxelSizes(CTextile &Textile)
 {
 	return true;
 }
+
 
 void COctreeVoxelMesh::ConvertOctreeToNodes()
 {
@@ -1169,8 +1171,8 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
   
 	double vxyz[3];
 	int node_count = 0;
-	int hanging_count = 2000000; // Large number for node offest
-  
+	int hanging_count = pow((pow(2,max_level) + 1),3) * (m_XVoxels + 1) * (m_YVoxels + 1) * (m_ZVoxels + 1); // Offset for numbering hanging nodes
+
 	// The mesh is stored as a tree and all of the last 8 hanging nodes belong to one 
 	// parent element. Therefore, it is enough to store last 8 elements to eliminate duplicates
 	double hang_coord[8][3];
@@ -1195,14 +1197,17 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 			anyhang = lnodes_decode2 (lnodes->face_code[k], hanging_corner);
       
 			vector<int> elemNodes;
+
 			// Loop through nodes
 			for(node_i = 0; node_i < P4EST_CHILDREN; node_i++) {
 				// Extract the coordinates
 				p4est_quadrant_corner_node(quad, node_i, &node_quadrant);
 				p4est_qcoord_to_vertex (p4est->connectivity, tt, node_quadrant.x, node_quadrant.y, node_quadrant.z, vxyz);
 
+
 				// The node is not hanging and therefore has correct numbering
 				if (!anyhang || hanging_corner[node_i] == -1) {
+
 					if (node_count - 1 < lnodes->element_nodes[P4EST_CHILDREN * k + node_i]) {                                    
 						AllNodes.insert(make_pair(lnodes->element_nodes[P4EST_CHILDREN * k + node_i] + 1, XYZ(vxyz[0], vxyz[1], vxyz[2])));
 						node_count++;
@@ -1216,16 +1221,19 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 					node_elements[node_i] = lnodes->element_nodes[P4EST_CHILDREN * k + node_i] + 1;
 
 				} else {
-					// Check if that hanging corner has been already written
+					// Check if that hanging corner has been already written. This function call only check recent elements not the full list
 					used = duplicatedHangingNode(vxyz, hang_coord, hang_nums);
 
 					if ( used > 0 ) {
 						// The node has already appeared and therefore does not need to be written again, use it to create an element only
 						node_elements[node_i] = used;
+
 					} else {
 						
-						int loc_hang = storeHangingNode(all_lni, hanging_corner, node_i, hanging_count + 1);
+						int loc_hang = storeHangingNode(all_lni, hanging_corner, node_i, hanging_count + 1, vxyz);
 						if ( loc_hang != 0 ) {
+
+
 							node_elements[node_i] = loc_hang;	
 						} else {
 							AllNodes.insert(make_pair(++hanging_count, XYZ(vxyz[0], vxyz[1], vxyz[2])));
@@ -1296,6 +1304,160 @@ void COctreeVoxelMesh::ConvertOctreeToNodes()
 	TGLOG("Num of elements: " << m_AllElements.size());
 
 }
+
+
+						
+/*
+void COctreeVoxelMesh::ConvertOctreeToNodes()
+{
+	p4est_ghost_t      *ghost;
+	p4est_lnodes_t     *lnodes;
+	// Create the ghost layer to learn about parallel neighbors.
+	ghost = p4est_ghost_new (p4est, P4EST_CONNECT_FULL);
+	// Create a node numbering for continuous linear finite elements.
+	lnodes = p4est_lnodes_new (p4est, ghost, 1 );
+	// Destroy the ghost structure -- no longer needed after node creation.
+	p4est_ghost_destroy (ghost);
+	ghost = NULL;
+	CentrePoints.clear();
+
+	// Assign independent nodes for hanging nodes (this piece is copied from one of the examples provided with p4est)
+	corner_to_hanging[0] = &zero;
+	corner_to_hanging[1] = p8est_edge_corners[0];
+	corner_to_hanging[2] = p8est_edge_corners[4];
+	corner_to_hanging[3] = p8est_face_corners[4];
+	corner_to_hanging[4] = p8est_edge_corners[8];
+	corner_to_hanging[ones - 2] = p4est_face_corners[2];
+	corner_to_hanging[ones - 1] = p4est_face_corners[0];
+	corner_to_hanging[ones] = &ones;
+
+	int                 i, k, node_i, q, Q, used, anyhang, hanging_corner[P4EST_CHILDREN], node_elements[8], hang_nums[8];
+	int elem_order[8] = {0, 2, 3, 1, 4, 6, 7, 5}; // That is how elements should be ordered in abaqus
+	sc_array_t         *tquadrants;
+	p4est_topidx_t      tt;
+	p4est_locidx_t      all_lni[P4EST_CHILDREN];
+	p4est_tree_t       *tree;
+	p4est_quadrant_t   *quad, node_quadrant; //,node;
+  
+	double vxyz[3];
+	int node_count = 0;
+	int hanging_count = 9000000; // Large number for node offest
+  
+	// The mesh is stored as a tree and all of the last 8 hanging nodes belong to one 
+	// parent element. Therefore, it is enough to store last 8 elements to eliminate duplicates
+	double hang_coord[8][3];
+
+	int ElemCount = 1;
+	// Loop over all the trees 
+	for (tt = p4est->first_local_tree, k = 0; tt <= p4est->last_local_tree; ++tt) {
+		tree = p4est_tree_array_index (p4est->trees, tt);
+		tquadrants = &tree->quadrants;
+		Q = (p4est_locidx_t) tquadrants->elem_count;
+		// loop over all the quadrant in the tree
+		for (q = 0; q < Q; ++q, ++k) {
+			XYZ CurrentCentre;
+			// Extract an element by index
+			quad = p4est_quadrant_array_index (tquadrants, q);       
+			// Get the numbers of the corners nodes
+			for (i = 0; i < P4EST_CHILDREN; ++i) {
+				all_lni[i] = lnodes->element_nodes[P4EST_CHILDREN * k + i];
+			}
+      
+			// Figure out the hanging corners on this element, if any. 
+			anyhang = lnodes_decode2 (lnodes->face_code[k], hanging_corner);
+      
+			vector<int> elemNodes;
+			// Loop through nodes
+			for(node_i = 0; node_i < P4EST_CHILDREN; node_i++) {
+				// Extract the coordinates
+				p4est_quadrant_corner_node(quad, node_i, &node_quadrant);
+				p4est_qcoord_to_vertex (p4est->connectivity, tt, node_quadrant.x, node_quadrant.y, node_quadrant.z, vxyz);
+
+				// The node is not hanging and therefore has correct numbering
+				if (!anyhang || hanging_corner[node_i] == -1) {
+					if (node_count - 1 < lnodes->element_nodes[P4EST_CHILDREN * k + node_i]) {                                    
+						AllNodes.insert(std::make_pair(lnodes->element_nodes[P4EST_CHILDREN * k + node_i] + 1, XYZ(vxyz[0], vxyz[1], vxyz[2])));
+						node_count++;
+
+						if ( isBoundary(vxyz) ) {
+							m_boundaryPoints.push_back(Point(lnodes->element_nodes[P4EST_CHILDREN * k + node_i] + 1, vxyz[0], vxyz[1], vxyz[2]));
+						}
+					}
+
+					// Keep the information for the element connectivity
+					node_elements[node_i] = lnodes->element_nodes[P4EST_CHILDREN * k + node_i] + 1;
+
+				} else {
+					// Check if that hanging corner has been already written
+					used = duplicatedHangingNode(vxyz, hang_coord, hang_nums);
+					//used = 0;
+					if ( used > 0 ) {
+						// The node has already appeared and therefore does not need to be written again, use it to create an element only
+						node_elements[node_i] = used;
+					} else {
+						// The node has not appeared earlier, write it, form an element, store the node for further comparisons
+						AllNodes.insert(std::make_pair(++hanging_count, XYZ(vxyz[0], vxyz[1], vxyz[2])));
+						node_elements[node_i] = hanging_count;
+						hang_coord[7][0] = vxyz[0];
+						hang_coord[7][1] = vxyz[1];
+						hang_coord[7][2] = vxyz[2];
+						hang_nums[7] = hanging_count;
+					
+						// Write constraints for the hanging node
+						int mytemp = storeHangingNode(all_lni, hanging_corner, node_i, hanging_count);
+						if (hanging_count == 9110609 )
+						{
+							TGLOG("This is node " << hanging_count << " mytemp = " << mytemp);
+						}
+					}
+				}
+				CurrentCentre.x += 1.0/8.0 * vxyz[0];
+				CurrentCentre.y += 1.0/8.0 * vxyz[1];
+				CurrentCentre.z += 1.0/8.0 * vxyz[2];
+				cornerPoints.push_back(XYZ(vxyz[0], vxyz[1], vxyz[2]));
+			}        
+
+			for(i = 0; i < 8; i++) {
+				elemNodes.push_back(node_elements[elem_order[i]]);
+				m_NodesEncounter[node_elements[i]].push_back(ElemCount);
+			}
+			ElemCount++;
+			CentrePoints.push_back(CurrentCentre);
+			m_AllElements.push_back(elemNodes);
+
+			// Create connectivity for the nodes in the element (only if it is the final level of the refinement)
+			if ( quad->level == max_level ) {
+				vector<int>::iterator itNodes;
+				int i = 0;
+				std::vector<int> temp;
+				for (itNodes = elemNodes.begin(); itNodes != elemNodes.end(); ++itNodes, i++) {
+					// No need to iterate through the elements which have this node as the loop will go through 
+					// these elements anyway. Only store the information available for this element - neighbouring nodes etc
+					int a[3];
+					switch(i) {
+						case 0: { a[0] = elemNodes[1]; a[1] = elemNodes[3]; a[2] = elemNodes[4]; break; }
+						case 1: { a[0] = elemNodes[0]; a[1] = elemNodes[2]; a[2] = elemNodes[5]; break; }
+						case 2: { a[0] = elemNodes[1]; a[1] = elemNodes[3]; a[2] = elemNodes[6]; break; }
+						case 3: { a[0] = elemNodes[0]; a[1] = elemNodes[2]; a[2] = elemNodes[7]; break; }
+						case 4: { a[0] = elemNodes[0]; a[1] = elemNodes[5]; a[2] = elemNodes[7]; break; }
+						case 5: { a[0] = elemNodes[1]; a[1] = elemNodes[4]; a[2] = elemNodes[6]; break; }
+						case 6: { a[0] = elemNodes[2]; a[1] = elemNodes[5]; a[2] = elemNodes[7]; break; }
+						case 7: { a[0] = elemNodes[3]; a[1] = elemNodes[4]; a[2] = elemNodes[6]; break; }
+					}
+					m_NeighbourNodes[*itNodes].push_back(a[0]);
+					m_NeighbourNodes[*itNodes].push_back(a[1]);
+					m_NeighbourNodes[*itNodes].push_back(a[2]);
+				}
+			}
+
+			elemNodes.clear();
+		}
+	} 
+	p4est_lnodes_destroy (lnodes); 
+	TGLOG("Num of elements: " << m_AllElements.size());
+}
+
+*/
 
 
 void COctreeVoxelMesh::ConvertHexToTets()
@@ -2140,7 +2302,8 @@ void COctreeVoxelMesh::smoothing(const map<int, vector<int>> &NodeSurf, const ve
 				XYZ laplacian(0.0, 0.0, 0.0);
 				
 				int num = m_NeighbourNodes[*itNodes].size();
-				XYZ orig = OldNodes[*itNodes];
+				//XYZ orig = OldNodes[*itNodes];
+				XYZ orig = PrevNodes[*itNodes];
 
 				for (itNeighbour = m_NeighbourNodes[*itNodes].begin(); itNeighbour != m_NeighbourNodes[*itNodes].end(); ++itNeighbour) {
 					laplacian -= coef/num*(orig - AllNodes[*itNeighbour]);

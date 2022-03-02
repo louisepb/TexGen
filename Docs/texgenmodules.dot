@@ -31,8 +31,8 @@ digraph G
 	Core -> p4est
 	Renderer -> VTK
 	Interface:f0 -> Python [constraint=false]
-	GUI -> wxWidgets [constraint=false]
-	GUI -> Python
+	GUI -> wxWidgets
+	GUI -> Python [constraint=false]
 	Octree [label="HXA7241 Octree"]
 
 	Octree [style=filled, fillcolor="peachpuff"]

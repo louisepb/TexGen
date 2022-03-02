@@ -37,10 +37,16 @@ namespace TexGen
 		CVoxelMesh(string Type = "CPeriodicBoundaries");
 		virtual ~CVoxelMesh(void);
 		/** Save the voxel mesh as an Abaqus input file with periodic boundary conditions
+		\param CTextile Textile - textile to be exported as refined voxel mesh
+		\param string OutputFilename - filename to save to
+		\param int XVoxNum - number of voxels in x direction
+		\param int YVoxNum - number of voxels in y direction
+		\param int ZVoxNum - number of voxels in z direction
 		\param bOutputMatrix True to output the matrix area of the mesh
 		\param bOutputYarns True to output the yarn areas
 		\param iBoundaryConditions as in enum PERIODIC_BOUNDARY_CONDITIONS
 		\param iElementType 0 for C3D8R, 1 for C3D8
+		\param int Filetype as in enum EXPORT_TYPE
 		*/
 		virtual void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, bool bOutputMatrix, bool bOutputYarns, int iBoundaryConditions, int iElementType = 0, int FileType = INP_EXPORT);
 		/// Add a row of element information

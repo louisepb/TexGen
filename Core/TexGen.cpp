@@ -30,7 +30,7 @@ CTexGen::CTexGen(void)
 , m_pTextileCallback(NULL)
 , m_iMajorVersion(3)
 , m_iMinorVersion(12)
-, m_iRevision(0)
+, m_iRevision(2)
 , m_bMessagesOn(true)
 {
 	SetLogger(CLoggerScreen());
@@ -197,6 +197,8 @@ bool CTexGen::LoadTiXmlElement(TiXmlElement &Element)
 				AddTextile(Name, CTextileOffsetAngleInterlock(*pTextile), bOverwrite);
 			else if (*pType == "CTextileLayerToLayer")
 				AddTextile(Name, CTextileLayerToLayer(*pTextile), bOverwrite);
+			else if (*pType == "CTextileDecoupledLToL")
+				AddTextile(Name, CTextileDecoupledLToL(*pTextile), bOverwrite);
 			else if (*pType == "CTextile3DWeave")
 				AddTextile(Name, CTextile3DWeave(*pTextile), bOverwrite);
 			else if (*pType == "CShearedTextileWeave2D")

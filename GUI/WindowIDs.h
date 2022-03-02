@@ -133,6 +133,7 @@ enum
 	ID_PatternDraft,
 	ID_QuickDomainVolumeFraction,
 	ID_DomainVolumeFraction,
+	ID_IntersectionCorrection,
 
 	ID_WarpWidth,
 	ID_WarpHeight,

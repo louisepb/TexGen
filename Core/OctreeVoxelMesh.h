@@ -90,7 +90,7 @@ namespace TexGen
 		\param double smooth1 is the first smoothing parameter
 		\param double smooth2 is the second smoothing parameter
 		*/
-		void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, int min_level, int refine_level, bool smoothing, int smoothIter, double smooth1, double smooth2, bool surfaceOuput, bool cohesive);
+		void SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVoxNum, int YVoxNum, int ZVoxNum, int min_level, int refine_level, bool smoothing, int smoothIter, double smooth1, double smooth2, bool surfaceOuput);
 
 
 	protected:
@@ -131,7 +131,7 @@ namespace TexGen
 		// Convert Hex to Tets
 		void ConvertHexToTets();
 		/// Storing hanging nodes from octree-mesh to a vector for writing the constraints
-		int storeHangingNode(int *all_lni, int *hanging_corner, int node_i, int hanging_count);
+		int storeHangingNode(int *all_lni, int *hanging_corner, int node_i, int hanging_count, double v[3]);
 		/// Smoothing
 		void smoothing(const std::map< int, vector<int> > &NodeSurf, const vector<int> &AllSurf);
 		void fillMaterialInfo();
@@ -182,5 +182,9 @@ namespace TexGen
 		bool m_bTet;
 		double m_smoothCoef1, m_smoothCoef2;
 		int m_smoothIter;
+
+		/*int m_XVoxels;
+		int m_YVoxels;
+		int m_ZVoxels;*/
 	};
 };	// namespace TexGen

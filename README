@@ -8,6 +8,37 @@ If you find bugs/issues with TexGen please post an issue at https://github.com/l
 
 Version History
 ---------------
+
+v3.12.2
+=======
+Core
+====
+** Bugfix to octree refinement when starting with number of voxels other than 1x1x1
+
+v3.12.1
+=======
+General
+=======
+** Updated VS2017 non-bundled installer to set 64-bit registry and added p4est libraries
+
+Core
+====
+** Bugfix to octree refinement when starting with number of voxels other than 1x1x1
+** Updated tetgen export so that o2 option works to export quadratic tet elements
+** Change to octree voxel mesh so that initial number of voxels can be specified
+** Bug fix in smoothing for octree voxel mesh
+** Added AdjustTextileMesh function to CAdjustMeshInterference to allow intersection correction to be called from outside the dry fibre export
+
+GUI
+===
+** Added octree refinement option to Export ABAQUS Voxel File option. Dialog for voxel octree refinement and smoothing options as secondary dialog
+** Added Correct Small Intersections to Tools menu
+
+UnitTests
+=========
+** Added tetgen quad export test
+** Octree voxel mesh test modified for change in SaveVoxelMesh input parameters
+
 v3.12.0
 =======
 GUI

@@ -213,6 +213,7 @@ bool CTextileOffsetAngleInterlock::BuildTextile() const
 		return false;
 
 	TGLOGINDENT("Building textile weave \"" << GetName() << "\"");
+	m_bNeedsBuilding = false;
 
 	vector<int> Yarns;
 

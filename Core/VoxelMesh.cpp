@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PeriodicBoundaries.h"
 #include "ShearedPeriodicBoundaries.h"
 #include "StaggeredPeriodicBoundaries.h"
+#include "BendingPeriodicBoundaries.h"
 #include <iterator>
 //#define SHINY_PROFILER TRUE
 
@@ -36,6 +37,8 @@ CVoxelMesh::CVoxelMesh(string Type)
 		m_PeriodicBoundaries = new CStaggeredPeriodicBoundaries;
 	else if ( Type == "CRotatedPeriodicBoundaries" )
 		m_PeriodicBoundaries = new CRotatedPeriodicBoundaries;
+	else if ( Type == "CBendingPeriodicBoundaries" )
+		m_PeriodicBoundaries = new CBendingPeriodicBoundaries;
 	else
 		m_PeriodicBoundaries = new CPeriodicBoundaries;
 }
@@ -80,6 +83,8 @@ void CVoxelMesh::SaveVoxelMesh(CTextile &Textile, string OutputFilename, int XVo
 	}
 	else
 		SaveVoxelMeshToVTK(OutputFilename, Textile);
+
+	m_ElementsInfo.clear(); // Clear point_info data as otherwise retains memory space until create another voxel mesh or exit program
 
    // PROFILE_END();
    // PROFILER_UPDATE();
