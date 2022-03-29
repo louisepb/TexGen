@@ -28,12 +28,19 @@ namespace TexGen
 
 	/// Domain implementation described using extrusion of a polygon outline
 	/**
-	
+	Prism is described by a yarn with two nodes (to give the orientation )
+	and a cross-section defined by a polygon section created using the vector of points given as an input parameter
 	*/
 
 	class CLASS_DECLSPEC CDomainPrism : public CDomain
 	{
 	public:
+		/// Constructor
+		/**
+		\param Points Vector of points defining the cross-section of the prism
+		\param start Position of start node 
+		\return end Position of end node
+		*/
 		CDomainPrism(const vector<XY> &Points, XYZ &start, XYZ &end);
 		CDomainPrism(TiXmlElement &Element);
 		~CDomainPrism(void);
@@ -47,7 +54,13 @@ namespace TexGen
 		vector<pair<int, int> > GetRepeatLimits(const CYarn &Yarn) const { return vector<pair<int, int> >(); }
 		/// Get the translation vectors necessary to fully fill the domain
 		vector<XYZ> GetTranslations(const CYarn &Yarn) const { return vector<XYZ>(); }
+
+		/// Clips a mesh passed to the function to the domain by using the PointInsideYarn function (for the domain 'yarn')
+		/// Creates intersection mesh of intersecting elements for further testing against each domain plane
 		void ClipMeshToDomain(CMesh &Mesh, bool bFillGaps = true) const;
+
+		/// Clip mesh elements which are known to intersect with the domain
+		/// Checks each mesh element against each domain plane
 		void ClipIntersectMeshToDomain(CMesh &Mesh, bool bFillGaps = true) const;
 
 		bool ClipMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps = true) const { return false; }

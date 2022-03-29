@@ -52,6 +52,7 @@ bool CPrismVoxelMesh::CalculateVoxelSizes(CTextile &Textile)
 	m_RotatedVoxSize[1] /= m_YVoxels;
 	m_RotatedVoxSize[2] /= m_ZVoxels;
 
+	// Create map of which elements in the xy bounding box are in the prism cross-section - assumes constant cross-section
 	GetElementMap(Textile);
 
 	return true;
