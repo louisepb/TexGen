@@ -34,7 +34,7 @@ CDomainPrism::CDomainPrism(const vector<XY> &Points, XYZ &start, XYZ &end)
 	m_Yarn.AddNode(Node);
 	// Last parameter in CSectionPolygon forces input points only to be used to generate the polygon
 	m_Yarn.AssignSection(CYarnSectionConstant(CSectionPolygon(Points, false, true)));
-	m_Yarn.SetResolution(2, Points.size());  // Need better definition of resolution
+	m_Yarn.SetResolution(2, (int)Points.size());  // Need better definition of resolution
 	BuildMesh();
 }
 
@@ -64,6 +64,7 @@ void CDomainPrism::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE Outpu
 
 void CDomainPrism::BuildMesh()
 {
+	// Build a surface mesh for the yarn representing the domain
 	m_Mesh.Clear();
 	m_Yarn.AddSurfaceToMesh( m_Mesh );
 	m_Mesh.MergeNodes();
@@ -77,7 +78,7 @@ void CDomainPrism::GeneratePlanes()
 		BuildMesh();
 	}
 
-	// Generate set of planes to form the domain
+	// Generate set of planes to form the domain, one for each element of the surface mesh of the domain 'yarn'
 
 	list<int>::iterator itInt;
 	list<int>::iterator itStart;
@@ -238,7 +239,6 @@ void CDomainPrism::ClipIntersectMeshToDomain(CMesh &Mesh, bool bFillGaps) const
 			{
 				// Do nothing
 			}
-			//else if (d1 < TOL && d2 < TOL && d3 > TOL && d4 > TOL) // Points 1 & 2 outside plane
 			else if (d1 < TOL && d2 < TOL && d3 > TOL && d4 > TOL) // Points 1 & 2 outside plane
 			{
 				itInt = QuadIndices.erase(itStart, itInt); // Delete the quad
@@ -406,85 +406,10 @@ void CDomainPrism::ClipIntersectMeshToDomain(CMesh &Mesh, bool bFillGaps) const
 			FillGaps(Mesh, *itPlane, ClosedLoop);
 	}
 
-	// Deal with volume elements
-	int iNumNodes;
-	double d;
-	vector<CMesh::ELEMENT_TYPE> VolumeElements;
-	vector<CMesh::ELEMENT_TYPE>::iterator itElementType;
-	VolumeElements.push_back(CMesh::TET);
-	VolumeElements.push_back(CMesh::PYRAMID);
-	VolumeElements.push_back(CMesh::WEDGE);
-	VolumeElements.push_back(CMesh::HEX);
-	VolumeElements.push_back(CMesh::QUADRATIC_TET);
-	for (itPlane = m_ElementPlanes.begin(); itPlane != m_ElementPlanes.end(); ++itPlane)
-	{
-		for (itElementType = VolumeElements.begin(); itElementType != VolumeElements.end(); ++itElementType)
-		{
-			list<int> &Indices = Mesh.GetIndices(*itElementType);
-			for (itInt = Indices.begin(); itInt != Indices.end(); )
-			{
-				iNumNodes = CMesh::GetNumNodes(*itElementType);
-				itStart = itInt;
+	// TODO Reinstate volume elements if want to clip through elements rather than using 
+	// centre point to determine whether inside domain and retaining whole element
 
-				XYZ Center;
-				for (i = 0; i<iNumNodes; ++i)
-				{
-					Center += Mesh.GetNode(*(itInt++));
-				}
-				Center /= iNumNodes;
-
-				d = DotProduct(itPlane->Normal, Center) - itPlane->d;
-				if (d < 0)
-					itInt = Indices.erase(itStart, itInt); // Delete the volume element
-			}
-		}
-	}
-
-	for (itPlane = m_ElementPlanes.begin(); itPlane != m_ElementPlanes.end(); ++itPlane)
-	{
-		list<int> &Indices = Mesh.GetIndices(CMesh::POLYGON);
-		list<int>::iterator itIndices;
-		int StartIndex, NewStartIndex;
-		bool bResetStart = true;
-		list<int>::iterator itStartIndex;
-		bool bDelete = true;
-
-		for (itIndices = Indices.begin(); itIndices != Indices.end(); )
-		{
-			bDelete = true;
-			StartIndex = NewStartIndex = (*(itIndices));
-			itStartIndex = itIndices;
-			vector<int> PolygonIndex;
-			XYZ p;
-			bResetStart = true;
-			int i = 0, iPoints = 0;
-			do {
-				p = Mesh.GetNode(*(itIndices));
-				d = DotProduct(itPlane->Normal, p) - itPlane->d;
-				if (d < TOL)
-				{
-					//if ( *itIndices == NewStartIndex )
-					//bResetStart = false;  // Keeping 1st so don't need to reset
-					//bDelete = false;
-					++iPoints;
-				}
-				++i;
-				++itIndices;
-			} while ((*itIndices) != StartIndex);
-			++itIndices;
-			//if ( bDelete )
-			if (iPoints == i) // All points outside plane
-			{
-				itIndices = Indices.erase(itStartIndex, itIndices);
-			}
-			/*if ( NewStartIndex != StartIndex ) // Must have deleted start so reset to new start value
-			*(itIndices) = NewStartIndex;
-			if ( NewStartIndex == StartIndex && bResetStart )  // Deleted whole loop so need to delete repeated start index
-			itIndices = Indices.erase(itIndices);
-			else
-			itIndices++;*/
-		}
-	}
+	// Polygon mesh not currently sent to intersect mesh clip - reinstate if added to intersection mesh
 
 	Mesh.RemoveUnreferencedNodes();
 }
@@ -504,15 +429,9 @@ void CDomainPrism::ClipMeshToDomain(CMesh &Mesh, bool bFillGaps) const
 	list<int>::iterator itStart;
 	list<int>::iterator itInt;
 	const XYZ *p1, *p2, *p3, *p4;
-	//XYZ points[4];
-	//double d1, d2, d3, d4;	// d represents the distance of the point to the plane (i.e. +ve inside, -ve outside, 0 on top)
-	//double dist[4];
-	double dTemp;
-	const XYZ *pTemp;
-	double u;
+	
 	int i;
 	int iLastNodeIndex;
-	bool bFlipped;
 	bool b1, b2, b3, b4;
 
 	CMesh IntersectMesh;   // Mesh used to save Mesh elements (from yarn) which intersect with the domain planes
@@ -624,6 +543,44 @@ void CDomainPrism::ClipMeshToDomain(CMesh &Mesh, bool bFillGaps) const
 	}
 	IntersectTriangles.clear();
 
+	// Deal with volume elements
+	int iNumNodes;
+	double d;
+	vector<CMesh::ELEMENT_TYPE> VolumeElements;
+	vector<CMesh::ELEMENT_TYPE>::iterator itElementType;
+	VolumeElements.push_back(CMesh::TET);
+	VolumeElements.push_back(CMesh::PYRAMID);
+	VolumeElements.push_back(CMesh::WEDGE);
+	VolumeElements.push_back(CMesh::HEX);
+	VolumeElements.push_back(CMesh::QUADRATIC_TET);
+	//for (itPlane = m_Planes.begin(); itPlane != m_Planes.end(); ++itPlane)
+	//{
+		for (itElementType = VolumeElements.begin(); itElementType != VolumeElements.end(); ++itElementType)
+		{
+			list<int> &Indices = Mesh.GetIndices(*itElementType);
+			for (itInt = Indices.begin(); itInt != Indices.end(); )
+			{
+				iNumNodes = CMesh::GetNumNodes(*itElementType);
+				itStart = itInt;
+
+				XYZ Center;
+				for (i = 0; i < iNumNodes; ++i)
+				{
+					Center += Mesh.GetNode(*(itInt++));
+				}
+				Center /= iNumNodes;
+
+				b1 = m_Yarn.PointInsideYarn(Center, NULL, NULL, NULL, &d);
+			//	d = DotProduct(itPlane->Normal, Center) - itPlane->d;
+			//	if (d < 0)
+				if (!b1)
+					itInt = Indices.erase(itStart, itInt); // Delete the volume element
+			}
+		}
+	//}
+
+
+	// Does it need to deal with polygon elements?
 
 	IntersectMesh.SaveToVTK("IntersectionMesh");  // Debug check for viewing of intersection mesh
 

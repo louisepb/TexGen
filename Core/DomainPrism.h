@@ -107,9 +107,11 @@ namespace TexGen
 		/// Populate m_PlaneIntersections and m_Mesh, note this only works for closed domains
 		void BuildMesh();
 
-		
+		/// Generate a plane from a vector of co-planar points
 		bool GetPlane(XYZ *points, PLANE &plane);
+		/// Iterate through m_ElementPlanes to remove duplicates
 		void RemoveDuplicatePlanes();
+		/// Test if both normal and d of two PLANE structures are equal 
 		bool PlaneEqual(PLANE Plane1, PLANE Plane2);
 
 		/// Given a mesh and a plane, the holes found in the plane will be filled with triangles
