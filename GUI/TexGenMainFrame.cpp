@@ -1150,6 +1150,11 @@ void CTexGenMainFrame::OnSaveVTUVoxels(wxCommandEvent& event)
 					Command << "Vox = CRotatedVoxelMesh('CRotatedPeriodicBoundaries')" << endl;
 					iBoundaryConditions = ROTATED_BC;
 				}
+				else if (iDomainType == PRISM_DOMAIN)
+				{
+					Command << "Vox = CPrismVoxelMesh('CPrismPeriodicBoundaries')" << endl;
+					iBoundaryConditions = NO_BOUNDARY_CONDITIONS;
+				}
 				else  // BOX_DOMAIN
 				{
 					Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
