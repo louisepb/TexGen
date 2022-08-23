@@ -974,6 +974,14 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 {
 	string TextileName = GetTextileSelection();
+	CTextile* pTextile = TEXGEN.GetTextile(TextileName);
+
+	if (pTextile->GetDomain()->GetType() == "CDomainPrism")
+	{
+		wxMessageBox(wxT("Cannot save voxel mesh for prism domain- \n only available via Python script"), wxT("Prism Domain Error"), wxOK | wxICON_ERROR, this);
+		return;
+	}
+
 	stringstream Command;
 
 	wxString XVoxels = wxT("50");
