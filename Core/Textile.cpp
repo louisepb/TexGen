@@ -853,6 +853,16 @@ CTextileAngleInterlock* CTextile::GetAngleInterlockWeave()
 	return dynamic_cast<CTextileAngleInterlock*>(this);
 }
 
+CTextileKnit* CTextile::GetKnit()
+{
+	return dynamic_cast<CTextileKnit*>(this);
+}
+
+CTextileWeftKnit* CTextile::GetWeftKnit()
+{
+	return dynamic_cast<CTextileWeftKnit*>(this);
+}
+
 /*int CTextile::AdjustInterference(vector<float> &DistanceToSurface, CMesh *pInterferingPoints)
 {
 	if (!BuildTextileIfNeeded())
