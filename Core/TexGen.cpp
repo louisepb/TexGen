@@ -187,7 +187,7 @@ bool CTexGen::LoadTiXmlElement(TiXmlElement &Element)
 				AddTextile(Name, CTextileWeave2D(*pTextile), bOverwrite);
 			else if (*pType == "CTextileWeave3D")
 				AddTextile(Name, CTextileWeave3D(*pTextile), bOverwrite);
-			else if (*pType == "CTextileWeave") 
+			else if (*pType == "CTextileWeave")
 				AddTextile(Name, CTextileWeave(*pTextile), bOverwrite);
 			else if (*pType == "CTextileOrthogonal")
 				AddTextile(Name, CTextileOrthogonal(*pTextile), bOverwrite);
@@ -205,6 +205,10 @@ bool CTexGen::LoadTiXmlElement(TiXmlElement &Element)
 				AddTextile(Name, CShearedTextileWeave2D(*pTextile), bOverwrite);
 			else if (*pType == "CTextileLayered")
 				AddTextile(Name, CTextileLayered(*pTextile), bOverwrite);
+			else if (*pType == "CTextileKnit")
+				AddTextile(Name, CTextileKnit(*pTextile), bOverwrite);
+			else if (*pType == "CTextileWeftKnit")
+				AddTextile(Name, CTextileWeftKnit(*pTextile), bOverwrite);
 			else
 				AddTextile(Name, CTextile(*pTextile), bOverwrite);
 		}
