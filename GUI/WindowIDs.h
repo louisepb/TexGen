@@ -75,6 +75,7 @@ enum
 	ID_DeleteTextile,
 	ID_Create3DTextile,
 	ID_CreateLayeredTextile,
+	ID_CreateWeftKnitTextile,
 	ID_SetLayerOffsets,
 	ID_NestLayers,
 	ID_MaxNestLayers,
