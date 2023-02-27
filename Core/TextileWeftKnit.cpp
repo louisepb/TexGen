@@ -5,9 +5,11 @@
 
 using namespace TexGen;
 
-CTextileWeftKnit::CTextileWeftKnit() : CTextileKnit()
+CTextileWeftKnit::CTextileWeftKnit(int iWales, int iCourses, double dWaleWidth, double dCourseHeight, double dYarnThickness) : CTextileKnit()
 {
-	double r = 1;
+
+
+	/*double r = 1;
 	double sx = r * 2.5;
 	double sy = r * 10;
 	double ly = 0.75 * (sx + r);
@@ -51,16 +53,16 @@ CTextileWeftKnit::CTextileWeftKnit() : CTextileKnit()
 
 	this->AddYarn(*Yarn);
 
-	this->AssignDomain(CDomainPlanes(XYZ(0, -ly, -2 * r), XYZ(4 * (r*sx), 4 * sy - ly, 2 * r)));
+	this->AssignDomain(CDomainPlanes(XYZ(0, -ly, -2 * r), XYZ(4 * (r*sx), 4 * sy - ly, 2 * r)));*/
 
 }
 
 CTextileWeftKnit::~CTextileWeftKnit(void)
 {
-
 }
 
-CTextileWeftKnit::CTextileWeftKnit(TiXmlElement &Element) : CTextileKnit(Element)
+CTextileWeftKnit::CTextileWeftKnit(TiXmlElement &Element)
+: CTextileKnit(Element)
 {
 
 }
@@ -72,5 +74,8 @@ void CTextileWeftKnit::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE O
 
 bool CTextileWeftKnit::BuildTextile() const
 {
+	m_Yarns.clear();
+	
+
 	return true;
 }

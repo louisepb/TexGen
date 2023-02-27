@@ -9,7 +9,7 @@ namespace TexGen
 	{
 	public:
 
-		CTextileWeftKnit();
+		CTextileWeftKnit(int iWales, int iCourses, double dWaleWidth, double dCourseHeight, double dYarnThickness);
 		CTextileWeftKnit(TiXmlElement &Element);
 		virtual ~CTextileWeftKnit(void);
 
