@@ -16,11 +16,18 @@ protected:
 	
 	void OnInit(wxInitDialogEvent& event);
 
-	wxString m_Wales;
-	wxString m_Courses;
+	void BuildPages();
+
+	wxWizardPageSimple* BuildFirstPage();
+
+	wxSpinCtrl *m_pWalesSpin;
+	wxSpinCtrl *m_pCoursesSpin;
 	wxString m_WaleWidth;
 	wxString m_CourseHeight;
 	wxString m_YarnThickness;
+
+	wxWizardPageSimple *m_pFirstPage;
+
 
 	bool m_bCreateDomain;
 
