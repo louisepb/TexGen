@@ -509,3 +509,4 @@ FodyWeavers.xsd
 /Triangle/INSTALL.vcxproj
 /Triangle/cmake_install.cmake
 /.gitignore.bak
+/GUI/WeftKnit.xpm.bak
