@@ -31,8 +31,9 @@ namespace TexGen
 
 		virtual bool BuildTextile() const;
 		std::vector<nodeCoordinates*> CalculateNodeCoordinatesForSingleLoop() const;
+		virtual void CreateNodesForSingleLoop(std::vector<nodeCoordinates*> nodeCoords) const;
 
-		
+		mutable std::vector<CNode*> m_Nodes;
 
 		int m_iWales;
 		int m_iCourses;

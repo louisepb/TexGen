@@ -84,10 +84,15 @@ bool CTextileWeftKnit::BuildTextile() const
 
 	std::vector<nodeCoordinates*> loopNodeCoordinates = CalculateNodeCoordinatesForSingleLoop();
 
+	CreateNodesForSingleLoop(loopNodeCoordinates);
 
 	for (nodeCoordinates* nodeCoords : loopNodeCoordinates)
 		delete nodeCoords;
 	loopNodeCoordinates.clear();
+
+	for (CNode* node : m_Nodes)
+		delete node;
+	m_Nodes.clear();
 
 	return true;
 }
@@ -165,4 +170,17 @@ std::vector<nodeCoordinates*> CTextileWeftKnit::CalculateNodeCoordinatesForSingl
 
 	return loopNodeCoordinates;
 	
+}
+
+void CTextileWeftKnit::CreateNodesForSingleLoop(std::vector<nodeCoordinates*> nodeCoords) const
+{
+	CNode* newNode = nullptr;
+	nodeCoordinates* thisNodeCoordinate = nullptr;
+
+	for (std::vector<nodeCoordinates*>::const_iterator nodeCoordinateIter = nodeCoords.begin() ; nodeCoordinateIter != nodeCoords.end() ; nodeCoordinateIter++)
+	{
+		thisNodeCoordinate = (*nodeCoordinateIter);
+		newNode = new CNode(XYZ(thisNodeCoordinate->xCoord, thisNodeCoordinate->yCoord, thisNodeCoordinate->zCoord));
+		m_Nodes.push_back(newNode);
+	}
 }
