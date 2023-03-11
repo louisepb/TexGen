@@ -168,8 +168,9 @@ enum
 	ID_AngleInterlockText,
 	ID_LayerToLayerText,
 
-	ID_WaleWidth,
-	ID_CourseHeight
+	ID_WaleHeight,
+	ID_CourseWidth,
+	ID_LoopHeight
 
 
 };

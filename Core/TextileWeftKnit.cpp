@@ -5,9 +5,15 @@
 
 using namespace TexGen;
 
-CTextileWeftKnit::CTextileWeftKnit(int iWales, int iCourses, double dWaleWidth, double dCourseHeight, double dYarnThickness) : CTextileKnit()
+CTextileWeftKnit::CTextileWeftKnit(int iWales, int iCourses, double dWaleHeight, double dCourseWidth, double dLoopHeight, double dYarnThickness) : CTextileKnit()
+, m_iWales(iWales)
+, m_iCourses(iCourses)
+, m_dWaleHeight(dWaleHeight)
+, m_dCourseWidth(dCourseWidth)
+, m_dLoopHeight(dLoopHeight)
+, m_dYarnThickness(dYarnThickness)
 {
-
+	BuildTextile();
 
 	/*double r = 1;
 	double sx = r * 2.5;
@@ -75,7 +81,88 @@ void CTextileWeftKnit::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE O
 bool CTextileWeftKnit::BuildTextile() const
 {
 	m_Yarns.clear();
-	
+
+	std::vector<nodeCoordinates*> loopNodeCoordinates = CalculateNodeCoordinatesForSingleLoop();
+
+
+	for (nodeCoordinates* nodeCoords : loopNodeCoordinates)
+		delete nodeCoords;
+	loopNodeCoordinates.clear();
 
 	return true;
+}
+
+string CTextileWeftKnit::GetDefaultName() const
+{
+	return "WeftKnit(W:" + stringify(m_iWales) + ",C:" + stringify(m_iCourses) + ")";
+}
+
+void CTextileWeftKnit::RefineTextile(bool bCorrectWidths, bool bCorrectInterference, bool bPeriodic) {}
+
+
+std::vector<nodeCoordinates*> CTextileWeftKnit::CalculateNodeCoordinatesForSingleLoop() const
+{
+	// Currently using model proposed by Ravandi et al. 
+	// in "Numerical Simulation of the Mechanical Behavior of a Weft-Knitted Carbon Fiber Composite under Tensile Loading" (2022)
+	
+	std::vector<nodeCoordinates*> loopNodeCoordinates;
+
+	nodeCoordinates *Node1 = new nodeCoordinates;
+	nodeCoordinates *Node2 = new nodeCoordinates;
+	nodeCoordinates *Node3 = new nodeCoordinates;
+	nodeCoordinates *Node4 = new nodeCoordinates;
+	nodeCoordinates *Node5 = new nodeCoordinates;
+	nodeCoordinates *Node6 = new nodeCoordinates;
+	nodeCoordinates *Node7 = new nodeCoordinates;
+	nodeCoordinates *Node8 = new nodeCoordinates;
+	nodeCoordinates *Node9 = new nodeCoordinates;
+
+	Node1->xCoord = double(0);
+	Node1->yCoord = double(0);
+	Node1->zCoord = double(m_dYarnThickness / double(2));
+
+	Node2->xCoord = double((m_dCourseWidth + (double(2) * m_dYarnThickness)) / double(4));
+	Node2->yCoord = double((m_dLoopHeight - m_dWaleHeight) / double(2));
+	Node2->zCoord = double(0);
+
+	Node3->xCoord = double(m_dCourseWidth / double(4));
+	Node3->yCoord = double(m_dLoopHeight / double(2));
+	Node3->zCoord = double(double(-1) * m_dYarnThickness / double(2));
+
+	Node4->xCoord = double((m_dCourseWidth - (double(2) * m_dYarnThickness)) / double(4));
+	Node4->yCoord = double((m_dLoopHeight + m_dWaleHeight) / double(2));
+	Node4->zCoord = double(0);
+
+	Node5->xCoord = double(m_dCourseWidth / double(2));
+	Node5->yCoord = double(m_dLoopHeight);
+	Node5->zCoord = double(m_dYarnThickness / double(2));
+
+	Node6->xCoord = double(((double(3) * m_dCourseWidth) + (double(2) * m_dYarnThickness)) / double(4));
+	Node6->yCoord = double((m_dLoopHeight + m_dWaleHeight) / double(2));
+	Node6->zCoord = double(0);
+
+	Node7->xCoord = double((double(3) * m_dCourseWidth) / double(4));
+	Node7->yCoord = double(m_dLoopHeight / double(2));
+	Node7->zCoord = double(double(-1) * m_dYarnThickness / double(2));
+
+	Node8->xCoord = double(((double(3) * m_dCourseWidth) - (double(2) * m_dYarnThickness)) / double(4));
+	Node8->yCoord = double((m_dLoopHeight - m_dWaleHeight) / double(2));
+	Node8->zCoord = double(0);
+
+	Node9->xCoord = m_dCourseWidth;
+	Node9->yCoord = double(0);
+	Node9->zCoord = double(m_dYarnThickness / double(2));
+
+	loopNodeCoordinates.push_back(Node1);
+	loopNodeCoordinates.push_back(Node2);
+	loopNodeCoordinates.push_back(Node3);
+	loopNodeCoordinates.push_back(Node4);
+	loopNodeCoordinates.push_back(Node5);
+	loopNodeCoordinates.push_back(Node6);
+	loopNodeCoordinates.push_back(Node7);
+	loopNodeCoordinates.push_back(Node8);
+	loopNodeCoordinates.push_back(Node9);
+
+	return loopNodeCoordinates;
+	
 }

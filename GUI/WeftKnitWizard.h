@@ -15,10 +15,11 @@ public:
 protected:
 	
 	void OnWizardPageChanging(wxWizardEvent& event);
-	void OnWaleWidthChanged(wxCommandEvent& event) { m_bWaleWidthChanged = true; }
-	void OnCourseHeightChanged(wxCommandEvent& event) { m_bCourseHeightChanged = true; }
+	void OnWaleHeightChanged(wxCommandEvent& event) { m_bWaleHeightChanged = true; }
+	void OnCourseWidthChanged(wxCommandEvent& event) { m_bCourseWidthChanged = true; }
+	void OnLoopHeightChanged(wxCommandEvent& event) { m_bLoopHeightChanged = true; }
 	void OnThicknessChanged(wxCommandEvent& event) { m_bThicknessChanged = true; }
-	void OnInit(wxInitDialogEvent& event) { m_bWaleWidthChanged = m_bCourseHeightChanged = m_bThicknessChanged = false; }
+	void OnInit(wxInitDialogEvent& event) { m_bCourseWidthChanged = m_bWaleHeightChanged = m_bThicknessChanged = m_bLoopHeightChanged = false; }
 
 	void OnRefine(wxCommandEvent& event);
 	void OnDomain(wxCommandEvent& event);
@@ -30,8 +31,9 @@ protected:
 
 	wxSpinCtrl *m_pWalesSpin;
 	wxSpinCtrl *m_pCoursesSpin;
-	wxString m_WaleWidth;
-	wxString m_CourseHeight;
+	wxString m_WaleHeight;
+	wxString m_CourseWidth;
+	wxString m_LoopHeight;
 	wxString m_YarnThickness;
 	wxString m_GapSize;
 
@@ -40,8 +42,9 @@ protected:
 
 	bool m_bCreateDomain;
 	bool m_bRefine;
-	bool m_bWaleWidthChanged;
-	bool m_bCourseHeightChanged;
+	bool m_bWaleHeightChanged;
+	bool m_bCourseWidthChanged;
+	bool m_bLoopHeightChanged;
 	bool m_bThicknessChanged;
 
 	DECLARE_EVENT_TABLE()

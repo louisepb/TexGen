@@ -11,8 +11,9 @@ EVT_WIZARD_PAGE_CHANGING(wxID_ANY, CWeftKnitWizard::OnWizardPageChanging)
 EVT_INIT_DIALOG(CWeftKnitWizard::OnInit)
 EVT_CHECKBOX(ID_Refine, CWeftKnitWizard::OnRefine)
 EVT_CHECKBOX(ID_DefaultDomain, CWeftKnitWizard::OnDomain)
-EVT_TEXT(ID_WaleWidth, CWeftKnitWizard::OnWaleWidthChanged)
-EVT_TEXT(ID_CourseHeight, CWeftKnitWizard::OnCourseHeightChanged)
+EVT_TEXT(ID_WaleHeight, CWeftKnitWizard::OnWaleHeightChanged)
+EVT_TEXT(ID_CourseWidth, CWeftKnitWizard::OnCourseWidthChanged)
+EVT_TEXT(ID_LoopHeight, CWeftKnitWizard::OnLoopHeightChanged)
 EVT_TEXT(ID_Thickness, CWeftKnitWizard::OnThicknessChanged)
 END_EVENT_TABLE()
 
@@ -20,13 +21,15 @@ CWeftKnitWizard::CWeftKnitWizard(wxWindow* parent, wxWindowID id)
 	: wxWizard(parent, id, wxT("Weft Knit Wizard"), wxBitmap(WeftKnit_xpm))
 	, m_bCreateDomain(true)
 	, m_pFirstPage(NULL)
-	, m_WaleWidth(wxT("1"))
-	, m_CourseHeight(wxT("1"))
+	, m_WaleHeight(wxT("1"))
+	, m_CourseWidth(wxT("1"))
+	, m_LoopHeight(wxT("1.2"))
 	, m_YarnThickness(wxT("0.2"))
 	, m_GapSize(wxT("0"))
 	, m_bRefine(true)
-	, m_bWaleWidthChanged(false)
-	, m_bCourseHeightChanged(false)
+	, m_bWaleHeightChanged(false)
+	, m_bCourseWidthChanged(false)
+	, m_bLoopHeightChanged(false)
 	, m_bThicknessChanged(false)
 {
 	BuildPages();
@@ -77,13 +80,17 @@ wxWizardPageSimple* CWeftKnitWizard::BuildFirstPage()
 
 		wxTextCtrl* pControl;
 
-		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Wale Width:")), SizerFlags);
-		pSubSizer->Add(pControl = new wxTextCtrl(pPage, ID_Spacing, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_NUMERIC, &m_WaleWidth)), SizerFlags);
-		pControl->SetToolTip(wxT("Sets the width of one wale."));
+		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Wale Height:")), SizerFlags);
+		pSubSizer->Add(pControl = new wxTextCtrl(pPage, ID_Spacing, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_NUMERIC, &m_WaleHeight)), SizerFlags);
+		pControl->SetToolTip(wxT("Sets the height of one wale."));
 
-		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Course Height:")), SizerFlags);
-		pSubSizer->Add(pControl = new wxTextCtrl(pPage, ID_Width, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_NUMERIC, &m_CourseHeight)), SizerFlags);
-		pControl->SetToolTip(wxT("Sets the height of one course."));
+		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Course Width:")), SizerFlags);
+		pSubSizer->Add(pControl = new wxTextCtrl(pPage, ID_Width, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_NUMERIC, &m_CourseWidth)), SizerFlags);
+		pControl->SetToolTip(wxT("Sets the width of one course."));
+
+		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Loop Height:")), SizerFlags);
+		pSubSizer->Add(pControl = new wxTextCtrl(pPage, ID_Width, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_NUMERIC, &m_LoopHeight)), SizerFlags);
+		pControl->SetToolTip(wxT("Sets the height of one loop."));
 
 		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Yarn Thickness:")), SizerFlags);
 		pSubSizer->Add(pControl = new wxTextCtrl(pPage, ID_Thickness, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_NUMERIC, &m_YarnThickness)), SizerFlags);
