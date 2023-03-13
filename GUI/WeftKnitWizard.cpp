@@ -142,8 +142,20 @@ bool CWeftKnitWizard::RunIt()
 
 string CWeftKnitWizard::GetCreateTextileCommand(string ExistingTextile)
 {
-	string testReturn = "";
-	return testReturn;
+	stringstream StringStream;
+	int iWales = m_pWalesSpin->GetValue();
+	int iCourses = m_pCoursesSpin->GetValue();
+	double dWaleHeight, dLoopHeight, dCourseWidth, dThickness;
+	m_WaleHeight.ToDouble(&dWaleHeight);
+	m_LoopHeight.ToDouble(&dLoopHeight);
+	m_CourseWidth.ToDouble(&dCourseWidth);
+	m_YarnThickness.ToDouble(&dThickness);
+	
+	StringStream << "WeftKnit = CTextileWeftKnit(" << iWales << "," << iCourses << "," << dWaleHeight << "," << dCourseWidth << "," << dLoopHeight << "," << dThickness << ")" << endl;
+
+	StringStream << "AddTextile(WeftKnit)" << endl;
+
+	return StringStream.str();
 }
 
 void CWeftKnitWizard::LoadSettings(const CTextileWeftKnit &WeftKnit)

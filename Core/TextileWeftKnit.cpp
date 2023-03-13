@@ -14,6 +14,8 @@ CTextileWeftKnit::CTextileWeftKnit(int iWales, int iCourses, double dWaleHeight,
 , m_dYarnThickness(dYarnThickness)
 {
 	BuildTextile();
+
+	BuildDomain();
 }
 
 CTextileWeftKnit::~CTextileWeftKnit(void)
@@ -40,8 +42,6 @@ bool CTextileWeftKnit::BuildTextile() const
 	CreateNodesForWidthwiseYarn(loopNodeCoordinates);
 
 	BuildYarns();
-	
-
 	
 
 	for (nodeCoordinates* nodeCoords : loopNodeCoordinates)
@@ -174,4 +174,11 @@ void CTextileWeftKnit::BuildYarns() const
 		newYarn->Translate(XYZ(0, m_dWaleHeight, 0));
 		this->AddYarn(*newYarn);
 	}
+}
+
+
+void CTextileWeftKnit::BuildDomain()
+{
+	CDomainPlanes domain = CDomainPlanes(XYZ(0, -m_dYarnThickness / double(2) , -m_dYarnThickness), XYZ(m_dCourseWidth * m_iCourses, (m_dLoopHeight * double(m_iWales)) - ((m_dLoopHeight - m_dWaleHeight) * double(m_iWales - 1)) + (m_dYarnThickness / double(2)), m_dYarnThickness));
+	AssignDomain(domain);
 }
