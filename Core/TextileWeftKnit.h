@@ -30,8 +30,10 @@ namespace TexGen
 	protected:
 
 		virtual bool BuildTextile() const;
-		std::vector<nodeCoordinates*> CalculateNodeCoordinatesForSingleLoop() const;
-		virtual void CreateNodesForSingleLoop(std::vector<nodeCoordinates*> nodeCoords) const;
+		std::vector<nodeCoordinates*> CalculateNodeCoordinatesForWidthwiseYarn() const;
+		virtual void CreateNodesForWidthwiseYarn(std::vector<nodeCoordinates*> nodeCoords) const;
+		virtual void BuildYarns() const;
+
 
 		mutable std::vector<CNode*> m_Nodes;
 
