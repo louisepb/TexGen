@@ -931,8 +931,6 @@ void CYarn::AddEndCapsToMesh(CMesh &Mesh) const
 
 	StartMesh = CSectionMeshTriangulate::GetTriangleMesh(StartNode.Get2DSectionPoints());
 	EndMesh = CSectionMeshTriangulate::GetTriangleMesh(EndNode.Get2DSectionPoints());
-	//StartMesh = CSectionMeshTriangulate::GetSimpleMesh(StartNode.Get2DSectionPoints());
-	//EndMesh = CSectionMeshTriangulate::GetSimpleMesh(EndNode.Get2DSectionPoints());
 
 	XYZ StartSide = CrossProduct(StartNode.GetTangent(), StartNode.GetUp());
 	XYZ EndSide = CrossProduct(EndNode.GetTangent(), EndNode.GetUp());

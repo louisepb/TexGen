@@ -48,7 +48,11 @@ void CSurfaceMesh::SaveSurfaceMesh(CTextile &Textile, bool bSaveYarns, bool bSav
 
 	if (bSaveDomain)
 	{
-		MeshDomainPlanes(true);
+		if (Textile.GetDomain()->GetType() == "CPrismDomain")
+			MeshDomainPlanes(false);  // Could change later so that is periodic across polygon faces
+		else
+			MeshDomainPlanes(true);
+
 		vector<CMesh>::iterator itTriangulatedMeshes;
 		for (itTriangulatedMeshes = m_TriangulatedMeshes.begin(); itTriangulatedMeshes != m_TriangulatedMeshes.end(); ++itTriangulatedMeshes)
 		{

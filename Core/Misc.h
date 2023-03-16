@@ -120,6 +120,7 @@ namespace TexGen
 		BOX_DOMAIN,
 		SHEARED_DOMAIN,
 		ROTATED_DOMAIN,
+		PRISM_DOMAIN,
 	};
 
 	CLASS_DECLSPEC COLOR GetIndexedColor(int iIndex);

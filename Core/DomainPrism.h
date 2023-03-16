@@ -63,7 +63,8 @@ namespace TexGen
 		/// Checks each mesh element against each domain plane
 		void ClipIntersectMeshToDomain(CMesh &Mesh, bool bFillGaps = true) const;
 
-		bool ClipMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps = true) const { return false; }
+		bool ClipMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps = true) const; //{ return false; }
+		bool ClipIntersectMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps) const;
 		string GetType() const { return "CDomainPrism"; }
 
 		const vector<XY> &GetPoints() const { return m_Points; }
@@ -82,6 +83,7 @@ namespace TexGen
 
 		/// Generate a set of planes corresponding to the mesh elements
 		void GeneratePlanes();
+		void GetMeshWithPolygonEnd(CMesh &Mesh);
 
 		void GetPolygonLimits(XYZ &StartPoint, XYZ *SizeVecs);
 

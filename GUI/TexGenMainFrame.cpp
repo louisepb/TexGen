@@ -656,6 +656,12 @@ void CTexGenMainFrame::OnSaveVolumeMesh(wxCommandEvent& event)
 	string TextileName = GetTextileSelection();
 	CTextile* pTextile = TEXGEN.GetTextile(TextileName);
 
+	if (pTextile->GetDomain()->GetType() == "CDomainPrism")
+	{
+		wxMessageBox(wxT("Cannot save volume mesh for prism domain- \n function not currently implemented"), wxT("Prism Domain Error"), wxOK | wxICON_ERROR, this);
+		return;
+	}
+
 	double dSeedSize = 1;
 
 	if ( pTextile )

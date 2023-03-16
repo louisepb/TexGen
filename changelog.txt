@@ -11,11 +11,14 @@ Core
 ** Changed octree voxel mesh to enforce periodic meshing at boundaries
 ** Added CTextileDecoupledLToL class to create layer to layer textile where binder yarns in the same warp position are not tied together
 ** Added CBendingPeriodicBoundaries class to output boundary conditions for a unit cell in tension and bending
+** Added CDomainPrism to create prismatic domains which can include concave shapes
+** Implemented surface and tetgen meshing for prism domains
 
 GUI
 ===
 ** Changed octree voxel mesh export to have one check box for output of surface nodes and cohesive elements
 ** Added drag resize to properties dialog
+** Added prism domain option to VTU voxel export
 
 UnitTests
 =========

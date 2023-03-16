@@ -70,6 +70,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AdjustMeshInterference.h"
 #include "Materials.h"
 #include "ShellElementExport.h"
+#include "MeshDomainPlane.h"
 
 /// Helper macro to get the texgen instance
 #define TEXGEN (CTexGen::GetInstance())

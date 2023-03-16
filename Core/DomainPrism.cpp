@@ -414,6 +414,284 @@ void CDomainPrism::ClipIntersectMeshToDomain(CMesh &Mesh, bool bFillGaps) const
 	Mesh.RemoveUnreferencedNodes();
 }
 
+bool CDomainPrism::ClipIntersectMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps) const
+{
+	// Clip mesh elements which are known to intersect with the domain
+	// Checks each mesh element against each domain plane
+	const double TOL = 1e-9;
+
+	TGLOGINDENT("Clipping mesh to domain");
+
+	vector<XYZ> NewTriangles;
+	vector<bool> NewTrianglesFlipped;
+	vector<XYZ>::iterator itXYZ;
+	vector<XYZ> NewQuads;
+
+	vector<PLANE>::const_iterator itPlane;
+	list<int>::iterator itStart;
+	list<int>::iterator itInt;
+	const XYZ *p1, *p2, *p3, *p4;
+	double d1, d2, d3, d4;	// d represents the distance of the point to the plane (i.e. +ve inside, -ve outside, 0 on top)
+	double dTemp;
+	const XYZ *pTemp;
+	double u;
+	int i;
+	int iLastNodeIndex;
+	bool bFlipped;
+
+	vector<CMesh>::iterator itDomainMeshes;
+	bool bSaveDomainMeshes = false;
+	if (DomainMeshes.size() != 0)
+		bSaveDomainMeshes = true;
+
+	// Deal with surface elements
+	for (itPlane = m_ElementPlanes.begin(); itPlane != m_ElementPlanes.end(); ++itPlane)
+	{
+		list<int> &QuadIndices = Mesh.GetIndices(CMesh::QUAD);
+		for (itInt = QuadIndices.begin(); itInt != QuadIndices.end(); )
+		{
+			itStart = itInt;
+
+			p1 = &Mesh.GetNode(*(itInt++));
+			p2 = &Mesh.GetNode(*(itInt++));
+			p3 = &Mesh.GetNode(*(itInt++));
+			p4 = &Mesh.GetNode(*(itInt++));
+
+			d1 = DotProduct(itPlane->Normal, *p1) - itPlane->d;
+			d2 = DotProduct(itPlane->Normal, *p2) - itPlane->d;
+			d3 = DotProduct(itPlane->Normal, *p3) - itPlane->d;
+			d4 = DotProduct(itPlane->Normal, *p4) - itPlane->d;
+
+			if (d1 <= TOL && d2 <= TOL && d3 <= TOL && d4 <= TOL) // The quad lies completely on or outside the plane
+			{
+				if (fabs(d1) < TOL || fabs(d2) < TOL || fabs(d3) < TOL || fabs(d4) < TOL)
+					itInt = QuadIndices.erase(itStart, itInt); // Delete the quad
+			}
+			else if (d1 >= -TOL && d2 >= -TOL && d3 >= -TOL && d4 >= -TOL) // The quad lies completely inside the plane
+			{
+				// Do nothing
+			}
+			else if (d1 < TOL && d2 < TOL && d3 > TOL && d4 > TOL) // Points 1 & 2 outside plane
+			{
+				itInt = QuadIndices.erase(itStart, itInt); // Delete the quad
+				u = d4 / (d4 - d1);
+				NewQuads.push_back(*p4 + (*p1 - *p4) * u);
+				u = d3 / (d3 - d2);
+				NewQuads.push_back(*p3 + (*p2 - *p3) * u);
+				NewQuads.push_back(*p3);
+				NewQuads.push_back(*p4);
+			}
+			else if (d2 < TOL && d3 < TOL && d4 > TOL && d1 > TOL) // Points 2 & 3 outside plane
+			{
+				itInt = QuadIndices.erase(itStart, itInt); // Delete the quad
+				NewQuads.push_back(*p1);
+				u = d1 / (d1 - d2);
+				NewQuads.push_back(*p1 + (*p2 - *p1) * u);
+				u = d4 / (d4 - d3);
+				NewQuads.push_back(*p4 + (*p3 - *p4) * u);
+				NewQuads.push_back(*p4);
+			}
+			else if (d3 < TOL && d4 < TOL && d1 > TOL && d2 > TOL)  // Points 3 & 4 outside plane
+			{
+				itInt = QuadIndices.erase(itStart, itInt); // Delete the quad
+				NewQuads.push_back(*p1);
+				NewQuads.push_back(*p2);
+				u = d2 / (d2 - d3);
+				NewQuads.push_back(*p2 + (*p3 - *p2) * u);
+				u = d1 / (d1 - d4);
+				NewQuads.push_back(*p1 + (*p4 - *p1) * u);
+			}
+			else if (d4 < TOL && d1 < TOL && d2 > TOL && d3 > TOL)  // Points 4 & 1 outside plane
+			{
+				itInt = QuadIndices.erase(itStart, itInt); // Delete the quad
+				u = d2 / (d2 - d1);
+				NewQuads.push_back(*p2 + (*p1 - *p2) * u);
+				NewQuads.push_back(*p2);
+				NewQuads.push_back(*p3);
+				u = d3 / (d3 - d4);
+				NewQuads.push_back(*p3 + (*p4 - *p3) * u);
+
+			}
+			else // Convert the quad to a triangle for trimming if 1 or 3 points inside plane
+			{
+				itInt = Mesh.ConvertQuadtoTriangles(itStart);
+			}
+		}
+
+		// Add the new quads to the mesh, and clear the new quad list
+		iLastNodeIndex = int(Mesh.GetNumNodes());
+		for (i = 0; i < int(NewQuads.size() / 4); ++i)
+		{
+
+			QuadIndices.push_back(4 * i + iLastNodeIndex);
+			QuadIndices.push_back(4 * i + 1 + iLastNodeIndex);
+			QuadIndices.push_back(4 * i + 2 + iLastNodeIndex);
+			QuadIndices.push_back(4 * i + 3 + iLastNodeIndex);
+		}
+		for (itXYZ = NewQuads.begin(); itXYZ != NewQuads.end(); ++itXYZ)
+		{
+			Mesh.AddNode(*itXYZ);
+		}
+		NewQuads.clear();
+
+		list<int> &TriIndices = Mesh.GetIndices(CMesh::TRI);
+		for (itInt = TriIndices.begin(); itInt != TriIndices.end(); )
+		{
+			itStart = itInt;
+
+			p1 = &Mesh.GetNode(*(itInt++));
+			p2 = &Mesh.GetNode(*(itInt++));
+			p3 = &Mesh.GetNode(*(itInt++));
+
+			d1 = DotProduct(itPlane->Normal, *p1) - itPlane->d;
+			d2 = DotProduct(itPlane->Normal, *p2) - itPlane->d;
+			d3 = DotProduct(itPlane->Normal, *p3) - itPlane->d;
+
+			if (d1 <= TOL && d2 <= TOL && d3 <= TOL) // The triangle lies completely outside or on the plane
+			{
+				itInt = TriIndices.erase(itStart, itInt); // Delete the triangle
+			}
+			else if (d1 >= -TOL && d2 >= -TOL && d3 >= -TOL) // The triangle lies completely inside the plane
+			{
+				// Do nothing
+			}
+			else
+			{
+				itInt = TriIndices.erase(itStart, itInt); // Delete the triangle, will need to be seperated into smaller ones
+														  // Order points such that d1 >= d2 >= d3
+				bFlipped = false; // Keep track of whether the triangle is flipped or not
+				if (d2 > d1)
+				{
+					dTemp = d2; d2 = d1; d1 = dTemp;
+					pTemp = p2; p2 = p1; p1 = pTemp;
+					bFlipped = !bFlipped;
+				}
+				if (d3 > d2)
+				{
+					dTemp = d3; d3 = d2; d2 = dTemp;
+					pTemp = p3; p3 = p2; p2 = pTemp;
+					bFlipped = !bFlipped;
+					if (d2 > d1)
+					{
+						dTemp = d2; d2 = d1; d1 = dTemp;
+						pTemp = p2; p2 = p1; p1 = pTemp;
+						bFlipped = !bFlipped;
+					}
+				}
+
+				if (d2 <= TOL) // One point of the triangle lies inside the plane, the other two are outside or on the plane
+				{
+					NewTriangles.push_back(*p1);
+					u = d1 / (d1 - d2);
+					NewTriangles.push_back(*p1 + (*p2 - *p1) * u);
+					u = d1 / (d1 - d3);
+					NewTriangles.push_back(*p1 + (*p3 - *p1) * u);
+					NewTrianglesFlipped.push_back(bFlipped);
+				}
+				else if (d3 <= TOL) // Two points of the triangle lie inside the plane, the other is outside or on the plane
+				{
+					NewTriangles.push_back(*p1);
+					NewTriangles.push_back(*p2);
+					u = d2 / (d2 - d3);
+					NewTriangles.push_back(*p2 + (*p3 - *p2) * u);
+					NewTrianglesFlipped.push_back(bFlipped);
+
+					NewTriangles.push_back(*p2 + (*p3 - *p2) * u);
+					u = d1 / (d1 - d3);
+					NewTriangles.push_back(*p1 + (*p3 - *p1) * u);
+					NewTriangles.push_back(*p1);
+					NewTrianglesFlipped.push_back(bFlipped);
+				}
+			}
+		}
+
+		// Add the new triangles to the mesh, and clear the new triangles list
+		iLastNodeIndex = int(Mesh.GetNumNodes());
+		for (i = 0; i < int(NewTriangles.size() / 3); ++i)
+		{
+			// The order of the vertices determines the direction of the normal,
+			// the normal should always point outwards from the yarn. Thus if the
+			// normal was flipped we must make sure the indices are swapped so
+			// the normal is flipped back to its original state.
+			if (!NewTrianglesFlipped[i])
+			{
+				TriIndices.push_back(3 * i + iLastNodeIndex);
+				TriIndices.push_back(3 * i + 1 + iLastNodeIndex);
+				TriIndices.push_back(3 * i + 2 + iLastNodeIndex);
+			}
+			else
+			{
+				TriIndices.push_back(3 * i + iLastNodeIndex);
+				TriIndices.push_back(3 * i + 2 + iLastNodeIndex);
+				TriIndices.push_back(3 * i + 1 + iLastNodeIndex);
+			}
+		}
+		for (itXYZ = NewTriangles.begin(); itXYZ != NewTriangles.end(); ++itXYZ)
+		{
+			Mesh.AddNode(*itXYZ);
+		}
+		NewTriangles.clear();
+		NewTrianglesFlipped.clear();
+
+		vector<int> ClosedLoop;
+		if (bFillGaps)
+		{
+			if (!FillGaps(Mesh, *itPlane, ClosedLoop, false))
+				return false;
+		}
+		if (bSaveDomainMeshes)
+		{
+			if (ClosedLoop.size() > 0)
+			{
+				for (itDomainMeshes = DomainMeshes.begin(); itDomainMeshes != DomainMeshes.end(); itDomainMeshes++)
+				{
+					XYZ Points[3];
+					XYZ Normal;
+					double dPlane;
+					for (int i = 0; i < 3; i++)
+					{
+						Points[i] = (*itDomainMeshes).GetNode(i);
+					}
+					Normal = CrossProduct((Points[0] - Points[1]), Points[2] - Points[1]);
+					dPlane = DotProduct(Points[2], Normal);
+					if (fabs(DotProduct(Mesh.GetNode(ClosedLoop[0]), Normal) - dPlane) < 0.000001)
+					{
+						int iIndex = (*itDomainMeshes).GetNumNodes();
+						int iPolyStart = iIndex;
+						vector<int>::iterator itClosedLoop;
+						vector<int> Indices;
+						int iStartInd = ClosedLoop[0];
+						for (itClosedLoop = ClosedLoop.begin(); itClosedLoop != ClosedLoop.end(); itClosedLoop++)
+						{
+							if (*itClosedLoop == iStartInd && iIndex > iPolyStart)  // Back to start of loop
+							{
+								Indices.push_back(iPolyStart);
+							}
+							else
+							{
+								Indices.push_back(iIndex++);
+								(*itDomainMeshes).AddNode(Mesh.GetNode(*itClosedLoop));
+							}
+						}
+						if (ClosedLoop[ClosedLoop.size() - 1] != iStartInd) // Close loop if not already closed
+							Indices.push_back(iPolyStart);
+						(*itDomainMeshes).AddElement(CMesh::POLYGON, Indices);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	// TODO Reinstate volume elements if want to clip through elements rather than using 
+	// centre point to determine whether inside domain and retaining whole element
+
+	// Polygon mesh not currently sent to intersect mesh clip - reinstate if added to intersection mesh
+
+	Mesh.RemoveUnreferencedNodes();
+	return true;
+}
+
 void CDomainPrism::ClipMeshToDomain(CMesh &Mesh, bool bFillGaps) const
 {
 	const double TOL = 1e-9;
@@ -590,6 +868,183 @@ void CDomainPrism::ClipMeshToDomain(CMesh &Mesh, bool bFillGaps) const
 	
 }
 
+bool CDomainPrism::ClipMeshToDomain(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool bFillGaps) const
+{
+	const double TOL = 1e-9;
+
+	TGLOGINDENT("Clipping mesh to domain");
+
+	vector<XYZ> NewTriangles;
+
+	vector<XYZ>::iterator itXYZ;
+	vector<XYZ> NewQuads;
+
+	vector<PLANE>::const_iterator itPlane;
+	list<int>::iterator itStart;
+	list<int>::iterator itInt;
+	const XYZ *p1, *p2, *p3, *p4;
+
+	int i;
+	int iLastNodeIndex;
+	bool b1, b2, b3, b4;
+
+
+	CMesh IntersectMesh;   // Mesh used to save Mesh elements (from yarn) which intersect with the domain planes
+	vector<XYZ> IntersectQuads;
+
+	// Deal with surface elements
+
+	// Quad elements
+	list<int> &QuadIndices = Mesh.GetIndices(CMesh::QUAD);
+	for (itInt = QuadIndices.begin(); itInt != QuadIndices.end(); )
+	{
+		itStart = itInt;
+
+		double d1 = 0, d2 = 0, d3 = 0, d4 = 0;
+		p1 = &Mesh.GetNode(*(itInt++));
+		p2 = &Mesh.GetNode(*(itInt++));
+		p3 = &Mesh.GetNode(*(itInt++));
+		p4 = &Mesh.GetNode(*(itInt++));
+
+		b1 = m_Yarn.PointInsideYarn(*p1, NULL, NULL, NULL, &d1);
+		b2 = m_Yarn.PointInsideYarn(*p2, NULL, NULL, NULL, &d2);
+		b3 = m_Yarn.PointInsideYarn(*p3, NULL, NULL, NULL, &d3);
+		b4 = m_Yarn.PointInsideYarn(*p4, NULL, NULL, NULL, &d4);
+
+
+		if (!b1 && !b2 && !b3 && !b4) // The quad lies completely on or outside the plane
+		{
+			itInt = QuadIndices.erase(itStart, itInt); // Delete the quad
+		}
+		else if (b1 && b2 && b3 && b4) // The quad lies completely inside the plane
+		{
+			// Do nothing
+		}
+		else  // quad to intersections
+		{
+			// For concave shapes PointInsideYarn may return incorrect value (point may be on 'incorrect' side of plane for one part of shape even though actually inside)
+			// So, save points for questionable elements to IntersectQuads vector ( to allow later checking of quad against each domain plane )
+			itInt = QuadIndices.erase(itStart, itInt); // Delete the quad
+			IntersectQuads.push_back(*p1);
+			IntersectQuads.push_back(*p2);
+			IntersectQuads.push_back(*p3);
+			IntersectQuads.push_back(*p4);
+		}
+	}
+
+	// Add points for intersecting quads to intersection mesh
+	list<int> &IntersectQuadIndices = IntersectMesh.GetIndices(CMesh::QUAD);
+	for (i = 0; i < int(IntersectQuads.size() / 4); ++i)
+	{
+		IntersectQuadIndices.push_back(4 * i);
+		IntersectQuadIndices.push_back(4 * i + 1);
+		IntersectQuadIndices.push_back(4 * i + 2);
+		IntersectQuadIndices.push_back(4 * i + 3);
+	}
+	for (itXYZ = IntersectQuads.begin(); itXYZ != IntersectQuads.end(); ++itXYZ)
+	{
+		IntersectMesh.AddNode(*itXYZ);
+	}
+	IntersectQuads.clear();
+
+
+	// Triangle elements
+	vector<XYZ> IntersectTriangles;
+
+	list<int> &TriIndices = Mesh.GetIndices(CMesh::TRI);
+	for (itInt = TriIndices.begin(); itInt != TriIndices.end(); )
+	{
+		itStart = itInt;
+
+		double d1 = 0, d2 = 0, d3 = 0, d4 = 0;
+		p1 = &Mesh.GetNode(*(itInt++));
+		p2 = &Mesh.GetNode(*(itInt++));
+		p3 = &Mesh.GetNode(*(itInt++));
+
+		b1 = m_Yarn.PointInsideYarn(*p1, NULL, NULL, NULL, &d1);
+		b2 = m_Yarn.PointInsideYarn(*p2, NULL, NULL, NULL, &d2);
+		b3 = m_Yarn.PointInsideYarn(*p3, NULL, NULL, NULL, &d3);
+
+		if (!b1 && !b2 && !b3) // The triangle lies completely outside or on the plane
+		{
+			itInt = TriIndices.erase(itStart, itInt); // Delete the triangle
+		}
+		else if (b1 && b2 && b3) // The triangle lies completely inside the plane
+		{
+			// Do nothing
+		}
+		else
+		{
+			itInt = TriIndices.erase(itStart, itInt);
+			IntersectTriangles.push_back(*p1);
+			IntersectTriangles.push_back(*p2);
+			IntersectTriangles.push_back(*p3);
+		}
+	}
+
+	// Add points for intersecting triangular elements to intersection mesh
+	list<int> &IntersectTriangleIndices = IntersectMesh.GetIndices(CMesh::TRI);
+	iLastNodeIndex = IntersectMesh.GetNumNodes();
+	for (i = 0; i < int(IntersectQuads.size() / 4); ++i)
+	{
+		IntersectTriangleIndices.push_back(4 * i + iLastNodeIndex);
+		IntersectTriangleIndices.push_back(4 * i + 1 + iLastNodeIndex);
+		IntersectTriangleIndices.push_back(4 * i + 2 + iLastNodeIndex);
+		IntersectTriangleIndices.push_back(4 * i + 3 + iLastNodeIndex);
+	}
+	for (itXYZ = IntersectTriangles.begin(); itXYZ != IntersectTriangles.end(); ++itXYZ)
+	{
+		IntersectMesh.AddNode(*itXYZ);
+	}
+	IntersectTriangles.clear();
+
+	// Deal with volume elements
+	int iNumNodes;
+	double d;
+	vector<CMesh::ELEMENT_TYPE> VolumeElements;
+	vector<CMesh::ELEMENT_TYPE>::iterator itElementType;
+	VolumeElements.push_back(CMesh::TET);
+	VolumeElements.push_back(CMesh::PYRAMID);
+	VolumeElements.push_back(CMesh::WEDGE);
+	VolumeElements.push_back(CMesh::HEX);
+	VolumeElements.push_back(CMesh::QUADRATIC_TET);
+	//for (itPlane = m_Planes.begin(); itPlane != m_Planes.end(); ++itPlane)
+	//{
+	for (itElementType = VolumeElements.begin(); itElementType != VolumeElements.end(); ++itElementType)
+	{
+		list<int> &Indices = Mesh.GetIndices(*itElementType);
+		for (itInt = Indices.begin(); itInt != Indices.end(); )
+		{
+			iNumNodes = CMesh::GetNumNodes(*itElementType);
+			itStart = itInt;
+
+			XYZ Center;
+			for (i = 0; i < iNumNodes; ++i)
+			{
+				Center += Mesh.GetNode(*(itInt++));
+			}
+			Center /= iNumNodes;
+
+			b1 = m_Yarn.PointInsideYarn(Center, NULL, NULL, NULL, &d);
+			//	d = DotProduct(itPlane->Normal, Center) - itPlane->d;
+			//	if (d < 0)
+			if (!b1)
+				itInt = Indices.erase(itStart, itInt); // Delete the volume element
+		}
+	}
+	//}
+
+
+	// Does it need to deal with polygon elements?
+
+	IntersectMesh.SaveToVTK("IntersectionMesh");  // Debug check for viewing of intersection mesh
+
+	// Clip the elements of the yarn mesh which intersect with the domain and add back into the yarn mesh
+	if (!ClipIntersectMeshToDomain(IntersectMesh, DomainMeshes, bFillGaps))
+		return false;
+	Mesh.InsertMesh(IntersectMesh);
+	return true;
+}
 
 bool CDomainPrism::FillGaps(CMesh &Mesh, const PLANE &Plane, vector<int> &Polygon, bool bMeshGaps)
 {
@@ -877,4 +1332,28 @@ void CDomainPrism::GetPolygonLimits( XYZ &StartPoint, XYZ *SizeVecs )
 	SizeVecs[2] -= StartPoint;
 
 	SizeVecs[1] = Node1 - Node0;
+}
+
+void CDomainPrism::GetMeshWithPolygonEnd(CMesh &Mesh)
+{
+	vector<int> StartIndices, EndIndices;
+	int NumSectionPoints = m_Points.size();
+	// Create vector of indices for polygon ends. Will need to update if change from 2 slave nodes in m_Yarn
+	for (int i = 0; i < NumSectionPoints; ++i)
+	{
+		StartIndices.push_back(i);
+		EndIndices.push_back(i + NumSectionPoints);
+	}
+	StartIndices.push_back(0);
+	EndIndices.push_back(NumSectionPoints);
+
+	if (m_Mesh.GetNumNodes() == 0)
+	{
+		BuildMesh();
+	}
+	Mesh = m_Mesh;
+	
+	Mesh.AddElement(CMesh::POLYGON, StartIndices);
+	Mesh.AddElement(CMesh::POLYGON, EndIndices);
+	Mesh.RemoveElementType(CMesh::TRI);   // Don't need triangles on end mesh
 }
