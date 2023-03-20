@@ -1226,6 +1226,7 @@ void CTexGenMainFrame::OnPeriodicBoundaries(wxCommandEvent& event)
 void CTexGenMainFrame::OnSaveTetgenMesh( wxCommandEvent& event )
 {
 	string TextileName = GetTextileSelection();
+	CTextile* pTextile = CTexGen::GetInstance().GetTextile(TextileName);
 	stringstream Command;
 
 	wxString params = wxT("pqAY");
@@ -1250,11 +1251,21 @@ void CTexGenMainFrame::OnSaveTetgenMesh( wxCommandEvent& event )
 	//wxDialog TetgenInput;
 	//if (wxXmlResource::Get()->LoadDialog(&TetgenInput, this, wxT("TetgenOptions")))
 	{
+		if (pTextile->GetDomain()->GetType() == "CDomainPrism")
+		{
+			XRCCTRL(TetgenInput, "Periodic", wxCheckBox)->Enable(false);
+			bPeriodic = false;
+			params = wxT("pqA");
+		}
+		
 		XRCCTRL(TetgenInput, "Param", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NONE, &params));
-		XRCCTRL(TetgenInput, "SeedSize", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &seed));
 		XRCCTRL(TetgenInput, "Periodic", wxCheckBox)->SetValidator(wxGenericValidator(&bPeriodic));
+		XRCCTRL(TetgenInput, "SeedSize", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &seed));
 		XRCCTRL(TetgenInput, "SetResolution", wxCheckBox)->SetValidator(wxGenericValidator(&bSetRes));
 		XRCCTRL(TetgenInput, "Resolution", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &resolution));
+
+		
+
 		if (TetgenInput.ShowModal() == wxID_OK)
 		{
 			if (dialog.ShowModal() == wxID_OK)

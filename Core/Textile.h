@@ -31,7 +31,6 @@ namespace TexGen
 	class CTextileDecoupledLToL;
 	class CTextileAngleInterlock;
 	class CTextileWeave2D;
-	class CTextileLongitudinalCell;
 
 	using namespace std;
 
