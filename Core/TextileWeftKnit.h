@@ -6,12 +6,12 @@ namespace TexGen
 {
 	using namespace std;
 
-	struct nodeCoordinates
+	/*struct nodeCoordinates
 	{
 		double xCoord;
 		double yCoord;
 		double zCoord;
-	};
+	};*/
 
 	class CLASS_DECLSPEC CTextileWeftKnit : public CTextileKnit
 	{
@@ -34,13 +34,9 @@ namespace TexGen
 	protected:
 
 		virtual bool BuildTextile() const;
-		std::vector<nodeCoordinates*> CalculateNodeCoordinatesForWidthwiseYarn() const;
-		virtual void CreateNodesForWidthwiseYarn(std::vector<nodeCoordinates*> nodeCoords) const;
-		virtual void BuildYarns() const;
+		virtual void AddOneLoopToYarn() const;
+		virtual void AddRepeats() const;
 		
-
-
-		mutable std::vector<CNode*> m_Nodes;
 
 		int m_iWales;
 		int m_iCourses;
@@ -48,6 +44,9 @@ namespace TexGen
 		double m_dCourseWidth;
 		double m_dLoopHeight;
 		double m_dYarnThickness;
+		int m_iNumSlaveNodes;
+		int m_iNumSectionPoints;
+		
 	};
 
 }

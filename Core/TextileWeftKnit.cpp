@@ -12,6 +12,8 @@ CTextileWeftKnit::CTextileWeftKnit(int iWales, int iCourses, double dWaleHeight,
 , m_dCourseWidth(dCourseWidth)
 , m_dLoopHeight(dLoopHeight)
 , m_dYarnThickness(dYarnThickness)
+, m_iNumSectionPoints(20)
+, m_iNumSlaveNodes(50)
 {
 	
 }
@@ -35,20 +37,21 @@ bool CTextileWeftKnit::BuildTextile() const
 {
 	m_Yarns.clear();
 
-	std::vector<nodeCoordinates*> loopNodeCoordinates = CalculateNodeCoordinatesForWidthwiseYarn();
+	TGLOGINDENT("Building textile weft knit \"" << GetName() << "\"");
 
-	CreateNodesForWidthwiseYarn(loopNodeCoordinates);
+	vector<int> Yarns;
 
-	BuildYarns();
+	Yarns.push_back(AddYarn(CYarn()));
+
+	AddOneLoopToYarn();
+
+	CSectionEllipse Section(m_dYarnThickness, m_dYarnThickness);
+	m_Yarns[0].AssignSection(CYarnSectionConstant(Section));
+
+	m_Yarns[0].SetResolution(m_iNumSlaveNodes, m_iNumSectionPoints);
+	m_Yarns[0].AssignInterpolation(CInterpolationBezier());
 	
-
-	for (nodeCoordinates* nodeCoords : loopNodeCoordinates)
-		delete nodeCoords;
-	loopNodeCoordinates.clear();
-
-	for (CNode* node : m_Nodes)
-		delete node;
-	m_Nodes.clear();
+	AddRepeats();
 
 	return true;
 }
@@ -63,115 +66,69 @@ void CTextileWeftKnit::RefineTextile(bool bCorrectWidths, bool bCorrectInterfere
 
 }
 
-
-std::vector<nodeCoordinates*> CTextileWeftKnit::CalculateNodeCoordinatesForWidthwiseYarn() const
+void CTextileWeftKnit::AddOneLoopToYarn() const
 {
-	// Currently using model proposed by Ravandi et al. 
-	// in "Numerical Simulation of the Mechanical Behavior of a Weft-Knitted Carbon Fiber Composite under Tensile Loading" (2022)
-	
-	std::vector<nodeCoordinates*> loopNodeCoordinates;
+	double x, y, z;
 
-	// The nodeCoordinate structs are safely deleted at the end of BuildTextile() to avoid memory leak
+	// Node 1
+	x = 0.0;
+	y = 0.0;
+	z = m_dYarnThickness / 2.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
 
-	nodeCoordinates *Node1 = new nodeCoordinates;
-	Node1->xCoord = double(0);
-	Node1->yCoord = double(0);
-	Node1->zCoord = double(m_dYarnThickness / double(2));
-	loopNodeCoordinates.push_back(Node1);
+	// Node 2
+	x = ((m_dCourseWidth + (2.0 * m_dYarnThickness)) / 4.0);
+	y = (m_dLoopHeight - m_dWaleHeight) / 2.0;
+	z = 0.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
 
-	for (int i = 0; i < m_iCourses; i++)
-	{
-		nodeCoordinates *Node2 = new nodeCoordinates;
-		Node2->xCoord = double(((m_dCourseWidth + (double(2) * m_dYarnThickness)) / double(4)) + (m_dCourseWidth * double(i)));
-		Node2->yCoord = double((m_dLoopHeight - m_dWaleHeight) / double(2));
-		Node2->zCoord = double(0);
-		loopNodeCoordinates.push_back(Node2);
+	// Node 3
+	x = m_dCourseWidth / 4.0;
+	y = m_dLoopHeight / 2.0;
+	z = -m_dYarnThickness / 2.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
 
-		nodeCoordinates *Node3 = new nodeCoordinates;
-		Node3->xCoord = double((m_dCourseWidth / double(4)) + (m_dCourseWidth * double(i)));
-		Node3->yCoord = double(m_dLoopHeight / double(2));
-		Node3->zCoord = double(double(-1) * m_dYarnThickness / double(2));
-		loopNodeCoordinates.push_back(Node3);
+	// Node 4
+	x = ((m_dCourseWidth - (2.0 * m_dYarnThickness)) / 4.0);
+	y = (m_dLoopHeight + m_dWaleHeight) / 2.0;
+	z = 0.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
 
-		nodeCoordinates *Node4 = new nodeCoordinates;
-		Node4->xCoord = double(((m_dCourseWidth - (double(2) * m_dYarnThickness)) / double(4)) + (m_dCourseWidth * double(i)));
-		Node4->yCoord = double((m_dLoopHeight + m_dWaleHeight) / double(2));
-		Node4->zCoord = double(0);
-		loopNodeCoordinates.push_back(Node4);
+	// Node 5
+	x = m_dCourseWidth / 2.0;
+	y = m_dLoopHeight;
+	z = m_dYarnThickness / 2.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
 
-		nodeCoordinates *Node5 = new nodeCoordinates;
-		Node5->xCoord = double((m_dCourseWidth / double(2)) + (m_dCourseWidth * double(i)));
-		Node5->yCoord = double(m_dLoopHeight);
-		Node5->zCoord = double(m_dYarnThickness / double(2));
-		loopNodeCoordinates.push_back(Node5);
+	// Node 6
+	x = ((3.0 * m_dCourseWidth) + (2.0 * m_dYarnThickness)) / 4.0;
+	y = (m_dLoopHeight + m_dWaleHeight) / 2.0;
+	z = 0.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
 
-		nodeCoordinates *Node6 = new nodeCoordinates;
-		Node6->xCoord = double((((double(3) * m_dCourseWidth) + (double(2) * m_dYarnThickness)) / double(4)) + (m_dCourseWidth * double(i)));
-		Node6->yCoord = double((m_dLoopHeight + m_dWaleHeight) / double(2));
-		Node6->zCoord = double(0);
-		loopNodeCoordinates.push_back(Node6);
+	// Node 7
+	x = (3.0 * m_dCourseWidth) / 4.0;
+	y = m_dLoopHeight / 2.0;
+	z = -m_dYarnThickness / 2.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
 
-		nodeCoordinates *Node7 = new nodeCoordinates;
-		Node7->xCoord = double(((double(3) * m_dCourseWidth) / double(4)) + (m_dCourseWidth * double(i)));
-		Node7->yCoord = double(m_dLoopHeight / double(2));
-		Node7->zCoord = double(double(-1) * m_dYarnThickness / double(2));
-		loopNodeCoordinates.push_back(Node7);
+	// Node 8
+	x = ((3.0 * m_dCourseWidth) - (2.0 * m_dYarnThickness)) / 4.0;
+	y = (m_dLoopHeight - m_dWaleHeight) / 2.0;
+	z = 0.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
 
-		nodeCoordinates *Node8 = new nodeCoordinates;
-		Node8->xCoord = double((((double(3) * m_dCourseWidth) - (double(2) * m_dYarnThickness)) / double(4)) + (m_dCourseWidth * double(i)));
-		Node8->yCoord = double((m_dLoopHeight - m_dWaleHeight) / double(2));
-		Node8->zCoord = double(0);
-		loopNodeCoordinates.push_back(Node8);
-
-		nodeCoordinates *Node9 = new nodeCoordinates;
-		Node9->xCoord = m_dCourseWidth + (m_dCourseWidth * double(i));
-		Node9->yCoord = double(0);
-		Node9->zCoord = double(m_dYarnThickness / double(2));
-		loopNodeCoordinates.push_back(Node9);
-		
-	}
-
-	return loopNodeCoordinates;
+	// Node 9
+	x = m_dCourseWidth;
+	y = 0.0;
+	z = m_dYarnThickness / 2.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
 }
 
-void CTextileWeftKnit::CreateNodesForWidthwiseYarn(std::vector<nodeCoordinates*> nodeCoords) const
+void CTextileWeftKnit::AddRepeats() const
 {
-	CNode* newNode = nullptr;
-	nodeCoordinates* thisNodeCoordinate = nullptr;
-
-	for (std::vector<nodeCoordinates*>::const_iterator nodeCoordinateIter = nodeCoords.begin() ; nodeCoordinateIter != nodeCoords.end() ; nodeCoordinateIter++)
-	{
-		thisNodeCoordinate = (*nodeCoordinateIter);
-		newNode = new CNode(XYZ(thisNodeCoordinate->xCoord, thisNodeCoordinate->yCoord, thisNodeCoordinate->zCoord));
-		m_Nodes.push_back(newNode);
-	}
-}
-
-
-void CTextileWeftKnit::BuildYarns() const
-{
-	CYarn* newYarn = new CYarn();
-	CSectionEllipse* section = new CSectionEllipse(m_dYarnThickness, m_dYarnThickness);
-	CYarnSectionConstant* sectionConstant = new CYarnSectionConstant(*section);
-
-
-	CNode* thisNode = nullptr;
-
-	for (std::vector<CNode*>::const_iterator nodeIter = m_Nodes.begin(); nodeIter != m_Nodes.end(); nodeIter++)
-	{
-		thisNode = *nodeIter;
-		newYarn->AddNode(*thisNode);
-	}
-
-	newYarn->AssignSection(*sectionConstant);
-	newYarn->SetResolution(20);
-	this->AddYarn(*newYarn);
-
-	for (int i = 1; i < m_iWales; i++)
-	{
-		newYarn->Translate(XYZ(0, m_dWaleHeight, 0));
-		this->AddYarn(*newYarn);
-	}
+	m_Yarns[0].AddRepeat(XYZ(m_dCourseWidth, 0.0, 0.0));
+	m_Yarns[0].AddRepeat(XYZ(0.0, m_dWaleHeight, 0.0));
 }
 
 
