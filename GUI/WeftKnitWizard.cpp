@@ -22,8 +22,8 @@ CWeftKnitWizard::CWeftKnitWizard(wxWindow* parent, wxWindowID id)
 	, m_bCreateDomain(true)
 	, m_pFirstPage(NULL)
 	, m_WaleHeight(wxT("1"))
-	, m_CourseWidth(wxT("1"))
 	, m_LoopHeight(wxT("1.2"))
+	, m_CourseWidth(wxT("1"))
 	, m_YarnThickness(wxT("0.2"))
 	, m_GapSize(wxT("0"))
 	, m_bRefine(true)
@@ -84,13 +84,13 @@ wxWizardPageSimple* CWeftKnitWizard::BuildFirstPage()
 		pSubSizer->Add(pControl = new wxTextCtrl(pPage, ID_Spacing, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_NUMERIC, &m_WaleHeight)), SizerFlags);
 		pControl->SetToolTip(wxT("Sets the height of one wale."));
 
-		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Course Width:")), SizerFlags);
-		pSubSizer->Add(pControl = new wxTextCtrl(pPage, ID_Width, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_NUMERIC, &m_CourseWidth)), SizerFlags);
-		pControl->SetToolTip(wxT("Sets the width of one course."));
-
 		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Loop Height:")), SizerFlags);
 		pSubSizer->Add(pControl = new wxTextCtrl(pPage, ID_Width, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_NUMERIC, &m_LoopHeight)), SizerFlags);
 		pControl->SetToolTip(wxT("Sets the height of one loop."));
+
+		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Course Width:")), SizerFlags);
+		pSubSizer->Add(pControl = new wxTextCtrl(pPage, ID_Width, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_NUMERIC, &m_CourseWidth)), SizerFlags);
+		pControl->SetToolTip(wxT("Sets the width of one course."));
 
 		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Yarn Thickness:")), SizerFlags);
 		pSubSizer->Add(pControl = new wxTextCtrl(pPage, ID_Thickness, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_NUMERIC, &m_YarnThickness)), SizerFlags);
@@ -152,7 +152,7 @@ string CWeftKnitWizard::GetCreateTextileCommand(string ExistingTextile)
 	m_CourseWidth.ToDouble(&dCourseWidth);
 	m_YarnThickness.ToDouble(&dThickness);
 	
-	StringStream << "WeftKnit = CTextileWeftKnit(" << iWales << "," << iCourses << "," << dWaleHeight << "," << dCourseWidth << "," << dLoopHeight << "," << dThickness << ")" << endl;
+	StringStream << "WeftKnit = CTextileWeftKnit(" << iWales << "," << iCourses << "," << dWaleHeight << "," << dLoopHeight << "," << dCourseWidth << "," << dThickness << ")" << endl;
 
 	if (m_bCreateDomain)
 	{
