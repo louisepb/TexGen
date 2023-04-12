@@ -143,6 +143,7 @@ bool CWeftKnitWizard::RunIt()
 string CWeftKnitWizard::GetCreateTextileCommand(string ExistingTextile)
 {
 	stringstream StringStream;
+
 	int iWales = m_pWalesSpin->GetValue();
 	int iCourses = m_pCoursesSpin->GetValue();
 	double dWaleHeight, dLoopHeight, dCourseWidth, dThickness;
@@ -152,6 +153,11 @@ string CWeftKnitWizard::GetCreateTextileCommand(string ExistingTextile)
 	m_YarnThickness.ToDouble(&dThickness);
 	
 	StringStream << "WeftKnit = CTextileWeftKnit(" << iWales << "," << iCourses << "," << dWaleHeight << "," << dCourseWidth << "," << dLoopHeight << "," << dThickness << ")" << endl;
+
+	if (m_bCreateDomain)
+	{
+		StringStream << "WeftKnit.AssignDefaultDomain()" << endl;
+	}
 
 	StringStream << "AddTextile(WeftKnit)" << endl;
 

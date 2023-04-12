@@ -1,5 +1,6 @@
 #pragma once
 #include "TextileKnit.h"
+#include "DomainPlanes.h"
 
 namespace TexGen
 {
@@ -27,7 +28,8 @@ namespace TexGen
 		virtual string GetDefaultName() const;
 		virtual void RefineTextile(bool bCorrectWidths = true, bool bCorrectInterference = true, bool bPeriodic = true);
 
-		virtual void BuildDomain();
+		void AssignDefaultDomain();
+		virtual CDomainPlanes GetDefaultDomain();
 
 	protected:
 

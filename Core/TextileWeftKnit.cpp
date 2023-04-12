@@ -13,9 +13,7 @@ CTextileWeftKnit::CTextileWeftKnit(int iWales, int iCourses, double dWaleHeight,
 , m_dLoopHeight(dLoopHeight)
 , m_dYarnThickness(dYarnThickness)
 {
-	BuildTextile();
-
-	BuildDomain();
+	
 }
 
 CTextileWeftKnit::~CTextileWeftKnit(void)
@@ -177,8 +175,23 @@ void CTextileWeftKnit::BuildYarns() const
 }
 
 
-void CTextileWeftKnit::BuildDomain()
+CDomainPlanes CTextileWeftKnit::GetDefaultDomain()
 {
-	CDomainPlanes domain = CDomainPlanes(XYZ(0, -m_dYarnThickness / double(2) , -m_dYarnThickness), XYZ(m_dCourseWidth * m_iCourses, (m_dLoopHeight * double(m_iWales)) - ((m_dLoopHeight - m_dWaleHeight) * double(m_iWales - 1)) + (m_dYarnThickness / double(2)), m_dYarnThickness));
-	AssignDomain(domain);
+	XYZ Min, Max;
+
+	Min.x = 0.0;
+	Min.y = -m_dYarnThickness / 2.0;
+	Min.z = -m_dYarnThickness;
+
+	Max.x = m_dCourseWidth * m_iCourses;
+	Max.y = (m_dLoopHeight * double(m_iWales)) - ((m_dLoopHeight - m_dWaleHeight) * double(m_iWales - 1)) + (m_dYarnThickness / 2.0);
+	Max.z = m_dYarnThickness;
+
+	return CDomainPlanes(Min, Max);
+}
+
+void CTextileWeftKnit::AssignDefaultDomain()
+{
+	CDomainPlanes Domain = GetDefaultDomain();
+	AssignDomain(Domain);
 }
