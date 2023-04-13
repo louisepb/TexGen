@@ -6,12 +6,10 @@ namespace TexGen
 {
 	using namespace std;
 
-	/*struct nodeCoordinates
+	enum LoopModel
 	{
-		double xCoord;
-		double yCoord;
-		double zCoord;
-	};*/
+		RAVANDI_2021
+	};
 
 	class CLASS_DECLSPEC CTextileWeftKnit : public CTextileKnit
 	{
@@ -30,10 +28,14 @@ namespace TexGen
 
 		void AssignDefaultDomain();
 		virtual CDomainPlanes GetDefaultDomain();
+		void SetNumSlaveNodes(int iNumSlaveNodes);
+		void SetNumSectionPoints(int iNumSectionPoints);
+		void SetLoopModel(LoopModel iLoopModel);
 
 	protected:
 
 		virtual bool BuildTextile() const;
+		virtual void CTextileWeftKnit::BuildTextileUsingRavandiLoopModel() const;
 		virtual void AddOneLoopToYarn() const;
 		virtual void AddRepeats() const;
 		
@@ -46,6 +48,7 @@ namespace TexGen
 		double m_dYarnThickness;
 		int m_iNumSlaveNodes;
 		int m_iNumSectionPoints;
+		LoopModel m_iLoopModel;
 		
 	};
 

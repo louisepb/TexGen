@@ -1,6 +1,7 @@
 #pragma once
 
 
+
 class CWeftKnitWizard : public wxWizard
 {
 public:
@@ -27,8 +28,13 @@ protected:
 	void BuildPages();
 	void RefreshGapTextBox();
 
-	wxWizardPageSimple* BuildFirstPage();
+	bool HasNextPage(wxWizardPage *page);
 
+	wxWizardPageSimple* BuildFirstPage();
+	wxWizardPageSimple* BuildSecondPage();
+
+	wxWizardPageSimple *m_pFirstPage;
+	wxRadioBox *m_pLoopModelRadio;
 	wxSpinCtrl *m_pWalesSpin;
 	wxSpinCtrl *m_pCoursesSpin;
 	wxString m_WaleHeight;
@@ -36,8 +42,17 @@ protected:
 	wxString m_LoopHeight;
 	wxString m_YarnThickness;
 	wxString m_GapSize;
+	LoopModel m_LoopModel;
 
-	wxWizardPageSimple *m_pFirstPage;
+	
+	wxWizardPageSimple *m_pSecondPage;
+	wxSpinCtrl *m_pNumSlaveNodesSpin;
+	wxSpinCtrl *m_pNumSectionPointsSpin;
+
+	
+
+
+
 
 
 	bool m_bCreateDomain;
@@ -46,6 +61,7 @@ protected:
 	bool m_bCourseWidthChanged;
 	bool m_bLoopHeightChanged;
 	bool m_bThicknessChanged;
+	bool m_bBuiltPages;
 
 	DECLARE_EVENT_TABLE()
 

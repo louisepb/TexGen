@@ -51,6 +51,17 @@ void CTextileWeftKnit::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE O
 
 bool CTextileWeftKnit::BuildTextile() const
 {
+	if (m_iLoopModel == RAVANDI_2021)
+	{
+		BuildTextileUsingRavandiLoopModel();
+	}
+
+	return true;
+}
+
+
+void CTextileWeftKnit::BuildTextileUsingRavandiLoopModel() const
+{
 	m_Yarns.clear();
 
 	TGLOGINDENT("Building textile weft knit \"" << GetName() << "\"");
@@ -66,10 +77,8 @@ bool CTextileWeftKnit::BuildTextile() const
 
 	m_Yarns[0].SetResolution(m_iNumSlaveNodes, m_iNumSectionPoints);
 	m_Yarns[0].AssignInterpolation(CInterpolationBezier());
-	
-	AddRepeats();
 
-	return true;
+	AddRepeats();
 }
 
 string CTextileWeftKnit::GetDefaultName() const
@@ -167,4 +176,19 @@ void CTextileWeftKnit::AssignDefaultDomain()
 {
 	CDomainPlanes Domain = GetDefaultDomain();
 	AssignDomain(Domain);
+}
+
+void CTextileWeftKnit::SetNumSlaveNodes(int iNumSlaveNodes)
+{
+	m_iNumSlaveNodes = iNumSlaveNodes;
+}
+
+void CTextileWeftKnit::SetNumSectionPoints(int iNumSectionPoints)
+{
+	m_iNumSectionPoints = iNumSectionPoints;
+}
+
+void CTextileWeftKnit::SetLoopModel(LoopModel iLoopModel)
+{
+	m_iLoopModel = iLoopModel;
 }

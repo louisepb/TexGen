@@ -170,7 +170,8 @@ enum
 
 	ID_WaleHeight,
 	ID_CourseWidth,
-	ID_LoopHeight
+	ID_LoopHeight,
+	ID_LoopModel
 
 
 };

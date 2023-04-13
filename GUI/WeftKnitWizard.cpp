@@ -18,7 +18,7 @@ EVT_TEXT(ID_Thickness, CWeftKnitWizard::OnThicknessChanged)
 END_EVENT_TABLE()
 
 CWeftKnitWizard::CWeftKnitWizard(wxWindow* parent, wxWindowID id)
-	: wxWizard(parent, id, wxT("Weft Knit Wizard"), wxBitmap(WeftKnit_xpm))
+	: wxWizard(parent, id, wxT("Weft Knit Wizard"))
 	, m_bCreateDomain(true)
 	, m_pFirstPage(NULL)
 	, m_WaleHeight(wxT("1"))
@@ -26,11 +26,13 @@ CWeftKnitWizard::CWeftKnitWizard(wxWindow* parent, wxWindowID id)
 	, m_CourseWidth(wxT("1"))
 	, m_YarnThickness(wxT("0.2"))
 	, m_GapSize(wxT("0"))
+	, m_LoopModel(RAVANDI_2021)
 	, m_bRefine(true)
 	, m_bWaleHeightChanged(false)
 	, m_bCourseWidthChanged(false)
 	, m_bLoopHeightChanged(false)
 	, m_bThicknessChanged(false)
+	, m_bBuiltPages(false)
 {
 	BuildPages();
 	GetPageAreaSizer()->Add(m_pFirstPage);
@@ -43,12 +45,25 @@ CWeftKnitWizard::~CWeftKnitWizard(void)
 
 void CWeftKnitWizard::OnWizardPageChanging(wxWizardEvent& event)
 {
-
+	
 }
+
+bool CWeftKnitWizard::HasNextPage(wxWizardPage *page)
+{
+	if (page == m_pFirstPage)
+		return true;
+	return wxWizard::HasNextPage(page);
+}
+
 
 void CWeftKnitWizard::BuildPages()
 {
 	m_pFirstPage = BuildFirstPage();
+	m_pSecondPage = BuildSecondPage();
+
+	wxWizardPageSimple::Chain(m_pFirstPage, m_pSecondPage);
+
+	m_bBuiltPages = true;
 }
 
 
@@ -64,12 +79,22 @@ wxWizardPageSimple* CWeftKnitWizard::BuildFirstPage()
 
 	wxSizer *pSubSizer;
 
-	pMainSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("This wizard will create a weft knit model for you.")), SizerFlags);
+	pMainSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Specify loop model and loop quantities for the weft knit textile.")), SizerFlags);
 
 	SizerFlags.Align(wxALIGN_CENTER_VERTICAL);
-	pSubSizer = new wxFlexGridSizer(2);
 
 	{
+		wxArrayString loopModelChoices;
+		loopModelChoices.Add(wxT("Ravandi et al. 2022"));
+		
+		pMainSizer->Add(m_pLoopModelRadio = new wxRadioBox(pPage, ID_LoopModel, wxT("Loop Model"), wxDefaultPosition, wxDefaultSize, loopModelChoices, 2, wxRA_SPECIFY_COLS), SizerFlags);
+		m_pLoopModelRadio->SetToolTip(wxT("Specifies which loop model is used to determine master node points."));
+
+	}
+	
+	{
+		pSubSizer = new wxFlexGridSizer(2);
+
 		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Wales:")), SizerFlags);
 		pSubSizer->Add(m_pWalesSpin = new wxSpinCtrl(pPage, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100), SizerFlags);
 		m_pWalesSpin->SetToolTip(wxT("Controls the number of wales contained in the unit cell."));
@@ -95,14 +120,17 @@ wxWizardPageSimple* CWeftKnitWizard::BuildFirstPage()
 		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Yarn Thickness:")), SizerFlags);
 		pSubSizer->Add(pControl = new wxTextCtrl(pPage, ID_Thickness, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_NUMERIC, &m_YarnThickness)), SizerFlags);
 		pControl->SetToolTip(wxT("Sets the thickness of the yarn."));
+
+		pMainSizer->Add(pSubSizer, SizerFlags);
 	}
 
-	pMainSizer->Add(pSubSizer, SizerFlags);
 	SizerFlags.Align(0);
 
 	SizerFlags.Align(wxALIGN_CENTER_VERTICAL);
-	pSubSizer = new wxFlexGridSizer(3);
+	
 	{
+		pSubSizer = new wxFlexGridSizer(3);
+
 		wxCheckBox* pDomainBox;
 		pSubSizer->Add(pDomainBox = new wxCheckBox(pPage, ID_DefaultDomain, wxT("Create default domain"), wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&m_bCreateDomain)), SizerFlags);
 		pDomainBox->SetToolTip(wxT("Assign the default domain to the textile. The default domain is the same size as the unit cell in the x and y directions and and corresponds to the fabric thickness in the z direction."));
@@ -135,6 +163,43 @@ wxWizardPageSimple* CWeftKnitWizard::BuildFirstPage()
 	return pPage;
 }
 
+wxWizardPageSimple* CWeftKnitWizard::BuildSecondPage()
+{
+	wxWizardPageSimple *pPage = new wxWizardPageSimple(this);
+
+	wxBoxSizer *pMainSizer = new wxBoxSizer(wxVERTICAL);
+	wxSizerFlags SizerFlags(0);
+
+	SizerFlags.Border();
+	SizerFlags.Expand();
+
+	wxSizer *pSubSizer;
+
+	pMainSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Specify rendered mesh resolution.")), SizerFlags);
+	SizerFlags.Align(wxALIGN_CENTER_VERTICAL);
+	{
+		pSubSizer = new wxFlexGridSizer(2);
+
+		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Number of slave nodes:")), SizerFlags);
+		pSubSizer->Add(m_pNumSlaveNodesSpin = new wxSpinCtrl(pPage, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100), SizerFlags);
+		m_pWalesSpin->SetToolTip(wxT("Controls the number of slave nodes to add in between master nodes."));
+
+		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Number of section points:")), SizerFlags);
+		pSubSizer->Add(m_pNumSectionPointsSpin = new wxSpinCtrl(pPage, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100), SizerFlags);
+		m_pCoursesSpin->SetToolTip(wxT("Controls the number of section points to use across the cross-section of the yarn."));
+
+		pMainSizer->Add(pSubSizer, SizerFlags);
+	}
+
+	pPage->SetSizer(pMainSizer);
+	pMainSizer->Fit(pPage);
+
+	m_pNumSlaveNodesSpin->SetValue(50);
+	m_pNumSectionPointsSpin->SetValue(20);
+
+	return pPage;
+}
+
 bool CWeftKnitWizard::RunIt()
 {
 	return RunWizard(m_pFirstPage);
@@ -151,13 +216,33 @@ string CWeftKnitWizard::GetCreateTextileCommand(string ExistingTextile)
 	m_LoopHeight.ToDouble(&dLoopHeight);
 	m_CourseWidth.ToDouble(&dCourseWidth);
 	m_YarnThickness.ToDouble(&dThickness);
+	int iNumSlaveNodes = m_pNumSlaveNodesSpin->GetValue();
+	int iNumSectionPoints = m_pNumSectionPointsSpin->GetValue();
 	
 	StringStream << "WeftKnit = CTextileWeftKnit(" << iWales << "," << iCourses << "," << dWaleHeight << "," << dLoopHeight << "," << dCourseWidth << "," << dThickness << ")" << endl;
+
+	StringStream << "WeftKnit.SetNumSlaveNodes(" << iNumSlaveNodes << ")" << endl;
+
+	StringStream << "WeftKnit.SetNumSectionPoints(" << iNumSectionPoints << ")" << endl;
 
 	if (m_bCreateDomain)
 	{
 		StringStream << "WeftKnit.AssignDefaultDomain()" << endl;
 	}
+
+	/*if (m_bRefine)
+	{
+		StringStream << "WeftKnit.RefineTextile()" << endl;
+	}*/
+
+	switch (m_pLoopModelRadio->GetSelection())
+	{
+		case RAVANDI_2021:
+		{
+			StringStream << "WeftKnit.SetLoopModel(RAVANDI_2021)" << endl;
+		}
+	}
+	
 
 	StringStream << "AddTextile(WeftKnit)" << endl;
 
