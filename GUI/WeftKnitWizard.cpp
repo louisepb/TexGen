@@ -2,7 +2,7 @@
 #include "WeftKnitWizard.h"
 #include "WindowIDs.h"
 
-#include "WeftKnit.xpm"
+#include "LoopGeometry.xpm"
 
 using namespace TexGen;
 
@@ -18,7 +18,7 @@ EVT_TEXT(ID_Thickness, CWeftKnitWizard::OnThicknessChanged)
 END_EVENT_TABLE()
 
 CWeftKnitWizard::CWeftKnitWizard(wxWindow* parent, wxWindowID id)
-	: wxWizard(parent, id, wxT("Weft Knit Wizard"))
+	: wxWizard(parent, id, wxT("Weft Knit Wizard"), wxBitmap(LoopGeometry_xpm))
 	, m_bCreateDomain(true)
 	, m_pFirstPage(NULL)
 	, m_WaleHeight(wxT("1"))
@@ -138,7 +138,7 @@ wxWizardPageSimple* CWeftKnitWizard::BuildFirstPage()
 		pSubSizer->AddSpacer(0);
 		pSubSizer->AddSpacer(0);
 
-		wxCheckBox* pRefineBox;
+		/*wxCheckBox* pRefineBox;
 		pSubSizer->Add(pRefineBox = new wxCheckBox(pPage, ID_Refine, wxT("Refine model"), wxDefaultPosition, wxDefaultSize, 0, wxGenericValidator(&m_bRefine)), SizerFlags);
 		pRefineBox->SetToolTip(wxT("Refine the model cross sections such that yarn volumes don't intersect.\nThe resulting geometry always contains a minimum gap size between two yarns."));
 		
@@ -148,7 +148,7 @@ wxWizardPageSimple* CWeftKnitWizard::BuildFirstPage()
 		pGapSize->SetToolTip(wxT("Adjusts the minimum gap size between two yarns when refine model is enabled."));
 
 		if (!m_bRefine)
-			pGapSize->Disable();
+			pGapSize->Disable();*/
 	}
 
 	pMainSizer->Add(pSubSizer, SizerFlags);

@@ -14,6 +14,7 @@ CTextileWeftKnit::CTextileWeftKnit(int iWales, int iCourses, double dWaleHeight,
 , m_dYarnThickness(dYarnThickness)
 , m_iNumSectionPoints(20)
 , m_iNumSlaveNodes(50)
+, m_iLoopModel(RAVANDI_2021)
 {
 	
 }
