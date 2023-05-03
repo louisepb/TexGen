@@ -5,13 +5,11 @@
 
 using namespace TexGen;
 
-CTextileWeftKnit::CTextileWeftKnit(int iWales, int iCourses, double dWaleHeight, double dLoopHeight , double dCourseWidth, double dYarnThickness) : CTextileKnit()
-, m_iWales(iWales)
-, m_iCourses(iCourses)
+CTextileWeftKnit::CTextileWeftKnit(int iWales, int iCourses, double dWaleHeight, double dLoopHeight , double dCourseWidth, double dYarnThickness)
+: CTextileKnit(iWales, iCourses, dYarnThickness)
 , m_dWaleHeight(dWaleHeight)
 , m_dLoopHeight(dLoopHeight)
 , m_dCourseWidth(dCourseWidth)
-, m_dYarnThickness(dYarnThickness)
 , m_iNumSectionPoints(20)
 , m_iNumSlaveNodes(50)
 , m_iLoopModel(RAVANDI_2021)
@@ -25,13 +23,10 @@ CTextileWeftKnit::~CTextileWeftKnit(void)
 
 CTextileWeftKnit::CTextileWeftKnit(TiXmlElement &Element)
 : CTextileKnit(Element)
-{
-	Element.Attribute("Wales", &m_iWales);
-	Element.Attribute("Courses", &m_iCourses);
+{	
 	Element.Attribute("WaleHeight", &m_dWaleHeight);
 	Element.Attribute("LoopHeight", &m_dLoopHeight);
-	Element.Attribute("CourseWidth", &m_dCourseWidth);
-	Element.Attribute("YarnThickness", &m_dYarnThickness);
+	Element.Attribute("CourseWidth", &m_dCourseWidth);	
 	Element.Attribute("NumSectionPoints", &m_iNumSectionPoints);
 	Element.Attribute("NumSlaveNodes", &m_iNumSlaveNodes);
 }
@@ -39,13 +34,10 @@ CTextileWeftKnit::CTextileWeftKnit(TiXmlElement &Element)
 void CTextileWeftKnit::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType)
 {
 	CTextileKnit::PopulateTiXmlElement(Element, OutputType);
-
-	Element.SetAttribute("Wales", m_iWales);
-	Element.SetAttribute("Courses", m_iCourses);
+	
 	Element.SetAttribute("WaleHeight", stringify(m_dWaleHeight));
 	Element.SetAttribute("LoopHeight", stringify(m_dLoopHeight));
-	Element.SetAttribute("CourseWidth", stringify(m_dCourseWidth));
-	Element.SetAttribute("YarnThickness", stringify(m_dYarnThickness));
+	Element.SetAttribute("CourseWidth", stringify(m_dCourseWidth));	
 	Element.SetAttribute("NumSectionPoints", m_iNumSectionPoints);
 	Element.SetAttribute("NumSlaveNodes", m_iNumSlaveNodes);
 }

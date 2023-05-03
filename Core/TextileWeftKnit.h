@@ -40,12 +40,9 @@ namespace TexGen
 		virtual void AddRepeats() const;
 		
 
-		int m_iWales;
-		int m_iCourses;
 		double m_dWaleHeight;
 		double m_dCourseWidth;
-		double m_dLoopHeight;
-		double m_dYarnThickness;
+		double m_dLoopHeight;	
 		int m_iNumSlaveNodes;
 		int m_iNumSectionPoints;
 		LoopModel m_iLoopModel;

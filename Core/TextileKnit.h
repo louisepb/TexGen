@@ -9,7 +9,7 @@ namespace TexGen
 	{
 	public:
 
-		CTextileKnit();
+		CTextileKnit(int iWales, int iCourses, double dYarnThickness);
 		CTextileKnit(TiXmlElement &Element);
 		virtual ~CTextileKnit(void);
 
@@ -21,6 +21,9 @@ namespace TexGen
 
 		virtual bool BuildTextile() const;
 
+		int m_iWales;
+		int m_iCourses;
+		double m_dYarnThickness;
 
 	};
 
