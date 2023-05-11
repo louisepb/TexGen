@@ -139,9 +139,10 @@ bool CTexGenApp::OnInit()
 	m_pMainFrame = new CTexGenMainFrame(wxT("TexGen"), wxDefaultPosition, wxSize(500,450));
 	m_pMainFrame->Show(TRUE);
 	m_pMainFrame->OnInit();
+	m_pMainFrame->Maximize();
 
 	SetTopWindow(m_pMainFrame);
-
+	
 
 	return wxApp::OnInit();
 }

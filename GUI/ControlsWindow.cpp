@@ -90,6 +90,7 @@ void CControlsWindow::BuildTextilesPage()
 	pSubSizer->Add(new wxButton(pControls, ID_Create2DWeave, wxT("Weave"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT), SizerFlags);
 	pSubSizer->Add(new wxButton(pControls, ID_Create3DTextile, wxT("3D Weave"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT), SizerFlags);
 	pSubSizer->Add(new wxButton(pControls, ID_CreateLayeredTextile, wxT("Layered"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT), SizerFlags);
+	pSubSizer->Add(new wxButton(pControls, ID_CreateWeftKnitTextile, wxT("Weft Knit"), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT), SizerFlags);
 //	pSubSizer->Add(new wxButton(pControls, wxID_ANY, "Braid", wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT), SizerFlags);
 	pMainSizer->Add(pSubSizer, SizerFlags);
 	SubSizers.push_back(pSubSizer);
