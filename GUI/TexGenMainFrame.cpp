@@ -658,7 +658,7 @@ void CTexGenMainFrame::OnSaveVolumeMesh(wxCommandEvent& event)
 
 	if (pTextile->GetDomain()->GetType() == "CDomainPrism")
 	{
-		wxMessageBox(wxT("Cannot save volume mesh for prism domain- \n function not currently implemented"), wxT("Prism Domain Error"), wxOK | wxICON_ERROR, this);
+		wxMessageBox(wxT("Cannot save volume mesh for prism domain. \nFunction not currently implemented"), wxT("Prism Domain Error"), wxOK | wxICON_ERROR, this);
 		return;
 	}
 
@@ -818,6 +818,13 @@ void CTexGenMainFrame::OnSaveSurfaceMesh(wxCommandEvent& event)
 void CTexGenMainFrame::OnSaveIGES(wxCommandEvent& event)
 {
 	string TextileName = GetTextileSelection();
+	CTextile* pTextile = TEXGEN.GetTextile(TextileName);
+
+	if (pTextile->GetDomain()->GetType() == "CDomainPrism")
+	{
+		wxMessageBox(wxT("Cannot save IGES output for prism domain. \nFunction not currently implemented"), wxT("Prism Domain Error"), wxOK | wxICON_ERROR, this);
+		return;
+	}
 
 	int iYarnSurface = 1;
 	bool bExportDomain = true, bSubtractYarns = false, bJoinYarns = true;
@@ -864,6 +871,15 @@ void CTexGenMainFrame::OnSaveIGES(wxCommandEvent& event)
 
 void CTexGenMainFrame::OnSaveSTEP(wxCommandEvent& event)
 {
+	string TextileName = GetTextileSelection();
+	CTextile* pTextile = TEXGEN.GetTextile(TextileName);
+
+	if (pTextile->GetDomain()->GetType() == "CDomainPrism")
+	{
+		wxMessageBox(wxT("Cannot save STEP output for prism domain. \nFunction not currently implemented"), wxT("Prism Domain Error"), wxOK | wxICON_ERROR, this);
+		return;
+	}
+
 	wxFileDialog dialog
 	(
 		this,
@@ -874,7 +890,6 @@ void CTexGenMainFrame::OnSaveSTEP(wxCommandEvent& event)
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
 	);
 	dialog.CentreOnParent();
-	string TextileName = GetTextileSelection();
 
 	int iYarnSurface = 1;
 	bool bExportDomain = true, bSubtractYarns = false, bJoinYarns = true;
@@ -984,7 +999,7 @@ void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 
 	if (pTextile->GetDomain()->GetType() == "CDomainPrism")
 	{
-		wxMessageBox(wxT("Cannot save voxel mesh for prism domain- \n only available via Python script"), wxT("Prism Domain Error"), wxOK | wxICON_ERROR, this);
+		wxMessageBox(wxT("Cannot save voxel mesh for prism domain. \nOnly available via Python script"), wxT("Prism Domain Error"), wxOK | wxICON_ERROR, this);
 		return;
 	}
 
