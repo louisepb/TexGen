@@ -66,5 +66,8 @@ namespace TexGen
 		/// The proportion of the distance around the total perimeter range from 0 to 1 for each point
 		vector<double> m_t;
 
+		/// Whether or not to use the polygon points to define the section edge points
+		bool m_bRetainPoints;
+
 	};
 };	// namespace TexGen

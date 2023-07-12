@@ -36,6 +36,7 @@ CDomainPrism::CDomainPrism(const vector<XY> &Points, XYZ &start, XYZ &end)
 	m_Yarn.AssignSection(CYarnSectionConstant(CSectionPolygon(Points, false, true)));
 	m_Yarn.SetResolution(2, (int)Points.size());  // Need better definition of resolution
 	BuildMesh();
+	GeneratePlanes();
 }
 
 CDomainPrism::~CDomainPrism(void)
@@ -52,6 +53,7 @@ CDomainPrism::CDomainPrism(TiXmlElement &Element)
 	{
 		BuildMesh();
 	}
+	GeneratePlanes();
 }
 
 void CDomainPrism::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType) const
