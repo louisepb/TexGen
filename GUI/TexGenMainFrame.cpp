@@ -657,6 +657,12 @@ void CTexGenMainFrame::OnSaveVolumeMesh(wxCommandEvent& event)
 	string TextileName = GetTextileSelection();
 	CTextile* pTextile = TEXGEN.GetTextile(TextileName);
 
+	if (pTextile->GetDomain()->GetType() == "CDomainPrism")
+	{
+		wxMessageBox(wxT("Cannot save volume mesh for prism domain. \nFunction not currently implemented"), wxT("Prism Domain Error"), wxOK | wxICON_ERROR, this);
+		return;
+	}
+
 	double dSeedSize = 1;
 
 	if ( pTextile )
@@ -813,6 +819,13 @@ void CTexGenMainFrame::OnSaveSurfaceMesh(wxCommandEvent& event)
 void CTexGenMainFrame::OnSaveIGES(wxCommandEvent& event)
 {
 	string TextileName = GetTextileSelection();
+	CTextile* pTextile = TEXGEN.GetTextile(TextileName);
+
+	if (pTextile->GetDomain()->GetType() == "CDomainPrism")
+	{
+		wxMessageBox(wxT("Cannot save IGES output for prism domain. \nFunction not currently implemented"), wxT("Prism Domain Error"), wxOK | wxICON_ERROR, this);
+		return;
+	}
 
 	int iYarnSurface = 1;
 	bool bExportDomain = true, bSubtractYarns = false, bJoinYarns = true;
@@ -859,6 +872,15 @@ void CTexGenMainFrame::OnSaveIGES(wxCommandEvent& event)
 
 void CTexGenMainFrame::OnSaveSTEP(wxCommandEvent& event)
 {
+	string TextileName = GetTextileSelection();
+	CTextile* pTextile = TEXGEN.GetTextile(TextileName);
+
+	if (pTextile->GetDomain()->GetType() == "CDomainPrism")
+	{
+		wxMessageBox(wxT("Cannot save STEP output for prism domain. \nFunction not currently implemented"), wxT("Prism Domain Error"), wxOK | wxICON_ERROR, this);
+		return;
+	}
+
 	wxFileDialog dialog
 	(
 		this,
@@ -869,7 +891,6 @@ void CTexGenMainFrame::OnSaveSTEP(wxCommandEvent& event)
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT | wxFD_CHANGE_DIR
 	);
 	dialog.CentreOnParent();
-	string TextileName = GetTextileSelection();
 
 	int iYarnSurface = 1;
 	bool bExportDomain = true, bSubtractYarns = false, bJoinYarns = true;
@@ -975,6 +996,14 @@ void CTexGenMainFrame::OnSaveABAQUS(wxCommandEvent& event)
 void CTexGenMainFrame::OnSaveABAQUSVoxels(wxCommandEvent& event)
 {
 	string TextileName = GetTextileSelection();
+	CTextile* pTextile = TEXGEN.GetTextile(TextileName);
+
+	if (pTextile->GetDomain()->GetType() == "CDomainPrism")
+	{
+		wxMessageBox(wxT("Cannot save voxel mesh for prism domain. \nOnly available via Python script"), wxT("Prism Domain Error"), wxOK | wxICON_ERROR, this);
+		return;
+	}
+
 	stringstream Command;
 
 	wxString XVoxels = wxT("50");
@@ -1143,6 +1172,11 @@ void CTexGenMainFrame::OnSaveVTUVoxels(wxCommandEvent& event)
 					Command << "Vox = CRotatedVoxelMesh('CRotatedPeriodicBoundaries')" << endl;
 					iBoundaryConditions = ROTATED_BC;
 				}
+				else if (iDomainType == PRISM_DOMAIN)
+				{
+					Command << "Vox = CPrismVoxelMesh('CPrismPeriodicBoundaries')" << endl;
+					iBoundaryConditions = NO_BOUNDARY_CONDITIONS;
+				}
 				else  // BOX_DOMAIN
 				{
 					Command << "Vox = CRectangularVoxelMesh('CPeriodicBoundaries')" << endl;
@@ -1208,6 +1242,7 @@ void CTexGenMainFrame::OnPeriodicBoundaries(wxCommandEvent& event)
 void CTexGenMainFrame::OnSaveTetgenMesh( wxCommandEvent& event )
 {
 	string TextileName = GetTextileSelection();
+	CTextile* pTextile = CTexGen::GetInstance().GetTextile(TextileName);
 	stringstream Command;
 
 	wxString params = wxT("pqAY");
@@ -1232,11 +1267,21 @@ void CTexGenMainFrame::OnSaveTetgenMesh( wxCommandEvent& event )
 	//wxDialog TetgenInput;
 	//if (wxXmlResource::Get()->LoadDialog(&TetgenInput, this, wxT("TetgenOptions")))
 	{
+		if (pTextile->GetDomain()->GetType() == "CDomainPrism")
+		{
+			XRCCTRL(TetgenInput, "Periodic", wxCheckBox)->Enable(false);
+			bPeriodic = false;
+			params = wxT("pqA");
+		}
+		
 		XRCCTRL(TetgenInput, "Param", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NONE, &params));
-		XRCCTRL(TetgenInput, "SeedSize", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &seed));
 		XRCCTRL(TetgenInput, "Periodic", wxCheckBox)->SetValidator(wxGenericValidator(&bPeriodic));
+		XRCCTRL(TetgenInput, "SeedSize", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &seed));
 		XRCCTRL(TetgenInput, "SetResolution", wxCheckBox)->SetValidator(wxGenericValidator(&bSetRes));
 		XRCCTRL(TetgenInput, "Resolution", wxTextCtrl)->SetValidator(wxTextValidator(wxFILTER_NUMERIC, &resolution));
+
+		
+
 		if (TetgenInput.ShowModal() == wxID_OK)
 		{
 			if (dialog.ShowModal() == wxID_OK)

@@ -115,7 +115,7 @@ namespace TexGen
 /*		/// Create Mesh and output to abaqus file format
 		bool OutputAbaqus(string FileName, double dInitialStrains = 0);*/
 
-		/// Get usefull information of a list of points
+		/// Get useful information of a list of points
 		/**
 		Pass in a vector of point coordinates, for each point it will be determined if
 		it lies within a yarn. If it does then the yarn index along with the tangent of the

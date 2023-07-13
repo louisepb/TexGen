@@ -6,6 +6,8 @@
 # TexGen
 TexGen is a geometric textile modelling software package to be used for obtaining engineering properties of woven textiles and textile composites. More information about the project can be found here http://texgen.sourceforge.net
 
+[![Download TexGen](https://img.shields.io/sourceforge/dt/texgen.svg)](https://sourceforge.net/projects/texgen/files/latest/download)
+
 ## Building Code
 Instructions for building TexGen from source can be found here http://texgen.sourceforge.net/index.php/Compiling_from_Source
 

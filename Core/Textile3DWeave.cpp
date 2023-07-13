@@ -2072,7 +2072,6 @@ int CTextile3DWeave::AddWeftNodes( int CurrentNode, int XNode, int i, int j ) co
 		// Change CurrentNode accordingly
 		return CurrentNode;
 	}*/
-	TGLOG("NumXYarns is " << m_iNumXYarns);
 	int	NextCellIndex = (j+1)%m_iNumXYarns;
 	int	PrevCellIndex = (j+m_iNumXYarns-1)%m_iNumXYarns;
 
@@ -2466,6 +2465,7 @@ void CTextile3DWeave::InsertWeftNode( CSection* YarnSection, double t, XYZ& Warp
 	else
 		m_Yarns[WeftYarnIndex].ReplaceNode( CurrentNode, NewNode );
 	
+
 }
 
 bool CTextile3DWeave::AdjustPowerEllipseSectionWidth( double &HeightReduction, double &MaxWidth, double TargetArea, CSectionPowerEllipse* YarnSection ) const

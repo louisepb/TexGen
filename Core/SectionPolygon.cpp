@@ -21,8 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SectionPolygon.h"
 using namespace TexGen;
 
-CSectionPolygon::CSectionPolygon(const vector<XY> &PolygonPoints, bool bSingleQuadrant)
-: m_PolygonPoints(PolygonPoints)
+CSectionPolygon::CSectionPolygon(const vector<XY> &PolygonPoints, bool bSingleQuadrant, bool bRetainPoints)
+: m_PolygonPoints(PolygonPoints),
+m_bRetainPoints(bRetainPoints)
 {
 	
 	if (bSingleQuadrant)
@@ -54,6 +55,8 @@ CSectionPolygon::CSectionPolygon(const vector<XY> &PolygonPoints, bool bSingleQu
 	}
 
 	CalcTValues();
+	if (bRetainPoints)
+		CreateSection();
 }
 
 CSectionPolygon::~CSectionPolygon(void)
@@ -70,16 +73,20 @@ bool CSectionPolygon::operator == (const CSection &CompareMe) const
 CSectionPolygon::CSectionPolygon(TiXmlElement &Element)
 : CSection(Element)
 {
+	m_bRetainPoints = valueify<bool>(Element.Attribute("RetainPoints"));
 	FOR_EACH_TIXMLELEMENT(pPoint, Element, "PolygonPoint")
 	{
 		m_PolygonPoints.push_back(valueify<XY>(pPoint->Attribute("value")));
 	}
 	CalcTValues();
+	if (m_bRetainPoints)
+		CreateSection();
 }
 
 void CSectionPolygon::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType) const
 {
 	CSection::PopulateTiXmlElement(Element, OutputType);
+	Element.SetAttribute("RetainPoints", stringify(m_bRetainPoints));
 	vector<XY>::const_iterator itPoint;
 	for (itPoint = m_PolygonPoints.begin(); itPoint != m_PolygonPoints.end(); ++itPoint)
 	{
@@ -171,6 +178,13 @@ void CSectionPolygon::CalcTValues()
 	}
 }
 
+void CSectionPolygon::CreateSection() const
+{
+	m_bEquiSpaced = false;
+	m_EdgePoints.clear();
+
+	m_EdgePoints = m_PolygonPoints;
+}
 
 
 

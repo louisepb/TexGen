@@ -27,6 +27,7 @@ namespace TexGen
 	using namespace std;
 
 	class CYarn;
+	class CDomainPrism;
 
 	/// Abstract base class representing the domain in which a textile cell may lie
 	class CLASS_DECLSPEC CDomain
@@ -43,9 +44,10 @@ namespace TexGen
 
 		/// Get the limits associated with each repeat vector, that is the upper and lower bounds multiplied to
 		/// the repeat vector for the entire yarn to lie just outside out of the domain
-		virtual vector<pair<int, int> > GetRepeatLimits(const CYarn &Yarn) const = 0;
+		vector<pair<int, int> > GetRepeatLimits(const CYarn &Yarn) const;
 		/// Get the translation vectors necessary to fully fill the domain
-		virtual vector<XYZ> GetTranslations(const CYarn &Yarn) const = 0;
+		vector<XYZ> GetTranslations(const CYarn &Yarn) const;
+
 		/// Clip the surface elements to the domain
 		/**
 		For surface elements (TRI and QUAD elements) the elements will be either kept, discarded
@@ -83,8 +85,28 @@ namespace TexGen
 		/// Check if a point lies inside the domain
 		virtual bool PointInDomain(const XYZ &Point) const = 0;
 
+		CDomainPrism* GetPrismDomain();
+
 	protected:
 		static vector<pair<int, int> > ConvertLimitsToInt(const vector<pair<double, double> > &RepeatLimits);
+
+		/// Get the limits for a single given repeat vector and surface mesh
+		/**
+		The limits are the points where the whole surface mesh lies outside the domain
+		The limit is represented as the factor multiplied by the repeat vector that represents
+		the translation of the surface mesh to the limiting case.
+		\param RepeatVector The repeat vector to get limit for
+		\param Mesh The surface mesh that needs to lie behind the plane
+		\return A pair of doubles representing the upper and lower limits
+		*/
+		pair<double, double> GetLimits(XYZ RepeatVector, const CMesh &Mesh) const;
+
+		/// Determine if a mesh intersects with the domain
+		/**
+		This is a very crude approximation of whether a mesh intersects the domain or not.
+		It is based soley on the axis aligned bounding boxes of the two regions.
+		*/
+		bool MeshIntersectsDomain(const CMesh &Mesh) const;
 
 		/// A mesh representing the domain as a surface mesh
 		CMesh m_Mesh;

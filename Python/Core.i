@@ -181,16 +181,19 @@ namespace std
 
 %include "../Core/Domain.h"
 %include "../Core/DomainPlanes.h"
+%include "../Core/DomainPrism.h"
 
 %include "../Core/FibreDistribution.h"
 %include "../Core/FibreDistributionConst.h"
 %include "../Core/FibreDistribution1DQuad.h"
 
+%include "../Core/MeshDomainPlane.h"
 %include "../Core/VoxelMesh.h"
 %include "../Core/RectangularVoxelMesh.h"
 %include "../Core/ShearedVoxelMesh.h"
 %include "../Core/StaggeredVoxelMesh.h"
 %include "../Core/RotatedVoxelMesh.h"
+%include "../core/PrismVoxelMesh.h"
 %include "../Core/TetgenMesh.h"
 %include "../Core/PeriodicBoundaries.h"
 %include "../Core/ShearedPeriodicBoundaries.h"
@@ -199,6 +202,7 @@ namespace std
 %include "../Core/OctreeVoxelMesh.h"
 %include "../Core/ShellElementExport.h"
 %include "../Core/SurfaceMesh.h"
+
 
 %include "../Core/PatternDraft.h"
 

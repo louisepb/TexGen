@@ -73,6 +73,7 @@ namespace TexGen
 		if this option has been selected.
 		*/
 		virtual bool BuildTextile() const;
+		void ShapeWeftYarns() const;
 
 		virtual void ConvertToPatternDraft( int iWeftOrder = BOTTOM_TO_TOP );
 		/// Set up row of pattern cells for one weft pattern using one row of weave pattern data and the layers pattern for the weave
@@ -133,19 +134,44 @@ namespace TexGen
 
 		int GetWeavePatternYarnIndex(int x, int y, int z) const;
 
+		/// Add weft nodes around outline of adjacent warp yarns
+		/**
+		\param CurrentNode  Index of node in centre of yarn, taking into account extra nodes already inserted
+		\param i  Cell x index
+		\param j  Cell y index
+		\param WeftIndex YYarn index of weft yarn
+		*/
+		//int AddWeftNodes(int CurrentNode, int XNode, int i, int j) const;
+		int AddWeftNodes(int CurrentNode, int i, int j, int WeftIndex) const;
+
 		vector<int> &GetYarnCell(int x, int y);
 		const vector<int> &GetYarnCell(int x, int y) const;
 		void RemoveYarnCell(int x, int y);
+
+		/// Finds the y-yarn index of the nth weft yarn in a YarnCell
+		int GetWeftYarnIndex(const vector<int> &YarnCell, int n) const;
+		/// Find position of given yarn index in YarnCell
+		int FindWeftYarnHeight(const vector<PATTERN3D>& YarnCell, int WeftIndex) const;
+		/// Find yarn index from m_YYarns using single weft index
+		/**
+		Needed because can't necessarily assume that there are the same number of wefts in each stack
+		*/
+		int FindWeftYarnIndex(int WeftIndex) const;
+
 		bool BuildWeavePatternTextile() const;
 		mutable int m_iYYarnOffset;
+
 
 		mutable map<pair<int, int>, YARNDATA> m_BinderData;
 
 		/// Indicates whether textile is loaded from weave pattern
 		bool m_bWeavePattern;
-
 		/// Container to keep track of which weft yarn is located at each cell position
 		/// Used when loaded from weave pattern
 		vector<vector<int> > m_WeftYarns;
+
+		//vector<vector<PATTERN3D> > m_Pattern;
+		//bool m_Consolidated = false;
+
 	};
 };	// namespace TexGen

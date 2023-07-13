@@ -17,11 +17,14 @@ Core
 ** Changed octree voxel mesh to enforce periodic meshing at boundaries
 ** Added CTextileDecoupledLToL class to create layer to layer textile where binder yarns in the same warp position are not tied together
 ** Added CBendingPeriodicBoundaries class to output boundary conditions for a unit cell in tension and bending
+** Added CDomainPrism to create prismatic domains which can include concave shapes
+** Implemented surface and tetgen meshing for prism domains
 
 GUI
 ===
 ** Changed octree voxel mesh export to have one check box for output of surface nodes and cohesive elements
 ** Added drag resize to properties dialog
+** Added prism domain option to VTU voxel export
 
 UnitTests
 =========
@@ -82,6 +85,7 @@ Core
 ** Added SaveToVTK option to CTetgenMesh
 ** Bugfix to correct extra space in ConstraintsDriver in voxel mesh equations (issue 21)
 ** Bugfix to correct reversal of G13 and G23 when calculating material properties using periodic boundary conditions set up in voxel mesh export (issue 22)
+** Added bRetainPoints variable to SectionPolygon constructor to enable shape to be forced to retain original points rather than iterate between them
 ** Bugfix to load linear interpolation from tg3 file
 ** Added COctreeVoxelMesh class for octree refinement and Laplacian smoothing
 

@@ -135,7 +135,7 @@ void CTetgenMesh::SaveTetgenMesh( CTextile &Textile, string OutputFilename, stri
 		}
 	}
 	else // if not periodic need to add quad for domain edge and point for any polygons intersecting domain plane
-	{
+	{			// currently assuming prism domains are not periodic
 		int iFace = 0;
 		vector<CMesh>::iterator itDomainMeshes;
 		for ( itDomainMeshes = m_DomainMeshes.begin(); itDomainMeshes != m_DomainMeshes.end(); ++itDomainMeshes )
@@ -149,10 +149,15 @@ void CTetgenMesh::SaveTetgenMesh( CTextile &Textile, string OutputFilename, stri
 			int iNodeOffset = m_Mesh.GetNumNodes();
 
 			f = &m_in.facetlist[i];
-			if ( PolygonIndices.empty() )
+			if ( PolygonIndices.empty() )   // Just a quad with no yarns crossing
 				f->numberofpolygons = 1;
-			else
-				f->numberofpolygons = (int)m_PolygonNumVertices[iFace].size() + 1;  // Number of polygons + the quad
+			else    // either a quad with yarns crossing or a prism domain polygon with/without yarns crossing
+			{
+				if (QuadIndices.empty())  // Prism domain
+					f->numberofpolygons = (int)m_PolygonNumVertices[iFace].size();  // Number of polygons (1 prism outline + any yarns crossing)
+				else
+					f->numberofpolygons = (int)m_PolygonNumVertices[iFace].size() + 1;  // Number of polygons + the quad
+			}
 			f->polygonlist = new tetgenio::polygon[f->numberofpolygons];
 			f->numberofholes = 0;
 			f->holelist = NULL;

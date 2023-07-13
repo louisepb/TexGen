@@ -73,6 +73,8 @@ CTextile::CTextile(TiXmlElement &Element)
 		{
 			if (*pType == "CDomainPlanes")
 				m_pDomain = CDomainPlanes(*pDomain);
+			else if (*pType == "CDomainPrism")
+				m_pDomain = CDomainPrism(*pDomain);
 		}
 	}
 	m_bNeedsBuilding = valueify<bool>(Element.Attribute("NeedsBuilding"));
@@ -205,9 +207,18 @@ bool CTextile::AddSurfaceToMesh(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool b
 		TGERROR("Textile has no domain assigned");
 		return false;
 	}
-	CMesh DomainMesh = m_pDomain->GetMesh();
-	// For the most part domain will be box in which case want the quad elements not the tris
-	DomainMesh.ConvertTriToQuad();
+	CMesh DomainMesh;
+	
+	if (m_pDomain->GetType() != "CDomainPrism")
+	{
+		DomainMesh = m_pDomain->GetMesh();
+		// For the most part domain will be box in which case want the quad elements not the tris
+		DomainMesh.ConvertTriToQuad();
+	}
+	else
+	{
+		m_pDomain->GetPrismDomain()->GetMeshWithPolygonEnd( DomainMesh );
+	}
 
 	list<int>::const_iterator itIter;
 	int iNumNodes;
@@ -217,10 +228,11 @@ bool CTextile::AddSurfaceToMesh(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool b
 	{
 		const list<int> &Indices = DomainMesh.GetIndices((CMesh::ELEMENT_TYPE)i);
 		iNumNodes = CMesh::GetNumNodes((CMesh::ELEMENT_TYPE)i);
-		for (itIter = Indices.begin(); itIter != Indices.end(); )
+		if (i != CMesh::POLYGON)
 		{
-			if ( i != CMesh::POLYGON  )
+			for (itIter = Indices.begin(); itIter != Indices.end(); )
 			{
+			
 				CMesh FaceMesh;
 				vector<int> index;
 				for ( int j = 0; j < iNumNodes; ++j )
@@ -230,7 +242,31 @@ bool CTextile::AddSurfaceToMesh(CMesh &Mesh, vector<CMesh> &DomainMeshes, bool b
 				}
 				FaceMesh.AddElement( (CMesh::ELEMENT_TYPE)i, index );
 				DomainMeshes.push_back(FaceMesh);
-			}		
+			}
+		}
+		else
+		{
+			int StartIndex;
+			for (itIter = Indices.begin(); itIter != Indices.end(); )
+			{
+				StartIndex = *itIter;
+				CMesh FaceMesh;
+				vector<int> index;
+				int j = 0;
+				do
+				{
+					FaceMesh.AddNode(DomainMesh.GetNode(*(itIter++)));
+					//index.push_back(*(itIter++));
+					index.push_back(j);
+					j++;
+				} while (*itIter != StartIndex);
+
+				FaceMesh.AddNode(DomainMesh.GetNode(*(itIter++)));
+				index.push_back(0);
+				
+				FaceMesh.AddElement((CMesh::ELEMENT_TYPE)i, index);
+				DomainMeshes.push_back(FaceMesh);
+			}
 		}
 	}
 

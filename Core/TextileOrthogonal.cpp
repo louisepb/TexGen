@@ -2194,6 +2194,10 @@ void CTextileOrthogonal::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, i
 			if ( !bFound )  // If reached end of stack without setting weft yarn need to set it at bottom of cell entries
 			{
 				PrevYCellIndex = (NumLayers - *(itLayers-1))*2 +1;
+
+				//int number = *(itLayers - 1);
+				//int newnumber = *itLayers - 1;
+
 				bFound = true;
 			}
 		}
@@ -2288,6 +2292,7 @@ void CTextileOrthogonal::SetupWeftRow( vector<int>& Layers, vector<int>& Warp, i
 
 void CTextileOrthogonal::ConsolidateCells()
 {
+
 	//bool bWeftChanged = false;
 	vector<int> Levels;
 
@@ -2447,6 +2452,7 @@ void CTextileOrthogonal::ConsolidateCells()
 		}
 	}
 
+	
 	for ( int j = 0; j < m_iNumXYarns; ++j )
 	{
 		if ( !IsBinderYarn( j ) )
@@ -2517,6 +2523,7 @@ const vector<int> &CTextileOrthogonal::GetYarnCell(int x, int y) const
 	return m_WeftYarns[x + m_iNumYYarns*y];
 }
 
+
 void CTextileOrthogonal::RemoveYarnCell(int x, int y)
 {
 	m_WeftYarns.erase(m_WeftYarns.begin()+(x + m_iNumYYarns*y));
@@ -2544,4 +2551,318 @@ int CTextileOrthogonal::GetWeavePatternYarnIndex(int x, int y, int z) const
 	
 	return m_XYarns[y][iXYarnCount];
 	
+}
+
+int CTextileOrthogonal::FindWeftYarnHeight(const vector<PATTERN3D>& YarnCell, int WeftIndex) const
+{
+	int i = YarnCell.size() - 1;
+	while (i >= 0)
+	{
+		if (YarnCell[i] == WeftIndex)
+			return i;
+		--i;
+	}
+	return i;
+}
+
+int CTextileOrthogonal::FindWeftYarnIndex(int WeftIndex) const
+{
+	int iYarn = 0;
+	for (int i = 0; i < m_YYarns.size(); ++i)
+	{
+		vector<int>::iterator itYYarns;
+		for (itYYarns = m_YYarns[i].begin(); itYYarns != m_YYarns[i].end(); ++itYYarns)
+		{
+			if (iYarn == WeftIndex)
+				return *itYYarns;
+			++iYarn;
+		}
+	}
+	return -1;
+}
+
+int CTextileOrthogonal::AddWeftNodes(int CurrentNode, int i, int j, int WeftIndex) const
+{
+	const vector<PATTERN3D> &Cell = GetCell(i, j);
+	const vector<PATTERN3D> &YarnCell = GetYarnCell(i, j);
+
+	int iIndex = FindWeftYarnHeight(YarnCell, WeftIndex);
+	if (iIndex == -1)
+		return -1;   // Partial weft - no weft yarn at this location
+
+
+	int	NextCellIndex = (j + 1) % m_iNumXYarns;
+	int	PrevCellIndex = (j + m_iNumXYarns - 1) % m_iNumXYarns;
+
+	const vector<PATTERN3D> &NextCell = GetCell(i, NextCellIndex);
+	const vector<PATTERN3D> &PrevCell = GetCell(i, PrevCellIndex);
+
+	const vector<PATTERN3D> &NextYarnCell = GetYarnCell(i, NextCellIndex);
+	const vector<PATTERN3D> &PrevYarnCell = GetYarnCell(i, PrevCellIndex);
+
+	int iPrevIndex = FindWeftYarnHeight(PrevYarnCell, WeftIndex);
+	int iNextIndex = FindWeftYarnHeight(NextYarnCell, WeftIndex);
+	int iMaxIndex = Cell.size() - 1;
+
+	XY SectionPoint;
+	XYZ WarpBelowNode, WarpAboveNode;
+	int iStartNode = CurrentNode;
+
+	if (iIndex < 0)
+		return CurrentNode;
+
+	double dWeftOffset = m_YYarnData[i].dHeight / 2.0;
+
+	int WeftYarnIndex = FindWeftYarnIndex(WeftIndex);  // Find overall yarn index from m_YYarns
+
+	if (WeftYarnIndex == -1)  // Can this happen?
+		return CurrentNode;
+
+	int WarpAboveIndex, WarpBelowIndex;
+	int WarpAboveCellIndex, WarpBelowCellIndex;
+
+	// Get indices of warp yarns above and below weft
+	if (iIndex < (int)Cell.size() - 1)
+	{
+		WarpAboveCellIndex = FindWarpAboveIndex(Cell, iIndex);
+		if (WarpAboveCellIndex != -1)
+		{
+			WarpAboveIndex = GetYarnIndex(i, j, WarpAboveCellIndex);
+			if (WarpAboveIndex >= 0)
+				WarpAboveNode = m_Yarns[WarpAboveIndex].GetNode(i)->GetPosition();
+				//WarpAboveNode = m_Yarns[WarpAboveIndex].GetNode(XNode)->GetPosition();
+		}
+		else
+			WarpAboveIndex = -1;
+	}
+	else
+		WarpAboveIndex = -1;
+
+	if (iIndex > 0)
+	{
+		WarpBelowCellIndex = FindWarpBelowIndex(Cell, iIndex);
+		
+		if (WarpBelowCellIndex != -1)
+		{
+			WarpBelowIndex = GetYarnIndex(i, j, WarpBelowCellIndex);
+			if (WarpBelowIndex >= 0)
+				WarpBelowNode = m_Yarns[WarpBelowIndex].GetNode(i)->GetPosition();
+			//WarpBelowNode = m_Yarns[WarpBelowIndex].GetNode(XNode)->GetPosition();
+		}
+		else
+			WarpBelowIndex = -1;
+	}
+	else
+		WarpBelowIndex = -1;
+
+	XYZ WeftNode = m_Yarns[WeftYarnIndex].GetNode(CurrentNode)->GetPosition();
+
+	if (iIndex > 0 && iPrevIndex != -1 && iPrevIndex < iIndex - 1 && PrevCell[iPrevIndex] == PATTERN3D_YYARN )  // Check for being more than one layer apart
+	{
+		// Get cross section of warp yarn below
+		if (WarpBelowIndex == -1)
+			return CurrentNode;
+		CSection* YarnSection = GetCrossSection(WarpBelowIndex);
+		if (YarnSection == NULL)
+			return CurrentNode;
+
+		// Insert points around Top left quadrant of warp yarn
+		XYZ NewNode = WarpBelowNode;
+
+		if (iIndex - iPrevIndex > 2)
+		{
+			SectionPoint = YarnSection->GetPoint(0.5);
+			NewNode.y = NewNode.y + SectionPoint.x - dWeftOffset - m_dGapSize;
+			NewNode.z = NewNode.z + SectionPoint.y;
+			m_Yarns[WeftYarnIndex].InsertNode(NewNode, CurrentNode);
+			CurrentNode++;
+		}
+
+		InsertWeftNode(YarnSection, 0.45, WarpBelowNode, CurrentNode, WeftYarnIndex, dWeftOffset + m_dGapSize);
+		InsertWeftNode(YarnSection, 0.4, WarpBelowNode, CurrentNode, WeftYarnIndex, dWeftOffset + m_dGapSize);
+		if (!(iIndex < iMaxIndex && iNextIndex > iIndex && NextCell[iNextIndex] == PATTERN3D_YYARN
+			&& GetYarnIndex(i, NextCellIndex, iNextIndex) == WeftYarnIndex))
+		{
+			InsertWeftNode(YarnSection, 0.35, WarpBelowNode, CurrentNode, WeftYarnIndex, dWeftOffset + m_dGapSize);
+			InsertWeftNode(YarnSection, 0.3, WarpBelowNode, CurrentNode, WeftYarnIndex, dWeftOffset + m_dGapSize);
+		}
+
+		delete YarnSection;
+	}
+	else if (iIndex < iMaxIndex && iPrevIndex != -1 && iPrevIndex > iIndex + 1 && PrevCell[iPrevIndex] == PATTERN3D_YYARN )
+	{
+		if (WarpAboveCellIndex != iIndex + 1)  // Warp not directly above so don't need to change weft
+			return CurrentNode;
+		// Get cross section of warp yarn below
+		CSection* YarnSection = GetCrossSection(WarpAboveIndex);
+		if (YarnSection == NULL)
+			return CurrentNode;
+		// Insert points around lower left quadrant of weft yarn
+		XYZ NewNode = WarpAboveNode;
+
+		if (iPrevIndex - iIndex > 2)
+		{
+			SectionPoint = YarnSection->GetPoint(0.5);
+			NewNode.y = NewNode.y + SectionPoint.x - dWeftOffset - m_dGapSize;
+			NewNode.z = NewNode.z + SectionPoint.y;
+			m_Yarns[WeftYarnIndex].InsertNode(NewNode, CurrentNode);
+			CurrentNode++;
+		}
+
+		NewNode = WarpAboveNode;
+
+		InsertWeftNode(YarnSection, 0.55, WarpAboveNode, CurrentNode, WeftYarnIndex, -(dWeftOffset + m_dGapSize));
+		InsertWeftNode(YarnSection, 0.6, WarpAboveNode, CurrentNode, WeftYarnIndex, -(dWeftOffset + m_dGapSize));
+
+		if (!(iIndex > 0 && iNextIndex < iIndex && NextCell[iNextIndex] == PATTERN3D_YYARN
+			&& GetYarnIndex(i, NextCellIndex, iNextIndex) == WeftYarnIndex))
+		{
+			InsertWeftNode(YarnSection, 0.65, WarpAboveNode, CurrentNode, WeftYarnIndex, -(dWeftOffset + m_dGapSize));
+			InsertWeftNode(YarnSection, 0.7, WarpAboveNode, CurrentNode, WeftYarnIndex, -(dWeftOffset + m_dGapSize));
+		}
+
+		if (iNextIndex >= iIndex && NextCell[iNextIndex] == PATTERN3D_YYARN
+			&& GetYarnIndex(i, NextCellIndex, iNextIndex) == WeftYarnIndex)
+		{
+			InsertWeftNode(YarnSection, 0.75, WarpAboveNode, CurrentNode, WeftYarnIndex, -(dWeftOffset + m_dGapSize), false);
+		}
+		delete YarnSection;
+	}
+
+
+
+	if (iIndex > 0 && iNextIndex != -1 && iNextIndex < iIndex - 1 && NextCell[iNextIndex] == PATTERN3D_YYARN )
+	{
+
+		// Get cross section of weft yarn below
+		CSection* YarnSection = GetCrossSection(WarpBelowIndex);
+		if (YarnSection == NULL)
+			return CurrentNode;
+
+		if (iPrevIndex <= iIndex && PrevCell[iPrevIndex] == PATTERN3D_YYARN
+			&& GetYarnIndex(i, PrevCellIndex, iPrevIndex) == WeftYarnIndex)
+		{
+			InsertWeftNode(YarnSection, 0.25, WarpBelowNode, CurrentNode, WeftYarnIndex, dWeftOffset + m_dGapSize, false);
+		}
+		// Insert points around upper right quadrant of weft
+
+		XYZ NewNode = WarpBelowNode;
+		CurrentNode++; // Need to insert after node (ie before next node)
+		if (!(iIndex < iMaxIndex && iPrevIndex > iIndex && PrevCell[iPrevIndex] == PATTERN3D_YYARN
+			&& GetYarnIndex(i, PrevCellIndex, iPrevIndex) == WeftYarnIndex))
+		{
+			InsertWeftNode(YarnSection, 0.2, WarpBelowNode, CurrentNode, WeftYarnIndex, dWeftOffset + m_dGapSize);
+			InsertWeftNode(YarnSection, 0.15, WarpBelowNode, CurrentNode, WeftYarnIndex, dWeftOffset + m_dGapSize);
+		}
+		InsertWeftNode(YarnSection, 0.1, WarpBelowNode, CurrentNode, WeftYarnIndex, dWeftOffset + m_dGapSize);
+		InsertWeftNode(YarnSection, 0.05, WarpBelowNode, CurrentNode, WeftYarnIndex, dWeftOffset + m_dGapSize);
+		CurrentNode--;
+
+		if (iIndex - iNextIndex > 2)
+		{
+			SectionPoint = YarnSection->GetPoint(0);
+			NewNode = WarpBelowNode;
+			NewNode.y = NewNode.y + SectionPoint.x + dWeftOffset + m_dGapSize;
+			NewNode.z = NewNode.z + SectionPoint.y;
+			m_Yarns[WeftYarnIndex].InsertNode(NewNode, CurrentNode + 1);
+			CurrentNode++;
+		}
+
+		delete YarnSection;
+	}
+	else if (iIndex < iMaxIndex && iNextIndex != -1 && iNextIndex > iIndex + 1 && NextCell[iNextIndex] == PATTERN3D_YYARN )
+	{
+		if (WarpAboveCellIndex != iIndex + 1)  // Warp not directly above so don't need to change weft
+			return CurrentNode;
+
+		// Get cross section of weft yarn below
+		CSection* YarnSection = GetCrossSection(WarpAboveIndex);
+		if (YarnSection == NULL)
+			return CurrentNode;
+
+		if (iPrevIndex >= iIndex && PrevCell[iPrevIndex] == PATTERN3D_YYARN
+			&& GetYarnIndex(i, PrevCellIndex, iPrevIndex) == WeftYarnIndex)
+		{
+			InsertWeftNode(YarnSection, 0.75, WarpAboveNode, CurrentNode, WeftYarnIndex, -(dWeftOffset + m_dGapSize), false);
+		}
+		// Insert points around lower right quadrant of weft yarn
+		{
+			XYZ NewNode = WarpAboveNode;
+			CurrentNode++;  // Need to insert after node (ie before next node)
+			if (!(iIndex > 0 && iPrevIndex < iIndex && PrevCell[iPrevIndex] == PATTERN3D_YYARN
+				&& GetYarnIndex(i, PrevCellIndex, iPrevIndex) == WeftYarnIndex))
+			{
+				InsertWeftNode(YarnSection, 0.8, WarpAboveNode, CurrentNode, WeftYarnIndex, -(dWeftOffset + m_dGapSize));
+				InsertWeftNode(YarnSection, 0.85, WarpAboveNode, CurrentNode, WeftYarnIndex, -(dWeftOffset + m_dGapSize));
+			}
+			InsertWeftNode(YarnSection, 0.9, WarpAboveNode, CurrentNode, WeftYarnIndex, -(dWeftOffset + m_dGapSize));
+			InsertWeftNode(YarnSection, 0.95, WarpAboveNode, CurrentNode, WeftYarnIndex, -(dWeftOffset + m_dGapSize));
+			CurrentNode--;
+
+			if (iNextIndex - iIndex > 2)
+			{
+				SectionPoint = YarnSection->GetPoint(0);
+				NewNode = WarpAboveNode;
+				NewNode.y = NewNode.y + SectionPoint.x + dWeftOffset + m_dGapSize;
+				NewNode.z = NewNode.z + SectionPoint.y;
+				m_Yarns[WeftYarnIndex].InsertNode(NewNode, CurrentNode + 1);
+				CurrentNode++;
+			}
+		}
+
+		delete YarnSection;
+	}
+
+	if (iStartNode == 0 && m_bWeftRepeat)
+	{
+		XYZ NewNode = m_Yarns[WeftYarnIndex].GetNode(0)->GetPosition();
+		ReplaceLastNode(WeftYarnIndex, NewNode, WeftNode);
+	}
+
+	return CurrentNode;
+}
+
+int CTextileOrthogonal::GetWeftYarnIndex(const vector<int> &YarnCell, int n) const
+{
+	int i = YarnCell.size()-1;
+	int YarnCount = 0;
+	while ( i > 0 )  
+	{
+		if (YarnCell[i] != -1)
+		{
+			if (YarnCount == n)
+				return YarnCell[i];   // Returns the YYarn index
+			else
+				YarnCount++;
+		}
+		--i;
+	}
+	return -1; // No weft found
+}
+
+void CTextileOrthogonal::ShapeWeftYarns() const
+{
+	//PROFILE_FUNC();
+	int iNumXYarns = m_iNumXYarns;
+	
+	for (int i = 0; i < m_iNumYYarns; ++i)
+	{
+		int NumWefts = m_YYarns[i].size();  // Get the number of weft yarns in the stack
+		for (int k = 0; k < NumWefts; ++k)   // Need to loop for each of the weft yarns in the stack
+		{
+			int CurrentYNode = 0;
+			const vector<int> &YarnCell = GetYarnCell(i, 0);
+			int WeftIndex = GetWeftYarnIndex(YarnCell, k);   // This is the index into the set of y-yarns
+			if (WeftIndex == -1)
+				continue;   // This may not work where partial weft insertions as with the Aachen textiles
+			
+			for (int j = 0; j < iNumXYarns; ++j)   // Add nodes for each warp yarn position
+			{
+				CurrentYNode = AddWeftNodes(CurrentYNode, i, j, WeftIndex);
+				CurrentYNode++;
+			}
+			m_bNeedsBuilding = false;
+			CheckUpVectors(i, PATTERN3D_YYARN);
+		}
+	}
 }

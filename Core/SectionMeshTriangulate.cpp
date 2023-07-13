@@ -59,7 +59,7 @@ bool CSectionMeshTriangulate::CreateMesh(const vector<XY> &Section) const
 
 	double dSectionArea = CSection::GetArea(Section);
 
-	double dMaxArea = dSectionArea*m_dMaxArea;
+	double dMaxArea = dSectionArea* m_dMaxArea;
 
 	#ifndef _DEBUG
 	Switches << "Q";
@@ -128,6 +128,84 @@ bool CSectionMeshTriangulate::CreateMesh(const vector<XY> &Section) const
 	triangle_context_destroy(ctx);
 
 	return true;
+}
+
+CMesh CSectionMeshTriangulate::GetTriangleMesh(const vector<XY> &Section)
+{
+	stringstream Switches;
+
+	double dSectionArea = CSection::GetArea(Section);
+
+	double dMaxArea = dSectionArea * 0.5;
+	double dMinAngle = 20;
+
+#ifndef _DEBUG
+	Switches << "Q";
+#endif
+	// Triangle has trouble parsing values given in scientific format so use fixed format with a
+	// rediculously high precision to get around the problem
+	Switches << "pzAPBq" << setiosflags(ios::fixed) << setprecision(20) << dMinAngle << "a" << dMaxArea;
+
+	triangleio TriangleInput, TriangleOutput;
+
+	context *ctx;
+	ctx = triangle_context_create();
+
+	triangle_context_options(ctx, (char*)Switches.str().c_str());
+
+	memset(&TriangleInput, 0, sizeof(TriangleInput));
+	memset(&TriangleOutput, 0, sizeof(TriangleOutput));
+
+	// Input nodes
+	TriangleInput.pointlist = new REAL[Section.size() * 2];
+	TriangleInput.numberofpoints = (int)Section.size();
+
+	int i;
+	for (i = 0; i < (int)Section.size(); ++i)
+	{
+		TriangleInput.pointlist[i * 2] = Section[i].x;
+		TriangleInput.pointlist[i * 2 + 1] = Section[i].y;
+	}
+
+	// Input segments
+	TriangleInput.segmentlist = new int[Section.size() * 2];
+	TriangleInput.numberofsegments = (int)Section.size();
+
+	for (i = 0; i < (int)Section.size(); ++i)
+	{
+		TriangleInput.segmentlist[i * 2] = i;
+		TriangleInput.segmentlist[i * 2 + 1] = (i + 1) % Section.size();
+	}
+
+	triangle_mesh_create(ctx, &TriangleInput);
+
+	delete[] TriangleInput.pointlist;
+	delete[] TriangleInput.segmentlist;
+
+	CMesh Mesh;
+
+	triangle_mesh_copy(ctx, &TriangleOutput, 1, 1);
+
+	XYZ Point;
+	for (i = 0; i < TriangleOutput.numberofpoints; ++i)
+	{
+		Point.x = TriangleOutput.pointlist[i * 2];
+		Point.y = TriangleOutput.pointlist[i * 2 + 1];
+		Mesh.AddNode(Point);
+	}
+
+	for (i = 0; i < TriangleOutput.numberoftriangles; ++i)
+	{
+		Mesh.GetIndices(CMesh::TRI).push_back(TriangleOutput.trianglelist[i * 3]);
+		Mesh.GetIndices(CMesh::TRI).push_back(TriangleOutput.trianglelist[i * 3 + 1]);
+		Mesh.GetIndices(CMesh::TRI).push_back(TriangleOutput.trianglelist[i * 3 + 2]);
+	}
+
+	triangle_free(TriangleOutput.pointlist);
+	triangle_free(TriangleOutput.trianglelist);
+	triangle_context_destroy(ctx);
+
+	return Mesh;
 }
 
 CMesh CSectionMeshTriangulate::GetSimpleMesh(const vector<XY> &Section)
