@@ -10,6 +10,7 @@ digraph G
 	node [shape="box", fontsize="16"]
 
 	CDomain->CDomainPlanes;
+	CDomain->CDomainPrism;
 
 	CTextile->CTextileWeave;
 	CTextile->CTextile3DWeave;
@@ -21,6 +22,7 @@ digraph G
 	CTextile3DWeave->CTextileAngleInterlock;
 	CTextile3DWeave->CTextileOffsetAngleInterlock;
 	CTextile3DWeave->CTextileLayerToLayer;
+	CTextileLayerToLayer->CTextileDecoupledLToL
 
 	CYarnSection->CYarnSectionConstant;
 	CYarnSection->CYarnSectionInterp;
@@ -39,6 +41,7 @@ digraph G
 	CSection->CSectionLenticular;
 	CSection->CSectionPolygon;
 	CSection->CSectionPowerEllipse;
+	CSection->CSectionRectangle;
 
 	CNode->CSlaveNode;
 
@@ -83,6 +86,7 @@ digraph G
 	CTextileOffsetAngleInterlock [style=filled, fillcolor="peachpuff"]
 	CTextileLayerToLayer [style=filled, fillcolor="peachpuff"]
 	CTextileLayered [style=filled, fillcolor="peachpuff"]
+	CTextileDecoupledLToL [style=filled, fillcolor="peachpuff"]
 	
 	CYarnSection [style=filled, fillcolor="lightblue"]
 	CYarnSectionConstant [style=filled, fillcolor="lightblue"]
@@ -101,6 +105,7 @@ digraph G
 	CSectionLenticular [style=filled, fillcolor="khaki"]
 	CSectionPolygon [style=filled, fillcolor="khaki"]
 	CSectionPowerEllipse [style=filled, fillcolor="khaki"]
+	CSectionRectangle [style=filled, fillcolor="khaki"]
 
 	CYarn [style=filled, fillcolor="mediumpurple1"]
 
@@ -109,6 +114,7 @@ digraph G
 
 	CDomain [style=filled, fillcolor="indianred1"]
 	CDomainPlanes [style=filled, fillcolor="indianred1"]
+	CDomainPrism [style=filled, fillcolor="indianred1"]
 
 	CLogger [style=filled, fillcolor="ivory"]
 	CLoggerScreen [style=filled, fillcolor="ivory"]

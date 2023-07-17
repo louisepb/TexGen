@@ -39,7 +39,7 @@ namespace TexGen
 		/**
 		\param Points Vector of points defining the cross-section of the prism
 		\param start Position of start node 
-		\return end Position of end node
+		\param end Position of end node
 		*/
 		CDomainPrism(const vector<XY> &Points, XYZ &start, XYZ &end);
 		CDomainPrism(TiXmlElement &Element);

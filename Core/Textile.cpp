@@ -917,7 +917,7 @@ CTextileAngleInterlock* CTextile::GetAngleInterlockWeave()
 			AABB1 = itYarn->GetAABB();
 			AABB2 = itYarnCompare->GetAABB();
 			if (!BoundingBoxIntersect(AABB1.first, AABB1.second, AABB2.first, AABB2.second, 1e-9))
-				continue;
+				continue;*/
 /*			if (AABB1.second.x < AABB2.first.x || AABB1.second.y < AABB2.first.y || AABB1.second.z < AABB2.first.z ||
 				AABB2.second.x < AABB1.first.x || AABB2.second.y < AABB1.first.y || AABB2.second.z < AABB1.first.z)
 				continue;*/
