@@ -29,8 +29,8 @@ CTexGen::CTexGen(void)
 : m_pLogger(NULL)
 , m_pTextileCallback(NULL)
 , m_iMajorVersion(3)
-, m_iMinorVersion(12)
-, m_iRevision(2)
+, m_iMinorVersion(13)
+, m_iRevision(0)
 , m_bMessagesOn(true)
 {
 	SetLogger(CLoggerScreen());

@@ -110,9 +110,9 @@ IF(WIN32)
 
 # Install the manifest file if VS2008. Haven't found way to access at build time from installation to get input folder
 	IF(MSVC90 OR MSVC11 OR MSVC14)
-		INSTALL(FILES ${CMAKE_BINARY_DIR}/Debug/TexGenGUI.exe.manifest
+		INSTALL(FILES ${CMAKE_BINARY_DIR}/Release/TexGenGUI.exe.manifest
 		DESTINATION ${CMAKE_INSTALL_PREFIX})
-		INSTALL(FILES ${CMAKE_BINARY_DIR}/Debug/TexGenGUI.exe.manifest
+		INSTALL(FILES ${CMAKE_BINARY_DIR}/Release/TexGenGUI.exe.manifest
 		DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../Installer)
 	ENDIF(MSVC90 OR MSVC11 OR MSVC14)	
 ELSE(WIN32)
