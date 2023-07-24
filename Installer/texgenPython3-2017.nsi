@@ -14,6 +14,9 @@ Name "TexGen Python3 ${VERSION}"
 ; The file to write
 OutFile "texgen-Python39-${VERSION}.exe"
 
+; Build a unicode installer
+Unicode true
+
 ; TexGen version
 VIProductVersion "${VERSION}"
 
@@ -50,9 +53,6 @@ Function CheckPython
   SetRegView LastUsed
 FunctionEnd
 
-LangString TEXT_PYTHON_TITLE ${LANG_ENGLISH} "Python Extension Installation"
-LangString TEXT_PYTHON_SUBTITLE ${LANG_ENGLISH} "Please locate the directory where Python is installed."
-
 Function PythonPage
   Call CheckPython
   !insertmacro MUI_HEADER_TEXT "$(TEXT_PYTHON_TITLE)" "$(TEXT_PYTHON_SUBTITLE)"
@@ -87,6 +87,9 @@ Page custom PythonPage ;Python custom page
 ;UninstPage instfiles
 
 !insertmacro MUI_LANGUAGE "English"
+LangString TEXT_PYTHON_TITLE ${LANG_ENGLISH} "Python Extension Installation"
+LangString TEXT_PYTHON_SUBTITLE ${LANG_ENGLISH} "Please locate the directory where Python is installed."
+
 Section "TexGen (required)" ;No components page, name is not important
 	
   SectionIn RO

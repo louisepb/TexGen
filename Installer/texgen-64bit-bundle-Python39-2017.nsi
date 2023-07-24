@@ -10,6 +10,9 @@ Name "TexGen-64bit-Python3 ${VERSION}"
 ; The file to write
 OutFile "texgen-bundle-64bit-Python39-${VERSION}.exe"
 
+; Build a unicode installer
+Unicode true
+
 ; TexGen version
 VIProductVersion "${VERSION}"
 
