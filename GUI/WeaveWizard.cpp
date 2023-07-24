@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WeavePatternCtrl.h"
 #include "PythonConverter.h"
 
-#include "Wizard.xpm"
+#include "WizardTexGen.xpm"
 #include "RangeValidator.h"
 
 BEGIN_EVENT_TABLE(CWeaveWizard, wxWizard)
@@ -43,7 +43,7 @@ BEGIN_EVENT_TABLE(CWeaveWizard, wxWizard)
 END_EVENT_TABLE()
 
 CWeaveWizard::CWeaveWizard(wxWindow* parent, wxWindowID id)
-: wxWizard(parent, id, wxT("Weave Wizard"), wxBitmap(Wizard_xpm))
+: wxWizard(parent, id, wxT("Weave Wizard"), wxBitmap(WizardTexGen_xpm))
 , m_pFirstPage(NULL)
 , m_pWeavePatternDialog(NULL)
 , m_pWeavePatternCtrl(NULL)
