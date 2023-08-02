@@ -266,8 +266,8 @@ namespace TexGen
 		STAGGERED_BC,
 		SHEARED_BC,
 		ROTATED_BC,
+		NO_BOUNDARY_CONDITIONS,
 		BENDING_BC,
-		NO_BOUNDARY_CONDITIONS
 	};
 
 	template <typename T>
