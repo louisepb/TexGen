@@ -1,6 +1,13 @@
 Version History
 ---------------
 
+v3.13.1
+=======
+
+Core
+====
+** Switched order of PERIODIC_BOUNDARY_CONDITIONS enum so matches voxel export dialog
+
 v3.13.0
 =======
 General

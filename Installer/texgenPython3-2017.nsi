@@ -1,5 +1,5 @@
 ; Set the current version, this should change at each release
-!define VERSION "3.13.0"
+!define VERSION "3.13.1"
 !define PYTHONDLL python39.dll
 !define PYTHONVER "3.9"
 !include "LogicLib.nsh"
