@@ -421,11 +421,11 @@ namespace TexGen
 		double GetFibreVolume(string Units = "m^3") const;
 
 		/**
-		Calculates the volume of fibre per unit area of fabric. This only works when the areal density and
-		fibre density is specified. Alternatively if linear density and fibre density is specified calculation
-		will be based on these values.
+		Calculates the volume of fibre per unit area of fabric. This will be calculated based on fibre diameter and number of fibres per yarn. 
+		If these are not specified it will be calculated based on areal density and
+		fibre density, otherwise on linear density and fibre density if specified. 
 		*/
-		double GetFibreVolumePerUnitArea(string Units = "m") const;
+		double GetFibreVolumePerUnitArea(string Units = "m^3") const;
 
 		/**
 		Calculates the volume of fibre divided by the volume of yarn. See GetFibreVolume and

@@ -222,7 +222,7 @@ namespace TexGen
 		fibre density is specified. Alternatively if linear density and fibre density is specified calculation
 		will be based on these values.
 		*/
-		double GetFibreVolumePerUnitArea(string Units = "m");
+		double GetFibreVolumePerUnitArea(string Units = "m^3");
 
 		/// Calculates the total fibre volume fraction for all yarns
 		/**

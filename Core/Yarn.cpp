@@ -1835,6 +1835,16 @@ double CYarn::GetFibreVolumePerUnitArea(string Units) const
 	if (dRepeatArea == 0)
 		return 0;
 	double dLengthPerUnitArea = GetYarnLengthPerUnitArea();
+
+	// Calculate volume based on fibre area
+	double dFibreArea = GetFibreArea();
+	if (dFibreArea != 0)
+	{
+		double dVolume = dLengthPerUnitArea * dFibreArea;
+		return ConvertUnits(dVolume, "m^3", Units);
+	}
+
+	// Otherwise calculate based on linear density
 	double dYarnLinearDensity = GetYarnLinearDensity();
 	// If yarn linear density is not specified for the yarn use textile value
 	if (dYarnLinearDensity == 0)
@@ -1855,7 +1865,7 @@ double CYarn::GetFibreVolumePerUnitArea(string Units) const
 		return 0;
 	}
 	double dVolPerUnitArea = dMassPerUnitArea/dFibreDensity;
-	return ConvertUnits(dVolPerUnitArea, "m", Units);
+	return ConvertUnits(dVolPerUnitArea, "m^3", Units);
 }
 
 double CYarn::GetFibreYarnVolumeFraction() const
