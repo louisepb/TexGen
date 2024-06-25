@@ -162,12 +162,19 @@ def ImportWeavePattern( Filename ):
 		WeftSpacing = 1/ConvertUnits( WeftDensity, WeftDensityUnits, '/mm' )
 		print(str(WeftSpacing))
 		
-		if ( (fabs(TowWidth) > tol) and (fabs(TowHeight) > tol) ):
+		if ( (fabs(TowWidth) > tol) and (fabs(TowHeight) > tol) ): # Both width and height specified, use those (ignore area)
 			TowWidth = ConvertUnits( TowWidth, TowWidthUnits, 'mm')
 			TowHeight = ConvertUnits( TowHeight, TowHeightUnits, 'mm')
-		else:
+		elif fabs(TowWidth > tol):  # Use area and width
+			TowWidth = ConvertUnits( TowWidth, TowWidthUnits, 'mm')
+			TowHeight = (4.0 * TowArea) / ( pi * TowWidth )
+			print(str(TowHeight))
+		elif fabs(TowHeight > tol):  # Use area and height
+			TowHeight = ConvertUnits( TowHeight, TowHeightUnits, 'mm')
+			TowWidth = (4.0 * TowArea) / ( pi * TowHeight )
+			print(str(TowWidth))
+		else:  # Use area and Work on 6:1 ratio for width to height of yarn in weave
 			TowArea = ConvertUnits( TowArea, TowAreaUnits, 'mm^2')
-			# Work on 6:1 ratio for width to height of yarn in weave
 			TowHeight = 2.0 * sqrt( TowArea / ( 6 * pi ) )
 			TowWidth = 6 * TowHeight
 			
