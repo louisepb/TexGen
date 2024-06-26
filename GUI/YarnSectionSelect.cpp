@@ -71,7 +71,7 @@ void CYarnSectionSelect::BuildDialog()
 
 		wxSlider* pSlider = XRCCTRL(*this, "InterpPositionSlider", wxSlider);
 		pSlider->SetValidator(wxGenericValidator(&m_iSliderPosition));
-		pSlider->SetTickFreq(10, 0);
+		pSlider->SetTickFreq(10);
 
 		wxListBox* pListBox = XRCCTRL(*this, "InterpPositionListBox", wxListBox);
 		if (pListBox->GetCount() == 0)
