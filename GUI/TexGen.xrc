@@ -616,7 +616,7 @@
 							<style>wxRA_SPECIFY_COLS</style>
 							<tooltip>This controls the domain to be used in the export.\nBox  - for a rectangular domain \nSheared  - sheared in the xy direction only\nRotated - applies where a rotated textile has been created with a corresponding rotated domain\n</tooltip>
 							<label>Domain Type</label>
-							<selection>0</selection>
+							<selection>2</selection>
 							<content>
 								<item>Box Domain</item>
 								<item>Sheared Domain</item>
@@ -3024,7 +3024,7 @@
 	</object>
 	<object class="wxDialog" name="SelectLayers">
 		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
-		<size>435,260</size>
+		<size>454,239</size>
 		<title>Select Textile Layers</title>
 		<centered>1</centered>
 		<object class="wxBoxSizer">
@@ -3081,7 +3081,7 @@
 							<orient>wxVERTICAL</orient>
 							<object class="sizeritem">
 								<option>0</option>
-								<flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
+								<flag>wxALL|wxEXPAND</flag>
 								<border>5</border>
 								<object class="wxButton" name="AddLayerButton">
 									<tooltip>Selection from Textiles list will be added to Layers list</tooltip>
@@ -3107,7 +3107,7 @@
 							</object>
 							<object class="sizeritem">
 								<option>0</option>
-								<flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
+								<flag>wxALL|wxEXPAND</flag>
 								<border>5</border>
 								<object class="wxButton" name="MoveLayerUpButton">
 									<label>Move Layer Up</label>
@@ -3119,7 +3119,7 @@
 							</object>
 							<object class="sizeritem">
 								<option>0</option>
-								<flag>wxALIGN_CENTER|wxALL|wxEXPAND</flag>
+								<flag>wxALL|wxEXPAND</flag>
 								<border>5</border>
 								<object class="wxButton" name="MoveLayerDownButton">
 									<label>Move Layer Down</label>

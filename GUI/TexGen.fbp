@@ -15353,10 +15353,10 @@
             <property name="hidden">0</property>
             <property name="id">wxID_ANY</property>
             <property name="maximum_size"></property>
-            <property name="minimum_size"></property>
+            <property name="minimum_size">-1,-1</property>
             <property name="name">SelectLayers</property>
             <property name="pos"></property>
-            <property name="size">435,260</property>
+            <property name="size">454,239</property>
             <property name="style">wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</property>
             <property name="subclass"></property>
             <property name="title">Select Textile Layers</property>
@@ -15592,7 +15592,7 @@
                                 <property name="permission">none</property>
                                 <object class="sizeritem" expanded="0">
                                     <property name="border">5</property>
-                                    <property name="flag">wxALIGN_CENTER|wxALL|wxEXPAND</property>
+                                    <property name="flag">wxALL|wxEXPAND</property>
                                     <property name="proportion">0</property>
                                     <object class="wxButton" expanded="0">
                                         <property name="BottomDockable">1</property>
@@ -15738,7 +15738,7 @@
                                 </object>
                                 <object class="sizeritem" expanded="0">
                                     <property name="border">5</property>
-                                    <property name="flag">wxALIGN_CENTER|wxALL|wxEXPAND</property>
+                                    <property name="flag">wxALL|wxEXPAND</property>
                                     <property name="proportion">0</property>
                                     <object class="wxButton" expanded="0">
                                         <property name="BottomDockable">1</property>
@@ -15811,7 +15811,7 @@
                                 </object>
                                 <object class="sizeritem" expanded="0">
                                     <property name="border">5</property>
-                                    <property name="flag">wxALIGN_CENTER|wxALL|wxEXPAND</property>
+                                    <property name="flag">wxALL|wxEXPAND</property>
                                     <property name="proportion">0</property>
                                     <object class="wxButton" expanded="0">
                                         <property name="BottomDockable">1</property>

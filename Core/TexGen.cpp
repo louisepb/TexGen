@@ -30,7 +30,7 @@ CTexGen::CTexGen(void)
 , m_pTextileCallback(NULL)
 , m_iMajorVersion(3)
 , m_iMinorVersion(13)
-, m_iRevision(1)
+, m_iRevision(2)
 , m_bMessagesOn(true)
 {
 	SetLogger(CLoggerScreen());

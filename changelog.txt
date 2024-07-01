@@ -1,5 +1,19 @@
 Version History
 ---------------
+v3.13.2
+=======
+
+Core
+====
+** Changed CYarn::GetFibreVolumePerUnitArea so works with fibre diameter and number of fibres
+
+GUI
+===
+** Updated to wxWidgets 3.2.5
+
+Python
+======
+** Updated WeavePattern.py to use tow width/height in conjunction with area
 
 v3.13.1
 =======
