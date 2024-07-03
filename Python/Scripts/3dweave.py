@@ -1,4 +1,7 @@
-# Create a textile
+# Python 3 version used runpy module to execute scripts from TexGen GUI which requires import of library
+from TexGen.Core import *
+
+# Create a textile using the 3D weave base class
 Textile = CTextileWeave3D(8, 4, 5, 7);
 
 # Add some layers of yarns

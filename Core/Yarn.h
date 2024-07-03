@@ -421,11 +421,11 @@ namespace TexGen
 		double GetFibreVolume(string Units = "m^3") const;
 
 		/**
-		Calculates the volume of fibre per unit area of fabric. This only works when the areal density and
-		fibre density is specified. Alternatively if linear density and fibre density is specified calculation
-		will be based on these values.
+		Calculates the volume of fibre per unit area of fabric. This will be calculated based on fibre diameter and number of fibres per yarn. 
+		If these are not specified it will be calculated based on areal density and
+		fibre density, otherwise on linear density and fibre density if specified. 
 		*/
-		double GetFibreVolumePerUnitArea(string Units = "m") const;
+		double GetFibreVolumePerUnitArea(string Units = "m^3") const;
 
 		/**
 		Calculates the volume of fibre divided by the volume of yarn. See GetFibreVolume and
@@ -500,10 +500,6 @@ namespace TexGen
 		int m_iNumSlaveNodes;	///< Number of slave nodes to create
 		int m_iNumSectionPoints;	///< Number of section points to create
 		bool m_bEquiSpacedSectionMesh;	///< Whether or not volume meshes of the yarn should be equispaced
-
-		/// Find whether point is inside polygon specified by Nodes
-		bool PointInside( const XY &Point, vector<XYZ> &Nodes ) const;
-		bool PointInside( const XY &Point, const vector<XY> &Nodes ) const;
 
 		/// Find closest perpendicular distance from point to polygon specified by SectionPoints
 		double FindClosestEdgeDistance( XY &Loc, const vector<XY> &SectionPoints, double dTolerance ) const;

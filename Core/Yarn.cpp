@@ -929,8 +929,8 @@ void CYarn::AddEndCapsToMesh(CMesh &Mesh) const
 
 	CMesh StartMesh, EndMesh;
 
-	StartMesh = CSectionMeshTriangulate::GetSimpleMesh(StartNode.Get2DSectionPoints());
-	EndMesh = CSectionMeshTriangulate::GetSimpleMesh(EndNode.Get2DSectionPoints());
+	StartMesh = CSectionMeshTriangulate::GetTriangleMesh(StartNode.Get2DSectionPoints());
+	EndMesh = CSectionMeshTriangulate::GetTriangleMesh(EndNode.Get2DSectionPoints());
 
 	XYZ StartSide = CrossProduct(StartNode.GetTangent(), StartNode.GetUp());
 	XYZ EndSide = CrossProduct(EndNode.GetTangent(), EndNode.GetUp());
@@ -1835,6 +1835,16 @@ double CYarn::GetFibreVolumePerUnitArea(string Units) const
 	if (dRepeatArea == 0)
 		return 0;
 	double dLengthPerUnitArea = GetYarnLengthPerUnitArea();
+
+	// Calculate volume based on fibre area
+	double dFibreArea = GetFibreArea();
+	if (dFibreArea != 0)
+	{
+		double dVolume = dLengthPerUnitArea * dFibreArea;
+		return ConvertUnits(dVolume, "m^3", Units);
+	}
+
+	// Otherwise calculate based on linear density
 	double dYarnLinearDensity = GetYarnLinearDensity();
 	// If yarn linear density is not specified for the yarn use textile value
 	if (dYarnLinearDensity == 0)
@@ -1855,7 +1865,7 @@ double CYarn::GetFibreVolumePerUnitArea(string Units) const
 		return 0;
 	}
 	double dVolPerUnitArea = dMassPerUnitArea/dFibreDensity;
-	return ConvertUnits(dVolPerUnitArea, "m", Units);
+	return ConvertUnits(dVolPerUnitArea, "m^3", Units);
 }
 
 double CYarn::GetFibreYarnVolumeFraction() const
@@ -1909,78 +1919,6 @@ CMesh::ELEMENT_TYPE CYarn::GetMeshPoint( CMesh &Mesh, const XY &Point, int& Inde
 		}
 	}
 	return CMesh::NUM_ELEMENT_TYPES;
-}
-
-bool CYarn::PointInside( const XY &Point, vector<XYZ> &Nodes ) const
-{
-	// Algorithm borrowed from http://paulbourke.net/geometry/polygonmesh/
-
-	int counter = 0;
-	int i, N = (int)Nodes.size();
-	double xinters;
-	XYZ p1, p2;
-	p1 = Nodes[0];
-	for (i=1;i<=N;i++)
-	{
-		p2 = Nodes[i % N];
-		if (Point.y > min(p1.y,p2.y))
-		{
-			if (Point.y <= max(p1.y,p2.y))
-			{
-				if (Point.x <= max(p1.x,p2.x))
-				{
-					if (p1.y != p2.y)
-					{
-						xinters = (Point.y-p1.y)*(p2.x-p1.x)/(p2.y-p1.y)+p1.x;
-						if (p1.x == p2.x || Point.x <= xinters)
-							counter++;
-					}
-				}
-			}
-		}
-		p1 = p2;
-	}
-
-	if (counter % 2 == 1)
-		return true;
-	else
-		return false;
-}
-
-bool CYarn::PointInside( const XY &Point, const vector<XY> &Nodes ) const
-{
-	// Algorithm borrowed from http://paulbourke.net/geometry/polygonmesh/
-
-	int counter = 0;
-	int i, N = (int)Nodes.size();
-	double xinters;
-	XY p1, p2;
-	p1 = Nodes[0];
-	for (i=1;i<=N;i++)
-	{
-		p2 = Nodes[i % N];
-		if (Point.y > min(p1.y,p2.y))
-		{
-			if (Point.y <= max(p1.y,p2.y))
-			{
-				if (Point.x <= max(p1.x,p2.x))
-				{
-					if (p1.y != p2.y)
-					{
-						xinters = (Point.y-p1.y)*(p2.x-p1.x)/(p2.y-p1.y)+p1.x;
-						if (p1.x == p2.x || Point.x <= xinters )
-							counter++;
-					}
-				}
-			}
-		}
-		p1 = p2;
-	}
-
-	if (counter % 2 == 1)
-		return true;
-	else
-		return false;
 }
 
 double CYarn::FindClosestEdgeDistance( XY &Loc, const vector<XY> &SectionPoints, double dTolerance ) const

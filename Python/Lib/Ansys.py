@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from TexGen.Core import *
-from StringIO import StringIO
+from io import StringIO
 
 def ExportAnsys(Filename, TextileName):
 	""" Export a textile as an Ansys Parametric Design Language script. """

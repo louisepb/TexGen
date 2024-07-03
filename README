@@ -9,6 +9,38 @@ If you find bugs/issues with TexGen please post an issue at https://github.com/l
 Version History
 ---------------
 
+v3.13.0
+=======
+General
+=======
+** Updated to Python3
+** Added installer files for Python3 installation
+** Updated sample scripts to import Core library. Needed for Run Script option which uses runpy library with Python3
+
+Core
+====
+** Changed COctreeVoxelMesh::SaveVoxelMesh to take bSurface parameter rather than both bSurface and bCohesive. bSurface option outputs both surfaces and cohesive elements
+** Clear element information from voxel mesh export before quitting
+** Fixed bug in sheared refinement with negative shear angles
+** Changed octree voxel mesh to enforce periodic meshing at boundaries
+** Added CTextileDecoupledLToL class to create layer to layer textile where binder yarns in the same warp position are not tied together
+** Added CBendingPeriodicBoundaries class to output boundary conditions for a unit cell in tension and bending
+** Added CDomainPrism to create prismatic domains which can include concave shapes
+** Implemented surface and tetgen meshing for prism domains
+
+GUI
+===
+** Changed octree voxel mesh export to have one check box for output of surface nodes and cohesive elements
+** Added drag resize to properties dialog
+** Added prism domain option to VTU voxel export
+
+UnitTests
+=========
+** Changed number of parameters to SaveVoxelMesh in octree voxel mesh test
+** Updated octree voxel mesh test file for change to periodic boundaries
+** Updated dry fibre test files to account for change in element data description
+** Updated voxel export test files to UTF-8
+
 v3.12.2
 =======
 Core

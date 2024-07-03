@@ -24,8 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PRINT_GAP  2
 
 BEGIN_EVENT_TABLE(CPatternDraftDialog, wxDialog)
-	//EVT_INIT_DIALOG(CTextileLayersDialog::OnInit)
-	//EVT_PAINT(CPatternDraftDialog::OnPaint)
 	EVT_BUTTON(wxID_PRINT, CPatternDraftDialog::OnPrint)
 	EVT_BUTTON(wxID_OK, CPatternDraftDialog::OnOK)	
 	EVT_BUTTON(wxID_SAVE, CPatternDraftDialog::OnSave)
@@ -33,8 +31,6 @@ END_EVENT_TABLE()
 
 BEGIN_EVENT_TABLE(CPatternDraftPainter, wxEvtHandler)
 	EVT_PAINT(CPatternDraftPainter::OnPaint)
-	//EVT_BUTTON(wxID_PRINT, CPatternDraftPainter::OnPrint)
-	//EVT_SIZE(CPatternDraftPainter::OnSize)
 END_EVENT_TABLE()
 
 CPatternDraftDialog::CPatternDraftDialog( )
@@ -122,11 +118,13 @@ void CPatternDraftDialog::CalculatePixelRatio( wxRect& Rect )
 void CPatternDraftDialog::DrawWeaveRegion( wxDC &dc, wxRect& ClientRect )
 {
 	wxRect Rect = ClientRect;
+	int PanelHeight = ClientRect.GetHeight();
 	Rect.width = m_PatternDraft.GetNumWarps() * m_iPixelRatio;
 	Rect.height = m_PatternDraft.GetNumWefts() * m_iPixelRatio;
 
 	Rect.x += m_iFreeWidth/2;
 	Rect.y += m_iFreeHeight/2;
+	Rect.y -= PanelHeight;   // Adjust as y origin is at top of panel
 
 	dc.SetPen(*wxTRANSPARENT_PEN);
 	const vector<string>& WeavePattern = m_PatternDraft.GetWeavePattern();
@@ -134,6 +132,7 @@ void CPatternDraftDialog::DrawWeaveRegion( wxDC &dc, wxRect& ClientRect )
 	
 	int j;
 	wxPoint BottomLeft = Rect.GetTopLeft();  // Top left because reversed y axis orientation for dc
+
 	for ( itWeavePattern = WeavePattern.rbegin(), j = 0; itWeavePattern != WeavePattern.rend(); ++itWeavePattern, ++j )
 	{
 		for ( int i = 0; i < itWeavePattern->size(); ++i )
@@ -184,14 +183,14 @@ void CPatternDraftDialog::DrawSquare( wxDC &dc, wxPoint &BottomLeft, int i, int 
 void CPatternDraftDialog::DrawHeddleRegion( wxDC &dc, wxRect& ClientRect)
 {
 	wxRect Rect = ClientRect;
+	int PanelHeight = ClientRect.GetHeight();
 
 	Rect.width = m_PatternDraft.GetNumWarps() * m_iPixelRatio;
 	Rect.height = m_PatternDraft.GetNumHeddles() * m_iPixelRatio;
 
 	Rect.x += m_iFreeWidth/2;
 	Rect.y = m_iFreeHeight/2 + (m_PatternDraft.GetNumWefts() + PRINT_GAP) * m_iPixelRatio;
-
-	//Rect.y = ClientRect.height - Rect.height-1 - m_iFreeHeight/2;
+	Rect.y -= PanelHeight;
 
 	dc.SetPen(*wxTRANSPARENT_PEN);
 	dc.SetBrush( wxBrush( *wxBLACK, wxSOLID ) );
@@ -209,14 +208,15 @@ void CPatternDraftDialog::DrawHeddleRegion( wxDC &dc, wxRect& ClientRect)
 void CPatternDraftDialog::DrawTieUpRegion( wxDC &dc, wxRect& ClientRect )
 {
 	wxRect Rect = ClientRect;
+	int PanelHeight = ClientRect.GetHeight();
 
 	int iNumHeddles = m_PatternDraft.GetNumHeddles();
 	Rect.width = iNumHeddles * m_iPixelRatio;
 	Rect.height = Rect.width;
 
 	Rect.y = m_iFreeHeight/2 + (m_PatternDraft.GetNumWefts() + PRINT_GAP) * m_iPixelRatio;
-	//Rect.y = ClientRect.height - Rect.height-1 - m_iFreeHeight/2;
-	//Rect.x = ClientRect.width - Rect.width-1 - m_iFreeWidth/2;
+	Rect.y -= PanelHeight;
+	
 	Rect.x = m_iFreeWidth/2 + (m_PatternDraft.GetNumWarps() + PRINT_GAP) * m_iPixelRatio;
 
 	dc.SetPen(*wxTRANSPARENT_PEN);
@@ -235,6 +235,7 @@ void CPatternDraftDialog::DrawTieUpRegion( wxDC &dc, wxRect& ClientRect )
 void CPatternDraftDialog::DrawChainRegion( wxDC &dc, wxRect& ClientRect )
 {
 	wxRect Rect = ClientRect;
+	int PanelHeight = ClientRect.GetHeight();
 
 	int Width = m_PatternDraft.GetNumHeddles();
 	int Height = m_PatternDraft.GetNumWefts();
@@ -242,7 +243,8 @@ void CPatternDraftDialog::DrawChainRegion( wxDC &dc, wxRect& ClientRect )
 	Rect.height =  Height * m_iPixelRatio;
 
 	Rect.y += m_iFreeHeight/2;
-	//Rect.x = ClientRect.width - Rect.width-1 - m_iFreeWidth/2;
+	Rect.y -= PanelHeight;
+	
 	Rect.x = m_iFreeWidth/2 + (m_PatternDraft.GetNumWarps() + PRINT_GAP) * m_iPixelRatio;
 
 	dc.SetPen(*wxTRANSPARENT_PEN);
@@ -298,14 +300,13 @@ void CPatternDraftPainter::OnPaint(wxPaintEvent& event)
 	wxPaintDC dc(dynamic_cast<wxPanel*>(event.GetEventObject()));
 
 	dc.SetAxisOrientation(true, true);
-	dc.SetDeviceOrigin(0, dc.GetSize().GetHeight()-1 );
+	// This was removed because of bug in wxWidgets 3.2.5 when using axis orientation and set device origin together
+	// The subtraction of client rect height in draw functions was added as a work-around
+	// Leaving in in case bug is fixed in which case this is more elegant solution
+	//dc.SetDeviceOrigin(0, dc.GetSize().GetHeight()-1 );  
 
 	m_PatternDraftDialog.DrawPatternDraft(dc);
 }
-
-/*void CPatternDraftPainter::OnSize(wxSizeEvent& event)
-{
-}*/
 
 CPatternDraftPrintout::CPatternDraftPrintout( int page_amount, wxString title, float units_per_cm, CPatternDraftDialog &PatternDraftDialog)
 : wxPrintout( title )

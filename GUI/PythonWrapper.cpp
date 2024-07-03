@@ -59,7 +59,7 @@ CPythonWrapper::~CPythonWrapper(void)
 PyObject *CPythonWrapper::CreateInstance(char szModule[], char szClass[], PyObject *pArgs)
 {
 	PyObject *pName, *pModule, *pClass;
-	pName = PyString_FromString(szModule);		// new ref
+	pName = PyUnicode_FromString(szModule);		// new ref
     pModule = PyImport_Import(pName);		// new ref
     Py_DECREF(pName);
     if (pModule == NULL)
@@ -74,7 +74,9 @@ PyObject *CPythonWrapper::CreateInstance(char szModule[], char szClass[], PyObje
 		return NULL;
 	}
 
-	PyObject *pInstance = PyInstance_New(pClass, pArgs, NULL);		// new ref
+
+	PyObject *pInstance = PyObject_CallObject(pClass, pArgs);
+	//PyObject *pInstance = PyInstance_New(pClass, pArgs, NULL);		// new ref
 	Py_DECREF(pClass);
 
 	return pInstance;
@@ -126,7 +128,7 @@ bool CPythonWrapper::SendCommand(string Command)
 
 	PyObject *pArgs, *pValue, *pFunc;
 	pArgs = PyTuple_New(1);		// new ref
-	pValue = PyString_FromString(Command.c_str());		// new ref
+	pValue = PyUnicode_FromString(Command.c_str());		// new ref
 	PyTuple_SetItem(pArgs, 0, pValue);		// pValue reference stolen here
 	pFunc = PyObject_GetAttrString(m_pConsoleInstance, "push");		// new ref
 	pValue = PyObject_CallObject(pFunc, pArgs);		// new ref
@@ -134,7 +136,7 @@ bool CPythonWrapper::SendCommand(string Command)
 	Py_DECREF(pFunc);
 	if (pValue != NULL)
 	{
-		bReturn = PyInt_AsLong(pValue)?true:false;
+		bReturn = PyLong_AsLong(pValue)?true:false;
 		Py_DECREF(pValue);
 	}
 
@@ -198,9 +200,9 @@ string CPythonWrapper::Complete(string Text, long iState)
 
 	PyObject *pArgs, *pValue, *pFunc;
 	pArgs = PyTuple_New(2);		// new ref
-	pValue = PyString_FromString(Text.c_str());		// new ref
+	pValue = PyUnicode_FromString(Text.c_str());		// new ref
 	PyTuple_SetItem(pArgs, 0, pValue);		// pValue reference stolen here
-	pValue = PyInt_FromLong(iState);		// new ref
+	pValue = PyLong_FromLong(iState);		// new ref
 	PyTuple_SetItem(pArgs, 1, pValue);		// pValue reference stolen here
 	pFunc = PyObject_GetAttrString(m_pCompleterInstance, "complete");		// new ref
 	pValue = PyObject_CallObject(pFunc, pArgs);		// new ref
@@ -208,9 +210,9 @@ string CPythonWrapper::Complete(string Text, long iState)
 	Py_DECREF(pFunc);
 	if (pValue != NULL)
 	{
-		if (PyString_Check(pValue))
+		if (PyUnicode_Check(pValue))
 		{
-			const char * pString = PyString_AsString(pValue);
+			const char * pString = PyUnicode_AsUTF8(pValue);
 			Py_DECREF(pValue);
 			if (strlen(pString) <= Text.size())
 				return "";
@@ -229,7 +231,7 @@ vector<string> CPythonWrapper::GetCompleteOptions(string Text)
 
 	PyObject *pArgs, *pValue, *pFunc, *pList;
 	pArgs = PyTuple_New(1);		// new ref
-	pValue = PyString_FromString(Text.c_str());		// new ref
+	pValue = PyUnicode_FromString(Text.c_str());		// new ref
 	PyTuple_SetItem(pArgs, 0, pValue);		// pValue reference stolen here
 	pFunc = PyObject_GetAttrString(m_pCompleterInstance, "getcompleteoptions");		// new ref
 	pList = PyObject_CallObject(pFunc, pArgs);		// new ref
@@ -245,9 +247,9 @@ vector<string> CPythonWrapper::GetCompleteOptions(string Text)
 			for (i=0; i<iSize; ++i)
 			{
 				PyObject *pStringObject = PyList_GetItem(pList, i);	// Borrowed ref
-				if (PyString_Check(pStringObject))
+				if (PyUnicode_Check(pStringObject))
 				{
-					const char * pString = PyString_AsString(pStringObject);
+					const char * pString = PyUnicode_AsUTF8(pStringObject);
 					Completions.push_back(pString);
 				}
 			}

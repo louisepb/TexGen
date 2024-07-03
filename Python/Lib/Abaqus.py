@@ -31,13 +31,13 @@ class TemporaryDirectoryRedirect(object):
 	def __init__(self):
 		self._prevDir = os.getcwd()
 		self._tempDir = mkdtemp(prefix='texgen')
-		print 'Changing current working directory to "%s"' % self._tempDir
+		print('Changing current working directory to "%s"' % self._tempDir)
 		os.chdir(self._tempDir)
 
 	def __del__(self):
-		print 'Reverting current working directory back to "%s"' % self._prevDir
+		print('Reverting current working directory back to "%s"' % self._prevDir)
 		os.chdir(self._prevDir)
-		print 'Deleting contents of "%s"' % self._tempDir
+		print('Deleting contents of "%s"' % self._tempDir)
 		#for fileName in glob(self._tempDir + r'\*'):
 		#	os.remove(fileName)
 		#os.rmdir(self._tempDir)
@@ -133,20 +133,20 @@ class TextileDeformerAbaqus(CTextileDeformerVolumeMesh, CSimulationAbaqus):
 					step = 1
 					if len(elems)>2:
 						step = elems[2]
-					elems = range(elems[0], elems[1]+1, step)
+					elems = list(range(elems[0], elems[1]+1, step))
 				name = sectionParams['elset']
 				if name in elsets:
 					elsets[name] += elems
 				else:
 					elsets[name] = elems
 		if len(unknownElementTypes) != 0:
-			print >> stderr, 'Warning: Some unknown elements were encountered while parsing', inpFilename, ':', unknownElementTypes
+			print('Warning: Some unknown elements were encountered while parsing', inpFilename, ':', unknownElementTypes, file=stderr)
 		if len(nodes) == 0:
-			print >> stderr, 'Warning: No nodes found while parsing', inpFilename
+			print('Warning: No nodes found while parsing', inpFilename, file=stderr)
 		if len(elements) == 0:
-			print >> stderr, 'Warning: No elements found while parsing', inpFilename
+			print('Warning: No elements found while parsing', inpFilename, file=stderr)
 		if len(elsets) == 0:
-			print >> stderr, 'Warning: No element sets found while parsing', inpFilename
+			print('Warning: No element sets found while parsing', inpFilename, file=stderr)
 		return nodes, elements, elsets
 
 	def _ParseDatFile(self, datFilename):
@@ -209,10 +209,10 @@ class TextileDeformerAbaqus(CTextileDeformerVolumeMesh, CSimulationAbaqus):
 							# if nodeNum != nodeCount:
 								# print 'nodeNum:', nodeNum, 'nodeCount:', nodeCount
 								# assert(False)
-							nodeDisplacements[nodeNum] = dict(zip(columnHeaders, [float(x) for x in result]))
+							nodeDisplacements[nodeNum] = dict(list(zip(columnHeaders, [float(x) for x in result])))
 
 		if len(nodeDisplacements) == 0:
-			print >> stderr, "Warning: No nodal displacements found while parsing", datFilename
+			print("Warning: No nodal displacements found while parsing", datFilename, file=stderr)
 		return nodeDisplacements
 
 	def DeformTextileFromAbaqusResults(self, textile, baseName, deformDomain = True):
@@ -231,7 +231,7 @@ class TextileDeformerAbaqus(CTextileDeformerVolumeMesh, CSimulationAbaqus):
 		mesh = CMesh()
 		nodeMap = {}
 		dispData = XYZMeshData("Displacements", CMeshDataBase.NODE)
-		for nodeNum, node in nodes.items():
+		for nodeNum, node in list(nodes.items()):
 			nodeMap[nodeNum] = mesh.AddNode(XYZ(node[0], node[1], node[2]))
 			try:
 				x = nodeDisplacements[nodeNum]
@@ -239,7 +239,7 @@ class TextileDeformerAbaqus(CTextileDeformerVolumeMesh, CSimulationAbaqus):
 			except:
 				d = XYZ()
 			dispData.m_Data.append(d)
-		for elemNum, elem in elements.items():
+		for elemNum, elem in list(elements.items()):
 			mesh.AddElement(elem[0], [nodeMap[x] for x in elem[1]])
 
 		#meshDataList = MeshDataVector()
@@ -266,7 +266,7 @@ class TextileDeformerAbaqus(CTextileDeformerVolumeMesh, CSimulationAbaqus):
 		# SaveToXML(tg3DeformedFile)
 
 	def SetRepeatVectorDeformation(self, deformation):
-		raise AttributeError, "This method is protected, please use SetDeformation instead"
+		raise AttributeError("This method is protected, please use SetDeformation instead")
 
 	def DeformTextile(self, textile, deformDomain = True):
 		'''This function automates the entire process of exporting a TexGen mesh
@@ -304,10 +304,10 @@ class TextileDeformerAbaqus(CTextileDeformerVolumeMesh, CSimulationAbaqus):
 		if fortranProg:
 			command += ' user="%s"' % fortranProg
 		command += ' ask_delete=off -interactive'
-		print 'Launching ABAQUS:', command
+		print('Launching ABAQUS:', command)
 		result = os.system(command)
 		if result == 0:
-			print 'ABAQUS seems to have completed successfully'
+			print('ABAQUS seems to have completed successfully')
 			self.DeformTextileFromAbaqusResults(textile, name, deformDomain)
 		else:
 			raise RuntimeError('ABAQUS has failed with error code: %d' % result)

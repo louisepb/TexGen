@@ -561,9 +561,9 @@ void CControlsWindow::UpdatePythonPage(bool bRecording)
 	if (pMenuItem)
 	{
 		if (bRecording)
-			pMenuItem->SetText(wxT("Stop Recording"));
+			pMenuItem->SetItemLabel(wxT("Stop Recording"));
 		else
-			pMenuItem->SetText(wxT("Record Script..."));
+			pMenuItem->SetItemLabel(wxT("Record Script..."));
 	}
 }
 

@@ -32,7 +32,6 @@ public:
 protected:
 	void BuildDialog();
 	void OnOK(wxCommandEvent& event);
-	//void OnInit(wxInitDialogEvent& event);
 	void OnPaint(wxPaintEvent& event);
 	void OnPrint( wxCommandEvent& event );
 	void OnSave( wxCommandEvent& event );
@@ -63,7 +62,6 @@ public:
 protected:
 	void OnPaint(wxPaintEvent& event);
 	void OnPrint(wxCommandEvent& event);
-	//void OnSize(wxSizeEvent& event);
 
 	CPatternDraftDialog &m_PatternDraftDialog;
 

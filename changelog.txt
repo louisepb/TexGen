@@ -1,8 +1,35 @@
 Version History
 ---------------
-
-v3.12.3
+v3.13.2
 =======
+
+Core
+====
+** Changed CYarn::GetFibreVolumePerUnitArea so works with fibre diameter and number of fibres
+
+GUI
+===
+** Updated to wxWidgets 3.2.5
+
+Python
+======
+** Updated WeavePattern.py to use tow width/height in conjunction with area
+
+v3.13.1
+=======
+
+Core
+====
+** Switched order of PERIODIC_BOUNDARY_CONDITIONS enum so matches voxel export dialog
+
+v3.13.0
+=======
+General
+=======
+** Updated to Python3
+** Added installer files for Python3 installation
+** Updated sample scripts to import Core library. Needed for Run Script option which uses runpy library with Python3
+
 Core
 ====
 ** Changed COctreeVoxelMesh::SaveVoxelMesh to take bSurface parameter rather than both bSurface and bCohesive. bSurface option outputs both surfaces and cohesive elements
@@ -11,11 +38,14 @@ Core
 ** Changed octree voxel mesh to enforce periodic meshing at boundaries
 ** Added CTextileDecoupledLToL class to create layer to layer textile where binder yarns in the same warp position are not tied together
 ** Added CBendingPeriodicBoundaries class to output boundary conditions for a unit cell in tension and bending
+** Added CDomainPrism to create prismatic domains which can include concave shapes
+** Implemented surface and tetgen meshing for prism domains
 
 GUI
 ===
 ** Changed octree voxel mesh export to have one check box for output of surface nodes and cohesive elements
 ** Added drag resize to properties dialog
+** Added prism domain option to VTU voxel export
 
 UnitTests
 =========
@@ -76,6 +106,7 @@ Core
 ** Added SaveToVTK option to CTetgenMesh
 ** Bugfix to correct extra space in ConstraintsDriver in voxel mesh equations (issue 21)
 ** Bugfix to correct reversal of G13 and G23 when calculating material properties using periodic boundary conditions set up in voxel mesh export (issue 22)
+** Added bRetainPoints variable to SectionPolygon constructor to enable shape to be forced to retain original points rather than iterate between them
 ** Bugfix to load linear interpolation from tg3 file
 ** Added COctreeVoxelMesh class for octree refinement and Laplacian smoothing
 

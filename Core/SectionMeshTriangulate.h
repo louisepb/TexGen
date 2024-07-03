@@ -49,6 +49,7 @@ namespace TexGen
 		/// Function to mesh 2d list of points that form a closed loop. This function does not use triangle
 		/// instead it used homegrown code.
 		static CMesh GetSimpleMesh(const vector<XY> &Section);
+		static CMesh GetTriangleMesh(const vector<XY> &Section );
 
 	protected:
 		bool CreateMesh(const vector<XY> &Section) const;

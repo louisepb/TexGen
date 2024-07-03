@@ -1,5 +1,8 @@
+# Python 3 version used runpy module to execute scripts from TexGen GUI which requires import of library
+from TexGen.Core import *
+
 # Create a 4x4 satin weave with yarn spacing of 1 and thickness of 0.2
-weave = CTextileWeave2D(4, 4, 1, 0.2, 1, False)
+weave = CTextileWeave2D(4, 4, 1, 0.2, True, False)
 weave.SetGapSize(0)
 
 # Set the weave pattern
@@ -27,7 +30,7 @@ for Yarn in Yarns:
     LayeredTextile.AddYarn(Yarn)
 
 # Create 2nd textile: Plain weave, spacing of 1 and thickness 0.25
-weave1 = CTextileWeave2D(2, 2, 1, 0.25, 1, False)
+weave1 = CTextileWeave2D(2, 2, 1, 0.25, True, False)
 weave1.SetGapSize(0)
 weave1.SetYarnWidths(0.8)
 weave1.SwapPosition(0, 1)

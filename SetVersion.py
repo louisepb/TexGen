@@ -78,16 +78,16 @@ def main():
 	FileNames = ['Core/TexGen.cpp', 'Installer/texgen.nsi', 'Installer/texgen-bundle.nsi', 'Installer/texgen2008.nsi',
              	'Installer/texgen-bundle2008.nsi', 'Installer/texgen-64bit-bundle2008.nsi','Installer/texgen-bundle2008_Python27.nsi',
 				'Installer/texgen-64bit-bundle-Python27-2008.nsi', 'Installer/texgen-64bit-bundle-Python27-2012.nsi','Installer/texgen2012.nsi',
-				'Installer/texgen-64bit-bundle-Python27-2017.nsi','Installer/texgen2017.nsi']
+				'Installer/texgen-64bit-bundle-Python27-2017.nsi','Installer/texgen2017.nsi','Installer/texgenPython3-2017.nsi','Installer/texgen-64bit-bundle-Python39-2017.nsi']
 				
 	TestFileNames = ['UnitTests/VoxelContinuumTest.inp','UnitTests/DryFibreULSurfaceTest.inp','UnitTests/DryFibreWholeSurfaceTest.inp',
 				'UnitTests/RotatedVoxelMeshTest.inp', 'UnitTests/vmesh.inp', 'UnitTests/TetgenTestPeriodic.inp','UnitTests/OctreeVoxelMeshTest.inp',
                 'UnitTests/TetgenTestQuad.inp']
 	NumFiles = len(FileNames)
-	print('Length filenames = ', NumFiles )
+	print(('Length filenames = ', NumFiles ))
 	
 	NumTestFiles = len(TestFileNames)
-	print('Length test filenames = ', NumTestFiles)
+	print(('Length test filenames = ', NumTestFiles))
 	OldVersions = [None] * NumFiles
 	OldTestVersions = [None] * NumTestFiles
 	
@@ -96,11 +96,11 @@ def main():
 	#OldVersions = [None] * 6
 	for i in range(1, NumFiles ):
 		OldVersions[i] = ModifyInstaller(FileNames[i], NewVersion)
-		print( 'Modified OldVersions', i)
+		print(( 'Modified OldVersions', i))
 		
 	for i in range(NumTestFiles):
 		OldTestVersions[i] = ModifyTestFile(TestFileNames[i], NewVersion)
-		print( 'Modified OldTestVersions', i)
+		print(( 'Modified OldTestVersions', i))
 	
 	#OldVersions[1] = ModifyInstaller(FileNames[1], NewVersion)
 	#OldVersions[2] = ModifyInstaller(FileNames[2], NewVersion)
@@ -122,11 +122,11 @@ def main():
 	if Conflict:
 		print('Version conflict between files:')
 		for FileName, OldVersion in zip(FileNames, OldVersions):
-			print( 'Changed %s from %d.%d.%d to %d.%d.%d' % tuple([FileName] + OldVersion + NewVersion))
+			print(( 'Changed %s from %d.%d.%d to %d.%d.%d' % tuple([FileName] + OldVersion + NewVersion)))
 		for TestFileName, OldTestVersion in zip(TestFileNames, OldTestVersions):
-			print( 'Changed %s from %d.%d.%d to %d.%d.%d' % tuple([TestFileName] + OldTestVersion + NewVersion))
+			print(( 'Changed %s from %d.%d.%d to %d.%d.%d' % tuple([TestFileName] + OldTestVersion + NewVersion)))
 	else:
-		print('Changed TexGen from version %d.%d.%d to version %d.%d.%d' % tuple(OldVersion + NewVersion))
+		print(('Changed TexGen from version %d.%d.%d to version %d.%d.%d' % tuple(OldVersion + NewVersion)))
 
 
 if __name__ == '__main__':

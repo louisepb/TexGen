@@ -120,6 +120,7 @@ namespace TexGen
 		BOX_DOMAIN,
 		SHEARED_DOMAIN,
 		ROTATED_DOMAIN,
+		PRISM_DOMAIN,
 	};
 
 	CLASS_DECLSPEC COLOR GetIndexedColor(int iIndex);
@@ -265,8 +266,8 @@ namespace TexGen
 		STAGGERED_BC,
 		SHEARED_BC,
 		ROTATED_BC,
+		NO_BOUNDARY_CONDITIONS,
 		BENDING_BC,
-		NO_BOUNDARY_CONDITIONS
 	};
 
 	template <typename T>

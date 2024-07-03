@@ -51,7 +51,8 @@ namespace TexGen
 		bool Triangulate(vector< vector<XY> > &PolygonPoints, vector<XY> &HolePoints, CMesh& OutputMesh, PLANEPARAMS& ConvertRef);
 
 		/// Convert points on one domain surface to local 2D points
-		bool ConvertDomainPointsTo2D(const list<int> &QuadIndices, CMesh& DomainMesh, vector<XY>& Points2D, PLANEPARAMS& ConvertRef);
+		bool ConvertDomainPointsTo2D(const list<int> &Indices, CMesh& DomainMesh, int numNodes, vector<XY>& Points2D, PLANEPARAMS& ConvertRef);
+		
 		/// Convert local 2D coordinates to global 3D coordinates
 		void Convert2DTo3DCoordinates(vector<XY>& Points2D, vector<XYZ>& Points3D, PLANEPARAMS& ConvertRef);
 		/// Convert global 3D coordinates to local 2D coordinates

@@ -88,6 +88,7 @@ namespace TexGen
 		*/
 		virtual int OutputHexElements(ostream &Output, bool bOutputMatrix, bool bOutputYarn, int Filetype = INP_EXPORT );
 
+
 		/// Outputs yarn orientations and element sets to .ori and .eld files
 		void OutputOrientationsAndElementSets( string Filename, ostream &Output );
 		/// Outputs all elements when only outputting matrix

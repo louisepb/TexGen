@@ -182,9 +182,9 @@ def ComputeEquivalentMaterialProperties(modelName, thermoMechSwitch):
 	resultODB = visualization.openOdb(path=fileName, readOnly=True)
 	
 	# Collect the various steps.
-	isothermalStep = resultODB.steps.values()[0]
+	isothermalStep = list(resultODB.steps.values())[0]
 	if (thermoMechSwitch==1):
-		thermoMechanicalStep = resultODB.steps.values()[1]
+		thermoMechanicalStep = list(resultODB.steps.values())[1]
 			
 	# The load-cases are held in frames.
 	# Index 0 holds the reference frame.

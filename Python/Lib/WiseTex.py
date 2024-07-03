@@ -157,8 +157,8 @@ def ImportWiseTex(filename):
                 # Rectangular section
                 Section = CSectionScaled(SquareSection, XY(*Point['Dimensions']))
             else:
-                print 'Unknown shape found: ', Shape
-                print 'Using ellipse instead...'
+                print('Unknown shape found: ', Shape)
+                print('Using ellipse instead...')
                 Section = CSectionEllipse(*Point['Dimensions'])
             # Add section to the yarn section
             YarnSection.AddSection(Section)

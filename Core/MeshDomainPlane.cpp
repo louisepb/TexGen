@@ -60,18 +60,10 @@ void CMeshDomainPlane::MeshDomainPlanes( bool bPeriodic )
 		list<int>::const_iterator itPolyIndices;
 		vector<int> NumVertices;
 		vector<XY> HolePoints;
-
-		CMesh TriangleMesh;
-
-		// Convert domain quad points to 2D points.  ConvertRef contains information to restore 2D points back to 3D on correct plane
-		vector< vector<XY> > ArrayPoints2D;
-		vector<XY> Points2D;
-		PLANEPARAMS ConvertRef;
-		ConvertDomainPointsTo2D(QuadIndices, *itDomainMeshes, Points2D, ConvertRef);
-		PlaneParams.push_back(ConvertRef);
-		ArrayPoints2D.push_back(Points2D);
+		bool bIsQuad = QuadIndices.size() > 0;
 
 		// Save number of indices in each polygon (each polygon represents intersection of yarn with domain plane)
+		// If no quad element then first polygon is outline of plane in a prism domain
 		if (PolygonIndices.size() > 0)
 		{
 			for (itPolyIndices = PolygonIndices.begin(); itPolyIndices != PolygonIndices.end(); )
@@ -95,9 +87,33 @@ void CMeshDomainPlane::MeshDomainPlanes( bool bPeriodic )
 			}
 			m_PolygonNumVertices.push_back(NumVertices);
 		}
+
+		CMesh TriangleMesh;
+
+		// Convert domain edge points to 2D points.  ConvertRef contains information to restore 2D points back to 3D on correct plane
+		// Will be a quad element or a polygon if one end of prism domain 
+		vector< vector<XY> > ArrayPoints2D;
+		vector<XY> Points2D;
+		PLANEPARAMS ConvertRef;
+		if ( bIsQuad )
+			ConvertDomainPointsTo2D(QuadIndices, *itDomainMeshes, CMesh::GetNumNodes(CMesh::QUAD), Points2D, ConvertRef);
+		else
+			ConvertDomainPointsTo2D(PolygonIndices, *itDomainMeshes, NumVertices[0]-1, Points2D, ConvertRef);
+		PlaneParams.push_back(ConvertRef);
+		ArrayPoints2D.push_back(Points2D);
+
+		
 		// Add yarn end polygons to 2D point array
 		int Poly = 0;
-		for (itPolyIndices = PolygonIndices.begin(); itPolyIndices != PolygonIndices.end(); )
+		//for (itPolyIndices = PolygonIndices.begin(); itPolyIndices != PolygonIndices.end(); )
+		itPolyIndices = PolygonIndices.begin();
+		if (!bIsQuad)
+		{
+			advance(itPolyIndices, NumVertices[0]);  // point to start of second polygon in list
+			Poly = 1;
+		}
+
+		for ( itPolyIndices; itPolyIndices != PolygonIndices.end(); )
 		{
 			vector<XYZ> Points3D;
 			for (int iNode = 0; iNode < NumVertices[Poly] - 1; ++iNode)
@@ -118,7 +134,7 @@ void CMeshDomainPlane::MeshDomainPlanes( bool bPeriodic )
 		}
 
 		int j;
-		if (bPeriodic)
+		if (bPeriodic)  // At the moment the assumption is that prism domains will be treated as non-periodic
 		{
 			for (j = 0; j < i; ++j)
 			{
@@ -138,24 +154,31 @@ void CMeshDomainPlane::MeshDomainPlanes( bool bPeriodic )
 				Triangulate(ArrayPoints2D, HolePoints, TriangleMesh, ConvertRef);
 			}
 			NumEdgeTris += (int)TriangleMesh.GetIndices(CMesh::TRI).size() / iNumNodes;
-			m_TriangulatedMeshes.push_back(TriangleMesh);
+			//m_TriangulatedMeshes.push_back(TriangleMesh);
 		}
-
+		else
+		{
+			vector<XY> SeededSides;
+			SeedSides(ArrayPoints2D[0]);
+			Triangulate(ArrayPoints2D, HolePoints, TriangleMesh, ConvertRef);
+		}
+		m_TriangulatedMeshes.push_back(TriangleMesh);
 	}
 
 }
 
-bool CMeshDomainPlane::ConvertDomainPointsTo2D(const list<int> &QuadIndices, CMesh& DomainMesh, vector<XY>& Points2D, PLANEPARAMS& ConvertRef)
-{
-	list<int>::const_iterator itQuadIndices;
 
-	for (itQuadIndices = QuadIndices.begin(); itQuadIndices != QuadIndices.end(); )
-	{
-		int numNodes = CMesh::GetNumNodes(CMesh::QUAD);
+
+bool CMeshDomainPlane::ConvertDomainPointsTo2D(const list<int> &Indices, CMesh& DomainMesh, int numNodes, vector<XY>& Points2D, PLANEPARAMS& ConvertRef)
+{
+	list<int>::const_iterator itIndices;
+	itIndices = Indices.begin();
+	//for (itIndices = Indices.begin(); itIndices != Indices.end(); )
+	//{
 		vector<XYZ> Points3D;
 		for (int iNode = 0; iNode < numNodes; ++iNode)
 		{
-			XYZ Point = DomainMesh.GetNode(*(itQuadIndices++));
+			XYZ Point = DomainMesh.GetNode(*(itIndices++));
 			Points3D.push_back(Point);
 		}
 		if (Points3D.size() < 3)
@@ -169,7 +192,7 @@ bool CMeshDomainPlane::ConvertDomainPointsTo2D(const list<int> &QuadIndices, CMe
 		ConvertRef.Normal = Normalise(ConvertRef.Normal);
 
 		Convert3DTo2DCoordinates(Points3D, ConvertRef, Points2D);
-	}
+	//}
 	return true;
 }
 
@@ -336,18 +359,6 @@ bool CMeshDomainPlane::Triangulate(vector<vector<XY> > &PolygonPoints, vector<XY
 		}
 	}
 
-	// Input regions
-	/*	TriangleInput.regionlist = new REAL [m_ProjectedRegions.size()*4];
-	TriangleInput.numberofregions = m_ProjectedRegions.size();
-
-	for (i=0; i<TriangleInput.numberofregions; ++i)
-	{
-	TriangleInput.regionlist[i*4] = m_ProjectedRegions[i].Center.x;
-	TriangleInput.regionlist[i*4+1] = m_ProjectedRegions[i].Center.y;
-	TriangleInput.regionlist[i*4+2] = i;
-	TriangleInput.regionlist[i*4+3] = 0;	// this is unused
-	}*/
-
 	triangle_mesh_create(ctx, &TriangleInput);
 
 
@@ -355,9 +366,7 @@ bool CMeshDomainPlane::Triangulate(vector<vector<XY> > &PolygonPoints, vector<XY
 	delete[] TriangleInput.segmentlist;
 	if (!m_bFillEnds)
 		delete[] TriangleInput.holelist;
-	//	delete [] TriangleInput.regionlist;
-
-	//	m_ProjectedMesh.Clear();
+	
 	triangle_mesh_copy(ctx, &TriangleOutput, 1, 1);
 
 	vector<XY> Points2D;
@@ -367,7 +376,6 @@ bool CMeshDomainPlane::Triangulate(vector<vector<XY> > &PolygonPoints, vector<XY
 		Point.x = TriangleOutput.pointlist[i * 2];
 		Point.y = TriangleOutput.pointlist[i * 2 + 1];
 		Points2D.push_back(Point);
-		//OutputMesh.AddNode(Point);
 	}
 	vector<XYZ> Points3D;
 	vector<XYZ>::iterator itPoints3D;
@@ -378,19 +386,15 @@ bool CMeshDomainPlane::Triangulate(vector<vector<XY> > &PolygonPoints, vector<XY
 		OutputMesh.AddNode(*itPoints3D);
 	}
 
-	//m_TriangleRegions.clear();
 	for (int i = 0; i<TriangleOutput.numberoftriangles; ++i)
 	{
 		OutputMesh.GetIndices(CMesh::TRI).push_back(TriangleOutput.trianglelist[i * 3]);
 		OutputMesh.GetIndices(CMesh::TRI).push_back(TriangleOutput.trianglelist[i * 3 + 1]);
 		OutputMesh.GetIndices(CMesh::TRI).push_back(TriangleOutput.trianglelist[i * 3 + 2]);
-		//m_TriangleRegions.push_back((int)TriangleOutput.triangleattributelist[i]);
 	}
 
 	triangle_free(TriangleOutput.pointlist);
 	triangle_free(TriangleOutput.trianglelist);
-	//trifree(TriangleOutput.triangleattributelist);
-	//	trifree(TriangleOutput.neighborlist);
 
 	triangle_context_destroy(ctx);
 	return true;
