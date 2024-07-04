@@ -149,11 +149,11 @@ CDomainPlanes CTextileWeftKnit::GetDefaultDomain()
 	XYZ Min, Max;
 
 	Min.x = 0.0;
-	Min.y = -m_dYarnThickness / 2.0;
+	Min.y = m_Yarns[0].GetNode(2)->GetPosition().y;
 	Min.z = -m_dYarnThickness;
 
 	Max.x = m_dCourseWidth * m_iCourses;
-	Max.y = (m_dLoopHeight * double(m_iWales)) - ((m_dLoopHeight - m_dWaleHeight) * double(m_iWales - 1)) + (m_dYarnThickness / 2.0);
+	Max.y = Min.y + (double)m_iWales * m_dWaleHeight;
 	Max.z = m_dYarnThickness;
 
 	return CDomainPlanes(Min, Max);
