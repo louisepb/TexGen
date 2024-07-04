@@ -132,6 +132,7 @@ void CControlsWindow::BuildTextilesPage()
 		}
 		pMenu->Append(wxID_ANY, wxT("&Nest Layers"), pNestingSubMenu);
 	}
+	pMenu->Append(ID_CreateWeftKnitTextile, wxT("Create Weft Knit..."));
 //	pMenu->Append(wxID_ANY, "Create Braid...");
 	pMenu->AppendSeparator();
 //	NOTE: TEMPORARILY DISABLED UNTIL A BETTER WAY TO DEAL WITH LONG RUNNING TASKS IS FOUND...
