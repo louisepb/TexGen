@@ -173,7 +173,16 @@ namespace TexGen
 		void RemoveDomain();
 
 		/// Set the resolution for all yarns in textile
-		bool SetResolution(int Resolution);
+		/**
+		\param iNumSlaveNodes The number of slave nodes to create
+		\param iNumSectionPoints The number of points defining the section
+		If no slave node parameter is passed the number of slave nodes is calculated such that the distance between nodes is equal
+		to the average distance between section points. This is done in an iterative manner,
+		since the average distance between section points and length of the yarn is not known
+		until the yarn is built.
+		Note that parameters are the opposite way round to the yarn SetResolution function
+		*/
+		bool SetResolution(int iNumSectionPoints, int iNumSlaveNodes = 0);
 
 
 

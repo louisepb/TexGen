@@ -1220,18 +1220,26 @@ bool CTextile::ConvertToInterpNodes() const
 	return true;
 }
 
-bool CTextile::SetResolution(int Resolution)
+bool CTextile::SetResolution(int iNumSectionPoints, int iNumSlaveNodes)
 {
 	BuildTextileIfNeeded();
 	vector<CYarn>::iterator itYarn;
 
 	for (itYarn = m_Yarns.begin(); itYarn != m_Yarns.end(); ++itYarn)
 	{
-		if (!itYarn->SetResolution(Resolution))
-			return false;
+		if (!iNumSlaveNodes)
+		{
+			if (!itYarn->SetResolution(iNumSectionPoints))
+				return false;
+		}
+		else
+		{
+			itYarn->SetResolution(iNumSlaveNodes, iNumSectionPoints);
+		}
 	}
 	return true;
 }
+
 
 
 
