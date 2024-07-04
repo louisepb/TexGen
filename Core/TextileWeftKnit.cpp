@@ -10,8 +10,6 @@ CTextileWeftKnit::CTextileWeftKnit(int iWales, int iCourses, double dWaleHeight,
 , m_dWaleHeight(dWaleHeight)
 , m_dLoopHeight(dLoopHeight)
 , m_dCourseWidth(dCourseWidth)
-, m_iNumSectionPoints(20)
-, m_iNumSlaveNodes(50)
 , m_iLoopModel(RAVANDI_2021)
 {
 	
@@ -27,8 +25,6 @@ CTextileWeftKnit::CTextileWeftKnit(TiXmlElement &Element)
 	Element.Attribute("WaleHeight", &m_dWaleHeight);
 	Element.Attribute("LoopHeight", &m_dLoopHeight);
 	Element.Attribute("CourseWidth", &m_dCourseWidth);	
-	Element.Attribute("NumSectionPoints", &m_iNumSectionPoints);
-	Element.Attribute("NumSlaveNodes", &m_iNumSlaveNodes);
 }
 
 void CTextileWeftKnit::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType)
@@ -38,8 +34,6 @@ void CTextileWeftKnit::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE O
 	Element.SetAttribute("WaleHeight", stringify(m_dWaleHeight));
 	Element.SetAttribute("LoopHeight", stringify(m_dLoopHeight));
 	Element.SetAttribute("CourseWidth", stringify(m_dCourseWidth));	
-	Element.SetAttribute("NumSectionPoints", m_iNumSectionPoints);
-	Element.SetAttribute("NumSlaveNodes", m_iNumSlaveNodes);
 }
 
 bool CTextileWeftKnit::BuildTextile() const
@@ -68,8 +62,8 @@ void CTextileWeftKnit::BuildTextileUsingRavandiLoopModel() const
 	CSectionEllipse Section(m_dYarnThickness, m_dYarnThickness);
 	m_Yarns[0].AssignSection(CYarnSectionConstant(Section));
 
-	m_Yarns[0].SetResolution(m_iNumSlaveNodes, m_iNumSectionPoints);
-	m_Yarns[0].AssignInterpolation(CInterpolationBezier());
+	m_Yarns[0].SetResolution(40);  // Initialise with default value. If being created with wizard will then set resolution to selected value
+	m_Yarns[0].AssignInterpolation(CInterpolationCubic());
 
 	AddRepeats();
 }
@@ -169,16 +163,6 @@ void CTextileWeftKnit::AssignDefaultDomain()
 {
 	CDomainPlanes Domain = GetDefaultDomain();
 	AssignDomain(Domain);
-}
-
-void CTextileWeftKnit::SetNumSlaveNodes(int iNumSlaveNodes)
-{
-	m_iNumSlaveNodes = iNumSlaveNodes;
-}
-
-void CTextileWeftKnit::SetNumSectionPoints(int iNumSectionPoints)
-{
-	m_iNumSectionPoints = iNumSectionPoints;
 }
 
 void CTextileWeftKnit::SetLoopModel(LoopModel iLoopModel)

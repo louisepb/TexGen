@@ -220,10 +220,7 @@ string CWeftKnitWizard::GetCreateTextileCommand(string ExistingTextile)
 	int iNumSectionPoints = m_pNumSectionPointsSpin->GetValue();
 	
 	StringStream << "WeftKnit = CTextileWeftKnit(" << iWales << "," << iCourses << "," << dWaleHeight << "," << dLoopHeight << "," << dCourseWidth << "," << dThickness << ")" << endl;
-
-	StringStream << "WeftKnit.SetNumSlaveNodes(" << iNumSlaveNodes << ")" << endl;
-
-	StringStream << "WeftKnit.SetNumSectionPoints(" << iNumSectionPoints << ")" << endl;
+	StringStream << "WeftKnit.SetResolution(" << iNumSectionPoints << "," << iNumSlaveNodes << ")" << endl;
 
 	if (m_bCreateDomain)
 	{

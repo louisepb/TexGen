@@ -28,8 +28,6 @@ namespace TexGen
 
 		void AssignDefaultDomain();
 		virtual CDomainPlanes GetDefaultDomain();
-		void SetNumSlaveNodes(int iNumSlaveNodes);
-		void SetNumSectionPoints(int iNumSectionPoints);
 		void SetLoopModel(LoopModel iLoopModel);
 
 	protected:
@@ -43,8 +41,6 @@ namespace TexGen
 		double m_dWaleHeight;
 		double m_dCourseWidth;
 		double m_dLoopHeight;	
-		int m_iNumSlaveNodes;
-		int m_iNumSectionPoints;
 		LoopModel m_iLoopModel;
 		
 	};
