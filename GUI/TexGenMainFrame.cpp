@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "CustomWidget.h"
 #include "LoggerGUI.h"
 #include "WeaveWizard3D.h"
+#include "WeftKnitWizard.h"
 #include "RangeValidator.h"
 #include "TextileLayersDialog.h"
 #include "PythonConverter.h"
@@ -1587,6 +1588,19 @@ void CTexGenMainFrame::OnTextiles(wxCommandEvent& event)
 			}
 		}
 		break;
+	case ID_CreateWeftKnitTextile:
+		{
+			CWeftKnitWizard Wizard(this, wxID_ANY);
+			if (Wizard.RunIt())
+			{
+				string Command = Wizard.GetCreateTextileCommand();
+				if (!Command.empty())
+				{
+					SendPythonCode(Command);
+				}
+			}
+		}
+	break;
 	case ID_SetLayerOffsets:
 		{
 			string TextileName = GetTextileSelection();

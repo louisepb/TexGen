@@ -142,6 +142,8 @@ namespace std
 %include "../Core/TextileOffsetAngleInterlock.h"
 %include "../Core/ShearedTextileWeave2D.h"
 %include "../Core/TextileLayered.h"
+%include "../Core/TextileKnit.h"
+%include "../Core/TextileWeftKnit.h"
 
 %include "../Core/TextileDeformer.h"
 %include "../Core/TextileDeformerVolumeMesh.h"
