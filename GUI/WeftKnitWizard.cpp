@@ -182,11 +182,11 @@ wxWizardPageSimple* CWeftKnitWizard::BuildSecondPage()
 
 		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Number of slave nodes:")), SizerFlags);
 		pSubSizer->Add(m_pNumSlaveNodesSpin = new wxSpinCtrl(pPage, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100), SizerFlags);
-		m_pWalesSpin->SetToolTip(wxT("Controls the number of slave nodes to add in between master nodes."));
+		m_pNumSlaveNodesSpin->SetToolTip(wxT("Controls the number of slave nodes to add in between master nodes."));
 
 		pSubSizer->Add(new wxStaticText(pPage, wxID_ANY, wxT("Number of section points:")), SizerFlags);
 		pSubSizer->Add(m_pNumSectionPointsSpin = new wxSpinCtrl(pPage, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100), SizerFlags);
-		m_pCoursesSpin->SetToolTip(wxT("Controls the number of section points to use across the cross-section of the yarn."));
+		m_pNumSectionPointsSpin->SetToolTip(wxT("Controls the number of section points to use across the cross-section of the yarn."));
 
 		pMainSizer->Add(pSubSizer, SizerFlags);
 	}
