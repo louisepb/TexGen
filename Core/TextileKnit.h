@@ -24,10 +24,12 @@ namespace TexGen
 {
 	using namespace std;
 
+	/// Represents a knitted textile class
 	class CLASS_DECLSPEC CTextileKnit : public CTextile
 	{
 	public:
 
+		/// Build a knit unit cell giving number of wales, courses and yarn thickness
 		CTextileKnit(int iWales, int iCourses, double dYarnThickness);
 		CTextileKnit(TiXmlElement &Element);
 		virtual ~CTextileKnit(void);
@@ -38,9 +40,15 @@ namespace TexGen
 
 	protected:
 
+		/// Build the textile
+		/** Generate the yarns to create the knitted textile.
+		The class is virtual so that this can be overridden for different types of knitted textile.
+		**/
 		virtual bool BuildTextile() const;
 
+		/// The wales are the loops which stack up vertically
 		int m_iWales;
+		/// The courses are the stitches across a horizontal row
 		int m_iCourses;
 		double m_dYarnThickness;
 

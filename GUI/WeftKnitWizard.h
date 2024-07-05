@@ -68,12 +68,6 @@ protected:
 	wxSpinCtrl *m_pNumSlaveNodesSpin;
 	wxSpinCtrl *m_pNumSectionPointsSpin;
 
-	
-
-
-
-
-
 	bool m_bCreateDomain;
 	bool m_bRefine;
 	bool m_bWaleHeightChanged;
