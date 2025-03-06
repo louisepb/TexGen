@@ -17,11 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =============================================================================*/
 
-//#include "PrecompiledHeaders.h"
-//#include "TextileWarpKnit.h"
-//#include "SectionEllipse.h"
-//#include "DomainPlanes.h"
-
+#include "PrecompiledHeaders.h"
+#include "TextileWarpKnit.h"
+#include "SectionEllipse.h"
+#include "DomainPlanes.h"
+//
 //using namespace TexGen;
 //
 //CTextileWarpKnit::CTextileWarpKnit(int iWales, int iCourses, double dWaleHeight, double dLoopHeight, double dCourseWidth, double dYarnThickness)
@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //	, m_dWaleHeight(dWaleHeight)
 //	, m_dLoopHeight(dLoopHeight)
 //	, m_dCourseWidth(dCourseWidth)
-//	, m_iLoopModel(JI_2020)
+//	, m_iLoopModel(RAVANDI_2021)
 //{
 //
 //}
