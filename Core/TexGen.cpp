@@ -209,6 +209,8 @@ bool CTexGen::LoadTiXmlElement(TiXmlElement &Element)
 				AddTextile(Name, CTextileKnit(*pTextile), bOverwrite);
 			else if (*pType == "CTextileWeftKnit")
 				AddTextile(Name, CTextileWeftKnit(*pTextile), bOverwrite);
+			else if (*pType == "CTextileWarpKnit")
+				AddTextile(Name, CTextileWarpKnit(*pTextile), bOverwrite);
 			else
 				AddTextile(Name, CTextile(*pTextile), bOverwrite);
 		}

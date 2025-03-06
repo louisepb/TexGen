@@ -18,173 +18,174 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =============================================================================*/
 
 #include "PrecompiledHeaders.h"
+#include "TextileKnit.h"
 #include "TextileWarpKnit.h"
 #include "SectionEllipse.h"
 #include "DomainPlanes.h"
-//
-//using namespace TexGen;
-//
-//CTextileWarpKnit::CTextileWarpKnit(int iWales, int iCourses, double dWaleHeight, double dLoopHeight, double dCourseWidth, double dYarnThickness)
-//	: CTextileKnit(iWales, iCourses, dYarnThickness)
-//	, m_dWaleHeight(dWaleHeight)
-//	, m_dLoopHeight(dLoopHeight)
-//	, m_dCourseWidth(dCourseWidth)
-//	, m_iLoopModel(RAVANDI_2021)
-//{
-//
-//}
-//
-//CTextileWarpKnit::~CTextileWarpKnit(void)
-//{
-//}
-//
-//CTextileWarpKnit::CTextileWarpKnit(TiXmlElement &Element)
-//	: CTextileKnit(Element)
-//{
-//	Element.Attribute("WaleHeight", &m_dWaleHeight);
-//	Element.Attribute("LoopHeight", &m_dLoopHeight);
-//	Element.Attribute("CourseWidth", &m_dCourseWidth);
-//}
-//
-//void CTextileWarpKnit::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType)
-//{
-//	CTextileKnit::PopulateTiXmlElement(Element, OutputType);
-//
-//	Element.SetAttribute("WaleHeight", stringify(m_dWaleHeight));
-//	Element.SetAttribute("LoopHeight", stringify(m_dLoopHeight));
-//	Element.SetAttribute("CourseWidth", stringify(m_dCourseWidth));
-//}
-//
-//bool CTextileWarpKnit::BuildTextile() const
-//{
-//	if (m_iLoopModel == RAVANDI_2021)
-//	{
-//		BuildTextileUsingRavandiLoopModel();
-//	}
-//
-//	return true;
-//}
-//
-//
-//void CTextileWarpKnit::BuildTextileUsingRavandiLoopModel() const
-//{
-//	m_Yarns.clear();
-//
-//	TGLOGINDENT("Building textile warp knit \"" << GetName() << "\"");
-//
-//	vector<int> Yarns;
-//
-//	Yarns.push_back(AddYarn(CYarn()));
-//
-//	AddOneLoopToYarn();
-//
-//	CSectionEllipse Section(m_dYarnThickness, m_dYarnThickness);
-//	m_Yarns[0].AssignSection(CYarnSectionConstant(Section));
-//
-//	m_Yarns[0].SetResolution(40);  // Initialise with default value. If being created with wizard will then set resolution to selected value
-//	m_Yarns[0].AssignInterpolation(CInterpolationCubic());
-//
-//	AddRepeats();
-//}
-//
-//string CTextileWarpKnit::GetDefaultName() const
-//{
-//	return "WarpKnit(W:" + stringify(m_iWales) + ",C:" + stringify(m_iCourses) + ")";
-//}
-//
-//void CTextileWarpKnit::RefineTextile(bool bCorrectWidths, bool bCorrectInterference, bool bPeriodic)
-//{
-//
-//}
-//
-//void CTextileWarpKnit::AddOneLoopToYarn() const
-//{
-//	double x, y, z;
-//
-//	// Node 1
-//	x = 0.0;
-//	y = 0.0;
-//	z = m_dYarnThickness / 2.0;
-//	m_Yarns[0].AddNode(XYZ(x, y, z));
-//
-//	// Node 2
-//	x = ((m_dCourseWidth + (2.0 * m_dYarnThickness)) / 4.0);
-//	y = (m_dLoopHeight - m_dWaleHeight) / 2.0;
-//	z = 0.0;
-//	m_Yarns[0].AddNode(XYZ(x, y, z));
-//
-//	// Node 3
-//	x = m_dCourseWidth / 4.0;
-//	y = m_dLoopHeight / 2.0;
-//	z = -m_dYarnThickness / 2.0;
-//	m_Yarns[0].AddNode(XYZ(x, y, z));
-//
-//	// Node 4
-//	x = ((m_dCourseWidth - (2.0 * m_dYarnThickness)) / 4.0);
-//	y = (m_dLoopHeight + m_dWaleHeight) / 2.0;
-//	z = 0.0;
-//	m_Yarns[0].AddNode(XYZ(x, y, z));
-//
-//	// Node 5
-//	x = m_dCourseWidth / 2.0;
-//	y = m_dLoopHeight;
-//	z = m_dYarnThickness / 2.0;
-//	m_Yarns[0].AddNode(XYZ(x, y, z));
-//
-//	// Node 6
-//	x = ((3.0 * m_dCourseWidth) + (2.0 * m_dYarnThickness)) / 4.0;
-//	y = (m_dLoopHeight + m_dWaleHeight) / 2.0;
-//	z = 0.0;
-//	m_Yarns[0].AddNode(XYZ(x, y, z));
-//
-//	// Node 7
-//	x = (3.0 * m_dCourseWidth) / 4.0;
-//	y = m_dLoopHeight / 2.0;
-//	z = -m_dYarnThickness / 2.0;
-//	m_Yarns[0].AddNode(XYZ(x, y, z));
-//
-//	// Node 8
-//	x = ((3.0 * m_dCourseWidth) - (2.0 * m_dYarnThickness)) / 4.0;
-//	y = (m_dLoopHeight - m_dWaleHeight) / 2.0;
-//	z = 0.0;
-//	m_Yarns[0].AddNode(XYZ(x, y, z));
-//
-//	// Node 9
-//	x = m_dCourseWidth;
-//	y = 0.0;
-//	z = m_dYarnThickness / 2.0;
-//	m_Yarns[0].AddNode(XYZ(x, y, z));
-//}
-//
-//void CTextileWarpKnit::AddRepeats() const
-//{
-//	m_Yarns[0].AddRepeat(XYZ(m_dCourseWidth, 0.0, 0.0));
-//	m_Yarns[0].AddRepeat(XYZ(0.0, m_dWaleHeight, 0.0));
-//}
-//
-//
-//CDomainPlanes CTextileWarpKnit::GetDefaultDomain()
-//{
-//	XYZ Min, Max;
-//
-//	Min.x = 0.0;
-//	Min.y = m_Yarns[0].GetNode(2)->GetPosition().y;
-//	Min.z = -m_dYarnThickness;
-//
-//	Max.x = m_dCourseWidth * m_iCourses;
-//	Max.y = Min.y + (double)m_iWales * m_dWaleHeight;
-//	Max.z = m_dYarnThickness;
-//
-//	return CDomainPlanes(Min, Max);
-//}
-//
-//void CTextileWarpKnit::AssignDefaultDomain()
-//{
-//	CDomainPlanes Domain = GetDefaultDomain();
-//	AssignDomain(Domain);
-//}
-//
-//void CTextileWarpKnit::SetLoopModel(LoopModel iLoopModel)
-//{
-//	m_iLoopModel = iLoopModel;
-//}
+
+using namespace TexGen;
+
+CTextileWarpKnit::CTextileWarpKnit(int iWales, int iCourses, double dWaleHeight, double dLoopHeight, double dCourseWidth, double dYarnThickness)
+	: CTextileKnit(iWales, iCourses, dYarnThickness)
+	, m_dWaleHeight(dWaleHeight)
+	, m_dLoopHeight(dLoopHeight)
+	, m_dCourseWidth(dCourseWidth)
+	, m_iLoopModel(JI_2020)
+{
+
+}
+
+CTextileWarpKnit::~CTextileWarpKnit(void)
+{
+}
+
+CTextileWarpKnit::CTextileWarpKnit(TiXmlElement &Element)
+	: CTextileKnit(Element)
+{
+	Element.Attribute("WaleHeight", &m_dWaleHeight);
+	Element.Attribute("LoopHeight", &m_dLoopHeight);
+	Element.Attribute("CourseWidth", &m_dCourseWidth);
+}
+
+void CTextileWarpKnit::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType)
+{
+	CTextileKnit::PopulateTiXmlElement(Element, OutputType);
+
+	Element.SetAttribute("WaleHeight", stringify(m_dWaleHeight));
+	Element.SetAttribute("LoopHeight", stringify(m_dLoopHeight));
+	Element.SetAttribute("CourseWidth", stringify(m_dCourseWidth));
+}
+
+bool CTextileWarpKnit::BuildTextile() const
+{
+	if (m_iLoopModel == JI_2020)
+	{
+		BuildTextileUsingJiLoopModel();
+	}
+
+	return true;
+}
+
+
+void CTextileWarpKnit::BuildTextileUsingJiLoopModel() const
+{
+	m_Yarns.clear();
+
+	TGLOGINDENT("Building textile warp knit \"" << GetName() << "\"");
+
+	vector<int> Yarns;
+
+	Yarns.push_back(AddYarn(CYarn()));
+
+	AddOneLoopToYarn();
+
+	CSectionEllipse Section(m_dYarnThickness, m_dYarnThickness);
+	m_Yarns[0].AssignSection(CYarnSectionConstant(Section));
+
+	m_Yarns[0].SetResolution(40);  // Initialise with default value. If being created with wizard will then set resolution to selected value
+	m_Yarns[0].AssignInterpolation(CInterpolationCubic());
+
+	AddRepeats();
+}
+
+string CTextileWarpKnit::GetDefaultName() const
+{
+	return "WarpKnit(W:" + stringify(m_iWales) + ",C:" + stringify(m_iCourses) + ")";
+}
+
+void CTextileWarpKnit::RefineTextile(bool bCorrectWidths, bool bCorrectInterference, bool bPeriodic)
+{
+
+}
+
+void CTextileWarpKnit::AddOneLoopToYarn() const
+{
+	double x, y, z;
+
+	// Node 1
+	x = 0.0;
+	y = 0.0;
+	z = m_dYarnThickness / 2.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
+
+	// Node 2
+	x = ((m_dCourseWidth + (2.0 * m_dYarnThickness)) / 4.0);
+	y = (m_dLoopHeight - m_dWaleHeight) / 2.0;
+	z = 0.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
+
+	// Node 3
+	x = m_dCourseWidth / 4.0;
+	y = m_dLoopHeight / 2.0;
+	z = -m_dYarnThickness / 2.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
+
+	// Node 4
+	x = ((m_dCourseWidth - (2.0 * m_dYarnThickness)) / 4.0);
+	y = (m_dLoopHeight + m_dWaleHeight) / 2.0;
+	z = 0.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
+
+	// Node 5
+	x = m_dCourseWidth / 2.0;
+	y = m_dLoopHeight;
+	z = m_dYarnThickness / 2.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
+
+	// Node 6
+	x = ((3.0 * m_dCourseWidth) + (2.0 * m_dYarnThickness)) / 4.0;
+	y = (m_dLoopHeight + m_dWaleHeight) / 2.0;
+	z = 0.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
+
+	// Node 7
+	x = (3.0 * m_dCourseWidth) / 4.0;
+	y = m_dLoopHeight / 2.0;
+	z = -m_dYarnThickness / 2.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
+
+	// Node 8
+	x = ((3.0 * m_dCourseWidth) - (2.0 * m_dYarnThickness)) / 4.0;
+	y = (m_dLoopHeight - m_dWaleHeight) / 2.0;
+	z = 0.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
+
+	// Node 9
+	x = m_dCourseWidth;
+	y = 0.0;
+	z = m_dYarnThickness / 2.0;
+	m_Yarns[0].AddNode(XYZ(x, y, z));
+}
+
+void CTextileWarpKnit::AddRepeats() const
+{
+	m_Yarns[0].AddRepeat(XYZ(m_dCourseWidth, 0.0, 0.0));
+	m_Yarns[0].AddRepeat(XYZ(0.0, m_dWaleHeight, 0.0));
+}
+
+
+CDomainPlanes CTextileWarpKnit::GetDefaultDomain()
+{
+	XYZ Min, Max;
+
+	Min.x = 0.0;
+	Min.y = m_Yarns[0].GetNode(2)->GetPosition().y;
+	Min.z = -m_dYarnThickness;
+
+	Max.x = m_dCourseWidth * m_iCourses;
+	Max.y = Min.y + (double)m_iWales * m_dWaleHeight;
+	Max.z = m_dYarnThickness;
+
+	return CDomainPlanes(Min, Max);
+}
+
+void CTextileWarpKnit::AssignDefaultDomain()
+{
+	CDomainPlanes Domain = GetDefaultDomain();
+	AssignDomain(Domain);
+}
+
+void CTextileWarpKnit::SetLoopModel(LoopModel iLoopModel)
+{
+	m_iLoopModel = iLoopModel;
+}

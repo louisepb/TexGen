@@ -33,6 +33,7 @@ namespace TexGen
 	class CTextileWeave2D;
 	class CTextileKnit;
 	class CTextileWeftKnit;
+	class CTextileWarpKnit;
 
 	using namespace std;
 
@@ -290,6 +291,7 @@ namespace TexGen
 		CTextileAngleInterlock* GetAngleInterlockWeave();
 		CTextileKnit* GetKnit();
 		CTextileWeftKnit* GetWeftKnit();
+		CTextileWarpKnit* GetWarpKnit();
 
 		// Accessor methods
 		int GetNumYarns() const;

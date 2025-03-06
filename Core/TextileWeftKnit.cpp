@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 =============================================================================*/
 
 #include "PrecompiledHeaders.h"
+#include "TextileKnit.h"
 #include "TextileWeftKnit.h"
 #include "SectionEllipse.h"
 #include "DomainPlanes.h"

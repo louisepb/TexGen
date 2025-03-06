@@ -899,6 +899,11 @@ CTextileWeftKnit* CTextile::GetWeftKnit()
 	return dynamic_cast<CTextileWeftKnit*>(this);
 }
 
+CTextileWarpKnit* CTextile::GetWarpKnit()
+{
+	return dynamic_cast<CTextileWarpKnit*>(this);
+}
+
 /*int CTextile::AdjustInterference(vector<float> &DistanceToSurface, CMesh *pInterferingPoints)
 {
 	if (!BuildTextileIfNeeded())

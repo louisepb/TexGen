@@ -25,11 +25,6 @@ namespace TexGen
 {
 	using namespace std;
 
-	enum LoopModel
-	{
-		RAVANDI_2021
-	};
-
 	/// Class to generate a weft knit textile
 	class CLASS_DECLSPEC CTextileWeftKnit : public CTextileKnit
 	{

@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TextileWeave3D.h"
 #include "TextileKnit.h"
 #include "TextileWeftKnit.h"
+#include "TextileWarpKnit.h"
 #include "Domain.h"
 #include "DomainPlanes.h"
 #include "DomainPrism.h"
