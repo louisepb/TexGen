@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DomainPlanes.h"
 
 using namespace TexGen;
-
+//Contructor
 CTextileWarpKnit::CTextileWarpKnit(int iWales, int iCourses, double dWaleHeight, double dLoopHeight, double dCourseWidth, double dYarnThickness)
 	: CTextileKnit(iWales, iCourses, dYarnThickness)
 	, m_dWaleHeight(dWaleHeight)
@@ -34,28 +34,28 @@ CTextileWarpKnit::CTextileWarpKnit(int iWales, int iCourses, double dWaleHeight,
 {
 
 }
-
+//Destructor
 CTextileWarpKnit::~CTextileWarpKnit(void)
 {
 }
-
+//Reads from XML (constructor)
 CTextileWarpKnit::CTextileWarpKnit(TiXmlElement &Element)
 	: CTextileKnit(Element)
 {
-	Element.Attribute("WaleHeight", &m_dWaleHeight);
+	Element.Attribute("WaleHeight", &m_dWaleHeight);	//Extracts WaleHeight from XML and assigns to m_dWaleHeight
 	Element.Attribute("LoopHeight", &m_dLoopHeight);
 	Element.Attribute("CourseWidth", &m_dCourseWidth);
 }
-
+//Writes to XML
 void CTextileWarpKnit::PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType)
 {
 	CTextileKnit::PopulateTiXmlElement(Element, OutputType);
 
-	Element.SetAttribute("WaleHeight", stringify(m_dWaleHeight));
+	Element.SetAttribute("WaleHeight", stringify(m_dWaleHeight)); //Adds "WaleHeight" to XML and value to be m_dWaleHeight
 	Element.SetAttribute("LoopHeight", stringify(m_dLoopHeight));
 	Element.SetAttribute("CourseWidth", stringify(m_dCourseWidth));
 }
-
+//Check for which model to use
 bool CTextileWarpKnit::BuildTextile() const
 {
 	if (m_iLoopModel == JI_2020)
