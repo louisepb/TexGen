@@ -38,7 +38,7 @@ CTextileWarpKnit::CTextileWarpKnit(int iWales, int iCourses, double dWaleHeight,
 CTextileWarpKnit::~CTextileWarpKnit(void)
 {
 }
-//Reads from XML (constructor)
+//Reads from XML
 CTextileWarpKnit::CTextileWarpKnit(TiXmlElement &Element)
 	: CTextileKnit(Element)
 {
@@ -66,7 +66,7 @@ bool CTextileWarpKnit::BuildTextile() const
 	return true;
 }
 
-
+//Builds textile according to model
 void CTextileWarpKnit::BuildTextileUsingJiLoopModel() const
 {
 	m_Yarns.clear();
