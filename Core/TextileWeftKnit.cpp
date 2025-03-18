@@ -36,7 +36,7 @@ using namespace TexGen;
 //dYarnThickness = d = thickness
 
 
-CTextileWeftKnit::CTextileWeftKnit(int iWales, int iCourses, double dWaleHeight, double dLoopHeight , double dCourseWidth, double dYarnThickness)
+CTextileWeftKnit::CTextileWeftKnit(double iWales, double iCourses, double dWaleHeight, double dLoopHeight , double dCourseWidth, double dYarnThickness)
 : CTextileKnit(iWales, iCourses, dYarnThickness)
 , m_dWaleHeight(dWaleHeight)
 , m_dLoopHeight(dLoopHeight)
@@ -122,7 +122,7 @@ void CTextileWeftKnit::AddOneLoopToYarn() const
 	double e = m_dLoopHeight;
 	double f = m_iWales;
 	double g = m_iCourses;
-	double H = (m_dWaleHeight - ((2.0 * m_dLoopHeight) / 3.0));
+	double H = (m_dWaleHeight - m_dLoopHeight + (1.0 / 3.0)*m_dLoopHeight);
 
 	// Node 1
 	x = -f;
@@ -286,9 +286,6 @@ void CTextileWeftKnit::AddOneLoopToYarn() const
 	y = -H+2*YDelta;
 	z = d-2*ZDelta;
 	m_Yarns[0].AddNode(XYZ(x, y, z));
-
-
-
 }
 
 void CTextileWeftKnit::AddRepeats() const

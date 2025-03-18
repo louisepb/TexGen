@@ -31,7 +31,7 @@ namespace TexGen
 	public:
 
 		/// Build a weft knit unit cell 
-		CTextileWeftKnit(int iWales, int iCourses, double dWaleHeight, double dLoopHeight, double dCourseWidth, double dYarnThickness);
+		CTextileWeftKnit(double iWales, double iCourses, double dWaleHeight, double dLoopHeight, double dCourseWidth, double dYarnThickness);
 		CTextileWeftKnit(TiXmlElement &Element);
 		virtual ~CTextileWeftKnit(void);
 
