@@ -93,7 +93,7 @@ void CTextileWeftKnit::BuildTextileUsingRavandiLoopModel() const
 	CSectionEllipse Section(m_dYarnThickness, m_dYarnThickness);
 	m_Yarns[0].AssignSection(CYarnSectionConstant(Section));
 
-	m_Yarns[0].SetResolution(40);  // Initialise with default value. If being created with wizard will then set resolution to selected value
+	m_Yarns[0].SetResolution(20);  // Initialise with default value. If being created with wizard will then set resolution to selected value
 	m_Yarns[0].AssignInterpolation(CInterpolationCubic());
 
 	AddRepeats();
@@ -291,7 +291,7 @@ void CTextileWeftKnit::AddOneLoopToYarn() const
 void CTextileWeftKnit::AddRepeats() const
 {
 	m_Yarns[0].AddRepeat(XYZ(0.0, 2.0*m_dWaleHeight, -2.0*m_dYarnThickness));
-	m_Yarns[0].AddRepeat(XYZ(2.0*(m_dCourseWidth + 2 * m_dYarnThickness), 0.0, 0.0));
+	m_Yarns[0].AddRepeat(XYZ(2.0*(m_dCourseWidth + 2.0 * m_dYarnThickness), 0.0, 0.0));
 }
 
 
