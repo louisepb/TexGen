@@ -31,7 +31,7 @@ namespace TexGen
 	public:
 
 		/// Build a weft knit unit cell 
-		CTextileWeftKnit(double iWales, double iCourses, double dWaleHeight, double dLoopHeight, double dCourseWidth, double dYarnThickness);
+		CTextileWeftKnit(int iWales, int iCourses, double dWaleHeight, double dNeckWidth, double dCourseWidth, double dYarnThickness);
 		CTextileWeftKnit(TiXmlElement &Element);
 		virtual ~CTextileWeftKnit(void);
 
@@ -57,11 +57,11 @@ namespace TexGen
 		virtual void BuildTextileUsingRavandiLoopModel() const;
 		virtual void AddOneLoopToYarn() const;
 		virtual void AddRepeats() const;
-		
+		virtual void AddTranslate() const;
 
 		double m_dWaleHeight;
 		double m_dCourseWidth;
-		double m_dLoopHeight;	
+		double m_dNeckWidth;
 		LoopModel m_iLoopModel;
 		
 	};
