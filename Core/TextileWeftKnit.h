@@ -54,8 +54,10 @@ namespace TexGen
 		**/
 		virtual bool BuildTextile() const;
 		/// Builds the weft knit textile using the Ravandi model for calculating loop geometry
-		virtual void BuildTextileUsingRavandiLoopModel() const;
-		virtual void AddOneLoopToYarn() const;
+		virtual void BuildTextileUsingDefaultLoopModel() const;
+		virtual void BuildTextileUsingJiLoopModel() const;
+		virtual void AddOneDefaultLoopToYarn() const;
+		virtual void AddOneJiLoopToYarn() const;
 		virtual void AddRepeats() const;
 		virtual void AddTranslate() const;
 

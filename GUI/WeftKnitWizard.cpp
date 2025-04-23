@@ -45,7 +45,8 @@ CWeftKnitWizard::CWeftKnitWizard(wxWindow* parent, wxWindowID id)
 	, m_CourseWidth(wxT("1"))
 	, m_YarnThickness(wxT("0.2"))
 	, m_GapSize(wxT("0"))
-	, m_LoopModel(RAVANDI_2021)
+	//, m_LoopModel(RAVANDI_2021) REMOVE COMMENT AND FOLLOWING LINE WHEN CHANGE BACK FROM WARP
+	, m_LoopModel(DEFAULT_2021)
 	, m_bRefine(true)
 	, m_bWaleHeightChanged(false)
 	, m_bCourseWidthChanged(false)
@@ -253,9 +254,10 @@ string CWeftKnitWizard::GetCreateTextileCommand(string ExistingTextile)
 
 	switch (m_pLoopModelRadio->GetSelection())
 	{
-		case RAVANDI_2021:
+		// case RAVANDI_2021:  REMOVE COMMENT AND FOLLOWING LINE WHEN CHANGE BACK FROM WARP
+		case DEFAULT_2021:
 		{
-			StringStream << "WeftKnit.SetLoopModel(RAVANDI_2021)" << endl;
+			StringStream << "WeftKnit.SetLoopModel(DEFAULT_2021)" << endl;
 		}
 	}
 	

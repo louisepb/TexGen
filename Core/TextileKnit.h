@@ -27,7 +27,7 @@ namespace TexGen
 	enum LoopModel
 	{
 		JI_2020,      // For warp-knitted textiles
-		RAVANDI_2021  // For weft-knitted textiles
+		DEFAULT_2021  // For weft-knitted textiles
 	};
 
 	/// Represents a knitted textile class
