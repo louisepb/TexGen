@@ -144,6 +144,7 @@ namespace std
 %include "../Core/TextileLayered.h"
 %include "../Core/TextileKnit.h"
 %include "../Core/TextileWeftKnit.h"
+%include "../Core/TextileWarpKnit.h"
 
 %include "../Core/TextileDeformer.h"
 %include "../Core/TextileDeformerVolumeMesh.h"

@@ -25,22 +25,22 @@ namespace TexGen
 {
 	using namespace std;
 
-	/// Class to generate a weft knit textile
-	class CLASS_DECLSPEC CTextileWeftKnit : public CTextileKnit
+	/// Class to generate a warp knit textile
+	class CLASS_DECLSPEC CTextileWarpKnit : public CTextileKnit
 	{
 	public:
 
-		/// Build a weft knit unit cell 
-		CTextileWeftKnit(int iWales, int iCourses, double dWaleHeight, double dNeckWidth, double dCourseWidth, double dYarnThickness);
-		CTextileWeftKnit(TiXmlElement &Element);
-		virtual ~CTextileWeftKnit(void);
+		/// Build a warp knit unit cell 
+		CTextileWarpKnit(int iWales, int iCourses, double dWaleHeight, double dLoopHeight, double dCourseWidth, double dYarnThickness);
+		CTextileWarpKnit(TiXmlElement &Element);
+		virtual ~CTextileWarpKnit(void);
 
-		virtual CTextile* Copy() const { return new CTextileWeftKnit(*this); }
-		virtual string GetType() const { return "CTextileWeftKnit"; }
+		virtual CTextile* Copy() const { return new CTextileWarpKnit(*this); }
+		virtual string GetType() const { return "CTextileWarpKnit"; }
 		virtual void PopulateTiXmlElement(TiXmlElement &Element, OUTPUT_TYPE OutputType);
-		
+
 		virtual string GetDefaultName() const;
-		/// Refine for weft knit is not implemented yet
+		/// Refine for warp knit is not implemented yet
 		virtual void RefineTextile(bool bCorrectWidths = true, bool bCorrectInterference = true, bool bPeriodic = true);
 
 		void AssignDefaultDomain();
@@ -50,25 +50,24 @@ namespace TexGen
 	protected:
 
 		/// Build the textile
-		/** Generate the yarns to create the weft knitted textile.
+		/** Generate the yarns to create the warp knitted textile.
 		**/
 		virtual bool BuildTextile() const;
-		/// Builds the weft knit textile using the Ravandi model for calculating loop geometry
-		virtual void BuildTextileUsingDefaultLoopModel() const;
+		/// Builds the warp knit textile using the Ji model for calculating loop geometry
 		virtual void BuildTextileUsingJiLoopModel() const;
-		virtual void AddOneDefaultLoopToYarn() const;
-		virtual void AddOneJiLoopToYarn() const;
+		virtual void AddOneLoopToYarn() const;
 		virtual void AddRepeats() const;
-		virtual void AddTranslate() const;
+
 
 		double m_dWaleHeight;
 		double m_dCourseWidth;
-		double m_dNeckWidth;
+		double m_dLoopHeight;
 		LoopModel m_iLoopModel;
-		
+
 	};
 
 }
+
 
 
 

@@ -24,6 +24,12 @@ namespace TexGen
 {
 	using namespace std;
 
+	enum LoopModel
+	{
+		JI_2020,      // For warp-knitted textiles
+		DEFAULT_2021  // For weft-knitted textiles
+	};
+
 	/// Represents a knitted textile class
 	class CLASS_DECLSPEC CTextileKnit : public CTextile
 	{

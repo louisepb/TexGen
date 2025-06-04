@@ -33,7 +33,7 @@ GUI/*.py
 GUI/*_wrap.*
 
 # Directories #
-Binaries
+Binaries/
 CMakeFiles
 .vs
 
